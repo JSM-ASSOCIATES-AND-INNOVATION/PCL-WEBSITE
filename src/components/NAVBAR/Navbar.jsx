@@ -1,8 +1,7 @@
-import StaggeredMenu from './StaggeredMenu';
+import StaggeredMenu from './MobileMenu/MobileMenu';
 import { ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
-  // Mobile menu needs the full nested structure for accordions
   const menuItems = [
     { 
       label: 'About Us', ariaLabel: 'About Prudentia', link: '/about',
@@ -25,6 +24,7 @@ export default function Navbar() {
     { 
       label: 'Campus Life', ariaLabel: 'Explore campus life', link: '/campus',
       subItems: [
+        { label: 'Campus Gallery', link: '/campus/gallery' },
         { label: 'Moot Court Society', link: '/campus/moot-court' },
         { label: 'Legal Aid & Counselling Clinic', link: '/campus/legal-aid' },
         { label: 'Library & Infrastructure', link: '/campus/library' },
@@ -77,6 +77,7 @@ export default function Navbar() {
           <li className="nav-item-dropdown">
             <a href="/campus">Campus Life <ChevronDown size={14} className="dropdown-icon" /></a>
             <div className="dropdown-menu">
+              <a href="/campus/gallery">Campus Gallery</a>
               <a href="/campus/moot-court">Moot Court Society</a>
               <a href="/campus/legal-aid">Legal Aid & Counselling Clinic</a>
               <a href="/campus/library">Library & Infrastructure</a>

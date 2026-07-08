@@ -1,11 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import PixelCard from '../components/PixelCard';
+import PixelCard from './LeadershipProfile/PixelCard';
 
-import founderImg from '../assets/founder.png';
-import coFounderImg from '../assets/co_founder.png';
-import logoImg from '../assets/logo.png';
+import founderImg from '../../../assets/pcl_founder.png';
+import coFounderImg from "../../../assets/pcl_cofounder.png";
 
 const tabs = [
   {

@@ -12,15 +12,17 @@ export default function Preloader() {
     if (!hasLoaded) {
       setShow(true);
       sessionStorage.setItem('pcl_preloader_shown', 'true');
-      
-      // The flow-reveal animation takes 1.2s. Fade out shortly after.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (show) {
       const timer = setTimeout(() => {
         setShow(false);
       }, 1500);
-      
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [show]);
 
   return (
     <AnimatePresence>

@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import founderImg from '../assets/founder.png';
-import coFounderImg from '../assets/co_founder.png';
+import Navbar from '../../Navbar.jsx';
+import founderImg from '../../../../assets/pcl_founder.png';
+import coFounderImg from '../../../../assets/pcl_cofounder.png';
 
 const profiles = {
   founder: {
