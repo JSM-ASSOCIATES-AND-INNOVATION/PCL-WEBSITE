@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import StaggeredMenu from './MobileMenu/MobileMenu';
 import { ChevronDown } from 'lucide-react';
 
@@ -7,23 +8,25 @@ export default function Navbar() {
       label: 'About Us', ariaLabel: 'About Prudentia', link: '/about',
       subItems: [
         { label: 'Leadership & Vision', link: '/about/leadership' },
-        { label: 'Faculty Profiles', link: '/about/faculty' },
         { label: 'Governing Body', link: '/about/governing-body' },
         { label: 'Affiliations', link: '/about/affiliations' },
       ]
     },
     { 
-      label: 'Programs', ariaLabel: 'View academic programs', link: '/programs',
+      label: 'Academics', ariaLabel: 'View academics', link: '/programs',
       subItems: [
-        { label: '5-Year BA LL.B (Integrated)', link: '/programs/ba-llb' },
-        { label: '5-Year BBA LL.B (Corporate)', link: '/programs/bba-llb' },
-        { label: '3-Year LL.B', link: '/programs/llb' },
-        { label: 'Judiciary & UPSC Prep', link: '/programs/judiciary' },
+        { label: '5-Year BA. LL.B (Honors)', link: '/programs/ba-llb' },
+        { label: '5-Year BBA. LL.B (Honors)', link: '/programs/bba-llb' },
+        { label: '3-Year LL.B (Standard)', link: '/programs/llb' },
+        { label: 'Faculty Profiles', link: '/about/faculty' },
+        { label: 'Educational Collaborations', link: '/programs#collaborations' },
+        { label: 'Academic Calendar', link: '/programs#calendar' },
       ]
     },
     { 
       label: 'Campus Life', ariaLabel: 'Explore campus life', link: '/campus',
       subItems: [
+        { label: 'Campus Facilities', link: '/campus/facilities' },
         { label: 'Campus Gallery', link: '/campus/gallery' },
         { label: 'Moot Court Society', link: '/campus/moot-court' },
         { label: 'Legal Aid & Counselling Clinic', link: '/campus/legal-aid' },
@@ -38,6 +41,9 @@ export default function Navbar() {
         { label: 'Opportunities with us', link: '/careers/opportunities' },
       ]
     },
+    {
+      label: 'Contact', ariaLabel: 'Get in touch', link: '/contact'
+    }
   ];
 
   const socialItems = [
@@ -47,54 +53,59 @@ export default function Navbar() {
   return (
     <nav className="navbar glass-nav">
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 20px' }}>
-        <a href="/" className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit', transform: 'scale(1.15)', transformOrigin: 'left center', zIndex: 50 }}>
+        <Link to="/" className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit', transform: 'scale(1.15)', transformOrigin: 'left center', zIndex: 50 }}>
           <div className="brand-crest" style={{ transform: 'scale(1.1)' }}></div>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.1' }}>
             <span style={{ fontWeight: 700, letterSpacing: '1.5px', fontSize: '1.15rem' }}>PRUDENTIA</span>
             <span style={{ fontSize: '0.7rem', letterSpacing: '1.8px', opacity: 0.9 }}>COLLEGE OF LAW</span>
           </div>
-        </a>
+        </Link>
         
         <ul className="nav-links" style={{ flex: 1, justifyContent: 'center' }}>
           <li className="nav-item-dropdown">
-            <a href="/about">About Us <ChevronDown size={14} className="dropdown-icon" /></a>
+            <Link to="/about">About Us <ChevronDown size={14} className="dropdown-icon" /></Link>
             <div className="dropdown-menu">
-              <a href="/about/leadership">Leadership & Vision</a>
-              <a href="/about/faculty">Faculty Profiles</a>
-              <a href="/about/governing-body">Governing Body</a>
-              <a href="/about/affiliations">Affiliations (BCI & Osmania University)</a>
+              <Link to="/about/leadership">Leadership & Vision</Link>
+              <Link to="/about/governing-body">Governing Body</Link>
+              <Link to="/about/affiliations">Affiliations</Link>
             </div>
           </li>
           <li className="nav-item-dropdown">
-            <a href="/programs">Programs <ChevronDown size={14} className="dropdown-icon" /></a>
+            <Link to="/programs">Academics <ChevronDown size={14} className="dropdown-icon" /></Link>
             <div className="dropdown-menu">
-              <a href="/programs/ba-llb">5-Year BA LL.B (Integrated)</a>
-              <a href="/programs/bba-llb">5-Year BBA LL.B (Corporate)</a>
-              <a href="/programs/llb">3-Year LL.B</a>
-              <a href="/programs/judiciary">Judiciary & UPSC Prep</a>
+              <Link to="/programs/ba-llb">5-Year BA. LL.B (Honors)</Link>
+              <Link to="/programs/bba-llb">5-Year BBA. LL.B (Honors)</Link>
+              <Link to="/programs/llb">3-Year LL.B (Standard)</Link>
+              <Link to="/about/faculty">Faculty Profiles</Link>
+              <Link to="/programs#collaborations">Educational Collaborations</Link>
+              <Link to="/programs#calendar">Academic Calendar</Link>
             </div>
           </li>
           <li className="nav-item-dropdown">
-            <a href="/campus">Campus Life <ChevronDown size={14} className="dropdown-icon" /></a>
+            <Link to="/campus">Campus Life <ChevronDown size={14} className="dropdown-icon" /></Link>
             <div className="dropdown-menu">
-              <a href="/campus/gallery">Campus Gallery</a>
-              <a href="/campus/moot-court">Moot Court Society</a>
-              <a href="/campus/legal-aid">Legal Aid & Counselling Clinic</a>
-              <a href="/campus/library">Library & Infrastructure</a>
+              <Link to="/campus/facilities">Campus Facilities</Link>
+              <Link to="/campus/gallery">Campus Gallery</Link>
+              <Link to="/campus/moot-court">Moot Court Society</Link>
+              <Link to="/campus/legal-aid">Legal Aid & Clinic</Link>
+              <Link to="/campus/library">Library & Infrastructure</Link>
             </div>
           </li>
           <li className="nav-item-dropdown">
-            <a href="/careers">Careers <ChevronDown size={14} className="dropdown-icon" /></a>
+            <Link to="/careers">Careers <ChevronDown size={14} className="dropdown-icon" /></Link>
             <div className="dropdown-menu">
-              <a href="/careers/placement">Placement Cell</a>
-              <a href="/careers/industry">Industry Integration & Clerkships</a>
-              <a href="/careers/opportunities">Opportunities with us</a>
+              <Link to="/careers/placement">Placement Cell</Link>
+              <Link to="/careers/industry">Industry Integration</Link>
+              <Link to="/careers/opportunities">Opportunities with us</Link>
             </div>
+          </li>
+          <li className="nav-item-dropdown" style={{ display: 'flex', alignItems: 'center' }}>
+            <Link to="/contact">Contact</Link>
           </li>
         </ul>
 
         <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <a href="/apply" className="apply-btn glowing-pill">Apply Now</a>
+          <Link to="/apply" className="apply-btn glowing-pill">Apply Now</Link>
           <div className="mobile-menu-wrapper">
             <StaggeredMenu 
               items={menuItems} 

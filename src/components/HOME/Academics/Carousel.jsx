@@ -3,6 +3,8 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 import './Carousel.css';
 
+import { Link } from 'react-router-dom';
+
 const DRAG_BUFFER = 0;
 const VELOCITY_THRESHOLD = 500;
 const GAP = 16;
@@ -40,9 +42,9 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
             <div className="carousel-item-title" style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', letterSpacing: '0' }}>{item.title}</div>
             <p className="carousel-item-description" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
             {item.link && (
-              <a href={item.link} className="carousel-explore-btn">
-                Explore Program <span style={{ marginLeft: '4px', color: 'var(--primary-color)' }}>→</span>
-              </a>
+              <Link to={item.link} className="carousel-explore-btn" style={{ color: '#FFBF00', fontWeight: 'bold', marginTop: 'auto', paddingTop: '10px' }}>
+                View Details <span style={{ marginLeft: '4px', color: '#FFBF00' }}>→</span>
+              </Link>
             )}
           </div>
         </>

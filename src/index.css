@@ -122,24 +122,26 @@
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(0px);
-  background: rgba(10, 10, 10, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 0;
-  border-radius: 8px;
+  background: rgba(8, 8, 8, 0.9);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 2px solid var(--primary-color);
+  padding: 15px 0;
+  border-radius: 12px;
   min-width: 280px;
   display: flex;
   flex-direction: column;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px rgba(255, 191, 0, 0.05);
   pointer-events: none;
 }
 .nav-item-dropdown:hover .dropdown-menu {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(5px);
+  transform: translateX(-50%) translateY(10px);
   pointer-events: auto;
 }
 .dropdown-menu::before {
@@ -153,17 +155,34 @@
 .dropdown-menu a {
   padding: 12px 25px;
   font-size: 14px;
+  font-weight: 500;
   text-transform: none;
   letter-spacing: 0.5px;
-  color: var(--text-color);
-  opacity: 0.7;
-  transition: all 0.2s ease;
-  display: block;
+  color: #ccc;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.dropdown-menu a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--primary-color);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+  transform-origin: center;
 }
 .dropdown-menu a:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 191, 0, 0.05);
   color: var(--primary-color);
+  padding-left: 32px;
+}
+.dropdown-menu a:hover::before {
+  transform: scaleY(1);
 }
 
 .portal-link {
@@ -1004,6 +1023,13 @@
 
 /* Mobile Adjustments */
 @media (max-width: 900px) {
+  .slide {
+    justify-content: flex-start;
+    padding-top: 100px;
+    padding-bottom: 50px;
+    height: auto;
+    min-height: 100dvh;
+  }
   .dramatic-title { font-size: 3rem; }
   
   .brand-logo { font-size: 1.1rem !important; }
@@ -1142,6 +1168,7 @@
     left: auto;
     right: auto;
     margin-left: 0;
+    margin-right: 0;
     margin-right: 0;
     display: flex;
     align-items: center;

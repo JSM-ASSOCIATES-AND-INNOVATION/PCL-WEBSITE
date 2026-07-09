@@ -1,0 +1,17 @@
+.programs-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background-color: #050505;
+  color: white;
+  overflow-x: hidden;
+}
+
+.programs-content-wrapper {
+  position: relative;
+  z-index: 20;
+}
+
+.tab-content-area {
+  position: relative;
+}

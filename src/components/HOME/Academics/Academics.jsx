@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import { Link } from 'react-router-dom';
 import Carousel from './Carousel';
 import classroomImg from '../../../assets/pcl_classroom_1.webp';
 import classroom2Img from '../../../assets/pcl_classroom_2.webp';
@@ -9,9 +10,9 @@ const Academics = forwardRef(({ windowWidth, academicGridRef }, ref) => {
     <section className="slide" ref={ref}>
       <div className="section-glow"></div>
       <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-        <div className="section-header">
-          <span className="section-subtitle">Our Programs</span>
-          <h2 className="section-heading">Academic Excellence</h2>
+        <div className="section-header" style={{ marginBottom: '10px' }}>
+          <span className="section-subtitle text-sm md:text-base">Our Programs</span>
+          <h2 className="section-heading text-3xl md:text-4xl">Academic Excellence</h2>
         </div>
         
         {windowWidth <= 900 ? (
@@ -51,40 +52,46 @@ const Academics = forwardRef(({ windowWidth, academicGridRef }, ref) => {
           </div>
         ) : (
           <div className="academic-grid" ref={academicGridRef}>
-            <div className="elegant-card">
+            <Link to="/programs/ba-llb" className="elegant-card block cursor-pointer group">
               <div className="card-bg" style={{ backgroundImage: `url(${classroomImg})` }}></div>
               <div className="card-accent"></div>
               <div className="card-content">
                 <span className="program-duration">5-Year Integrated</span>
                 <h3>BA LL.B <span className="program-focus">Honors</span></h3>
                 <p>A comprehensive program combining arts and law for a holistic understanding of the legal system and societal dynamics.</p>
-                <div className="view-syllabus">Explore Program <span className="arrow">➔</span></div>
+                <div className="view-syllabus">Explore Program <span className="arrow group-hover:translate-x-2 transition-transform">➔</span></div>
               </div>
-            </div>
+            </Link>
 
-            <div className="elegant-card">
+            <Link to="/programs/bba-llb" className="elegant-card block cursor-pointer group">
               <div className="card-bg" style={{ backgroundImage: `url(${classroom2Img})` }}></div>
               <div className="card-accent"></div>
               <div className="card-content">
                 <span className="program-duration">5-Year Corporate</span>
                 <h3>BBA LL.B <span className="program-focus">Honors</span></h3>
                 <p>Designed for future corporate leaders, integrating advanced business administration principles with corporate law.</p>
-                <div className="view-syllabus">Explore Program <span className="arrow">➔</span></div>
+                <div className="view-syllabus">Explore Program <span className="arrow group-hover:translate-x-2 transition-transform">➔</span></div>
               </div>
-            </div>
+            </Link>
 
-            <div className="elegant-card">
+            <Link to="/programs/llb" className="elegant-card block cursor-pointer group">
               <div className="card-bg" style={{ backgroundImage: `url(${classroom3Img})` }}></div>
               <div className="card-accent"></div>
               <div className="card-content">
                 <span className="program-duration">3-Year Graduate</span>
                 <h3>LL.B <span className="program-focus">Standard</span></h3>
                 <p>Intensive, rigorous legal training tailored specifically for graduates seeking to enter the legal profession swiftly.</p>
-                <div className="view-syllabus">Explore Program <span className="arrow">➔</span></div>
+                <div className="view-syllabus">Explore Program <span className="arrow group-hover:translate-x-2 transition-transform">➔</span></div>
               </div>
-            </div>
+            </Link>
           </div>
         )}
+
+        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }} className="pb-8 md:pb-0 z-20 relative">
+          <Link to="/programs" className="px-6 md:px-8 py-3 bg-[#FFBF00] font-bold uppercase tracking-widest rounded hover:bg-white transition-colors text-sm md:text-base" style={{ color: '#000000' }}>
+            Explore All Programs
+          </Link>
+        </div>
       </div>
     </section>
   );

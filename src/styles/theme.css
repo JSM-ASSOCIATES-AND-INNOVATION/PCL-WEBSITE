@@ -41,7 +41,6 @@ body {
   margin: 0;
   padding: 0;
   line-height: 1.6;
-  overflow: hidden; /* We will handle scrolling in a container */
 }
 
 /* Frosted Glass Utilities */
