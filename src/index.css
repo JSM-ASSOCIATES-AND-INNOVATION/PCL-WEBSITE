@@ -2,6 +2,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 @import './styles/theme.css';
 
+@theme {
+  --color-brand-bg: var(--bg-color);
+  --color-brand-text: var(--text-color);
+  --color-brand-primary: var(--primary-color);
+  --color-brand-primary-hover: var(--primary-hover);
+  --color-brand-primary-light: var(--primary-light);
+  --color-brand-card: var(--card-bg);
+  --color-brand-border: var(--card-border);
+  --color-brand-nav: var(--nav-bg);
+  --color-brand-muted: var(--text-muted);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -120,23 +132,23 @@
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%) translateY(0px);
-  background: rgba(8, 8, 8, 0.9);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-top: 2px solid var(--primary-color);
-  padding: 15px 0;
+  left: -20px;
+  background: var(--card-solid);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  min-width: 250px;
+  padding: 15px;
   border-radius: 12px;
-  min-width: 280px;
-  display: flex;
-  flex-direction: column;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 20px rgba(255, 191, 0, 0.05);
-  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
 }
 .nav-item-dropdown:hover .dropdown-menu {
   opacity: 1;
@@ -158,7 +170,7 @@
   font-weight: 500;
   text-transform: none;
   letter-spacing: 0.5px;
-  color: #ccc;
+  color: var(--text-color);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -267,7 +279,13 @@
   image-rendering: -webkit-optimize-contrast;
   image-rendering: high-quality;
   z-index: -3;
-  opacity: 0.6;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+  z-index: 1;
 }
 .hero-beams-wrapper {
   position: absolute;
@@ -310,29 +328,31 @@
   text-align: center;
   width: 100%;
   max-width: 1000px;
-  margin: 0 auto;
+  margin: -10vh auto 0 auto; /* Shifted up to prevent dashboard overlap */
 }
 .badge {
   display: inline-block;
   padding: 8px 16px;
-  border: 1px solid rgba(128, 0, 32, 0.5);
+  border: 1px solid var(--primary-color);
   color: var(--primary-color);
   text-transform: uppercase;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 4px;
-  border-radius: 2px;
-  margin-bottom: 30px;
-  background: rgba(128, 0, 32, 0.05);
+  border-radius: 4px;
+  margin-bottom: 25px;
+  background: var(--primary-glow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  font-weight: 800;
   margin: 0 0 15px 0;
   line-height: 1.1;
-  color: var(--text-color);
-  text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  color: #ffffff;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.8);
 }
 .hero-title .text-gradient {
   background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-light) 100%);
@@ -341,39 +361,43 @@
   filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
 }
 .hero-sub {
-  font-size: clamp(0.9rem, 1.5vw, 1.15rem);
-  color: var(--text-muted);
-  max-width: 600px;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 650px;
   margin: 0 auto 30px auto;
   line-height: 1.6;
-  font-weight: 400;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  font-weight: 500;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   padding: 15px 35px;
   border-radius: 40px;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 10px 30px var(--glass-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.5);
   display: inline-block;
 }
 .dashboard {
   position: absolute;
-  bottom: 5vh;
+  bottom: 6vh;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 40px;
+  gap: 30px;
   padding: 20px 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  background: var(--card-bg);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--card-border);
   z-index: 10;
   width: 90%;
-  max-width: 1000px;
+  max-width: 900px;
   justify-content: space-between;
+  box-shadow: 0 20px 50px var(--glass-shadow);
 }
-.dash-item h4 { margin: 0; font-size: 18px; color: #fff; }
-.dash-item p { margin: 0; font-size: 14px; color: var(--text-muted); }
+.dash-item h4 { margin: 0; font-size: 16px; color: var(--text-color); font-weight: 700; }
+.dash-item p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 500; }
 
 /* Slide 2: The Philosophy */
 .philosophy-visual {
@@ -837,15 +861,12 @@
   font-size: 5.5rem;
   font-weight: 300;
   letter-spacing: -2px;
-  color: #fff;
+  color: var(--primary-color);
   margin: 0 0 5px 0;
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.3) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   line-height: 1;
 }
 .metric-item p {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-muted);
   font-family: 'Outfit', sans-serif;
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -854,15 +875,16 @@
   margin: 0;
 }
 .admissions-cta {
-  background: rgba(5, 5, 5, 0.4);
+  background: var(--card-bg);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 50px 60px;
-  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 60px 40px;
   text-align: center;
-  margin: 0 40px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 40px rgba(0, 0, 0, 0.5);
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 0 20px 50px var(--glass-shadow);
 }
 .admissions-title {
   font-family: 'Playfair Display', serif;
@@ -882,9 +904,9 @@
 }
 .btn-amber-glow {
   display: inline-block;
-  padding: 16px 36px;
-  background: #FFBF00;
-  color: #000;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 18px 40px;
   border: none;
   border-radius: 30px;
   text-transform: uppercase;
@@ -893,14 +915,14 @@
   font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 20px rgba(255, 191, 0, 0.15);
+  box-shadow: 0 10px 20px var(--primary-glow);
   text-decoration: none;
 }
 .btn-amber-glow:hover {
-  background: #fff;
-  color: #000;
+  background: var(--primary-hover);
+  color: #fff;
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 30px var(--primary-glow);
 }
 
 /* Slide 6: Contact & Footer */
@@ -920,27 +942,30 @@
   margin-bottom: 40px;
 }
 .contact-box {
-  background: rgba(10, 10, 10, 0.4);
+  background: var(--card-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
   padding: 40px 30px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px var(--glass-shadow);
 }
 .contact-box:hover {
-  border-color: rgba(255, 191, 0, 0.3);
-  background: rgba(15, 15, 15, 0.6);
+  border-color: var(--primary-color);
+  background: var(--card-bg);
   transform: translateY(-8px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 20px 40px rgba(255, 191, 0, 0.08);
+  box-shadow: 0 20px 40px var(--glass-shadow);
 }
 .contact-box.highlight {
-  background: linear-gradient(180deg, rgba(255, 191, 0, 0.05) 0%, rgba(10, 10, 10, 0.6) 100%);
-  border-color: rgba(255, 191, 0, 0.2);
+  background: linear-gradient(180deg, var(--primary-glow) 0%, var(--card-bg) 100%);
+  border-color: var(--primary-color);
+}
+.contact-box.highlight:hover {
+  box-shadow: 0 20px 50px var(--primary-glow);
 }
 .icon-wrapper {
   color: #FFBF00;
@@ -1021,19 +1046,52 @@
   color: #aaa;
 }
 
-/* Mobile Adjustments */
+  /* Mobile Adjustments */
 @media (max-width: 900px) {
+  .snap-container {
+    scroll-snap-type: none;
+    height: auto;
+    overflow-y: visible;
+    overflow-x: hidden;
+  }
   .slide {
     justify-content: flex-start;
-    padding-top: 100px;
+    padding-top: 80px;
     padding-bottom: 50px;
     height: auto;
     min-height: 100dvh;
   }
+  
+  .hero-content {
+    margin-top: 2vh;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    height: auto;
+  }
+  .hero-title {
+    font-size: 2.2rem;
+    margin-bottom: 0;
+    line-height: 1.2;
+  }
+  .hero-sub {
+    font-size: 0.9rem;
+    margin: 0 auto;
+    padding: 12px 20px;
+  }
+  .badge {
+    margin-bottom: 5px;
+  }
+
   .dramatic-title { font-size: 3rem; }
   
   .brand-logo { font-size: 1.1rem !important; }
   .brand-crest { width: 30px; height: 35px; }
+  .section-header { 
+    margin-top: 35px;
+  }
   .section-heading { font-size: 2.5rem; }
   
   .dashboard { 
@@ -1091,11 +1149,14 @@
   }
   .arsenal-visual {
     min-height: 25vh;
-    margin: 0 5vw;
+    margin: 35px 5vw 0 5vw;
     padding: 20px;
   }
   .arsenal-headline {
     font-size: 2rem;
+  }
+  .split-right.mobile-only .carousel-container {
+    padding-bottom: 40px;
   }
   
   /* Slide 5 Mobile Fixes */
@@ -1169,11 +1230,10 @@
     right: auto;
     margin-left: 0;
     margin-right: 0;
-    margin-right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    min-height: calc(100dvh - 130px);
   }
   .glass-container {
     background: var(--card-bg) !important;
@@ -1183,6 +1243,7 @@
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
     width: 100%;
+    margin-top: 8vh;
   }
   .glass-container h2 {
     position: relative;

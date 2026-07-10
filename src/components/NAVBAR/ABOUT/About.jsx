@@ -28,7 +28,7 @@ export default function About() {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-full relative flex flex-col items-center bg-[#050505] overflow-x-hidden overflow-y-auto font-sans text-white scroll-smooth pb-32">
+    <div className="h-screen w-full relative flex flex-col items-center bg-brand-bg overflow-x-hidden overflow-y-auto font-sans text-brand-text scroll-smooth pb-32">
       {/* Clean Abstract Background */}
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#050505] to-[#000000] z-0" />
       
@@ -44,14 +44,14 @@ export default function About() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-white mb-12 uppercase leading-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-brand-text mb-12 uppercase leading-tight"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Shaping the Future of <br className="hidden md:block" />
             <span className="text-[#FFBF00]">Legal Professionals.</span>
           </motion.h1>
           
-          <div className="text-gray-300 text-base md:text-lg lg:text-xl leading-relaxed text-justify space-y-6 mx-auto" style={{ fontFamily: "'Outfit', sans-serif" }}>
+          <div className="text-brand-muted text-base md:text-lg lg:text-xl leading-relaxed text-justify space-y-6 mx-auto" style={{ fontFamily: "'Outfit', sans-serif" }}>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }}>
               <span className="text-[#FFBF00] font-semibold text-xl">Prudentia College of Law, Gurramguda, Hyderabad</span> is established with a vision to nurture a new generation of legal professionals equipped with knowledge, integrity, and leadership. The institution is dedicated to creating an academic environment where law is not merely studied as a subject but understood as a powerful instrument of justice, social transformation, and nation-building.
             </motion.p>
@@ -83,7 +83,7 @@ export default function About() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 + (index * 0.2), ease: "easeOut" }}
-              className="relative p-8 md:p-10 bg-[#0a0a0a] border border-white/5 rounded-2xl shadow-2xl hover:border-[#FFBF00]/30 hover:bg-[#111] hover:-translate-y-2 transition-all duration-500 group overflow-hidden flex flex-col items-center text-center"
+              className="relative p-8 md:p-10 bg-brand-card border border-brand-border rounded-2xl shadow-2xl hover:border-[#FFBF00]/30 hover:bg-brand-card hover:-translate-y-2 transition-all duration-500 group overflow-hidden flex flex-col items-center text-center"
             >
               {/* Card Hover Glow Background */}
               <div className="absolute inset-0 bg-gradient-to-br from-[#FFBF00]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -91,7 +91,7 @@ export default function About() {
               <h3 className="relative z-10 text-2xl lg:text-3xl text-[#FFBF00] uppercase tracking-widest font-semibold mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
                 {tab.label}
               </h3>
-              <p className="relative z-10 text-gray-400 leading-relaxed text-base lg:text-lg" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              <p className="relative z-10 text-brand-muted leading-relaxed text-base lg:text-lg" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 "{tab.content}"
               </p>
             </motion.div>
@@ -104,7 +104,7 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold uppercase tracking-widest text-white mb-16 text-center"
+            className="text-3xl md:text-5xl font-bold uppercase tracking-widest text-brand-text mb-16 text-center"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Our <span className="text-[#FFBF00]">Leadership</span>
@@ -185,7 +185,7 @@ export default function About() {
                       Mr. Bharat Krishna Buddala
                     </h3>
                     <p className="text-[#FFBF00] uppercase tracking-widest text-xs md:text-sm font-semibold mb-3">
-                      Co-Founder & Managing Director, Prudentia College of Law
+                      Co-Founder & Secretary
                     </p>
                     
                     {/* Hover Read More */}

@@ -7,7 +7,7 @@ export default function UnderConstruction({ title }) {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen w-full bg-[#050505] flex flex-col items-center justify-center font-sans text-white px-6">
+    <div className="min-h-screen w-full bg-brand-bg flex flex-col items-center justify-center font-sans text-brand-text px-6">
       
       {/* Background Gradient */}
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#050505] to-[#000000] z-0 pointer-events-none" />
@@ -37,7 +37,7 @@ export default function UnderConstruction({ title }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-gray-400 text-lg md:text-xl mb-12 max-w-xl leading-relaxed"
+          className="text-brand-muted text-lg md:text-xl mb-12 max-w-xl leading-relaxed"
         >
           We are currently crafting this section to bring you an unparalleled experience. Please check back soon.
         </motion.p>
@@ -47,7 +47,7 @@ export default function UnderConstruction({ title }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
           onClick={() => navigate(-1)}
-          className="group flex items-center gap-3 px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-semibold transition-all"
+          className="group flex items-center gap-3 px-8 py-4 bg-white/5 hover:bg-white/10 border border-brand-border rounded-full text-brand-text font-semibold transition-all"
         >
           <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
           <span>Return to Previous Page</span>

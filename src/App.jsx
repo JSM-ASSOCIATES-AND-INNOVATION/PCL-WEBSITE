@@ -1,11 +1,13 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/NAVBAR/Navbar';
+import Footer from './components/UI/Footer/Footer';
 import Home from './components/HOME/Home';
 import About from './components/NAVBAR/ABOUT/About';
 import LeadershipProfile from './components/NAVBAR/ABOUT/LeadershipProfile/LeadershipProfile';
 import UnderConstruction from './pages/UnderConstruction';
 import Gallery from './components/NAVBAR/CAMPUS/Gallery/Gallery';
 import Preloader from './components/UI/Preloader/Preloader';
+import ScrollToTop from './components/UI/ScrollToTop';
 import Programs from './components/NAVBAR/PROGRAMS/Programs';
 import CourseBALLB from './components/NAVBAR/PROGRAMS/CourseBALLB';
 import CourseBBALLB from './components/NAVBAR/PROGRAMS/CourseBBALLB';
@@ -15,10 +17,17 @@ import FacultyProfile from './components/NAVBAR/ABOUT/FacultyProfile';
 import Facilities from './components/NAVBAR/CAMPUS/Facilities/Facilities';
 import FacilityDetail from './components/NAVBAR/CAMPUS/Facilities/FacilityDetail';
 import Contact from './components/NAVBAR/Contact/Contact';
+import ApplyNow from './components/NAVBAR/ApplyNow/ApplyNow';
+import TermsAndConditions from './components/Legal/TermsAndConditions';
+import PrivacyPolicy from './components/Legal/PrivacyPolicy';
 
 function App() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
   return (
     <>
+      <ScrollToTop />
       <Preloader />
       <Routes>
         <Route path="/" element={<><Navbar /><main><Home /></main></>} />
@@ -51,9 +60,13 @@ function App() {
         <Route path="/careers/opportunities" element={<UnderConstruction title="Opportunities" />} />
 
         <Route path="/contact" element={<><Navbar /><Contact /></>} />
+        <Route path="/apply" element={<ApplyNow />} />
+        <Route path="/terms" element={<TermsAndConditions />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
 
         <Route path="*" element={<UnderConstruction title="Page Not Found" />} />
       </Routes>
+      {!isHome && <Footer />}
     </>
   )
 }

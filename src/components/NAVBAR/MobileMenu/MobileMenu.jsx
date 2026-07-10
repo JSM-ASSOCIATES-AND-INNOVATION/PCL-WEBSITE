@@ -462,6 +462,27 @@ export const StaggeredMenu = ({
               </ul>
             </div>
           )}
+          <div style={{ marginTop: '30px', paddingBottom: '20px' }}>
+            <a 
+              href="/apply" 
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'center',
+                padding: '15px 0',
+                background: 'var(--primary-color)',
+                color: '#fff',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                fontWeight: 'bold',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                boxShadow: '0 10px 20px var(--primary-glow)'
+              }}
+            >
+              Apply Now
+            </a>
+          </div>
         </div>
       </aside>
     </div>

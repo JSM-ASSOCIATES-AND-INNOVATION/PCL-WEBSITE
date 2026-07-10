@@ -31,15 +31,15 @@ export default function Gallery() {
   return (
     <>
       <Navbar />
-      <div className="h-screen w-full bg-[#050505] flex flex-col pt-24 font-sans text-white">
+      <div className="h-screen w-full bg-brand-bg flex flex-col pt-24 font-sans text-brand-text">
         
         {/* Gallery View Toggle */}
         <div className="flex justify-center my-6 z-10 relative">
-          <div className="bg-white/5 p-1 rounded-full border border-white/10 flex">
+          <div className="bg-white/5 p-1 rounded-full border border-brand-border flex">
             <button
               onClick={() => setView('circular')}
               className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
-                view === 'circular' ? 'bg-[#FFBF00] text-black shadow-[0_0_20px_rgba(255,191,0,0.3)]' : 'text-gray-400 hover:text-white'
+                view === 'circular' ? 'bg-[#FFBF00] text-black shadow-[0_0_20px_rgba(255,191,0,0.3)]' : 'text-brand-muted hover:text-brand-text'
               }`}
             >
               Circular View
@@ -47,7 +47,7 @@ export default function Gallery() {
             <button
               onClick={() => setView('infinite')}
               className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
-                view === 'infinite' ? 'bg-[#FFBF00] text-black shadow-[0_0_20px_rgba(255,191,0,0.3)]' : 'text-gray-400 hover:text-white'
+                view === 'infinite' ? 'bg-[#FFBF00] text-black shadow-[0_0_20px_rgba(255,191,0,0.3)]' : 'text-brand-muted hover:text-brand-text'
               }`}
             >
               Grid View
@@ -75,7 +75,7 @@ export default function Gallery() {
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center">
-                <p className="text-gray-400 text-lg">
+                <p className="text-brand-muted text-lg">
                   Grid View component code is pending. Waiting for InfiniteMenu...
                 </p>
               </div>

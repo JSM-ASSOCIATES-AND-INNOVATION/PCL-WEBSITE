@@ -1,3 +1,5 @@
+import React from 'react';
+import { BookOpen, MonitorPlay, Wifi, Mic, Scale, HandHeart, Landmark, Building2, Briefcase, GraduationCap, Gavel, UserCheck, Trophy } from 'lucide-react';
 import classRoom1 from '../../../../assets/pcl_classroom_1.webp';
 import classRoom2 from '../../../../assets/pcl_classroom_2.webp';
 import classRoom3 from '../../../../assets/pcl_classroom_3.webp';
@@ -18,7 +20,7 @@ export const facilitiesData = {
         summary: "An extensive knowledge repository housing over 10,000 volumes.",
         content: "An extensive knowledge repository housing over 10,000 volumes, alongside thousands of national and international journals. Managed by expert librarians, it serves as the intellectual core for legal research and academic excellence.",
         image: library,
-        icon: "📚"
+        icon: <BookOpen className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "smart-classrooms",
@@ -26,7 +28,7 @@ export const facilitiesData = {
         summary: "Forward-thinking learning spaces equipped with advanced digital teaching tools.",
         content: "Forward-thinking learning spaces equipped with advanced digital teaching tools, enabling dynamic presentations and multimedia-driven educational methodologies.",
         image: classRoom1,
-        icon: "🖥️"
+        icon: <MonitorPlay className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "campus-wifi",
@@ -34,7 +36,7 @@ export const facilitiesData = {
         summary: "Seamless, campus-wide internet connectivity.",
         content: "Seamless, campus-wide internet connectivity ensuring students have uninterrupted access to elite online research platforms, global legal databases, and digital academic tools.",
         image: outdoor,
-        icon: "📶"
+        icon: <Wifi className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "executive-auditorium",
@@ -42,7 +44,7 @@ export const facilitiesData = {
         summary: "A sprawling, technologically advanced venue equipped with premium systems.",
         content: "A sprawling, technologically advanced venue equipped with premium audio-visual systems, designed to host national seminars, legal workshops, and high-profile institutional events.",
         image: entrance,
-        icon: "🎤"
+        icon: <Mic className="text-[#FFBF00] w-6 h-6" />
       }
     ]
   },
@@ -56,7 +58,7 @@ export const facilitiesData = {
         summary: "A meticulously designed replica of a real courtroom.",
         content: "A meticulously designed replica of a real courtroom. This facility immerses students in the mechanics of trial and appellate advocacy through rigorous training and competitive moot court events.",
         image: justice,
-        icon: "⚖️"
+        icon: <Scale className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "legal-aid-clinic",
@@ -64,7 +66,7 @@ export const facilitiesData = {
         summary: "Providing vital community services and hands-on exposure.",
         content: "Operating in collaboration with state legal service authorities, this clinic provides vital community services while giving students hands-on exposure to social justice initiatives and client counseling.",
         image: legalClinic,
-        icon: "🤝"
+        icon: <HandHeart className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "district-court-access",
@@ -72,7 +74,7 @@ export const facilitiesData = {
         summary: "Located in close proximity to a major district court complex.",
         content: "Situated in close proximity to a major district court complex, allowing students to observe live litigation and transition seamlessly from academic theory to actual legal practice.",
         image: classRoom2,
-        icon: "🏛️"
+        icon: <Landmark className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "metropolitan-edge",
@@ -80,7 +82,7 @@ export const facilitiesData = {
         summary: "Unparalleled exposure to premier state-level legal forums.",
         content: "Strategically located in the state capital, offering unparalleled exposure to High Courts, legislative assemblies, specialized tribunals, and premier state-level legal forums.",
         image: classRoom3,
-        icon: "🏙️"
+        icon: <Building2 className="text-[#FFBF00] w-6 h-6" />
       }
     ]
   },
@@ -94,15 +96,31 @@ export const facilitiesData = {
         summary: "A dedicated placement cell bridging academia and industry.",
         content: "A dedicated placement cell that bridges the gap between academia and industry. We facilitate recruitment with multinational corporations and top-tier law firms, securing competitive positions for our graduates as legal officers and corporate advisors.",
         image: entrance,
-        icon: "💼"
+        icon: <Briefcase className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "integrated-coaching",
-        title: "Integrated CS & CA Coaching",
-        summary: "Specialized, concurrent coaching for dual qualifications.",
-        content: "Specialized, concurrent coaching programs designed for students aiming to achieve dual qualifications as Company Secretaries (CS) or Chartered Accountants (CA) alongside their legal degrees.",
+        title: "Integrated Civil Services & Judiciary Coaching",
+        summary: "In-house training for competitive examinations.",
+        content: "In exclusive partnership with Sharat Chandra Academy, we offer elite in-house training for UPSC Civil Services, state judicial examinations, and competitive legal service entries.",
+        image: library,
+        icon: <GraduationCap className="text-[#FFBF00] w-6 h-6" />
+      },
+      {
+        id: "adr-training",
+        title: "Alternative Dispute Resolution (ADR) Cell",
+        summary: "Specialized training in arbitration and mediation.",
+        content: "A specialized cell focused on modern dispute resolution techniques, training students in negotiation, mediation, and arbitration to excel in international and domestic corporate environments.",
         image: classRoom1,
-        icon: "📈"
+        icon: <Gavel className="text-[#FFBF00] w-6 h-6" />
+      },
+      {
+        id: "mentorship-program",
+        title: "Executive Mentorship Program",
+        summary: "Direct guidance from senior advocates and corporate leaders.",
+        content: "A structured program pairing top-performing students with senior advocates, corporate counsel, and judicial officers for personalized guidance, networking, and career mapping.",
+        image: classRoom2,
+        icon: <UserCheck className="text-[#FFBF00] w-6 h-6" />
       },
       {
         id: "pms-scholarship",
@@ -110,7 +128,7 @@ export const facilitiesData = {
         summary: "A prestigious, full-tuition scholarship for elite scholars.",
         content: "A prestigious, full-tuition scholarship awarded to elite scholars securing a top 100 rank in the TGLAWCET. (Note: In the event of multiple top-100 applicants, the highest-ranking candidate is selected).",
         image: library,
-        icon: "🏅"
+        icon: <Trophy className="text-[#FFBF00] w-6 h-6" />
       }
     ]
   },
@@ -121,10 +139,18 @@ export const facilitiesData = {
       {
         id: "athletics-sports",
         title: "Athletics & Sports Facilities",
-        summary: "Access to premium indoor and outdoor sporting arenas.",
-        content: "Access to premium indoor and outdoor sporting arenas, fostering physical well-being, team building, and active participation in university and state-level tournaments.",
+        summary: "Dedicated grounds for competitive and recreational sports.",
+        content: "Dedicated grounds for competitive and recreational sports, encouraging teamwork, discipline, and physical fitness as essential components of a robust legal education.",
         image: outdoor,
-        icon: "⚽"
+        icon: <Trophy className="text-[#FFBF00] w-6 h-6" />
+      },
+      {
+        id: "student-cafeteria",
+        title: "The Collegiate Cafeteria",
+        summary: "A modern dining facility focusing on hygiene and nutrition.",
+        content: "A modern dining facility adhering to strict hygiene and nutritional standards. It serves as a vibrant social hub where ideas are exchanged beyond the confines of the classroom.",
+        image: entrance,
+        icon: <Building2 className="text-[#FFBF00] w-6 h-6" />
       }
     ]
   }
