@@ -14,19 +14,19 @@ import { useERP } from './CONTEXT/ErpContext';
 // ==========================================
 // 1. AUTH & LAYOUT IMPORTS
 // ==========================================
-import Login from './COMPONENTS/LOGIN/LOGIN';
+import Login from './COMPONENTS/LOGIN/Login';
 import TopNav from './COMPONENTS/SHARED/TopNav';
 import MobileNav from './COMPONENTS/SHARED/MobileNav';
 import Sidebar from './COMPONENTS/STUDENT/SIDEBAR/Sidebar';
-import FacultySidebar from './COMPONENTS/FACULTY/FACULTYSIDEBAR/FACULTYSIDEBAR';
-import AdminSidebar from './COMPONENTS/ADMIN/ADMINSIDEBAR/ADMINSIDEBAR';
+import FacultySidebar from './COMPONENTS/FACULTY/FACULTYSIDEBAR/FacultySidebar';
+import AdminSidebar from './COMPONENTS/ADMIN/ADMINSIDEBAR/AdminSidebar';
 
 // ==========================================
 // 2. SHARED PORTAL MODULES
 // ==========================================
 import NoticeBoard from './COMPONENTS/NOTICES/NoticeBoard';
-import Helpdesk from './COMPONENTS/STUDENT/HELPDESK/HELPDESK';
-import Credentials from './COMPONENTS/STUDENT/CREDENTIALS/CREDENTIALS';
+import Helpdesk from './COMPONENTS/STUDENT/HELPDESK/Helpdesk';
+import Credentials from './COMPONENTS/STUDENT/CREDENTIALS/Credentials';
 import QuestionnaireModal from './COMPONENTS/SHARED/QuestionnaireModal';
 import DialogContainer from './COMPONENTS/SHARED/DialogContainer';
 import CredentialVerification from './COMPONENTS/PUBLIC/CredentialVerification';
@@ -34,50 +34,50 @@ import CredentialVerification from './COMPONENTS/PUBLIC/CredentialVerification';
 // ==========================================
 // 3. STUDENT PORTAL MODULES
 // ==========================================
-import StudentDashboard from './COMPONENTS/STUDENT/STUDENTDASHBOARD/STUDENTDASHBOARD';
-import Attendance from './COMPONENTS/STUDENT/ATTENDANCE/ATTENDANCE';
-import CourseVault from './COMPONENTS/STUDENT/COURSEVAULT/COURSEVAULT';
-import Timetable from './COMPONENTS/STUDENT/TIMETABLE/TIMETABLE';
-import Assignments from './COMPONENTS/STUDENT/ASSIGNMENTS/ASSIGNMENTS';
-import Examinations from './COMPONENTS/STUDENT/EXAMINATIONS/EXAMINATIONS';
-import Internships from './COMPONENTS/STUDENT/INTERNSHIPS/INTERNSHIPS';
-import MootCourt from './COMPONENTS/STUDENT/MOOTCOURT/MOOTCOURT';
-import Achievements from './COMPONENTS/STUDENT/ACHIEVEMENTS/ACHIEVEMENTS';
-import CVBuilder from './COMPONENTS/STUDENT/CVBUILDER/CVBUILDER';
-import Fees from './COMPONENTS/STUDENT/FEES/FEES';
-import Leave from './COMPONENTS/STUDENT/LEAVE/LEAVE';
-import Mentorship from './COMPONENTS/STUDENT/MENTORSHIP/MENTORSHIP';
-import ElectiveBidding from './COMPONENTS/STUDENT/ELECTIVEBIDDING/ELECTIVEBIDDING';
+import StudentDashboard from './COMPONENTS/STUDENT/STUDENTDASHBOARD/StudentDashboard';
+import Attendance from './COMPONENTS/STUDENT/ATTENDANCE/Attendance';
+import CourseVault from './COMPONENTS/STUDENT/COURSEVAULT/CourseVault';
+import Timetable from './COMPONENTS/STUDENT/TIMETABLE/Timetable';
+import Assignments from './COMPONENTS/STUDENT/ASSIGNMENTS/Assignments';
+import Examinations from './COMPONENTS/STUDENT/EXAMINATIONS/Examinations';
+import Internships from './COMPONENTS/STUDENT/INTERNSHIPS/Internships';
+import MootCourt from './COMPONENTS/STUDENT/MOOTCOURT/MootCourt';
+import Achievements from './COMPONENTS/STUDENT/ACHIEVEMENTS/Achievements';
+import CVBuilder from './COMPONENTS/STUDENT/CVBUILDER/CVBuilder';
+import Fees from './COMPONENTS/STUDENT/FEES/Fees';
+import Leave from './COMPONENTS/STUDENT/LEAVE/Leave';
+import Mentorship from './COMPONENTS/STUDENT/MENTORSHIP/Mentorship';
+import ElectiveBidding from './COMPONENTS/STUDENT/ELECTIVEBIDDING/ElectiveBidding';
 import StudentApprovals from './COMPONENTS/STUDENT/APPROVALS/StudentApprovals';
 
 
 // ==========================================
 // 4. FACULTY PORTAL MODULES
 // ==========================================
-import FacultyDashboard from './COMPONENTS/FACULTY/FACULTYDASHBOARD/FACULTYDASHBOARD';
-import ClassRoster from './COMPONENTS/FACULTY/CLASSROSTER/CLASSROSTER';
-import FacultyTimetable from './COMPONENTS/FACULTY/FACULTYTIMETABLE/FACULTYTIMETABLE';
-import CourseMaterials from './COMPONENTS/FACULTY/COURSEMATERIALS/COURSEMATERIALS';
-import FacultyAssignments from './COMPONENTS/FACULTY/FACULTYASSIGNMENTS/FACULTYASSIGNMENTS';
-import MarksEntry from './COMPONENTS/FACULTY/MARKSENTRY/MARKSENTRY';
-import FacultyMentorship from './COMPONENTS/FACULTY/FACULTYMENTORSHIP/FACULTYMENTORSHIP';
-import Approvals from './COMPONENTS/FACULTY/APPROVALS/APPROVALS';
-import FacultyLeave from './COMPONENTS/FACULTY/FACULTYLEAVE/FACULTYLEAVE';
+import FacultyDashboard from './COMPONENTS/FACULTY/FACULTYDASHBOARD/FacultyDashboard';
+import ClassRoster from './COMPONENTS/FACULTY/CLASSROSTER/ClassRoster';
+import FacultyTimetable from './COMPONENTS/FACULTY/FACULTYTIMETABLE/FacultyTimetable';
+import CourseMaterials from './COMPONENTS/FACULTY/COURSEMATERIALS/CourseMaterials';
+import FacultyAssignments from './COMPONENTS/FACULTY/FACULTYASSIGNMENTS/FacultyAssignments';
+import MarksEntry from './COMPONENTS/FACULTY/MARKSENTRY/MarksEntry';
+import FacultyMentorship from './COMPONENTS/FACULTY/FACULTYMENTORSHIP/FacultyMentorship';
+import Approvals from './COMPONENTS/FACULTY/APPROVALS/Approvals';
+import FacultyLeave from './COMPONENTS/FACULTY/FACULTYLEAVE/FacultyLeave';
 
 // ==========================================
 // 5. ADMIN PORTAL MODULES
 // ==========================================
-import AdminDashboard from './COMPONENTS/ADMIN/ADMINDASHBOARD/ADMINDASHBOARD';
-import UserManagement from './COMPONENTS/ADMIN/USERMANAGEMENT/USERMANAGEMENT';
-import AdminTimetableBuilder from './COMPONENTS/ADMIN/ADMINTIMETABLEBUILDER/ADMINTIMETABLEBUILDER';
-import AdminMentorship from './COMPONENTS/ADMIN/ADMINMENTORSHIP/ADMINMENTORSHIP';
-import AdminApprovals from './COMPONENTS/ADMIN/ADMINAPPROVALS/ADMINAPPROVALS';
+import AdminDashboard from './COMPONENTS/ADMIN/ADMINDASHBOARD/AdminDashboard';
+import UserManagement from './COMPONENTS/ADMIN/USERMANAGEMENT/UserManagement';
+import AdminTimetableBuilder from './COMPONENTS/ADMIN/ADMINTIMETABLEBUILDER/AdminTimetableBuilder';
+import AdminMentorship from './COMPONENTS/ADMIN/ADMINMENTORSHIP/AdminMentorship';
+import AdminApprovals from './COMPONENTS/ADMIN/ADMINAPPROVALS/AdminApprovals';
 import AdminExaminations from './COMPONENTS/ADMIN/EXAMINATIONS/AdminExaminations';
 import AdminNotices from './COMPONENTS/ADMIN/NOTICES/AdminNotices';
-import AdminFees from './COMPONENTS/ADMIN/ADMINFEES/ADMINFEES';
-import AdminMootCourt from './COMPONENTS/ADMIN/ADMINMOOTCOURT/ADMINMOOTCOURT';
-import AdminPlacements from './COMPONENTS/ADMIN/ADMINPLACEMENTS/ADMINPLACEMENTS';
-import AdminLegalAid from './COMPONENTS/ADMIN/ADMINLEGALAID/ADMINLEGALAID';
+import AdminFees from './COMPONENTS/ADMIN/ADMINFEES/AdminFees';
+import AdminMootCourt from './COMPONENTS/ADMIN/ADMINMOOTCOURT/AdminMootCourt';
+import AdminPlacements from './COMPONENTS/ADMIN/ADMINPLACEMENTS/AdminPlacements';
+import AdminLegalAid from './COMPONENTS/ADMIN/ADMINLEGALAID/AdminLegalAid';
 import SessionTimeoutGuard from './COMPONENTS/SHARED/SessionTimeoutGuard';
 import { LiveClock, GlobalSearch, RoleActionButton } from './COMPONENTS/SHARED/LiveHeaderComponents';
 import IntelligentBot from './COMPONENTS/SHARED/IntelligentBot';
