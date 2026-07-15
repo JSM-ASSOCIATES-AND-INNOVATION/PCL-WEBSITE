@@ -15,6 +15,7 @@ import library from '../../../../ASSETS/CAMPUS/pcl_library.webp';
 import justice from '../../../../ASSETS/CAMPUS/pcl_justice.webp';
 import outdoor from '../../../../ASSETS/CAMPUS/pcl_outdoor.webp';
 import entrance from '../../../../ASSETS/CAMPUS/pcl_entrance.webp';
+import mootCourt from '../../../../ASSETS/CAMPUS/pcl_moot_court.jpg';
 
 export const facilitiesData = {
   "academic-digital": {
