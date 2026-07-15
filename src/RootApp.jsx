@@ -23,7 +23,7 @@ const ErpWrapper = () => {
 };
 
 const RootApp = () => {
-  const isErpRoute = window.location.pathname.startsWith('/ERP');
+  const isErpRoute = window.location.pathname.toLowerCase().startsWith('/erp');
   return (
     <>
       <ScrollToTop />
