@@ -1,0 +1,58 @@
+import React, { useState, useEffect } from 'react';
+import { theme } from '../../theme';
+
+export function LiveClock() {
+    const [time, setTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const dateStr = time.toLocaleDateString("en-US", { day: 'numeric', month: 'short', year: 'numeric' });
+    const timeStr = time.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    return (
+        <div className={`hidden lg:flex items-center px-4 py-2 rounded-themePanel ${theme.layout.panelElevated} ${theme.text.overline} text-themeText font-mono tracking-tighter shrink-0`}>
+            <i className="fa-regular fa-clock mr-2 text-themeAccent"></i>
+            {dateStr} <span className="opacity-40 mx-2">•</span> {timeStr}
+        </div>
+    );
+}
+
+export function GlobalSearch() {
+    return (
+        <div className="hidden md:flex items-center w-full max-w-[200px] lg:max-w-[240px] xl:max-w-[320px] group mx-2 lg:mx-4">
+            <div className={`w-full flex items-center px-4 py-2.5 rounded-themeBtn bg-themePanel border-theme border-themeBorder focus-within:border-themeAccent transition-all hover:border-themeBorderStrong shadow-sm`}>
+                <i className="fa-solid fa-magnifying-glass text-themeTextSec opacity-50 group-focus-within:text-themeAccent transition-colors"></i>
+                <input 
+                    type="text" 
+                    placeholder="Search resources..." 
+                    className="w-full bg-transparent border-none outline-none text-themeText text-xs font-medium ml-3 placeholder-themeTextSec placeholder-opacity-50 min-w-0"
+                />
+                <div className="hidden lg:flex items-center justify-center px-1.5 py-0.5 rounded bg-themeElevated border-theme border-themeBorder text-[9px] font-black text-themeTextSec opacity-70 ml-2 shadow-themeElevated shrink-0">
+                    ⌘K
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function RoleActionButton({ role, setActiveTab }) {
+    const config = {
+        student: { label: "Submit Task", icon: "fa-cloud-arrow-up", color: "bg-emerald-500", text: "text-black", border: "border-emerald-700", tab: "assignments" },
+        faculty: { label: "Grade Entry", icon: "fa-check-double", color: "bg-blue-500", text: "text-white", border: "border-blue-700", tab: "marks" },
+        admin: { label: "New Notice", icon: "fa-bullhorn", color: "bg-rose-500", text: "text-white", border: "border-rose-700", tab: "notices" }
+    };
+
+    const action = config[role] || config.student;
+
+    return (
+        <button 
+            onClick={() => setActiveTab(action.tab)}
+            className={`hidden xl:flex items-center px-5 py-2.5 rounded-themeBtn ${action.color} ${action.text} text-[10px] font-black uppercase tracking-[0.1em] border-theme ${action.border} hover:scale-105 transition-transform shadow-themeElevated shrink-0`}
+        >
+            <i className={`fa-solid ${action.icon} mr-2`}></i> {action.label}
+        </button>
+    );
+}
