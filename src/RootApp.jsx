@@ -6,7 +6,7 @@
  */
 
 import React, { Suspense } from 'react';
-import Preloader from './COMPONENTS/UI/PRELOADER/PRELOADER';
+import Preloader from './COMPONENTS/UI/PRELOADER/Preloader';
 import ScrollToTop from './COMPONENTS/UI/ScrollToTop';
 import App from './App';
 import { ErpProvider } from './ERP/CONTEXT/ErpContext';

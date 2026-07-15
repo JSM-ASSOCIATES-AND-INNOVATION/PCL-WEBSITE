@@ -13,7 +13,7 @@ import About from './COMPONENTS/NAVBAR/ABOUT/About';
 import LeadershipProfile from './COMPONENTS/NAVBAR/ABOUT/LEADERSHIPPROFILE/LEADERSHIPPROFILE';
 import UnderConstruction from './PAGES/UnderConstruction';
 import Gallery from './COMPONENTS/NAVBAR/CAMPUS/GALLERY/GALLERY';
-import Preloader from './COMPONENTS/UI/PRELOADER/PRELOADER';
+import Preloader from './COMPONENTS/UI/PRELOADER/Preloader';
 import ScrollToTop from './COMPONENTS/UI/ScrollToTop';
 import Programs from './COMPONENTS/NAVBAR/PROGRAMS/Programs';
 import CourseBALLB from './COMPONENTS/NAVBAR/PROGRAMS/CourseBALLB';
