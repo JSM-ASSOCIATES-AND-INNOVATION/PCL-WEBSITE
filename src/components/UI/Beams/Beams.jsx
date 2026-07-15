@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 /* eslint-disable react/no-unknown-property */
 import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo } from 'react';
 

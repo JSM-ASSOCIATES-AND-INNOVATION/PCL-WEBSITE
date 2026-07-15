@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from 'ogl';
 import { useEffect, useRef } from 'react';
 

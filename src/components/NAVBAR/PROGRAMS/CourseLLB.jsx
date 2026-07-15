@@ -1,7 +1,14 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import classroom3 from '../../../assets/pcl_classroom_3.webp';
+import classroom3 from '../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
 
 export default function CourseLLB() {
   return (

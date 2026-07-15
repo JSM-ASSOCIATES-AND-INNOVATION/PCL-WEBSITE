@@ -1,10 +1,17 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Navbar from '../../Navbar.jsx';
-import founderImg from '../../../../assets/pcl_founder.png';
-import coFounderImg from '../../../../assets/pcl_cofounder.png';
+import founderImg from '../../../../ASSETS/PEOPLE/pcl_founder.png';
+import coFounderImg from '../../../../ASSETS/PEOPLE/pcl_cofounder.png';
 
 const profiles = {
   founder: {

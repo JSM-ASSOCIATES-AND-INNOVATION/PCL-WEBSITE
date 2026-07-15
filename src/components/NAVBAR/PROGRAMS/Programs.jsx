@@ -1,11 +1,18 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import outdoorImg from '../../../assets/pcl_outdoor.webp';
-import saratChandraLogo from '../../../assets/pcl_sarat_chandra_logo.png';
-import classroom1 from '../../../assets/pcl_classroom_1.webp';
-import classroom2 from '../../../assets/pcl_classroom_2.webp';
-import classroom3 from '../../../assets/pcl_classroom_3.webp';
+import outdoorImg from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
+import saratChandraLogo from '../../../ASSETS/LOGOS/pcl_sarat_chandra_logo.png';
+import classroom1 from '../../../ASSETS/CAMPUS/pcl_classroom_1.webp';
+import classroom2 from '../../../ASSETS/CAMPUS/pcl_classroom_2.webp';
+import classroom3 from '../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
 import './Programs.css';
 
 const TABS = [

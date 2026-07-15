@@ -1,9 +1,16 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import Carousel from './Carousel';
-import classroomImg from '../../../assets/pcl_classroom_1.webp';
-import classroom2Img from '../../../assets/pcl_classroom_2.webp';
-import classroom3Img from '../../../assets/pcl_classroom_3.webp';
+import classroomImg from '../../../ASSETS/CAMPUS/pcl_classroom_1.webp';
+import classroom2Img from '../../../ASSETS/CAMPUS/pcl_classroom_2.webp';
+import classroom3Img from '../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
 
 const Academics = forwardRef(({ windowWidth, academicGridRef }, ref) => {
   return (

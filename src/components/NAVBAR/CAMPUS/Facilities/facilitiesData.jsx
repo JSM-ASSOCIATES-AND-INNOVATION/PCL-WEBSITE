@@ -1,13 +1,20 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React from 'react';
 import { BookOpen, MonitorPlay, Wifi, Mic, Scale, HandHeart, Landmark, Building2, Briefcase, GraduationCap, Gavel, UserCheck, Trophy } from 'lucide-react';
-import classRoom1 from '../../../../assets/pcl_classroom_1.webp';
-import classRoom2 from '../../../../assets/pcl_classroom_2.webp';
-import classRoom3 from '../../../../assets/pcl_classroom_3.webp';
-import legalClinic from '../../../../assets/pcl_legal_clinic.webp';
-import library from '../../../../assets/pcl_library.webp';
-import justice from '../../../../assets/pcl_justice.webp';
-import outdoor from '../../../../assets/pcl_outdoor.webp';
-import entrance from '../../../../assets/pcl_entrance.webp';
+import classRoom1 from '../../../../ASSETS/CAMPUS/pcl_classroom_1.webp';
+import classRoom2 from '../../../../ASSETS/CAMPUS/pcl_classroom_2.webp';
+import classRoom3 from '../../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
+import legalClinic from '../../../../ASSETS/CAMPUS/pcl_legal_clinic.webp';
+import library from '../../../../ASSETS/CAMPUS/pcl_library.webp';
+import justice from '../../../../ASSETS/CAMPUS/pcl_justice.webp';
+import outdoor from '../../../../ASSETS/CAMPUS/pcl_outdoor.webp';
+import entrance from '../../../../ASSETS/CAMPUS/pcl_entrance.webp';
 
 export const facilitiesData = {
   "academic-digital": {
@@ -57,7 +64,7 @@ export const facilitiesData = {
         title: "State-of-the-Art Moot Court Hall",
         summary: "A meticulously designed replica of a real courtroom.",
         content: "A meticulously designed replica of a real courtroom. This facility immerses students in the mechanics of trial and appellate advocacy through rigorous training and competitive moot court events.",
-        image: justice,
+        image: mootCourt,
         icon: <Scale className="text-[#FFBF00] w-6 h-6" />
       },
       {

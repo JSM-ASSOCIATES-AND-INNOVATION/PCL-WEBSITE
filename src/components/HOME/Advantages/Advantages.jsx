@@ -1,10 +1,17 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { forwardRef } from 'react';
 import { Briefcase, Gavel, Shield, Landmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import BorderGlow from './BorderGlow';
-import Carousel from '../Academics/Carousel';
+import Carousel from '../ACADEMICS/Carousel';
 
-import ladyJusticeImg from '../../../assets/pcl_justice.webp';
+import ladyJusticeImg from '../../../ASSETS/CAMPUS/pcl_justice.webp';
 
 const Advantages = forwardRef(({ windowWidth }, ref) => {
   const advantageItems = [

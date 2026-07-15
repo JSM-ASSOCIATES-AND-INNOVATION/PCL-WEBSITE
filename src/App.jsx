@@ -1,25 +1,32 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Navbar from './components/NAVBAR/Navbar';
-import Footer from './components/UI/Footer/Footer';
-import Home from './components/HOME/Home';
-import About from './components/NAVBAR/ABOUT/About';
-import LeadershipProfile from './components/NAVBAR/ABOUT/LeadershipProfile/LeadershipProfile';
-import UnderConstruction from './pages/UnderConstruction';
-import Gallery from './components/NAVBAR/CAMPUS/Gallery/Gallery';
-import Preloader from './components/UI/Preloader/Preloader';
-import ScrollToTop from './components/UI/ScrollToTop';
-import Programs from './components/NAVBAR/PROGRAMS/Programs';
-import CourseBALLB from './components/NAVBAR/PROGRAMS/CourseBALLB';
-import CourseBBALLB from './components/NAVBAR/PROGRAMS/CourseBBALLB';
-import CourseLLB from './components/NAVBAR/PROGRAMS/CourseLLB';
-import Faculty from './components/NAVBAR/ABOUT/Faculty';
-import FacultyProfile from './components/NAVBAR/ABOUT/FacultyProfile';
-import Facilities from './components/NAVBAR/CAMPUS/Facilities/Facilities';
-import FacilityDetail from './components/NAVBAR/CAMPUS/Facilities/FacilityDetail';
-import Contact from './components/NAVBAR/Contact/Contact';
-import ApplyNow from './components/NAVBAR/ApplyNow/ApplyNow';
-import TermsAndConditions from './components/Legal/TermsAndConditions';
-import PrivacyPolicy from './components/Legal/PrivacyPolicy';
+import Navbar from './COMPONENTS/NAVBAR/Navbar';
+import Footer from './COMPONENTS/UI/FOOTER/FOOTER';
+import Home from './COMPONENTS/HOME/Home';
+import About from './COMPONENTS/NAVBAR/ABOUT/About';
+import LeadershipProfile from './COMPONENTS/NAVBAR/ABOUT/LEADERSHIPPROFILE/LEADERSHIPPROFILE';
+import UnderConstruction from './PAGES/UnderConstruction';
+import Gallery from './COMPONENTS/NAVBAR/CAMPUS/GALLERY/GALLERY';
+import Preloader from './COMPONENTS/UI/PRELOADER/PRELOADER';
+import ScrollToTop from './COMPONENTS/UI/ScrollToTop';
+import Programs from './COMPONENTS/NAVBAR/PROGRAMS/Programs';
+import CourseBALLB from './COMPONENTS/NAVBAR/PROGRAMS/CourseBALLB';
+import CourseBBALLB from './COMPONENTS/NAVBAR/PROGRAMS/CourseBBALLB';
+import CourseLLB from './COMPONENTS/NAVBAR/PROGRAMS/CourseLLB';
+import Faculty from './COMPONENTS/NAVBAR/ABOUT/FACULTY';
+import FacultyProfile from './COMPONENTS/NAVBAR/ABOUT/FacultyProfile';
+import Facilities from './COMPONENTS/NAVBAR/CAMPUS/FACILITIES/FACILITIES';
+import FacilityDetail from './COMPONENTS/NAVBAR/CAMPUS/FACILITIES/FacilityDetail';
+import Contact from './COMPONENTS/NAVBAR/CONTACT/CONTACT';
+import ApplyNow from './COMPONENTS/NAVBAR/APPLYNOW/APPLYNOW';
+import TermsAndConditions from './COMPONENTS/LEGAL/TermsAndConditions';
+import PrivacyPolicy from './COMPONENTS/LEGAL/PrivacyPolicy';
 
 function App() {
   const location = useLocation();

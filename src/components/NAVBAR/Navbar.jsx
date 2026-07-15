@@ -1,5 +1,12 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import { Link } from 'react-router-dom';
-import StaggeredMenu from './MobileMenu/MobileMenu';
+import StaggeredMenu from './MOBILEMENU/MOBILEMENU';
 import { ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
@@ -105,6 +112,9 @@ export default function Navbar() {
         </ul>
 
         <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <Link to="/erp" className="erp-btn" style={{ padding: '10px 20px', borderRadius: '50px', border: '1px solid rgba(255,255,255,0.2)', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', color: '#fff' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}>
+            ERP Portal
+          </Link>
           <Link to="/apply" className="apply-btn glowing-pill">Apply Now</Link>
           <div className="mobile-menu-wrapper">
             <StaggeredMenu 

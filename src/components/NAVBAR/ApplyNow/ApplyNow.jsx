@@ -1,9 +1,16 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
-import campusImg from '../../../assets/pcl_outdoor.webp';
+import campusImg from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
 
 export default function ApplyNow() {
   const navigate = useNavigate();
@@ -41,7 +48,7 @@ export default function ApplyNow() {
     
     try {
       // Automatically import supabase inside the submit to avoid top-level import issues if it's not setup yet
-      const { supabase } = await import('../../../lib/supabaseClient');
+      const { supabase } = await import('../../../LIB/supabaseClient');
       
       const { error } = await supabase
         .from('admissions_applications')

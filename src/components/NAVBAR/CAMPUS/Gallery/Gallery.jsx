@@ -1,18 +1,25 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { useState } from 'react';
 import Navbar from '../../Navbar.jsx';
 import CircularGallery from './CircularGallery';
-import UnderConstruction from '../../../../pages/UnderConstruction';
+import UnderConstruction from '../../../../PAGES/UnderConstruction';
 import { motion } from 'framer-motion';
 
 // Import images
-import classroom1 from '../../../../assets/pcl_classroom_1.webp';
-import classroom2 from '../../../../assets/pcl_classroom_2.webp';
-import classroom3 from '../../../../assets/pcl_classroom_3.webp';
-import entrance from '../../../../assets/pcl_entrance.webp';
-import ladyJustice from '../../../../assets/pcl_justice.webp';
-import legalCell from '../../../../assets/pcl_legal_clinic.webp';
-import library from '../../../../assets/pcl_library.webp';
-import outdoor from '../../../../assets/pcl_outdoor.webp';
+import classroom1 from '../../../../ASSETS/CAMPUS/pcl_classroom_1.webp';
+import classroom2 from '../../../../ASSETS/CAMPUS/pcl_classroom_2.webp';
+import classroom3 from '../../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
+import entrance from '../../../../ASSETS/CAMPUS/pcl_entrance.webp';
+import ladyJustice from '../../../../ASSETS/CAMPUS/pcl_justice.webp';
+import legalCell from '../../../../ASSETS/CAMPUS/pcl_legal_clinic.webp';
+import library from '../../../../ASSETS/CAMPUS/pcl_library.webp';
+import outdoor from '../../../../ASSETS/CAMPUS/pcl_outdoor.webp';
 
 const galleryItems = [
   { image: entrance, text: 'Campus Entrance' },

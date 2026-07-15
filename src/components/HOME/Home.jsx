@@ -1,10 +1,17 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import { useState, useEffect, useRef } from 'react';
 
-import Hero from './Hero/Hero';
-import Philosophy from './Philosophy/Philosophy';
-import Academics from './Academics/Academics';
-import Advantages from './Advantages/Advantages';
-import Contact from './Contact/HomeContact';
+import Hero from './HERO/HERO';
+import Philosophy from './PHILOSOPHY/PHILOSOPHY';
+import Academics from './ACADEMICS/ACADEMICS';
+import Advantages from './ADVANTAGES/ADVANTAGES';
+import Contact from './CONTACT/HomeContact';
 
 export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0);

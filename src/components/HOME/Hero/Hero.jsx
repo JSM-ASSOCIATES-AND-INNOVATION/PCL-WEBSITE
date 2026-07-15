@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 import React, { forwardRef } from 'react';
-import campusLogoImg from '../../../assets/pcl_campus_logo.webp';
-import outdoorImg from '../../../assets/pcl_outdoor.webp';
+import campusLogoImg from '../../../ASSETS/LOGOS/pcl_campus_logo.webp';
+import outdoorImg from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
 
 const Hero = forwardRef(({ windowWidth }, ref) => {
   return (

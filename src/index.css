@@ -1,6 +1,13 @@
+/*
+ * Copyright (c) 2026 JSM Associates and Innovation. All rights reserved.
+ * 
+ * This code is the exclusive property of JSM Associates and Innovation.
+ * Unauthorized copying, modification, or distribution is strictly prohibited.
+ */
+
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-@import './styles/theme.css';
+@import './STYLES/theme.css';
 
 @theme {
   --color-brand-bg: var(--bg-color);
@@ -81,11 +88,11 @@
   width: 32px;
   height: 32px;
   background-color: var(--primary-color);
-  -webkit-mask-image: url('./assets/pcl_logo.svg');
+  -webkit-mask-image: url('./ASSETS/LOGOS/pcl_logo.svg');
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
-  mask-image: url('./assets/pcl_logo.svg');
+  mask-image: url('./ASSETS/LOGOS/pcl_logo.svg');
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
