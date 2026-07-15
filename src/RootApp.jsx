@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import Preloader from './components/UI/Preloader/Preloader';
 import ScrollToTop from './components/UI/ScrollToTop';
 import App from './App';
-import { ErpProvider } from './erp/CONTEXT/ErpContext';
+import { ErpProvider } from './erp/context/ErpContext';
 import ErpApp from './erp/ErpApp';
 
 const ErpWrapper = () => {

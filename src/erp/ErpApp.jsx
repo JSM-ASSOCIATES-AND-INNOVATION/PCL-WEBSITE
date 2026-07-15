@@ -2,81 +2,81 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { theme } from './theme';
-import { useerp } from './CONTEXT/ErpContext';
+import { useERP } from './context/ErpContext';
 
 // ==========================================
 // 1. AUTH & LAYOUT IMPORTS
 // ==========================================
-import Login from './components/LOGIN/Login';
-import TopNav from './components/SHARED/TopNav';
-import MobileNav from './components/SHARED/MobileNav';
-import Sidebar from './components/STUDENT/SIDEBAR/Sidebar';
-import FacultySidebar from './components/FACULTY/FACULTYSIDEBAR/FacultySidebar';
-import AdminSidebar from './components/ADMIN/ADMINSIDEBAR/AdminSidebar';
+import Login from './components/Login/Login';
+import TopNav from './components/shared/TopNav';
+import MobileNav from './components/shared/MobileNav';
+import Sidebar from './components/Student/sidebar/Sidebar';
+import FacultySidebar from './components/Faculty/FacultySidebar/FacultySidebar';
+import AdminSidebar from './components/Admin/AdminSidebar/AdminSidebar';
 
 // ==========================================
 // 2. SHARED PORTAL MODULES
 // ==========================================
-import NoticeBoard from './components/NOTICES/NoticeBoard';
-import Helpdesk from './components/STUDENT/HELPDESK/Helpdesk';
-import Credentials from './components/STUDENT/CREDENTIALS/Credentials';
-import QuestionnaireModal from './components/SHARED/QuestionnaireModal';
-import DialogContainer from './components/SHARED/DialogContainer';
-import CredentialVerification from './components/PUBLIC/CredentialVerification';
+import NoticeBoard from './components/notices/NoticeBoard';
+import Helpdesk from './components/Student/Helpdesk/Helpdesk';
+import Credentials from './components/Student/Credentials/Credentials';
+import QuestionnaireModal from './components/shared/QuestionnaireModal';
+import DialogContainer from './components/shared/DialogContainer';
+import CredentialVerification from './components/Public/CredentialVerification';
 
 // ==========================================
 // 3. STUDENT PORTAL MODULES
 // ==========================================
-import StudentDashboard from './components/STUDENT/STUDENTDASHBOARD/StudentDashboard';
-import Attendance from './components/STUDENT/ATTENDANCE/Attendance';
-import CourseVault from './components/STUDENT/COURSEVAULT/CourseVault';
-import Timetable from './components/STUDENT/TIMETABLE/Timetable';
-import Assignments from './components/STUDENT/ASSIGNMENTS/Assignments';
-import Examinations from './components/STUDENT/EXAMINATIONS/Examinations';
-import Internships from './components/STUDENT/INTERNSHIPS/Internships';
-import MootCourt from './components/STUDENT/MOOTCOURT/MootCourt';
-import Achievements from './components/STUDENT/ACHIEVEMENTS/Achievements';
-import CVBuilder from './components/STUDENT/CVBUILDER/CVBuilder';
-import Fees from './components/STUDENT/FEES/Fees';
-import Leave from './components/STUDENT/LEAVE/Leave';
-import Mentorship from './components/STUDENT/MENTORSHIP/Mentorship';
-import ElectiveBidding from './components/STUDENT/ELECTIVEBIDDING/ElectiveBidding';
-import StudentApprovals from './components/STUDENT/APPROVALS/StudentApprovals';
+import StudentDashboard from './components/Student/StudentDashboard/StudentDashboard';
+import Attendance from './components/Student/Attendance/Attendance';
+import CourseVault from './components/Student/CourseVault/CourseVault';
+import Timetable from './components/Student/Timetable/Timetable';
+import Assignments from './components/Student/Assignments/Assignments';
+import Examinations from './components/Student/Examinations/Examinations';
+import Internships from './components/Student/Internships/Internships';
+import MootCourt from './components/Student/MootCourt/MootCourt';
+import Achievements from './components/Student/Achievements/Achievements';
+import CVBuilder from './components/Student/CVBuilder/CVBuilder';
+import Fees from './components/Student/Fees/Fees';
+import Leave from './components/Student/Leave/Leave';
+import Mentorship from './components/Student/Mentorship/Mentorship';
+import ElectiveBidding from './components/Student/ElectiveBidding/ElectiveBidding';
+import StudentApprovals from './components/Student/Approvals/StudentApprovals';
 
 
 // ==========================================
 // 4. FACULTY PORTAL MODULES
 // ==========================================
-import FacultyDashboard from './components/FACULTY/FACULTYDASHBOARD/FacultyDashboard';
-import ClassRoster from './components/FACULTY/CLASSROSTER/ClassRoster';
-import FacultyTimetable from './components/FACULTY/FACULTYTIMETABLE/FacultyTimetable';
-import CourseMaterials from './components/FACULTY/COURSEMATERIALS/CourseMaterials';
-import FacultyAssignments from './components/FACULTY/FACULTYASSIGNMENTS/FacultyAssignments';
-import MarksEntry from './components/FACULTY/MARKSENTRY/MarksEntry';
-import FacultyMentorship from './components/FACULTY/FACULTYMENTORSHIP/FacultyMentorship';
-import Approvals from './components/FACULTY/APPROVALS/Approvals';
-import FacultyLeave from './components/FACULTY/FACULTYLEAVE/FacultyLeave';
+import FacultyDashboard from './components/Faculty/FacultyDashboard/FacultyDashboard';
+import ClassRoster from './components/Faculty/ClassRoster/ClassRoster';
+import FacultyTimetable from './components/Faculty/FacultyTimetable/FacultyTimetable';
+import CourseMaterials from './components/Faculty/CourseMaterials/CourseMaterials';
+import FacultyAssignments from './components/Faculty/FacultyAssignments/FacultyAssignments';
+import MarksEntry from './components/Faculty/MarksEntry/MarksEntry';
+import FacultyMentorship from './components/Faculty/FacultyMentorship/FacultyMentorship';
+import Approvals from './components/Faculty/Approvals/Approvals';
+import FacultyLeave from './components/Faculty/FacultyLeave/FacultyLeave';
 
 // ==========================================
 // 5. ADMIN PORTAL MODULES
 // ==========================================
-import AdminDashboard from './components/ADMIN/ADMINDASHBOARD/AdminDashboard';
-import UserManagement from './components/ADMIN/USERMANAGEMENT/UserManagement';
-import AdminTimetableBuilder from './components/ADMIN/ADMINTIMETABLEBUILDER/AdminTimetableBuilder';
-import AdminMentorship from './components/ADMIN/ADMINMENTORSHIP/AdminMentorship';
-import AdminApprovals from './components/ADMIN/ADMINAPPROVALS/AdminApprovals';
-import AdminExaminations from './components/ADMIN/EXAMINATIONS/AdminExaminations';
-import AdminNotices from './components/ADMIN/NOTICES/AdminNotices';
-import AdminFees from './components/ADMIN/ADMINFEES/AdminFees';
-import AdminMootCourt from './components/ADMIN/ADMINMOOTCOURT/AdminMootCourt';
-import AdminPlacements from './components/ADMIN/ADMINPLACEMENTS/AdminPlacements';
-import AdminLegalAid from './components/ADMIN/ADMINLEGALAID/AdminLegalAid';
-import SessionTimeoutGuard from './components/SHARED/SessionTimeoutGuard';
-import { LiveClock, GlobalSearch, RoleActionButton } from './components/SHARED/LiveHeaderComponents';
-import IntelligentBot from './components/SHARED/IntelligentBot';
+import AdminDashboard from './components/Admin/AdminDashboard/AdminDashboard';
+import UserManagement from './components/Admin/UserManagement/UserManagement';
+import AdminTimetableBuilder from './components/Admin/AdminTimetableBuilder/AdminTimetableBuilder';
+import AdminMentorship from './components/Admin/AdminMentorship/AdminMentorship';
+import AdminApprovals from './components/Admin/AdminApprovals/AdminApprovals';
+import AdminExaminations from './components/Admin/Examinations/AdminExaminations';
+import AdminNotices from './components/Admin/notices/AdminNotices';
+import AdminFees from './components/Admin/AdminFees/AdminFees';
+import AdminMootCourt from './components/Admin/AdminMootCourt/AdminMootCourt';
+import AdminPlacements from './components/Admin/AdminPlacements/AdminPlacements';
+import AdminLegalAid from './components/Admin/AdminLegalAid/AdminLegalAid';
+import SessionTimeoutGuard from './components/shared/SessionTimeoutGuard';
+import { LiveClock, GlobalSearch, RoleActionButton } from './components/shared/LiveHeaderComponents';
+import IntelligentBot from './components/shared/IntelligentBot';
 
 export default function App() {
-  const { userSession, isAppLoading, logout, notices, layoutPreference, navLayout } = useerp();
+  const { userSession, isAppLoading, logout, notices, layoutPreference, navLayout } = useERP();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -146,7 +146,7 @@ export default function App() {
         <i className="fa-solid fa-landmark text-5xl text-neutral-800 mb-6"></i>
         <div className="flex items-center gap-3">
           <i className="fa-solid fa-circle-notch fa-spin text-xl text-neutral-500"></i>
-          <h1 className="text-xl font-black tracking-widest text-themeText uppercase">Initializing erp System...</h1>
+          <h1 className="text-xl font-black tracking-widest text-themeText uppercase">Initializing ERP System...</h1>
         </div>
       </div>
     );
@@ -271,7 +271,7 @@ export default function App() {
                     {getPageTitle(activeTab)}
                   </h2>
                   <p className={`${theme.text.overline} ${theme.text.muted} mt-0.5 lg:mt-1 hidden sm:block truncate`}>
-                    JSM Associates & Innovations • Academic erp
+                    JSM Associates & Innovations • Academic ERP
                   </p>
                 </div>
               </div>
