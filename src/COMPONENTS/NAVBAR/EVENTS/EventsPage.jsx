@@ -40,8 +40,8 @@ export default function EventsPage() {
             <div key={evt.id} className="bg-brand-card border border-brand-border rounded-2xl overflow-hidden shadow-lg group hover:-translate-y-2 hover:border-[var(--primary-color)] transition-all duration-300 flex flex-col">
                 {evt.image_url ? (
                     <div className="h-48 overflow-hidden relative shrink-0">
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10"></div>
-                        <img src={evt.image_url} alt={evt.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-20 pointer-events-none"></div>
+                        <img src={evt.image_url} alt={evt.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 relative z-0" />
                     </div>
                 ) : (
                     <div className="h-48 bg-[var(--primary-glow)] flex items-center justify-center text-[var(--primary-color)] opacity-50 relative overflow-hidden shrink-0">

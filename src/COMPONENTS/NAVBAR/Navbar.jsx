@@ -49,6 +49,9 @@ export default function Navbar() {
       ]
     },
     {
+      label: 'Events & News', ariaLabel: 'Campus events', link: '/events'
+    },
+    {
       label: 'Contact', ariaLabel: 'Get in touch', link: '/contact'
     }
   ];
@@ -105,6 +108,9 @@ export default function Navbar() {
               <Link to="/careers/industry">Industry Integration</Link>
               <Link to="/careers/opportunities">Opportunities with us</Link>
             </div>
+          </li>
+          <li className="nav-item-dropdown" style={{ display: 'flex', alignItems: 'center' }}>
+            <Link to="/events">Events & News</Link>
           </li>
           <li className="nav-item-dropdown" style={{ display: 'flex', alignItems: 'center' }}>
             <Link to="/contact">Contact</Link>

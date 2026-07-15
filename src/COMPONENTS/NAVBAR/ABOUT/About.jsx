@@ -129,7 +129,7 @@ export default function About() {
             >
               <div 
                 onClick={() => navigate('/about/leadership/founder')}
-                className="w-full h-full cursor-pointer relative group"
+                className="w-full h-full cursor-pointer relative group aspect-[3/4] md:h-[420px]"
               >
                 <PixelCard 
                   variant="yellow" 
@@ -172,7 +172,7 @@ export default function About() {
             >
               <div 
                 onClick={() => navigate('/about/leadership/co-founder')}
-                className="w-full h-full cursor-pointer relative group"
+                className="w-full h-full cursor-pointer relative group aspect-[3/4] md:h-[420px]"
               >
                 <PixelCard 
                   variant="yellow" 
