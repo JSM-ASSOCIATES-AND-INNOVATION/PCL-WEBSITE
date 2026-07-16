@@ -178,7 +178,7 @@ export default function Login() {
                         <div className="relative flex items-center justify-center group-hover:scale-105 group-hover:-translate-y-1 transition-transform duration-500 overflow-hidden px-4">
                             <div 
                                 className="bg-center bg-contain bg-no-repeat brand-crest relative z-10 filter drop-shadow-lg" 
-                                style={{ width: '90px', height: '105px', backgroundColor: 'var(--theme-accent)' }}
+                                style={{ width: '90px', height: '105px', backgroundColor: 'var(--accent)' }}
                             ></div>
                         </div>
                         <div className="flex flex-col justify-center">
@@ -325,7 +325,7 @@ export default function Login() {
                                     disabled={isLoading || !credential || !password}
                                     className={`w-full py-4 lg:py-5 rounded-2xl text-[12px] font-black uppercase tracking-[0.15em] transition-all duration-300 flex justify-center items-center gap-3 relative overflow-hidden group ${isLoading || !credential || !password
                                         ? 'bg-themeApp text-themeTextSec cursor-not-allowed border border-themeBorder'
-                                        : 'bg-themeAccent text-themeApp hover:opacity-90 hover:scale-[1.02] shadow-[0_0_20px_rgba(var(--theme-accent-rgb),0.4)]'
+                                        : 'bg-themeAccent text-themeApp hover:opacity-90 hover:scale-[1.02] shadow-xl shadow-themeAccent/40'
                                         }`}
                                 >
                                     {isLoading ? (

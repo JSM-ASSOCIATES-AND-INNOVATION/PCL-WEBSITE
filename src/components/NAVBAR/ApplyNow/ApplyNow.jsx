@@ -41,7 +41,7 @@ export default function ApplyNow() {
     
     try {
       // Automatically import supabase inside the submit to avoid top-level import issues if it's not setup yet
-      const { supabase } = await import('../../../LIB/supabaseClient');
+      const { supabase } = await import('../../../lib/supabaseClient');
       
       const { error } = await supabase
         .from('admissions_applications')

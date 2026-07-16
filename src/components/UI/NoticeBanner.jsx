@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../LIB/supabaseClient';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function NoticeBanner() {
     const [notices, setNotices] = useState([]);
@@ -33,27 +33,27 @@ export default function NoticeBanner() {
     if (!visible || notices.length === 0) return null;
 
     return (
-        <div className="bg-red-700 text-white overflow-hidden relative z-50 shadow-md">
-            <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+        <div className="text-white overflow-hidden relative z-50 shadow-none border-b border-white/10" style={{ background: "rgba(0,0,0,0.2)" }}>
+            <div className="max-w-7xl mx-auto px-4 py-1 flex items-center justify-between">
                 <div className="flex items-center gap-3 w-full">
-                    <div className="flex-shrink-0 bg-red-800 px-3 py-1 rounded text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                    <div className="flex-shrink-0 bg-[var(--primary-color)] text-black px-3 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                         <i className="fa-solid fa-bullhorn animate-pulse"></i> Announcements
                     </div>
                     <div className="flex-1 overflow-hidden relative h-6">
                         <div className="absolute whitespace-nowrap animate-marquee flex gap-12 items-center h-full">
                             {notices.map((n, i) => (
                                 <span key={n.id} className="text-sm font-medium flex items-center gap-4">
-                                    <span className="text-red-200">|</span> 
+                                    <span className="text-[var(--primary-color)] opacity-70">|</span> 
                                     {n.title}
-                                    {n.priority === 'urgent' && <span className="bg-white text-red-700 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ml-2">Urgent</span>}
+                                    {n.priority === 'urgent' && <span className="bg-white text-black px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ml-2">Urgent</span>}
                                 </span>
                             ))}
                             {/* Duplicate for seamless looping */}
                             {notices.map((n, i) => (
                                 <span key={n.id + '-dup'} className="text-sm font-medium flex items-center gap-4">
-                                    <span className="text-red-200">|</span> 
+                                    <span className="text-[var(--primary-color)] opacity-70">|</span> 
                                     {n.title}
-                                    {n.priority === 'urgent' && <span className="bg-white text-red-700 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ml-2">Urgent</span>}
+                                    {n.priority === 'urgent' && <span className="bg-white text-black px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ml-2">Urgent</span>}
                                 </span>
                             ))}
                         </div>

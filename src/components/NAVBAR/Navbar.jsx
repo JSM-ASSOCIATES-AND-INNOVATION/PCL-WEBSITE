@@ -1,9 +1,19 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StaggeredMenu from './MobileMenu/MobileMenu';
 import { ChevronDown } from 'lucide-react';
 import NoticeBanner from '../UI/NoticeBanner';
 
 export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const menuItems = [
     { 
       label: 'Discover PCL', ariaLabel: 'About Prudentia', link: '/about',
@@ -49,11 +59,12 @@ export default function Navbar() {
   ];
 
   return (
-    
-    <header style={{ position: 'sticky', top: 0, zIndex: 50, width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div className="combined-nav-wrapper glass-nav">
-        <NoticeBanner />
-        <nav className="navbar" style={{ position: 'relative', background: 'transparent', borderBottom: 'none' }}>
+    <header style={{ position: 'fixed', top: scrolled ? '20px' : '0', left: 0, right: 0, zIndex: 50, display: 'flex', flexDirection: 'column', transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+      <div className={`combined-nav-wrapper glass-nav ${scrolled ? 'scrolled' : ''}`}>
+        <div className={`notice-wrapper ${scrolled ? 'hidden' : ''}`} style={{ transition: 'all 0.3s ease', overflow: 'hidden', height: scrolled ? '0' : 'auto', opacity: scrolled ? 0 : 1 }}>
+          <NoticeBanner />
+        </div>
+        <nav className="navbar" style={{ position: 'relative', background: 'transparent', borderBottom: 'none', height: '60px', transition: 'height 0.3s ease' }}>
 
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 20px' }}>
         <Link to="/" className="brand-logo" style={{ display: 'flex', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit', transform: 'scale(1.15)', transformOrigin: 'left center', zIndex: 50 }}>

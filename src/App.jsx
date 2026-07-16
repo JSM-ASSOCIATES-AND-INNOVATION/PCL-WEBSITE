@@ -18,6 +18,7 @@ import Facilities from './components/NAVBAR/CAMPUS/FACILITIES/Facilities';
 import FacilityDetail from './components/NAVBAR/CAMPUS/FACILITIES/FacilityDetail';
 import Contact from './components/NAVBAR/Contact/Contact';
 import EventsPage from './components/NAVBAR/Events/EventsPage';
+import BlogsPage from './components/NAVBAR/EVENTS/BlogsPage';
 import ApplyNow from './components/NAVBAR/ApplyNow/ApplyNow';
 import TermsAndConditions from './components/LEGAL/TermsAndConditions';
 import PrivacyPolicy from './components/LEGAL/PrivacyPolicy';
@@ -61,6 +62,7 @@ function App() {
         <Route path="/careers/opportunities" element={<UnderConstruction title="Opportunities" />} />
 
         <Route path="/events" element={<><Navbar /><EventsPage /></>} />
+        <Route path="/blogs" element={<><Navbar /><BlogsPage /></>} />
 
         <Route path="/contact" element={<><Navbar /><Contact /></>} />
         <Route path="/apply" element={<ApplyNow />} />

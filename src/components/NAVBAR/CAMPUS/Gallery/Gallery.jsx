@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '../../Navbar.jsx';
 import CircularGallery from './CircularGallery';
-import UnderConstruction from '../../../../PAGES/UnderConstruction';
+import UnderConstruction from '../../../../pages/UnderConstruction';
 import { motion } from 'framer-motion';
 
 // Import images
