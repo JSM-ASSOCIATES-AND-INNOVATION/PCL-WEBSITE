@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { theme } from './theme';
 import { useERP } from './context/ErpContext';
+import './index.css';
 
 // ==========================================
 // 1. AUTH & LAYOUT IMPORTS
