@@ -176,7 +176,7 @@ export default function Login() {
                     <div className="flex flex-col lg:flex-row items-center lg:items-start gap-5 lg:gap-6 mb-8 group cursor-default">
                         <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-2xl bg-gradient-to-br from-[#112240] to-[#0A192F] border border-[#D4AF37]/30 flex items-center justify-center group-hover:scale-105 group-hover:-translate-y-1 transition-all duration-500 shadow-[0_0_30px_rgba(212,175,55,0.15)] overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#D4AF37]/10 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
-                            <i className="fa-solid fa-scale-balanced text-3xl lg:text-4xl text-[#D4AF37]"></i>
+                            <div className="w-10 h-10 lg:w-14 lg:h-14 bg-center bg-contain bg-no-repeat brand-crest relative z-10"></div>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-4xl lg:text-6xl font-black tracking-tight text-white mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
