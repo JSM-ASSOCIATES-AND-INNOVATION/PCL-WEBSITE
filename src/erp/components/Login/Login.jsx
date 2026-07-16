@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useERP } from '../../context/ErpContext';
-import { theme } from '../../theme';
+
 export default function Login() {
     const { login } = useERP();
 
@@ -14,7 +14,7 @@ export default function Login() {
     const [isDeviceSupported, setIsDeviceSupported] = useState(false);
     const [hasBiometricSetup, setHasBiometricSetup] = useState(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const checkBiometricSupport = async () => {
             const savedCred = localStorage.getItem('saved_credential');
             const savedPass = localStorage.getItem('saved_password');
@@ -51,7 +51,6 @@ export default function Login() {
             if (!response.success) {
                 setError(response.error?.message || 'Invalid credentials. Please verify your ID and password.');
             } else {
-                // Success! Handle Remember Me / Biometric
                 if (rememberMe) {
                     if (isDeviceSupported) {
                         try {
@@ -63,13 +62,9 @@ export default function Login() {
                             const webAuthnCred = await navigator.credentials.create({
                                 publicKey: {
                                     challenge,
-                                    rp: { name: "JSM ERP", id: window.location.hostname },
-                                    user: {
-                                        id: userId,
-                                        name: credential,
-                                        displayName: credential
-                                    },
-                                    pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256
+                                    rp: { name: "PCL ERP", id: window.location.hostname },
+                                    user: { id: userId, name: credential, displayName: credential },
+                                    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
                                     authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
                                 }
                             });
@@ -84,7 +79,6 @@ export default function Login() {
                             }
                         } catch (webAuthnErr) {
                             console.warn("WebAuthn creation cancelled or failed:", webAuthnErr);
-                            // Fallback to basic if they cancelled the prompt but wanted 'remember me'
                             localStorage.setItem('biometric_enabled', 'false');
                             localStorage.setItem('saved_credential', credential);
                             localStorage.setItem('saved_password', btoa(password.trim()));
@@ -124,7 +118,6 @@ export default function Login() {
                 return;
             }
 
-            // Create a secure random challenge
             const challenge = new Uint8Array(32);
             window.crypto.getRandomValues(challenge);
             
@@ -135,14 +128,9 @@ export default function Login() {
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                allowCredentials = [{
-                    id: bytes,
-                    type: 'public-key',
-                    transports: ['internal']
-                }];
+                allowCredentials = [{ id: bytes, type: 'public-key', transports: ['internal'] }];
             }
 
-            // Request native biometric prompt
             const credentialData = await navigator.credentials.get({
                 publicKey: {
                     challenge: challenge,
@@ -168,168 +156,205 @@ export default function Login() {
     };
 
     return (
-        <div className={`${theme.layout.appBase} relative flex items-center justify-center lg:overflow-hidden min-h-screen w-full`}>
-            {/* Minimal Background Elements for brutalist theme */}
-            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-50">
-                <div className="absolute top-10 left-10 w-64 h-64 bg-themePanel/50 border-theme border-themeBorder rounded-full opacity-20 blur-xl"></div>
-                <div className="absolute bottom-10 right-10 w-96 h-96 bg-themePanel/50 border-theme border-themeBorder rounded-full opacity-20 blur-2xl"></div>
+        <div className="relative flex items-center justify-center min-h-screen w-full bg-[#050B14] font-sans overflow-hidden">
+            
+            {/* --- PREMIUM ANIMATED BACKGROUND --- */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[#0A192F] rounded-full mix-blend-screen filter blur-[100px] opacity-60 animate-pulse-slow"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[#112240] rounded-full mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div className="absolute top-[20%] right-[10%] w-[30vw] h-[30vw] bg-[#D4AF37]/10 rounded-full mix-blend-screen filter blur-[80px] animate-pulse"></div>
+                
+                {/* Subtle Grid overlay */}
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
             </div>
 
             {/* --- MAIN CONTAINER --- */}
-            <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-24 p-6 py-12 lg:p-12 min-h-screen lg:min-h-0 lg:h-full">
+            <div className="relative z-10 w-full max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 p-6 lg:p-12 min-h-screen lg:min-h-0">
                 
-                {/* LEFT: BRANDING & HERO */}
-                <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left animate-fade-in shrink-0">
-                    <div className="flex items-center gap-3 lg:gap-4 mb-6 lg:mb-12 group cursor-pointer">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel bg-themePanel border-theme border-themeBorder flex items-center justify-center group-hover:scale-105 group-hover:-translate-y-1 transition-all duration-300 shadow-themeElevated">
-                            <i className="fa-solid fa-landmark text-2xl lg:text-3xl text-themeAccent"></i>
+                {/* LEFT: PCL BRANDING & HERO */}
+                <div className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left animate-fade-in-up mt-10 lg:mt-0">
+                    <div className="flex flex-col lg:flex-row items-center lg:items-start gap-5 lg:gap-6 mb-8 group cursor-default">
+                        <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-2xl bg-gradient-to-br from-[#112240] to-[#0A192F] border border-[#D4AF37]/30 flex items-center justify-center group-hover:scale-105 group-hover:-translate-y-1 transition-all duration-500 shadow-[0_0_30px_rgba(212,175,55,0.15)] overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#D4AF37]/10 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                            <i className="fa-solid fa-scale-balanced text-3xl lg:text-4xl text-[#D4AF37]"></i>
                         </div>
-                        <span className="text-3xl lg:text-5xl font-black tracking-tighter text-themeText">
-                            JSM<span className="text-themeAccent">ERP</span>
-                        </span>
+                        <div className="flex flex-col">
+                            <span className="text-4xl lg:text-6xl font-black tracking-tight text-white mb-1" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                Prudentia
+                            </span>
+                            <span className="text-xl lg:text-2xl font-light tracking-[0.2em] text-[#D4AF37] uppercase">
+                                College of Law
+                            </span>
+                        </div>
                     </div>
 
-                    <h1 className="text-4xl lg:text-7xl font-black text-themeText leading-[1.05] tracking-tight mb-4 lg:mb-6 uppercase">
-                        Next-Gen<br className="hidden lg:block"/>
-                        <span className="text-themeAccent inline-block transform -rotate-1 mt-2">
-                            Campus Hub.
-                        </span>
+                    <h1 className="text-4xl lg:text-[4.5rem] font-black text-white leading-[1.1] tracking-tight mb-6 uppercase">
+                        Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">Campus</span> <br className="hidden lg:block"/>
+                        Ecosystem.
                     </h1>
                     
-                    <p className={`${theme.text.secondary} text-xs lg:text-base font-medium max-w-sm lg:max-w-md leading-relaxed hidden sm:block`}>
-                        Experience a seamless, secure, and unified digital ecosystem designed exclusively for students, faculty, and administration.
+                    <p className="text-[#8892B0] text-sm lg:text-lg font-light max-w-lg leading-relaxed">
+                        Securely authenticate to access your personalized academic dashboard, course materials, and administrative services.
                     </p>
 
-                    <div className="mt-6 lg:mt-8 flex items-center gap-2 lg:gap-3 bg-themePanel border-theme border-themeBorder px-4 py-2 lg:px-5 lg:py-2.5 rounded-themeBtn w-fit shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                    <div className="mt-8 lg:mt-10 flex items-center gap-4 bg-[#112240]/50 backdrop-blur-md border border-[#D4AF37]/20 px-5 py-3 lg:px-6 lg:py-4 rounded-full w-fit shadow-lg">
                         <div className="relative flex items-center justify-center">
-                            <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full border border-black/20"></div>
-                            <div className="absolute w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping opacity-75"></div>
+                            <div className="w-3 h-3 bg-emerald-400 rounded-full"></div>
+                            <div className="absolute w-3 h-3 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
                         </div>
-                        <span className="text-[9px] lg:text-[10px] font-black text-themeText uppercase tracking-widest">All Systems Operational</span>
+                        <span className="text-xs lg:text-sm font-bold text-[#E6F1FF] uppercase tracking-wider">Gateway Secure & Active</span>
                     </div>
                 </div>
 
                 {/* RIGHT: SECURE LOGIN CARD */}
-                <div className="w-full max-w-md lg:w-[450px] animate-fade-in shrink-0" style={{ animationDelay: '0.2s' }}>
-                    <form onSubmit={handleSubmit} className={`${theme.layout.panelElevated} p-8 lg:p-10 flex flex-col gap-5 lg:gap-6 relative`}>
+                <div className="w-full max-w-md lg:w-[45%] animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                    <div className="relative">
+                        {/* Glow behind card */}
+                        <div className="absolute -inset-1 bg-gradient-to-r from-[#D4AF37]/20 to-[#0A192F]/50 rounded-[2.5rem] blur-xl opacity-70"></div>
                         
-                        <div className="mb-2 text-center lg:text-left">
-                            <h2 className="text-2xl lg:text-3xl font-black text-themeText tracking-tight mb-1 uppercase">
-                                Welcome Back
-                            </h2>
-                            <p className="text-xs font-bold text-themeTextSec opacity-70">
-                                Authenticate to securely access your portal.
-                            </p>
-                        </div>
+                        <form onSubmit={handleSubmit} className="relative bg-[#0A192F]/80 backdrop-blur-2xl border border-white/10 p-8 lg:p-12 rounded-[2rem] shadow-2xl flex flex-col gap-6 lg:gap-8 overflow-hidden">
+                            
+                            {/* Decorative Corner */}
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#D4AF37]/10 to-transparent rounded-tr-[2rem] pointer-events-none"></div>
 
-                        {error && (
-                            <div className="bg-rose-500/10 border-theme border-rose-500/30 text-rose-600 p-4 rounded-themePanel text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-fade-in">
-                                <i className="fa-solid fa-triangle-exclamation text-base shrink-0"></i> 
-                                <span>{error}</span>
+                            <div className="mb-2 text-center lg:text-left relative z-10">
+                                <h2 className="text-2xl lg:text-4xl font-bold text-white tracking-tight mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    Portal Access
+                                </h2>
+                                <p className="text-sm font-medium text-[#8892B0]">
+                                    Enter your institutional credentials.
+                                </p>
                             </div>
-                        )}
 
-                        {successMsg && (
-                            <div className="bg-emerald-500/10 border-theme border-emerald-500/30 text-emerald-600 p-4 rounded-themePanel text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-fade-in">
-                                <i className="fa-solid fa-circle-check text-base shrink-0"></i> 
-                                <span>{successMsg}</span>
-                            </div>
-                        )}
+                            {error && (
+                                <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-xs font-bold uppercase tracking-wider flex items-start gap-3">
+                                    <i className="fa-solid fa-circle-exclamation text-base shrink-0 mt-0.5"></i> 
+                                    <span className="leading-relaxed">{error}</span>
+                                </div>
+                            )}
 
-                        <div className="flex flex-col gap-4 lg:gap-5">
-                            {/* Official ID Input */}
-                            <div className="relative">
-                                <label className="block text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 ml-1">USER ID</label>
-                                <div className="relative group/input">
-                                    <i className="fa-solid fa-id-badge absolute left-4 top-1/2 -translate-y-1/2 text-themeTextSec opacity-50 group-focus-within/input:text-themeAccent group-focus-within/input:opacity-100 transition-colors text-sm z-10"></i>
-                                    <input
-                                        type="text"
-                                        value={credential}
-                                        onChange={handleCredentialChange}
-                                        className="relative w-full bg-themeApp border-theme border-themeBorder focus:border-themeBorderStrong rounded-themeBtn py-3.5 lg:py-4 pl-11 pr-4 text-xs lg:text-sm font-bold text-themeText uppercase outline-none transition-all placeholder:text-themeTextSec placeholder:opacity-50 placeholder:normal-case shadow-sm focus:shadow-[2px_2px_0px_rgba(0,0,0,0.1)]"
-                                        placeholder="e.g. USER ID"
-                                        required
-                                        autoCapitalize="none"
-                                        autoCorrect="off"
-                                        autoComplete="username"
-                                    />
+                            {successMsg && (
+                                <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-3">
+                                    <i className="fa-solid fa-circle-check text-base shrink-0"></i> 
+                                    <span>{successMsg}</span>
+                                </div>
+                            )}
+
+                            <div className="flex flex-col gap-5 lg:gap-6 relative z-10">
+                                {/* Official ID Input */}
+                                <div className="relative group">
+                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#8892B0] mb-2 ml-1 group-focus-within:text-[#D4AF37] transition-colors">
+                                        Institutional ID
+                                    </label>
+                                    <div className="relative">
+                                        <i className="fa-regular fa-id-card absolute left-5 top-1/2 -translate-y-1/2 text-[#8892B0] group-focus-within:text-[#D4AF37] transition-colors text-lg z-10"></i>
+                                        <input
+                                            type="text"
+                                            value={credential}
+                                            onChange={handleCredentialChange}
+                                            className="w-full bg-[#112240]/80 border border-white/5 focus:border-[#D4AF37]/50 rounded-2xl py-4 lg:py-5 pl-14 pr-5 text-sm font-bold text-white uppercase outline-none transition-all placeholder:text-[#8892B0] placeholder:font-normal placeholder:opacity-50 placeholder:normal-case shadow-inner"
+                                            placeholder="e.g. PCL-STU-2026"
+                                            required
+                                            autoCapitalize="none"
+                                            autoCorrect="off"
+                                            autoComplete="username"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Password Input */}
+                                <div className="relative group">
+                                    <div className="flex justify-between items-center mb-2 px-1">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8892B0] group-focus-within:text-[#D4AF37] transition-colors">
+                                            Passcode
+                                        </label>
+                                        <button type="button" className="text-[10px] font-bold text-[#D4AF37] hover:text-white transition-colors">
+                                            Forgot?
+                                        </button>
+                                    </div>
+                                    <div className="relative">
+                                        <i className="fa-solid fa-lock absolute left-5 top-1/2 -translate-y-1/2 text-[#8892B0] group-focus-within:text-[#D4AF37] transition-colors text-lg z-10"></i>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="w-full bg-[#112240]/80 border border-white/5 focus:border-[#D4AF37]/50 rounded-2xl py-4 lg:py-5 pl-14 pr-14 text-sm font-bold text-white outline-none transition-all placeholder:text-[#8892B0] placeholder:opacity-50 shadow-inner"
+                                            placeholder="••••••••"
+                                            required
+                                            autoCapitalize="none"
+                                            autoCorrect="off"
+                                            autoComplete="current-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            tabIndex="-1"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8892B0] hover:text-white transition-colors outline-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 z-10"
+                                        >
+                                            <i className={`fa-regular ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-sm`}></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Remember Me Toggle */}
+                                <div className="flex items-center gap-3 mt-1 px-1">
+                                    <div className="relative flex items-center justify-center w-5 h-5">
+                                        <input 
+                                            type="checkbox" 
+                                            id="remember-biometric" 
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                            className="appearance-none w-5 h-5 border-2 border-[#8892B0] rounded-md checked:bg-[#D4AF37] checked:border-[#D4AF37] cursor-pointer transition-all peer"
+                                        />
+                                        <i className="fa-solid fa-check absolute text-black text-[10px] opacity-0 peer-checked:opacity-100 pointer-events-none"></i>
+                                    </div>
+                                    <label htmlFor="remember-biometric" className="text-[11px] font-medium text-[#8892B0] cursor-pointer select-none">
+                                        {isDeviceSupported ? 'Keep me logged in & enable Biometrics' : 'Keep me logged in'}
+                                    </label>
                                 </div>
                             </div>
 
-                            {/* Password Input */}
-                            <div className="relative">
-                                <div className="flex justify-between items-center mb-1.5 px-1">
-                                    <label className="text-[8px] lg:text-[9px] font-black uppercase tracking-widest text-themeTextSec">Password</label>
-                                </div>
-                                <div className="relative group/input">
-                                    <i className="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-themeTextSec opacity-50 group-focus-within/input:text-themeAccent group-focus-within/input:opacity-100 transition-colors text-sm z-10"></i>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="relative w-full bg-themeApp border-theme border-themeBorder focus:border-themeBorderStrong rounded-themeBtn py-3.5 lg:py-4 pl-11 pr-12 text-xs lg:text-sm font-bold text-themeText outline-none transition-all placeholder:text-themeTextSec placeholder:opacity-50 shadow-sm focus:shadow-[2px_2px_0px_rgba(0,0,0,0.1)]"
-                                        placeholder="••••••••"
-                                        required
-                                        autoCapitalize="none"
-                                        autoCorrect="off"
-                                        autoComplete="current-password"
-                                    />
+                            <div className="flex flex-col gap-4 mt-4 relative z-10">
+                                {/* Primary Login Button */}
+                                <button
+                                    id="login-form-submit"
+                                    type="submit"
+                                    disabled={isLoading || !credential || !password}
+                                    className={`w-full py-4 lg:py-5 rounded-2xl text-[12px] font-black uppercase tracking-[0.15em] transition-all duration-300 flex justify-center items-center gap-3 relative overflow-hidden group ${isLoading || !credential || !password
+                                        ? 'bg-[#112240] text-[#8892B0] cursor-not-allowed border border-white/5'
+                                        : 'bg-gradient-to-r from-[#D4AF37] to-[#C5A059] text-[#0A192F] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:scale-[1.02]'
+                                        }`}
+                                >
+                                    {isLoading ? (
+                                        <><i className="fa-solid fa-circle-notch fa-spin text-lg"></i> Authenticating...</>
+                                    ) : (
+                                        <>
+                                            <span className="relative z-10">Access Portal</span>
+                                            <i className="fa-solid fa-arrow-right-to-bracket text-sm relative z-10 group-hover:translate-x-1 transition-transform"></i>
+                                        </>
+                                    )}
+                                </button>
+
+                                {hasBiometricSetup && isDeviceSupported && (
                                     <button
                                         type="button"
-                                        tabIndex="-1"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-themeTextSec opacity-50 hover:opacity-100 hover:text-themeAccent transition-colors outline-none w-8 h-8 flex items-center justify-center rounded-full hover:bg-themePanel z-10"
+                                        onClick={handleBiometricLogin}
+                                        disabled={isLoading}
+                                        className="w-full py-4 lg:py-5 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all duration-300 flex justify-center items-center gap-3 bg-[#112240]/50 hover:bg-[#112240] text-white border border-[#D4AF37]/30 hover:border-[#D4AF37] shadow-lg"
                                     >
-                                        <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-xs`}></i>
+                                        <i className="fa-solid fa-fingerprint text-xl text-[#D4AF37]"></i> 
+                                        <span>Face ID / Touch ID</span>
                                     </button>
-                                </div>
-                            </div>
-
-                            {/* Remember Me Toggle */}
-                            <div className="flex items-center gap-2 mt-1 px-1">
-                                <input 
-                                    type="checkbox" 
-                                    id="remember-biometric" 
-                                    checked={rememberMe}
-                                    onChange={(e) => setRememberMe(e.target.checked)}
-                                    className="w-3.5 h-3.5 lg:w-4 lg:h-4 accent-themeAccent cursor-pointer border-theme border-themeBorder"
-                                />
-                                <label htmlFor="remember-biometric" className="text-[9px] lg:text-[10px] font-bold text-themeTextSec cursor-pointer select-none">
-                                    {isDeviceSupported ? 'Remember Me & Enable Biometric Login' : 'Remember Me'}
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-3 lg:gap-4 mt-2 relative z-10">
-                            {/* Primary Login Button */}
-                            <button
-                                id="login-form-submit"
-                                type="submit"
-                                disabled={isLoading || !credential || !password}
-                                className={`w-full py-4 lg:py-5 rounded-themeBtn text-[10px] lg:text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center gap-2 lg:gap-3 relative overflow-hidden ${isLoading || !credential || !password
-                                    ? 'bg-themePanel text-themeTextSec border-theme border-themeBorder opacity-50 cursor-not-allowed'
-                                    : 'bg-themeAccent text-white hover:opacity-90 shadow-[4px_4px_0px_rgba(0,0,0,0.1)] active:translate-y-1 active:translate-x-1 active:shadow-[0px_0px_0px_rgba(0,0,0,0.1)]'
-                                    }`}
-                            >
-                                {isLoading ? (
-                                    <><i className="fa-solid fa-circle-notch fa-spin text-base lg:text-lg"></i> Processing...</>
-                                ) : (
-                                    <><i className="fa-solid fa-bolt text-xs lg:text-sm"></i> Initialize Session</>
                                 )}
-                            </button>
-
-                            {hasBiometricSetup && isDeviceSupported && (
-                                <button
-                                    type="button"
-                                    onClick={handleBiometricLogin}
-                                    disabled={isLoading}
-                                    className="w-full py-4 lg:py-5 rounded-themeBtn text-[10px] lg:text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center gap-2 lg:gap-3 bg-themePanel hover:bg-themeElevated text-themeText border-theme border-themeBorderStrong shadow-[2px_2px_0px_rgba(0,0,0,0.1)] active:translate-y-0.5 active:translate-x-0.5 active:shadow-[0px_0px_0px_rgba(0,0,0,0.1)]"
-                                >
-                                    <i className="fa-solid fa-fingerprint text-base lg:text-lg text-themeAccent"></i> Face ID / Touch ID
-                                </button>
-                            )}
-                        </div>
-                    </form>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    {/* Support Link */}
+                    <div className="mt-8 text-center text-[#8892B0] text-xs font-medium">
+                        Having trouble accessing your account? <br className="sm:hidden" />
+                        <a href="/contact" className="text-[#D4AF37] hover:text-white underline underline-offset-4 transition-colors">Contact IT Support</a>
+                    </div>
                 </div>
 
             </div>
