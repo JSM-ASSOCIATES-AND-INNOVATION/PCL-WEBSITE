@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 import Preloader from './components/UI/Preloader/Preloader';
 import ScrollToTop from './components/UI/ScrollToTop';
 import App from './App';
@@ -16,7 +17,14 @@ const ErpWrapper = () => {
 };
 
 const RootApp = () => {
-  const isErpRoute = window.location.pathname.toLowerCase().startsWith('/erp');
+  const location = useLocation();
+  const path = location.pathname.toLowerCase();
+  const isErpRoute = path.startsWith('/erp') || 
+                     path.startsWith('/login') || 
+                     path.startsWith('/student') || 
+                     path.startsWith('/faculty') || 
+                     path.startsWith('/admin') || 
+                     path.startsWith('/verify');
   return (
     <>
       <ScrollToTop />
