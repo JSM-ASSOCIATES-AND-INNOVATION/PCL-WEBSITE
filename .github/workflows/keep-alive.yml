@@ -1,0 +1,25 @@
+name: Keep Server Alive
+
+on:
+  schedule:
+    # Runs at midnight every 4 days to ensure the Supabase free tier (7-day limit) never pauses
+    - cron: '0 0 */4 * *'
+  workflow_dispatch: # Allows you to manually trigger it from the GitHub Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Project
+        # We hit the public REST endpoint using the public anonymous key to register "activity" on the project
+        run: |
+          curl -s -o /dev/null -w "Response: %{http_code}\n" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA" \
+            "https://saswiwkahpubgivrtjwy.supabase.co/rest/v1/"
+
+      - name: Ping Vercel Website
+        # We also hit the public website to keep the Vercel edge functions warm
+        run: |
+          curl -s -o /dev/null -w "Response: %{http_code}\n" \
+            "https://pcl-website.vercel.app/"
