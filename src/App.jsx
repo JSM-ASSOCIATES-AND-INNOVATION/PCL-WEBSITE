@@ -22,9 +22,9 @@ import FacilityDetail from './COMPONENTS/NAVBAR/CAMPUS/FACILITIES/FacilityDetail
 import Library from './COMPONENTS/NAVBAR/CAMPUS/LIBRARY/Library';
 import MootCourt from './COMPONENTS/NAVBAR/CAMPUS/MOOT_COURT/MootCourt';
 import LegalAid from './COMPONENTS/NAVBAR/CAMPUS/LEGAL_AID/LegalAid';
-import Contact from './COMPONENTS/NAVBAR/CONTACT/Contact';
-import EventsPage from './COMPONENTS/NAVBAR/EVENTS/EventsPage';
-import EventDetail from './COMPONENTS/NAVBAR/EVENTS/EventDetail';
+import Contact from "./COMPONENTS/NAVBAR/Contact/Contact";
+import EventsPage from "./COMPONENTS/NAVBAR/Events/EventsPage";
+import EventDetail from "./COMPONENTS/NAVBAR/Events/EventDetail";
 import BlogsPage from './COMPONENTS/NAVBAR/BLOGS/BlogsPage';
 import BlogDetail from './COMPONENTS/NAVBAR/BLOGS/BlogDetail';
 import SubmitBlog from './COMPONENTS/NAVBAR/BLOGS/SubmitBlog';

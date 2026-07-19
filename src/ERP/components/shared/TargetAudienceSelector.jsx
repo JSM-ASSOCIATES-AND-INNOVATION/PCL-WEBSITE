@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../LIB/supabase/supabaseClient';
 
 const MOCK_BATCHES = [
     'B.B.A., LL.B. (Hons.) 2026',

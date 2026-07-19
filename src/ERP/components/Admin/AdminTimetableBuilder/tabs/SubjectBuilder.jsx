@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../../../LIB/supabase/supabaseClient';
 
 const AVAILABLE_COLORS = [
     { name: 'Blue', value: 'blue', bg: 'bg-blue-500/10', border: 'border-blue-500/20', text: 'text-blue-500', solid: 'bg-blue-500' },

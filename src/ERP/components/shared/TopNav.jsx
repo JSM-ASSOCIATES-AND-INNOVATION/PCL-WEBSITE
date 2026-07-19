@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { theme } from "../../theme";
 import { useERP } from "../../context/ErpContext";
-import pclLogo from "../../../assets/LOGOS/pcl_logo.svg";
+import pclLogo from "../../../ASSETS/LOGOS/pcl_logo.svg";
 import { STUDENT_NAV_GROUPS, STUDENT_NAV_EXPANDED } from "../Student/sidebar/Sidebar";
 import { FACULTY_NAV_GROUPS, FACULTY_NAV_EXPANDED } from "../Faculty/FacultySidebar/FacultySidebar";
 import { ADMIN_NAV_GROUPS, ADMIN_NAV_EXPANDED } from "../Admin/AdminSidebar/AdminSidebar";

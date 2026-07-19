@@ -12,7 +12,7 @@ import imgClassroom1 from '../../../../ASSETS/CAMPUS/PCL_CLASSROOM.webp';
 import imgClassroom2 from '../../../../ASSETS/CAMPUS/PCL_CLASSROOM2.webp';
 import imgClassroom3 from '../../../../ASSETS/CAMPUS/PCL_CLASSROOM3.webp';
 import imgLegalAid from '../../../../ASSETS/CAMPUS/PCL_LEGAL_AID_CELL.webp';
-import imgLibrary from '../../../../ASSETS/CAMPUS/PCL_LIBRARY.webp';
+import imgLibrary from '../../../../ASSETS/CAMPUS/pcl_library.webp';
 import imgLobby from '../../../../ASSETS/CAMPUS/PCL_LOBBY.webp';
 import imgOutside from '../../../../ASSETS/CAMPUS/PCL_OUTSIDE.webp';
 import imgCampus from '../../../../ASSETS/CAMPUS/PCL_CAMPUS.webp';

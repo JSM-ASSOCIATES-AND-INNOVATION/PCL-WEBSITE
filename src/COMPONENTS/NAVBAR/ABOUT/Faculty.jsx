@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-import { supabase } from '../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../LIB/supabase/supabaseClient';
 import PremiumCard from '../../UI/PremiumCard/PremiumCard';
 
 export default function Faculty() {

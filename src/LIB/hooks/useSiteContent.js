@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../SUPABASE/supabaseClient';
+import { supabase } from '../supabase/supabaseClient';
 
 export function useSiteContent(pagePath, sectionName) {
     const [content, setContent] = useState(null);

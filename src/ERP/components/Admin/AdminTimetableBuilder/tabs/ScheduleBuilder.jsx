@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../../../LIB/supabase/supabaseClient';
 import WeeklyChart from '../../../shared/WeeklyChart';
 
 export default function ScheduleBuilder() {

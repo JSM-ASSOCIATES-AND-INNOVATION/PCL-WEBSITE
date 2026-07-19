@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 export default function MentorshipAllocations() {

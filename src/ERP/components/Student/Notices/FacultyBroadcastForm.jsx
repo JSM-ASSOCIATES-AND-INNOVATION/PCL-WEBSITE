@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../../LIB/supabase/supabaseClient';
 import { useERP } from '../../../context/ErpContext';
 import TargetAudienceSelector from '../../shared/TargetAudienceSelector';
 

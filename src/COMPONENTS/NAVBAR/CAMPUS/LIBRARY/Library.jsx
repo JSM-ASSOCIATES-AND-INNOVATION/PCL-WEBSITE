@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Library as LibraryIcon, Monitor, Wifi, Video, ArrowUpRight } from 'lucide-react';
 
-import libraryImg from '../../../../ASSETS/CAMPUS/PCL_LIBRARY.webp';
+import libraryImg from '../../../../ASSETS/CAMPUS/pcl_library.webp';
 import styles from '../../PROGRAMS/Programs.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
