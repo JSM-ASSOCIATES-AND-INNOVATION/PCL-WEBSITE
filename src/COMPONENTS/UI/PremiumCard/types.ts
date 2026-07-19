@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 export interface CardProps {
   id: string;
   title: string;

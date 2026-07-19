@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
 "use client";
 

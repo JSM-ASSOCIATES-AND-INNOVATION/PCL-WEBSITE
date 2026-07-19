@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React from "react";
 import SidebarFramework from "../../shared/Navigation/SidebarFramework";
 import { useERP } from "../../../context/ErpContext";

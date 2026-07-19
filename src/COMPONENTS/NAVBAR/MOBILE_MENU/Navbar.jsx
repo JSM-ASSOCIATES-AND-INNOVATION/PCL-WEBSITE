@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import StaggeredMenu from './MOBILE_MENU/MobileMenu';

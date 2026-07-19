@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState } from 'react';
 import styles from './PremiumCard.module.css';
 import { ButtonProps } from './types';

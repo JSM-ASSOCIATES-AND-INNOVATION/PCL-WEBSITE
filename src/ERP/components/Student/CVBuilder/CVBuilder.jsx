@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { theme } from "../../../theme";

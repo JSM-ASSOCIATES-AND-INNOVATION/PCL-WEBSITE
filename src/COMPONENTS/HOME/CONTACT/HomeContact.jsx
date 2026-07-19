@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { forwardRef } from 'react';
 import { MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
 import CountUp from './CountUp';

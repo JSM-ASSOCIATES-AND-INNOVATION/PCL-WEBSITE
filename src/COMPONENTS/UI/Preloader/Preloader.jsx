@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Preloader.css';

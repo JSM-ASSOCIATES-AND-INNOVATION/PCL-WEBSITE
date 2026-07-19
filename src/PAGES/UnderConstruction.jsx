@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

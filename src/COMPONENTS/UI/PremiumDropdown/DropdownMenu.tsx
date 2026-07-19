@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './PremiumDropdown.module.css';

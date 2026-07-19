@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../../lib/supabase/supabaseClient";

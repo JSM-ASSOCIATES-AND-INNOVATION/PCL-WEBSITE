@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 

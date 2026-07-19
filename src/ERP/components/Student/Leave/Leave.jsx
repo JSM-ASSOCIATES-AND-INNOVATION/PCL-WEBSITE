@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
 import React, { useState, useEffect, useRef } from "react";
 import { theme } from "../../../theme";

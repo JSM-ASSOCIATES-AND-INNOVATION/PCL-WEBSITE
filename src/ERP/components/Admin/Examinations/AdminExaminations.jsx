@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "../../../lib/supabase/supabaseClient";

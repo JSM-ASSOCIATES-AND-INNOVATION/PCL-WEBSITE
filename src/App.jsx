@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './COMPONENTS/NAVBAR/Navbar';
 import PremiumFooter from './COMPONENTS/UI/PremiumFooter/PremiumFooter';

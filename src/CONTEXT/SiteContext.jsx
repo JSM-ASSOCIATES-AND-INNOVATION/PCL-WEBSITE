@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../LIB/supabase/supabaseClient';
 

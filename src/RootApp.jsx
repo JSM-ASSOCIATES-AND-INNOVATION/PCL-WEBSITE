@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import Preloader from './COMPONENTS/UI/Preloader/Preloader';

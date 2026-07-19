@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { useEffect, useRef } from 'react';
 
 export function useClickOutside(handler: () => void) {

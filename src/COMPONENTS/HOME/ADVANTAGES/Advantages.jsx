@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { forwardRef } from 'react';
 import { Briefcase, Gavel, Shield, Landmark } from 'lucide-react';
 import { Link } from 'react-router-dom';

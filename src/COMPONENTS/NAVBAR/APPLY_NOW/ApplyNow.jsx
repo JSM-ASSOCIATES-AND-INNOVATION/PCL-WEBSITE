@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send, AlertCircle, CheckCircle } from 'lucide-react';

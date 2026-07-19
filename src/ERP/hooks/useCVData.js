@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase/supabaseClient';
 

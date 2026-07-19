@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, ArrowRight, Building, CheckCircle, Mail, Phone, MapPin, Send } from 'lucide-react';

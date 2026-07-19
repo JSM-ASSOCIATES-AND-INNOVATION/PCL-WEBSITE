@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React from 'react';
 import { ArrowUp, Activity } from 'lucide-react';
 import styles from './PremiumFooter.module.css';

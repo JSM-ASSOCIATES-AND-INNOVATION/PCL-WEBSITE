@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';

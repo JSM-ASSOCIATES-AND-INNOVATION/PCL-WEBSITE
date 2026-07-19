@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { Camera, Mesh, Plane, Program, Renderer, Texture, Transform } from 'ogl';
 import { useEffect, useRef } from 'react';
 

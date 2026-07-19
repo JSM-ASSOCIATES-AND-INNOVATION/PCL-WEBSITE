@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /**
  * DialogManager
  * Exposes global methods to trigger custom React UI dialogs instead of native browser popups.

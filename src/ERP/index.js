@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 // src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';

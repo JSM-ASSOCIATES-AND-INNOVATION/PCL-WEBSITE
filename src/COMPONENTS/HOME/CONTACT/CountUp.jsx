@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { useInView, useMotionValue, useSpring } from 'framer-motion';
 import { useCallback, useEffect, useRef } from 'react';
 

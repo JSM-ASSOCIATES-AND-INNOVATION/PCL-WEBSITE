@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';

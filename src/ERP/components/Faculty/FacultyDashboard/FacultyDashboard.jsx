@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";

@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { createClient } from '@supabase/supabase-js';
 
 // Connected directly to the PCL ERP Supabase Instance via ENV

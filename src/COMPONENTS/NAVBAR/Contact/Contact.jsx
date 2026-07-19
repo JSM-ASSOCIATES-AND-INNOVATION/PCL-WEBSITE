@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, Send, ChevronDown, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';

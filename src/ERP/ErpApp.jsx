@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';

@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, ArrowRight, CheckCircle2, Clock, MapPin } from 'lucide-react';

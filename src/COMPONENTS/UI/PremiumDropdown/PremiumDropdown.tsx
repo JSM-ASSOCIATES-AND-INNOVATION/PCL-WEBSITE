@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';

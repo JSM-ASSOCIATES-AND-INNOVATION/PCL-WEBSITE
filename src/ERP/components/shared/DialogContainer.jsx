@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect } from "react";
 import { registerDialogContainer } from "../../utils/DialogManager";
 import { theme } from "../../theme";

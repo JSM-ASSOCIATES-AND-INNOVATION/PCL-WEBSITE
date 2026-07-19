@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';

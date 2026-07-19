@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 

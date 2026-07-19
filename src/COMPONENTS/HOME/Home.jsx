@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect, useRef } from 'react';
 import Hero from './HERO/Hero';
 import Philosophy from './PHILOSOPHY/Philosophy';

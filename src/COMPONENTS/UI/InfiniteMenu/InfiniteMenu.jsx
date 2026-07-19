@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import { useEffect, useRef, useState } from 'react';
 import { mat4, quat, vec2, vec3 } from 'gl-matrix';
 import './InfiniteMenu.css';

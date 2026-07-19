@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useState } from 'react';
 import { Megaphone, X } from 'lucide-react';
 import { supabase } from '../../LIB/supabaseClient';

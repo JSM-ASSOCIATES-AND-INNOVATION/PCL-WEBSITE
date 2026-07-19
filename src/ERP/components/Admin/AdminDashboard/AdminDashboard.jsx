@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState } from "react";
 import AdminHeroBanner from "./AdminHeroBanner";
 import AdminKPIGrid from "./AdminKPIGrid";

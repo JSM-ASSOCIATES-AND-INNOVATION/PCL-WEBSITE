@@ -1,3 +1,4 @@
+/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../NAVBAR/Navbar';
 // NOTE: adjust the Navbar import path to match your project structure, or remove it
