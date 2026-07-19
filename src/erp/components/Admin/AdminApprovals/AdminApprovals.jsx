@@ -1,15 +1,14 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 
 export default function AdminApprovals() {
-    const [activeTab, setActiveTab] = useState("faculty_leaves"); // 'faculty_leaves', 'escalated_grievances'
+    const [activeTab, setActiveTab] = useState("escalated_grievances"); // 'escalated_grievances', 'document_verification'
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Data
-    const [facultyLeaves, setFacultyLeaves] = useState([]);
     const [grievances, setGrievances] = useState([]);
     const [pendingDocuments, setPendingDocuments] = useState([]);
 
@@ -25,10 +24,6 @@ export default function AdminApprovals() {
                 { data: leavesData },
                 { data: grievancesData }
             ] = await Promise.all([
-                // Fetch faculty leaves
-
-                supabase.from('faculty_leaves').select('*').order('created_at', { ascending: false }),
-                
                 // Fetch escalated grievances (assigned_to IS NULL)
                 supabase.from('grievances')
                     .select('*, reporter:profiles!grievances_reporter_id_fkey(full_name, role), accused:profiles!grievances_accused_id_fkey(full_name, role)')
@@ -44,12 +39,6 @@ export default function AdminApprovals() {
 
             const { data: allProfiles } = await supabase.from('profiles').select('id, full_name, role');
             
-            const enrichedLeaves = (leavesData || []).map(l => {
-                const p = allProfiles?.find(prof => prof.id === l.faculty_id);
-                return { ...l, faculty_name: p?.full_name || 'Unknown Faculty' };
-            });
-
-            setFacultyLeaves(enrichedLeaves);
             setGrievances(grievancesData || []);
             setPendingDocuments(arguments[0][2]?.data || []);
 
@@ -60,24 +49,7 @@ export default function AdminApprovals() {
         }
     }, []);
 
-    const handleLeaveAction = async (leaveId, newStatus, remarks = "") => {
-        setIsProcessing(true);
-        try {
-            const { error } = await supabase
-                .from('faculty_leaves')
-                .update({ status: newStatus, admin_remarks: remarks })
-                .eq('id', leaveId);
-            
-            if (error) throw error;
-            window.erpDialog.alert(`Faculty leave request has been ${newStatus}.`);
-            fetchData();
-        } catch (error) {
-            console.error("Error updating leave:", error);
-            window.erpDialog.alert("Failed to process leave request.");
-        } finally {
-            setIsProcessing(false);
-        }
-    };
+
 
     const handleGrievanceAction = async (grievanceId, newStatus, notes = "") => {
         setIsProcessing(true);
@@ -173,12 +145,6 @@ export default function AdminApprovals() {
             {/* Tabs */}
             <div className="flex bg-themeElevated p-1.5 rounded-xl border-theme border-themeBorder w-fit relative z-10 overflow-x-auto max-w-full">
                 <button 
-                    onClick={() => setActiveTab('faculty_leaves')}
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-lg text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'faculty_leaves' ? 'bg-themeAccent text-themeText shadow-lg' : 'text-themeTextSec hover:text-themeText'}`}
-                >
-                    Faculty Leaves
-                </button>
-                <button 
                     onClick={() => setActiveTab('escalated_grievances')}
                     className={`whitespace-nowrap px-6 py-2.5 rounded-lg text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'escalated_grievances' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-themeTextSec hover:text-themeText'}`}
                 >
@@ -200,52 +166,7 @@ export default function AdminApprovals() {
             ) : (
                 <div className="relative z-10">
                     
-                    {activeTab === 'faculty_leaves' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                            {facultyLeaves.length === 0 ? (
-                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
-                                    <p className="text-sm font-semibold text-themeTextSec">No pending leave requests from Faculty.</p>
-                                </div>
-                            ) : (
-                                facultyLeaves.map(req => (
-                                    <div key={req.id} className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-5 flex flex-col gap-4 relative overflow-hidden`}>
-                                        <div className="absolute top-0 left-0 w-1 h-full bg-themeAccent"></div>
-                                        <div className="flex justify-between items-start pl-2">
-                                            <div>
-                                                <p className="text-sm font-black text-themeText mb-0.5">{req.faculty_name}</p>
-                                                <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">{req.start_date} to {req.end_date}</p>
-                                            </div>
-                                            {getStatusBadge(req.status)}
-                                        </div>
-                                        
-                                        <div className="flex gap-2">
-                                            <span className="bg-themePanel border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.leave_type}</span>
-                                            <span className="bg-themePanel border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.total_days} Days</span>
-                                        </div>
 
-                                        <div className="bg-themeElevated p-3 rounded-lg border-theme border-themeBorder">
-                                            <p className="text-xs text-themeText italic">"{req.reason}"</p>
-                                        </div>
-
-                                        {req.status === 'pending' ? (
-                                            <div className="flex gap-2 mt-auto">
-                                                <button onClick={() => handleLeaveAction(req.id, 'approved', 'Approved by Administration')} disabled={isProcessing} className="flex-1 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Approve</button>
-                                                <button onClick={() => {
-                                                    const reason = window.prompt("Reason for rejection:");
-                                                    if(reason) handleLeaveAction(req.id, 'rejected', reason);
-                                                }} disabled={isProcessing} className="flex-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Reject</button>
-                                            </div>
-                                        ) : (
-                                            <div className="mt-auto border-t-theme border-themeBorderStrong pt-3">
-                                                <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec mb-1">Admin Remarks</p>
-                                                <p className="text-xs text-themeText">{req.admin_remarks || "N/A"}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    )}
 
                     {activeTab === 'escalated_grievances' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

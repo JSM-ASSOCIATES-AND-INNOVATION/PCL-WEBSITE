@@ -155,44 +155,40 @@ export default function MobileNav({ userSession, activeTab, setActiveTab, onLogo
 
     return (
         <>
-            {/* BOTTOM NAVIGATION BAR */}
-            <nav className="flex lg:hidden fixed bottom-0 left-0 w-full bg-themeApp/95 backdrop-blur-md border-t border-themeBorder z-40 px-2 py-2 pb-safe items-center justify-around shadow-[0_-5px_20px_rgba(0,0,0,0.3)]">
-                {bottomNavLinks.map(link => {
-                    const isActive = activeTab === link.id && !mobileMenuOpen;
-                    return (
-                        <button 
-                            key={link.id}
-                            onClick={() => handleTabSwitch(link.id)}
-                            className={`flex flex-col items-center justify-center w-16 h-14 relative transition-all duration-300 ${isActive ? '-translate-y-1' : ''}`}
-                        >
-                            <div className={`w-9 h-9 flex items-center justify-center rounded-themePanel mb-1 transition-all duration-300 ${isActive ? `bg-themeElevated ${accentColor} border border-themeBorderStrong shadow-themeElevated` : 'text-themeTextSec opacity-70'}`}>
-                                <i className={`${link.icon} text-lg`}></i>
-                            </div>
-                            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${isActive ? accentColor : 'text-themeTextSec opacity-70'}`}>
-                                {link.label}
-                            </span>
-                            {isActive && (
-                                <div className={`absolute -bottom-1 w-1.5 h-1.5 rounded-full ${role === 'faculty' ? 'bg-blue-500' : 'bg-themeAccent'}`}></div>
-                            )}
-                        </button>
-                    )
-                })}
-                
-                {/* Mobile Menu Toggle Button */}
-                <button 
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className={`flex flex-col items-center justify-center w-16 h-14 relative transition-all duration-300 ${mobileMenuOpen ? '-translate-y-1' : ''}`}
-                >
-                    <div className={`w-9 h-9 flex items-center justify-center rounded-themePanel mb-1 transition-all duration-300 ${mobileMenuOpen ? `bg-themeElevated ${accentColor} border border-themeBorderStrong shadow-themeElevated` : 'text-themeTextSec opacity-70'}`}>
-                        <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
-                    </div>
-                    <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${mobileMenuOpen ? accentColor : 'text-themeTextSec opacity-70'}`}>
-                        Menu
-                    </span>
-                    {mobileMenuOpen && (
-                        <div className={`absolute -bottom-1 w-1.5 h-1.5 rounded-full ${role === 'faculty' ? 'bg-blue-500' : 'bg-themeAccent'}`}></div>
-                    )}
-                </button>
+            {/* BOTTOM NAVIGATION BAR - Standard Full Width Glass Dock */}
+            <nav className="flex lg:hidden fixed bottom-0 left-0 w-full bg-themeElevated/90 backdrop-blur-2xl border-t border-themeBorderStrong z-40 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(0,0,0,0.15)]">
+                <div className="flex w-full justify-around items-center h-[72px] px-2">
+                    {bottomNavLinks.map(link => {
+                        const isActive = activeTab === link.id && !mobileMenuOpen;
+                        return (
+                            <button 
+                                key={link.id}
+                                onClick={() => handleTabSwitch(link.id)}
+                                className={`flex flex-col items-center justify-center flex-1 h-full relative transition-all duration-300`}
+                            >
+                                <div className={`w-8 h-8 flex items-center justify-center rounded-xl mb-0.5 transition-all duration-300 ${isActive ? `${role === 'admin' ? 'text-indigo-500 bg-indigo-500/10' : (role === 'faculty' ? 'text-blue-500 bg-blue-500/10' : 'text-amber-500 bg-amber-500/10')}` : 'text-themeTextSec opacity-70 hover:opacity-100 hover:bg-themePanel'}`}>
+                                    <i className={`${link.icon} text-lg`}></i>
+                                </div>
+                                <span className={`text-[9px] font-bold tracking-tight transition-colors ${isActive ? (role === 'admin' ? 'text-indigo-500' : (role === 'faculty' ? 'text-blue-500' : 'text-amber-500')) : 'text-themeTextSec opacity-70'}`}>
+                                    {link.label}
+                                </span>
+                            </button>
+                        )
+                    })}
+                    
+                    {/* Mobile Menu Toggle Button */}
+                    <button 
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className={`flex flex-col items-center justify-center flex-1 h-full relative transition-all duration-300`}
+                    >
+                        <div className={`w-8 h-8 flex items-center justify-center rounded-xl mb-0.5 transition-all duration-300 ${mobileMenuOpen ? `${role === 'admin' ? 'text-indigo-500 bg-indigo-500/10' : (role === 'faculty' ? 'text-blue-500 bg-blue-500/10' : 'text-amber-500 bg-amber-500/10')}` : 'text-themeTextSec opacity-70 hover:opacity-100 hover:bg-themePanel'}`}>
+                            <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
+                        </div>
+                        <span className={`text-[9px] font-bold tracking-tight transition-colors ${mobileMenuOpen ? (role === 'admin' ? 'text-indigo-500' : (role === 'faculty' ? 'text-blue-500' : 'text-amber-500')) : 'text-themeTextSec opacity-70'}`}>
+                            Menu
+                        </span>
+                    </button>
+                </div>
             </nav>
 
             {/* BOTTOM SHEET DRAWER MENU */}

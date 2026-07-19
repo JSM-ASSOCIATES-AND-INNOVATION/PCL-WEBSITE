@@ -1,0 +1,271 @@
+import React, { useState, useEffect } from 'react';
+import { theme } from '../../../theme';
+import { supabase } from '../../../lib/supabase/supabaseClient';
+
+export default function AdminKPIGrid() {
+    const [loading, setLoading] = useState(true);
+    const [flippedCard, setFlippedCard] = useState(null);
+    const [data, setData] = useState({
+        students: { total: 0, byBatch: {} },
+        faculty: { total: 0, list: [] },
+        attendance: { present: 0, total: 0, rate: 0 },
+        approvals: { total: 0, leaves: 0, docs: 0, grievances: 0 },
+        fees: { collected: 0, pending: 0 }
+    });
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchKPIs = async () => {
+            try {
+                const query = `
+                    SELECT json_build_object(
+                        'students', (SELECT json_build_object(
+                            'total', count(*), 
+                            'byBatch', COALESCE(json_object_agg(COALESCE(academic_batch, 'Unassigned'), batch_count), '{}'::json)
+                        ) FROM (SELECT academic_batch, count(*) as batch_count FROM profiles WHERE role = 'student' GROUP BY academic_batch) sub),
+                        'faculty', (SELECT json_build_object(
+                            'total', count(*), 
+                            'list', COALESCE(json_agg(json_build_object('id', id, 'full_name', full_name, 'department', department)), '[]'::json)
+                        ) FROM profiles WHERE role = 'faculty'),
+                        'attendance', (SELECT json_build_object(
+                            'total', count(*), 
+                            'present', COALESCE(sum(case when status='present' then 1 else 0 end), 0)
+                        ) FROM attendance WHERE date = CURRENT_DATE),
+                        'approvals', (SELECT json_build_object(
+                            'leaves', (SELECT count(*) FROM faculty_leaves WHERE status='pending'),
+                            'docs', (SELECT count(*) FROM student_documents WHERE status='pending'),
+                            'grievances', (SELECT count(*) FROM grievances WHERE status='open')
+                        )),
+                        'fees', (SELECT json_build_object(
+                            'collected', COALESCE(sum(case when status='paid' then amount else 0 end), 0),
+                            'pending', COALESCE(sum(case when status='pending' then amount else 0 end), 0)
+                        ) FROM fee_invoices)
+                    ) as kpi_data
+                `;
+
+                const { data, error } = await supabase.rpc('admin_exec_sql', { query_text: query });
+                if (error) throw error;
+
+                if (isMounted && Array.isArray(data) && data.length > 0) {
+                    const kpi = data[0].kpi_data;
+                    
+                    const attTotal = Number(kpi.attendance.total) || 0;
+                    const attPresent = Number(kpi.attendance.present) || 0;
+                    const rate = attTotal > 0 ? ((attPresent / attTotal) * 100).toFixed(1) : 0;
+
+                    const leaves = Number(kpi.approvals.leaves) || 0;
+                    const docs = Number(kpi.approvals.docs) || 0;
+                    const grievances = Number(kpi.approvals.grievances) || 0;
+                    const totalApprovals = leaves + docs + grievances;
+
+                    setData({
+                        students: { total: kpi.students.total, byBatch: kpi.students.byBatch },
+                        faculty: { total: kpi.faculty.total, list: kpi.faculty.list },
+                        attendance: { present: attPresent, total: attTotal, rate },
+                        approvals: { total: totalApprovals, leaves, docs, grievances },
+                        fees: { collected: Number(kpi.fees.collected), pending: Number(kpi.fees.pending) }
+                    });
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error("Error fetching KPIs:", error);
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        fetchKPIs();
+        return () => { isMounted = false; };
+    }, []);
+
+    const toggleFlip = (cardId) => {
+        setFlippedCard(flippedCard === cardId ? null : cardId);
+    };
+
+    const formatCurrency = (val) => {
+        if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
+        if (val >= 1000) return `₹${(val / 1000).toFixed(1)}K`;
+        return `₹${val}`;
+    };
+
+    if (loading) {
+        return (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 animate-pulse">
+                {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="h-[140px] bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder opacity-50 shadow-sm"></div>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+            
+            {/* 1. Students Flipcard */}
+            <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(1)}>
+                <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 1 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
+                    {/* Front */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                        <div className="flex justify-between items-start">
+                            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 flex items-center justify-center text-sm shrink-0">
+                                <i className="fa-solid fa-user-graduate"></i>
+                            </div>
+                            <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-1.5 py-0.5 rounded">Expand</span>
+                        </div>
+                        <div className="mt-auto">
+                            <p className="text-2xl font-black text-themeText tracking-tight">{data.students.total}</p>
+                            <p className={`text-[9px] font-black ${theme.text.muted} uppercase tracking-widest mt-0.5 truncate`}>Active Students</p>
+                        </div>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col">
+                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-themeBorder pb-1">Breakdown</h4>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1.5 pr-1">
+                            {Object.entries(data.students.byBatch).length === 0 ? (
+                                <p className="text-[10px] font-medium text-themeTextSec italic text-center mt-2">No data</p>
+                            ) : (
+                                Object.entries(data.students.byBatch).map(([batch, count]) => (
+                                    <div key={batch} className="flex justify-between items-center bg-themePanel p-1.5 px-2 rounded border border-themeBorder">
+                                        <span className="text-[9px] font-bold text-themeText truncate pr-2">{batch}</span>
+                                        <span className="text-[9px] font-black text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded">{count}</span>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 2. Faculty Flipcard */}
+            <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(2)}>
+                <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 2 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
+                    {/* Front */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                        <div className="flex justify-between items-start">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20 flex items-center justify-center text-sm shrink-0">
+                                <i className="fa-solid fa-chalkboard-user"></i>
+                            </div>
+                            <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-1.5 py-0.5 rounded">Expand</span>
+                        </div>
+                        <div className="mt-auto">
+                            <p className="text-2xl font-black text-themeText tracking-tight">{data.faculty.total}</p>
+                            <p className={`text-[9px] font-black ${theme.text.muted} uppercase tracking-widest mt-0.5 truncate`}>Active Faculty</p>
+                        </div>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col">
+                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-themeBorder pb-1">Directory</h4>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1.5 pr-1">
+                            {data.faculty.list.length === 0 ? (
+                                <p className="text-[10px] font-medium text-themeTextSec italic text-center mt-2">No data</p>
+                            ) : (
+                                data.faculty.list.map(fac => (
+                                    <div key={fac.id} onClick={(e) => { e.stopPropagation(); console.log("Routing to profile:", fac.id); }} className="flex items-center gap-2 bg-themePanel p-1.5 rounded border border-themeBorder hover:border-themeAccent transition-colors cursor-pointer">
+                                        <div className="w-4 h-4 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                                            <i className="fa-solid fa-user text-[8px]"></i>
+                                        </div>
+                                        <div className="flex flex-col overflow-hidden">
+                                            <span className="text-[9px] font-bold text-themeText truncate">{fac.full_name || 'Unnamed'}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. Attendance Flipcard */}
+            <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(3)}>
+                <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 3 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
+                    {/* Front */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                        <div className="flex justify-between items-start">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-sm shrink-0">
+                                <i className="fa-solid fa-clipboard-user"></i>
+                            </div>
+                            {data.attendance.total > 0 ? (
+                                <div className="flex gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+                                </div>
+                            ) : (
+                                <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec bg-themeElevated px-1.5 py-0.5 rounded border border-themeBorder truncate max-w-[60px]">Awaiting</span>
+                            )}
+                        </div>
+                        <div className="mt-auto">
+                            <p className="text-2xl font-black text-themeText tracking-tight">
+                                {data.attendance.total > 0 ? `${data.attendance.rate}%` : '--'}
+                            </p>
+                            <p className={`text-[9px] font-black ${theme.text.muted} uppercase tracking-widest mt-0.5 truncate`}>Attendance</p>
+                        </div>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col justify-center items-center text-center">
+                        <h4 className="text-[9px] font-black text-themeText uppercase tracking-widest mb-1">Status</h4>
+                        <p className="text-[9px] text-themeTextSec px-2">
+                            {data.attendance.total > 0 ? `${data.attendance.present} of ${data.attendance.total} students present today.` : 'Classes still in session. Check back later.'}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* 4. Approvals Flipcard */}
+            <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(4)}>
+                <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 4 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
+                    {/* Front */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                        <div className="flex justify-between items-start mb-1">
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-sm shrink-0">
+                                <i className="fa-solid fa-stamp"></i>
+                            </div>
+                        </div>
+                        <div className="mt-auto">
+                            <p className="text-2xl font-black text-themeText tracking-tight">{data.approvals.total}</p>
+                            <p className={`text-[9px] font-black ${theme.text.muted} uppercase tracking-widest mt-0.5 truncate`}>Pending Approvals</p>
+                        </div>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col">
+                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-themeBorder pb-1">Queues</h4>
+                        <div className="flex flex-col gap-1.5 mt-auto pb-1">
+                            <div className="bg-themePanel p-1.5 px-2 rounded border border-themeBorder flex justify-between items-center">
+                                <span className="text-[8px] font-bold text-themeTextSec uppercase tracking-wider">Leaves</span>
+                                <span className={`text-[10px] font-black ${data.approvals.leaves > 0 ? 'text-amber-500' : 'text-themeText'}`}>{data.approvals.leaves}</span>
+                            </div>
+                            <div className="bg-themePanel p-1.5 px-2 rounded border border-themeBorder flex justify-between items-center">
+                                <span className="text-[8px] font-bold text-themeTextSec uppercase tracking-wider">Tickets</span>
+                                <span className={`text-[10px] font-black ${data.approvals.grievances > 0 ? 'text-rose-500' : 'text-themeText'}`}>{data.approvals.grievances}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. Revenue Flipcard */}
+            <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(5)}>
+                <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 5 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
+                    {/* Front */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                        <div className="flex justify-between items-start">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-sm shrink-0">
+                                <i className="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+                        </div>
+                        <div className="mt-auto">
+                            <p className="text-2xl font-black text-themeText tracking-tight truncate">{formatCurrency(data.fees.collected)}</p>
+                            <p className={`text-[9px] font-black ${theme.text.muted} uppercase tracking-widest mt-0.5 truncate`}>Collected</p>
+                        </div>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col justify-center items-center text-center">
+                        <h4 className="text-[9px] font-black text-themeText uppercase tracking-widest mb-2">Ledger</h4>
+                        <p className="text-[10px] font-bold text-themeTextSec">Paid: <span className="text-emerald-500">{formatCurrency(data.fees.collected)}</span></p>
+                        <p className="text-[10px] font-bold text-themeTextSec">Dues: <span className="text-rose-500">{formatCurrency(data.fees.pending)}</span></p>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    );
+}

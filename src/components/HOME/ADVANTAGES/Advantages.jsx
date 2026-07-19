@@ -1,120 +1,145 @@
 import React, { forwardRef } from 'react';
 import { Briefcase, Gavel, Shield, Landmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import BorderGlow from './BorderGlow';
+import { motion } from 'framer-motion';
 import Carousel from '../ACADEMICS/Carousel';
 
 import ladyJusticeImg from '../../../ASSETS/CAMPUS/pcl_justice.webp';
 
-const Advantages = forwardRef(({ windowWidth }, ref) => {
-  const advantageItems = [
+const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
+  
+  const containerVars = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1, 
+      transition: { staggerChildren: 0.1, delayChildren: 0.3 }
+    }
+  };
+
+  const itemVars = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } }
+  };
+
+  const advantages = [
     {
       id: 'adv-1',
-      customRender: () => (
-        <Link to="/campus/facilities/corporate-placements" className="block h-full w-full group">
-          <BorderGlow className="h-full w-full transition-transform duration-300 group-hover:-translate-y-1" borderRadius={16} backgroundColor="transparent" colors={['#eab308', '#d97706', '#b45309']} glowColor="40 80 50">
-            <div className="bg-brand-card border border-brand-border rounded-2xl p-6 h-full flex flex-col items-start transition-colors duration-500 group-hover:border-[var(--primary-color)] shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary-glow)] rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-              
-              <div className="w-12 h-12 rounded-xl bg-[var(--primary-glow)] text-[var(--primary-color)] flex items-center justify-center mb-4 border border-[var(--primary-color)]/30 group-hover:scale-110 transition-transform duration-500 shadow-sm relative z-10">
-                <Briefcase size={22} />
-              </div>
-              <div className="relative z-10 flex flex-col flex-grow">
-                <h4 className="text-xl font-bold mb-2 text-brand-text group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>Industry Integration</h4>
-                <p className="text-sm text-brand-muted leading-relaxed">Forged alliances with top-tier law firms and judicial bodies, ensuring continuous court exposure and elite clerkship pipelines.</p>
-              </div>
-            </div>
-          </BorderGlow>
-        </Link>
-      )
+      icon: <Briefcase size={22} />,
+      title: "Industry Integration",
+      desc: "Forged alliances with top-tier law firms and judicial bodies, ensuring continuous court exposure and elite clerkship pipelines.",
+      link: "/campus/facilities/corporate-placements"
     },
     {
       id: 'adv-2',
-      customRender: () => (
-        <Link to="/campus/facilities/moot-court" className="block h-full w-full group">
-          <BorderGlow className="h-full w-full transition-transform duration-300 group-hover:-translate-y-1" borderRadius={16} backgroundColor="transparent" colors={['#eab308', '#d97706', '#b45309']} glowColor="40 80 50">
-            <div className="bg-brand-card border border-brand-border rounded-2xl p-6 h-full flex flex-col items-start transition-colors duration-500 group-hover:border-[var(--primary-color)] shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary-glow)] rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-              
-              <div className="w-12 h-12 rounded-xl bg-[var(--primary-glow)] text-[var(--primary-color)] flex items-center justify-center mb-4 border border-[var(--primary-color)]/30 group-hover:scale-110 transition-transform duration-500 shadow-sm relative z-10">
-                <Gavel size={22} />
-              </div>
-              <div className="relative z-10 flex flex-col flex-grow">
-                <h4 className="text-xl font-bold mb-2 text-brand-text group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>Practical Training</h4>
-                <p className="text-sm text-brand-muted leading-relaxed">Immersion in advanced Moot Court warfare and Alternative Dispute Resolution (ADR) simulations.</p>
-              </div>
-            </div>
-          </BorderGlow>
-        </Link>
-      )
+      icon: <Gavel size={22} />,
+      title: "Practical Training",
+      desc: "Immersion in advanced Moot Court warfare and Alternative Dispute Resolution (ADR) simulations.",
+      link: "/campus/facilities/moot-court"
     },
     {
       id: 'adv-3',
-      customRender: () => (
-        <Link to="/campus/facilities/legal-aid-clinic" className="block h-full w-full group">
-          <BorderGlow className="h-full w-full transition-transform duration-300 group-hover:-translate-y-1" borderRadius={16} backgroundColor="transparent" colors={['#eab308', '#d97706', '#b45309']} glowColor="40 80 50">
-            <div className="bg-brand-card border border-brand-border rounded-2xl p-6 h-full flex flex-col items-start transition-colors duration-500 group-hover:border-[var(--primary-color)] shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary-glow)] rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-              
-              <div className="w-12 h-12 rounded-xl bg-[var(--primary-glow)] text-[var(--primary-color)] flex items-center justify-center mb-4 border border-[var(--primary-color)]/30 group-hover:scale-110 transition-transform duration-500 shadow-sm relative z-10">
-                <Shield size={22} />
-              </div>
-              <div className="relative z-10 flex flex-col flex-grow">
-                <h4 className="text-xl font-bold mb-2 text-brand-text group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>Legal Aid Clinic</h4>
-                <p className="text-sm text-brand-muted leading-relaxed">Operating a dedicated in-house clinic, deploying students to defend underserved communities.</p>
-              </div>
-            </div>
-          </BorderGlow>
-        </Link>
-      )
+      icon: <Shield size={22} />,
+      title: "Legal Aid Clinic",
+      desc: "Operating a dedicated in-house clinic, deploying students to defend underserved communities.",
+      link: "/campus/facilities/legal-aid-clinic"
     },
     {
       id: 'adv-4',
-      customRender: () => (
-        <Link to="/campus/facilities/integrated-coaching" className="block h-full w-full group">
-          <BorderGlow className="h-full w-full transition-transform duration-300 group-hover:-translate-y-1" borderRadius={16} backgroundColor="transparent" colors={['#eab308', '#d97706', '#b45309']} glowColor="40 80 50">
-            <div className="bg-brand-card border border-brand-border rounded-2xl p-6 h-full flex flex-col items-start transition-colors duration-500 group-hover:border-[var(--primary-color)] shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary-glow)] rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-              
-              <div className="w-12 h-12 rounded-xl bg-[var(--primary-glow)] text-[var(--primary-color)] flex items-center justify-center mb-4 border border-[var(--primary-color)]/30 group-hover:scale-110 transition-transform duration-500 shadow-sm relative z-10">
-                <Landmark size={22} />
-              </div>
-              <div className="relative z-10 flex flex-col flex-grow">
-                <h4 className="text-xl font-bold mb-2 text-brand-text group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>Integrated Civil Services</h4>
-                <p className="text-sm text-brand-muted leading-relaxed">Exclusive partnership with Sharat Chandra Academy to forge the next generation of judicial officers.</p>
-              </div>
-            </div>
-          </BorderGlow>
-        </Link>
-      )
+      icon: <Landmark size={22} />,
+      title: "Integrated Civil Services",
+      desc: "Exclusive partnership with Sharat Chandra Academy to forge the next generation of judicial officers.",
+      link: "/campus/facilities/integrated-coaching"
     }
   ];
 
+  const AdvantageCard = ({ item }) => (
+    <Link to={item.link} className="block group w-full h-full">
+      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl rounded-2xl p-6 md:p-8 h-full flex flex-col items-start transition-all duration-500 hover:border-[var(--primary-color)] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-[var(--primary-glow)] rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
+        
+        <div className="w-12 h-12 rounded-xl bg-[var(--primary-glow)] text-[var(--primary-color)] flex items-center justify-center mb-6 border border-[var(--primary-color)]/30 group-hover:scale-110 transition-transform duration-500 shadow-sm relative z-10">
+          {React.cloneElement(item.icon, { size: 24 })}
+        </div>
+        <div className="relative z-10 flex flex-col flex-grow">
+          <h4 className="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>{item.title}</h4>
+          <p className="text-sm md:text-base text-[var(--text-muted)] leading-relaxed">{item.desc}</p>
+        </div>
+      </div>
+    </Link>
+  );
+
   return (
-    <section className="slide" ref={ref}>
-      <div className="container split-screen">
-        <div className="split-left">
-          <div className="arsenal-visual" style={{ backgroundImage: `url(${ladyJusticeImg})` }}>
-            <div className="dark-overlay-heavy"></div>
-            <div className="flex flex-col items-center md:items-start text-center md:text-left relative z-10 w-full px-6 md:px-0 md:pl-10">
-              <h2 className="arsenal-headline" style={{ marginBottom: '20px' }}>The Prudentia<br/><span className="text-amber">Advantage.</span></h2>
-              <Link to="/campus/facilities" className="inline-block px-6 py-3 md:px-8 md:py-4 bg-[var(--primary-color)] rounded-full font-bold uppercase tracking-widest text-xs md:text-sm hover:bg-[var(--primary-hover)] transition-transform duration-300 shadow-lg shadow-[var(--primary-glow)] hover:-translate-y-1 text-black" style={{ color: '#000000' }}>
-                Explore All Facilities
-              </Link>
+    <section className="slide w-full relative flex items-center justify-center py-10 md:py-16" ref={ref} {...props}>
+      <div className="container w-full h-full md:h-[60vh] flex flex-col md:flex-row gap-8 md:gap-0 mt-8 md:mt-0">
+        
+        {/* Left Side: Visual */}
+        <div className="w-full md:w-1/2 h-[30vh] md:h-full relative overflow-hidden md:rounded-r-3xl md:shadow-2xl">
+          <motion.div 
+            initial={{ scale: 1.1 }}
+            whileInView={{ scale: 1 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute inset-0 bg-cover bg-center origin-center" 
+            style={{ backgroundImage: `url(${ladyJusticeImg})` }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+            
+            <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-10 md:p-16 z-10">
+              <motion.h2 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="text-4xl md:text-6xl font-bold mb-6 text-white" 
+                style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.1 }}
+              >
+                The Prudentia <br/>
+                <span className="text-[var(--primary-color)] drop-shadow-[0_0_20px_var(--primary-glow)]">Advantage.</span>
+              </motion.h2>
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+              >
+                <Link to="/campus/facilities" className="inline-block px-8 py-4 bg-[var(--primary-color)] text-black font-black uppercase tracking-widest text-sm rounded-full shadow-[0_0_20px_var(--primary-glow)] hover:scale-105 hover:shadow-[0_0_30px_var(--primary-glow)] transition-all">
+                  Explore All Facilities
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </div>
-        <div className="split-right arsenal-content desktop-only">
-          {advantageItems.map(item => <div key={item.id} style={{height: '100%'}}>{item.customRender()}</div>)}
+
+        {/* Right Side: Grid of Advantages */}
+        <div className="w-full md:w-1/2 h-full flex items-center justify-center px-4 md:px-12 z-10">
+          {windowWidth <= 768 ? (
+            <div className="w-full mb-10">
+              <Carousel 
+                items={advantages.map(adv => ({
+                  id: adv.id,
+                  customRender: () => <AdvantageCard item={adv} />
+                }))}
+                baseWidth={windowWidth - 40}
+                autoplay={true}
+                loop={true}
+              />
+            </div>
+          ) : (
+            <motion.div 
+              variants={containerVars}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl"
+            >
+              {advantages.map((adv, idx) => (
+                <motion.div key={adv.id} variants={itemVars} className="h-full">
+                  <AdvantageCard item={adv} />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </div>
-        <div className="split-right mobile-only" style={{ padding: '10px 0', overflow: 'hidden' }}>
-          <Carousel 
-            items={advantageItems} 
-            baseWidth={Math.min(windowWidth - 32, 320)} 
-            autoplay={true} 
-            loop={true} 
-          />
-        </div>
+
       </div>
     </section>
   );

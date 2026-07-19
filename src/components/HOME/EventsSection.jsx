@@ -1,5 +1,5 @@
 import React, { forwardRef, useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '../../LIB/supabaseClient';
 
 const EventsSection = forwardRef(({ windowWidth }, ref) => {
     const [events, setEvents] = useState([]);

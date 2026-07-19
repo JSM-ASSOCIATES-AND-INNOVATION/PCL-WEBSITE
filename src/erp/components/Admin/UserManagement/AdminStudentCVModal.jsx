@@ -113,7 +113,7 @@ const ModernTemplate = (data, config) => {
 
             <div style={{ marginTop: "auto", paddingTop: "24px", borderTop: "1px solid #e2e8f0", textAlign: "center" }}>
                 <p style={{ fontSize: "6.5pt", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em", color: "#cbd5e1", margin: 0 }}>
-                    Officially Verified & Minted · JSM University ERP Engine
+                    Officially Verified & Minted · Prudentia College of Law ERP Engine
                 </p>
                 <p style={{ fontSize: "6pt", fontWeight: 600, color: "#e2e8f0", marginTop: "2px", textTransform: "uppercase", letterSpacing: "0.15em" }}>
                     Document ID: {data.docId}
@@ -131,7 +131,7 @@ export default function AdminStudentCVModal({ studentId, onClose }) {
         if (!erpData) return;
         setIsExporting(true);
         const getTargetElement = () => document.getElementById('admin-cv-pdf-target');
-        const filename = `${erpData.personal.name.replace(/\s+/g, '_')}_JSM_CV.pdf`;
+        const filename = `${erpData.personal.name.replace(/\s+/g, '_')}_PCL_CV.pdf`;
         
         try {
             await generatePDF(getTargetElement, {

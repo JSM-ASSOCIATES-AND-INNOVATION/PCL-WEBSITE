@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import { useERP } from "../../../context/ErpContext"; 
 
 export default function Attendance() {

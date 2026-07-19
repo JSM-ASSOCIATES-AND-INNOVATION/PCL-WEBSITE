@@ -1,0 +1,341 @@
+/* eslint-disable */
+"use client";
+
+import React, { useState } from "react";
+import { useERP } from "../../context/ErpContext";
+import { theme } from "../../theme";
+
+export default function EventsBoard() {
+    const { userSession, events, addEvent, deleteEvent } = useERP();
+
+    // --- STATE ---
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    
+    // Form State
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
+    const [eventDate, setEventDate] = useState("");
+    const [location, setLocation] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [isPublic, setIsPublic] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const role = userSession?.role || "student";
+    const canCreate = role === "faculty" || role === "admin";
+
+    // --- SAFE THEME MAPPING ---
+    const themeStyles = {
+        student: { glow: "bg-themeElevated", iconBox: "text-purple-400", hoverBorder: "hover:border-purple-200", hoverText: "group-hover:text-purple-600", readText: "text-purple-600" },
+        faculty: { glow: "bg-themeElevated", iconBox: "text-blue-400", hoverBorder: "hover:border-blue-200", hoverText: "group-hover:text-blue-600", readText: "text-blue-600" }
+    };
+    const currentTheme = themeStyles[role === "faculty" ? "faculty" : "student"] || themeStyles.student;
+
+    const handleCreateEvent = async (e) => {
+        e.preventDefault();
+        if (!title.trim() || !description.trim() || !eventDate) return;
+
+        setIsSubmitting(true);
+        try {
+            const { success, error } = await addEvent({
+                title,
+                description,
+                event_date: eventDate,
+                location: location.trim() || "TBA",
+                image_url: imageUrl.trim() || null,
+                is_public: isPublic
+            });
+
+            if (!success && error) throw error;
+            
+            setIsCreateModalOpen(false);
+            setTitle("");
+            setDescription("");
+            setEventDate("");
+            setLocation("");
+            setImageUrl("");
+            setIsPublic(false);
+
+        } catch (error) {
+            console.error("Error creating event:", error);
+            alert("Failed to create event. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this event?")) return;
+        const { success } = await deleteEvent(id);
+        if (success) setSelectedEvent(null);
+        else alert("Failed to delete event.");
+    };
+
+    return (
+        <div className="w-full max-w-6xl mx-auto flex flex-col gap-8 pb-12 animate-[fadeIn_0.4s_ease-out]">
+            {/* 1. HEADER BANNER */}
+            <div className={`bg-themeElevated rounded-themePanel p-8 relative overflow-hidden border-theme border-themeBorderStrong text-themeText flex flex-col md:flex-row justify-between items-center gap-6`}>
+                <div className={`absolute top-0 right-0 w-64 h-64 ${currentTheme.glow} rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-50`}></div>
+                <div className="relative z-10 flex items-center justify-between w-full">
+                    <div className="flex items-center gap-4">
+                        <div className={`w-14 h-14 bg-themePanel rounded-themePanel flex items-center justify-center border-theme border-themeBorderStrong ${currentTheme.iconBox} text-2xl shrink-0`}>
+                            <i className="fa-solid fa-calendar-star"></i>
+                        </div>
+                        <div>
+                            <h1 className={`${theme.text.heading} text-3xl text-themeText tracking-tight mb-1`}>College Events</h1>
+                            <p className={`${theme.text.secondary} text-sm font-medium`}>Upcoming extracurricular and academic events.</p>
+                        </div>
+                    </div>
+                    {canCreate && (
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="bg-purple-600 text-white px-6 py-3 rounded-themePanel font-bold text-sm tracking-wide hover:opacity-90 transition-opacity flex items-center gap-2 shadow-lg"
+                        >
+                            <i className="fa-solid fa-calendar-plus"></i> Add Event
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* 2. EVENTS GRID */}
+            {(!events || events.length === 0) ? (
+                <div className="w-full py-20 border-2 border-dashed border-themeBorder rounded-themePanel flex flex-col items-center justify-center bg-themePanel/50">
+                    <i className="fa-solid fa-calendar-xmark text-4xl text-themeTextSec opacity-50 mb-4"></i>
+                    <h3 className={`${theme.text.heading} text-lg text-themeText`}>No upcoming events</h3>
+                    <p className={`${theme.text.secondary} text-xs font-semibold mt-1`}>Check back later for exciting college events!</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {events.map((evt) => {
+                        const evtDate = new Date(evt.event_date);
+                        const isPast = evtDate < new Date();
+                        return (
+                        <div
+                            key={evt.id}
+                            onClick={() => setSelectedEvent(evt)}
+                            className={`${theme.layout.panel} p-0 rounded-themePanel border-theme hover: cursor-pointer flex flex-col justify-between transition-all group border-themeBorder ${currentTheme.hoverBorder} overflow-hidden ${isPast ? 'opacity-60' : ''}`}
+                        >
+                            {evt.image_url ? (
+                                <div className="h-40 w-full overflow-hidden border-b-theme border-themeBorder">
+                                    <img src={evt.image_url} alt={evt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                </div>
+                            ) : (
+                                <div className="h-20 w-full bg-themeElevated border-b-theme border-themeBorder flex items-center justify-center text-3xl text-themeTextSec opacity-20">
+                                    <i className="fa-solid fa-calendar-day"></i>
+                                </div>
+                            )}
+
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border-theme bg-themeElevated border-themeBorderStrong ${isPast ? 'text-themeTextSec' : 'text-purple-400'}`}>
+                                        {isPast ? 'Past Event' : 'Upcoming'}
+                                    </span>
+                                    {evt.is_public && (
+                                        <span className="text-[10px] text-blue-500 bg-themeElevated border-theme border-themeBorderStrong px-2 py-1 rounded-md flex items-center gap-1" title="Public Website">
+                                            <i className="fa-solid fa-globe"></i>
+                                        </span>
+                                    )}
+                                </div>
+
+                                <h3 className={`${theme.text.heading} text-lg text-themeText leading-tight mb-2 ${currentTheme.hoverText} transition-colors`}>
+                                    {evt.title}
+                                </h3>
+                                <p className={`${theme.text.secondary} text-sm line-clamp-2 mb-4 leading-relaxed`}>
+                                    {evt.description}
+                                </p>
+                            </div>
+
+                            <div className="px-6 py-4 bg-themeElevated border-t-theme border-themeBorder flex justify-between items-center">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-themeTextSec opacity-80 uppercase tracking-widest">
+                                    <i className="fa-regular fa-clock"></i> {evtDate.toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' })}
+                                </div>
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${currentTheme.readText} opacity-0 group-hover:opacity-100 transition-opacity`}>
+                                    Details &rarr;
+                                </span>
+                            </div>
+                        </div>
+                    )})}
+                </div>
+            )}
+
+            {/* 3. READING MODAL */}
+            {selectedEvent && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+                    <div className="bg-themeApp w-full max-w-2xl rounded-themePanel overflow-hidden border-theme border-themeBorderStrong shadow-2xl flex flex-col max-h-[90vh]">
+
+                        <div className={`p-6 text-white relative bg-purple-600`}>
+                            <div className="flex justify-between items-start relative z-10">
+                                <div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70 mb-2 block">
+                                        College Event
+                                    </span>
+                                    <h3 className={`${theme.text.heading} text-2xl tracking-tight mb-1 text-white`}>{selectedEvent.title}</h3>
+                                </div>
+                                <button onClick={() => setSelectedEvent(null)} className="w-8 h-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 transition-colors shrink-0 text-white">
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="p-8 overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-4 mb-6 pb-6 border-b-theme border-themeBorder">
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Date & Time</p>
+                                    <p className={`${theme.text.heading} text-sm text-themeText flex items-center gap-2`}>
+                                        <i className="fa-regular fa-calendar text-purple-500"></i>
+                                        {new Date(selectedEvent.event_date).toLocaleString("en-GB", { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Location</p>
+                                    <p className={`${theme.text.heading} text-sm text-themeText flex items-center gap-2`}>
+                                        <i className="fa-solid fa-location-dot text-rose-500"></i>
+                                        {selectedEvent.location || "TBA"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {selectedEvent.image_url && (
+                                <div className="mb-6 border-theme border-themeBorder rounded-themePanel overflow-hidden">
+                                    <img src={selectedEvent.image_url} alt="Event" className="w-full h-auto object-cover max-h-96" />
+                                </div>
+                            )}
+
+                            <div className={`${theme.text.secondary} prose prose-sm max-w-none leading-relaxed whitespace-pre-wrap`}>
+                                {selectedEvent.description}
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                                <button
+                                    onClick={() => setSelectedEvent(null)}
+                                    className={`flex-1 py-4 bg-themeElevated hover:opacity-80 text-themeText rounded-themePanel text-xs font-black uppercase tracking-widest transition-opacity flex items-center justify-center gap-2 border-theme border-themeBorderStrong`}
+                                >
+                                    <i className="fa-solid fa-check-double text-themeAccent"></i> Close Event
+                                </button>
+                                
+                                {(role === 'admin' || userSession?.db_id === selectedEvent.author_id) && (
+                                    <button
+                                        onClick={() => handleDelete(selectedEvent.id)}
+                                        className={`sm:w-auto px-6 py-4 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-themePanel text-xs font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2 border-theme border-rose-500/20 hover:border-rose-500`}
+                                    >
+                                        <i className="fa-solid fa-trash-can"></i> Delete
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
+            {/* 4. CREATE EVENT MODAL */}
+            {isCreateModalOpen && canCreate && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
+                    <div className="bg-themeApp w-full max-w-lg rounded-themePanel overflow-hidden border-theme border-themeBorderStrong shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b-theme border-themeBorder flex justify-between items-center bg-themeElevated">
+                            <div>
+                                <h3 className={`${theme.text.heading} text-xl text-themeText`}>Add College Event</h3>
+                                <p className={`${theme.text.secondary} text-xs mt-1`}>Publish a new event to the dashboard.</p>
+                            </div>
+                            <button onClick={() => setIsCreateModalOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-themePanel hover:bg-themeBorder text-themeText transition-colors shrink-0">
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleCreateEvent} className="p-6 flex flex-col gap-5 overflow-y-auto">
+                            <div>
+                                <label className="block text-xs font-bold text-themeText uppercase tracking-widest mb-2">Event Title</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                    placeholder="e.g. Annual Tech Symposium"
+                                    className="w-full bg-themeElevated border-theme border-themeBorder rounded-lg px-4 py-3 text-themeText focus:outline-none focus:border-purple-500 transition-colors text-sm"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-themeText uppercase tracking-widest mb-2">Date & Time</label>
+                                    <input
+                                        type="datetime-local"
+                                        required
+                                        value={eventDate}
+                                        onChange={(e) => setEventDate(e.target.value)}
+                                        className="w-full bg-themeElevated border-theme border-themeBorder rounded-lg px-4 py-3 text-themeText focus:outline-none focus:border-purple-500 transition-colors text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-themeText uppercase tracking-widest mb-2">Location</label>
+                                    <input
+                                        type="text"
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                        placeholder="e.g. Main Auditorium"
+                                        className="w-full bg-themeElevated border-theme border-themeBorder rounded-lg px-4 py-3 text-themeText focus:outline-none focus:border-purple-500 transition-colors text-sm"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-themeText uppercase tracking-widest mb-2">Description</label>
+                                <textarea
+                                    required
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Enter event details..."
+                                    rows={4}
+                                    className="w-full bg-themeElevated border-theme border-themeBorder rounded-lg px-4 py-3 text-themeText focus:outline-none focus:border-purple-500 transition-colors text-sm resize-none"
+                                ></textarea>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-themeText uppercase tracking-widest mb-2">Image URL (Optional)</label>
+                                <input
+                                    type="url"
+                                    value={imageUrl}
+                                    onChange={(e) => setImageUrl(e.target.value)}
+                                    placeholder="https://example.com/banner.jpg"
+                                    className="w-full bg-themeElevated border-theme border-themeBorder rounded-lg px-4 py-3 text-themeText focus:outline-none focus:border-purple-500 transition-colors text-sm"
+                                />
+                            </div>
+
+                            {canCreate && (
+                                <label className="flex items-center gap-3 cursor-pointer mt-2 p-4 border-theme border-themeBorder rounded-themePanel bg-themeElevated">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={isPublic} 
+                                        onChange={(e) => setIsPublic(e.target.checked)} 
+                                        className="w-5 h-5 accent-purple-500"
+                                    />
+                                    <div>
+                                        <p className="text-sm font-bold text-themeText">Promote on Public Website</p>
+                                        <p className="text-[10px] text-themeTextSec uppercase tracking-widest">Show this event to external visitors</p>
+                                    </div>
+                                </label>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full mt-4 bg-purple-600 hover:opacity-90 text-white rounded-themePanel py-4 text-xs font-black uppercase tracking-widest transition-opacity flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <i className="fa-solid fa-circle-notch fa-spin"></i> Adding...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="fa-solid fa-calendar-check"></i> Add Event
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+        </div>
+    );
+}

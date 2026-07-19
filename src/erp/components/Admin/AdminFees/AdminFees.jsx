@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { theme } from '../../../theme';
 import { useERP } from '../../../context/ErpContext';
-import { supabase } from '../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../LIB/supabase/supabaseClient';
 
 export default function AdminFees() {
     const { userSession } = useERP();

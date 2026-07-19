@@ -132,18 +132,16 @@ export default function TopNav({ userSession, activeTab, setActiveTab, onLogout 
     const displayName = userSession?.name || (role === 'admin' ? "System Admin" : role === 'faculty' ? "Professor" : "Student");
 
     return (
-        <header className="hidden lg:flex items-center justify-between px-6 h-[72px] bg-themeApp border-b border-themeBorder text-themeText z-50 sticky top-0">
+        <header className="hidden lg:flex items-center justify-between px-6 h-[72px] bg-themePanel border-b-theme border-themeBorder text-themeText z-50 sticky top-0">
             {/* Left: Brand Logo */}
             <div 
                 className="flex items-center gap-4 cursor-pointer shrink-0" 
                 onClick={() => setActiveTab('dashboard')}
             >
-                <div className="w-10 h-10 rounded-themePanel bg-themeElevated border border-themeBorderStrong flex items-center justify-center shadow-themeElevated transition-transform hover:scale-105">
-                    <i className={`fa-solid ${iconClass} ${role !== 'faculty' ? 'text-themeAccent' : ''} text-lg`}></i>
-                </div>
+                <img src="/ASSETS/LOGOS/pcl_logo.svg" alt="PCL Logo" className="w-10 h-10 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:scale-105 transition-transform" />
                 <div className="flex flex-col">
                     <span className="text-2xl font-black tracking-tighter text-themeText leading-none">
-                        JSM<span className={role === 'faculty' ? 'text-blue-500' : 'text-themeAccent'}>ERP</span>
+                        PCL<span className={role === 'faculty' ? 'text-blue-500' : 'text-themeAccent'}>ERP</span>
                     </span>
                     <span className="text-[9px] font-bold text-themeTextSec uppercase tracking-[0.2em] mt-0.5 opacity-70">
                         {role === 'admin' ? 'Administration' : role === 'faculty' ? 'Faculty Portal' : 'Student Portal'}

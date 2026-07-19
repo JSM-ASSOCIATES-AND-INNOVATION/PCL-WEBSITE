@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import CLETracker from "./CLETracker";
 
 // --- CACHE HELPERS ---
@@ -198,7 +198,7 @@ export default function Internships() {
 
     const shareToLinkedIn = (e, item) => {
         if (e) e.stopPropagation();
-        const text = `I'm thrilled to share my latest experience: ${item.role_title} at ${item.company_name}!\n\nType: ${item.type}\nDuration: ${item.duration}\n\n#JSMUniversity #LawSchool #Experience`;
+        const text = `I'm thrilled to share my latest experience: ${item.role_title} at ${item.company_name}!\n\nType: ${item.type}\nDuration: ${item.duration}\n\n#PCLUniversity #LawSchool #Experience`;
         const url = `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`;
         window.open(url, '_blank', 'width=800,height=600');
     };

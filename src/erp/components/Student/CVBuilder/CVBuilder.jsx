@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import generatePDF, { Resolution, Margin } from 'react-to-pdf';
 
 // ═══════════════════════════════════════════════════════════════
@@ -161,7 +161,7 @@ const ModernTemplate = (data, config) => {
 
             <div style={{ marginTop: "auto", paddingTop: "24px", borderTop: "1px solid #e2e8f0", textAlign: "center" }}>
                 <p style={{ fontSize: "6.5pt", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.2em", color: "#cbd5e1", margin: 0 }}>
-                    Officially Verified & Minted · JSM University ERP Engine
+                    Officially Verified & Minted · Prudentia College of Law ERP Engine
                 </p>
                 <p style={{ fontSize: "6pt", fontWeight: 600, color: "#e2e8f0", marginTop: "2px", textTransform: "uppercase", letterSpacing: "0.15em" }}>
                     Document ID: {data.docId}
@@ -231,7 +231,7 @@ const ClassicTemplate = (data, config) => {
 
             <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid #e2e8f0", textAlign: "center" }}>
                 <p style={{ fontSize: "6.5pt", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "#cbd5e1", margin: 0 }}>
-                    Verified Record · JSM University
+                    Verified Record · Prudentia College of Law
                 </p>
                 <p style={{ fontSize: "6pt", color: "#e2e8f0", marginTop: "2px" }}>{data.docId}</p>
             </div>
@@ -412,7 +412,7 @@ const ExecutiveSplitTemplate = (data, config) => {
 
                 <div style={{ marginTop: "auto", paddingTop: "16px", borderTop: "1px solid #e2e8f0", textAlign: "center" }}>
                     <p style={{ fontSize: "6pt", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "#cbd5e1", margin: 0 }}>
-                        JSM University — Official Verified Document
+                        Prudentia College of Law — Official Verified Document
                     </p>
                 </div>
             </div>
@@ -480,7 +480,7 @@ const ProfessionalTemplate = (data, config) => {
 
             <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "2px solid #1e3a5f", textAlign: "center" }}>
                 <p style={{ fontSize: "6.5pt", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.2em", color: "#94a3b8", margin: 0 }}>
-                    JSM University — Official Verified Document
+                    Prudentia College of Law — Official Verified Document
                 </p>
                 <p style={{ fontSize: "6pt", color: "#cbd5e1", marginTop: "2px" }}>{data.docId}</p>
             </div>
@@ -492,7 +492,7 @@ const ProfessionalTemplate = (data, config) => {
 //  REGISTRY
 // ═══════════════════════════════════════════════════════════════
 const TEMPLATES = {
-    modern: { name: "Modern (JSM)", icon: "fa-pen-nib", accent: "amber", description: "Contemporary sans-serif with amber accent headings. Best for corporate firms.", render: ModernTemplate },
+    modern: { name: "Modern (PCL)", icon: "fa-pen-nib", accent: "amber", description: "Contemporary sans-serif with amber accent headings. Best for corporate firms.", render: ModernTemplate },
     classic: { name: "Harvard Classic", icon: "fa-landmark", accent: "slate", description: "Traditional serif layout with rule lines. Favored by top-tier law firms.", render: ClassicTemplate },
     executive: { name: "Executive Split", icon: "fa-columns", accent: "navy", description: "Two-column layout with dark sidebar, profile photo & contact. Premium look.", render: ExecutiveSplitTemplate },
     professional: { name: "Professional Navy", icon: "fa-user-tie", accent: "blue", description: "Navy header block with serif body. Ideal for judicial clerkship applications.", render: ProfessionalTemplate },
@@ -553,7 +553,7 @@ export default function CVBuilder() {
                 },
                 academic: {
                     degree: profile.department || (isLLM ? "LL.M. (Master of Laws)" : "B.B.A. LL.B. (Hons.)"),
-                    university: "JSM University, School of Law",
+                    university: "Prudentia College of Law, School of Law",
                     duration: `${admYear} – ${gradYear}`,
                     cgpa: analytics.cgpa ? `${analytics.cgpa.toFixed(2)} / 10.0` : "Awaiting Data",
                     rank: analytics.batch_rank ? `${analytics.batch_rank} / ${analytics.batch_total}` : "N/A",
@@ -611,7 +611,7 @@ export default function CVBuilder() {
     const handleExport = async () => {
         setIsExporting(true);
         const getTargetElement = () => document.getElementById('cv-pdf-target');
-        const filename = `${erpData.personal.name.replace(/\s+/g, '_')}_JSM_CV.pdf`;
+        const filename = `${erpData.personal.name.replace(/\s+/g, '_')}_PCL_CV.pdf`;
         
         try {
             await generatePDF(getTargetElement, {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 
 export default function AdminLegalAid() {
     const [diaries, setDiaries] = useState([]);

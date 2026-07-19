@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase/supabaseClient';
+import { supabase } from '../LIB/supabase/supabaseClient';
 
 export default function useCVData(studentId) {
     const [erpData, setErpData] = useState(null);

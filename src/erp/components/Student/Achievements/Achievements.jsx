@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 
 // --- CACHE HELPERS ---
 const CK = { data: 'achievements_data' };
@@ -127,7 +127,7 @@ export default function Achievements() {
 
     const shareToLinkedIn = (e, achievement) => {
         if (e) e.stopPropagation();
-        const text = encodeURIComponent(`I am proud to share my recent achievement: ${achievement.title} at JSM ERP Law School!`);
+        const text = encodeURIComponent(`I am proud to share my recent achievement: ${achievement.title} at Prudentia College of Law!`);
         const urlParam = encodeURIComponent("https://jsm.edu/achievements");
         const url = `https://www.linkedin.com/sharing/share-offsite/?url=${urlParam}&summary=${text}`;
         window.open(url, '_blank');

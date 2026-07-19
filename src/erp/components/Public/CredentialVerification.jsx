@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { supabase } from "../../lib/supabase/supabaseClient";
+import { supabase } from "../../LIB/supabase/supabaseClient";
 
 export default function CredentialVerification() {
     const { id } = useParams();

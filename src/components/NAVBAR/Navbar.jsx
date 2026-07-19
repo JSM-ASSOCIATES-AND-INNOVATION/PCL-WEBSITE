@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import StaggeredMenu from './MobileMenu/MobileMenu';
+import StaggeredMenu from './MOBILE_MENU/MobileMenu';
 import { ChevronDown } from 'lucide-react';
 import NoticeBanner from '../UI/NoticeBanner';
+import { useSite } from '../../CONTEXT/SiteContext';
 
 export default function Navbar() {
+  const { isAdmissionsOpen } = useSite();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -143,7 +145,9 @@ export default function Navbar() {
           <a href="/erp" className="erp-btn" style={{ padding: '10px 20px', borderRadius: '50px', border: '1px solid rgba(255,255,255,0.2)', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', transition: 'all 0.3s ease', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', color: '#fff' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}>
             ERP Portal
           </a>
-          <Link to="/apply" className="apply-btn glowing-pill">Apply Now</Link>
+          {isAdmissionsOpen && (
+            <Link to="/apply" className="apply-btn glowing-pill">Apply Now</Link>
+          )}
           <div className="mobile-menu-wrapper">
             <StaggeredMenu 
               items={menuItems} 

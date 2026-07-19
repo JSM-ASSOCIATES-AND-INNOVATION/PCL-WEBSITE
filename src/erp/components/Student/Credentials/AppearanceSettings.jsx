@@ -6,13 +6,13 @@ export default function AppearanceSettings() {
     const { activeTheme, changeTheme, navLayout, changeNavLayout } = useERP();
 
     const themes = [
-        { id: 'dark-luxury', name: 'Obsidian Prestige', desc: 'True Deep Blacks & Champagne Gold (Default)', icon: 'fa-moon', previewBg: 'bg-[#080808]', previewAccent: 'bg-[#D4AF37]' },
-        { id: 'marble-executive', name: 'Marble Executive', desc: 'Pure Whites & Executive Navy', icon: 'fa-sun', previewBg: 'bg-[#F9FAFB]', previewAccent: 'bg-[#1E3A8A]' },
-        { id: 'midnight-justice', name: 'Midnight Justice', desc: 'Deep Midnight Blue & Platinum', icon: 'fa-cloud-moon', previewBg: 'bg-[#0B1120]', previewAccent: 'bg-[#E2E8F0]' },
-        { id: 'emerald-chancery', name: 'Emerald Chancery', desc: 'Abyssal Green & Antique Brass', icon: 'fa-tree', previewBg: 'bg-[#061410]', previewAccent: 'bg-[#CBA86B]' },
-        { id: 'crimson-advocate', name: 'Crimson Advocate', desc: 'Blackened Crimson & Rose Platinum', icon: 'fa-droplet', previewBg: 'bg-[#110707]', previewAccent: 'bg-[#FCA5A5]' },
-        { id: 'imperial-crown', name: 'Imperial Crown', desc: 'Dark Amethyst & Sovereign Gold', icon: 'fa-crown', previewBg: 'bg-[#0B0710]', previewAccent: 'bg-[#FDE047]' },
-        { id: 'structural-neo-brutalism', name: 'Structural Neo-Brutalism', desc: 'High Contrast, Harsh Red, Pure Whites', icon: 'fa-cubes', previewBg: 'bg-[#E5E7EB]', previewAccent: 'bg-[#DC2626]', specialBorder: 'border-[3px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none' },
+        { id: 'lex-light', name: 'Lex Light', desc: 'Apple × Linear aesthetics (Default)', icon: 'fa-sun', previewBg: 'bg-[#F8FAFC]', previewAccent: 'bg-[#4F46E5]' },
+        { id: 'ivory-light', name: 'Ivory Light', desc: 'Warm academic feel', icon: 'fa-book', previewBg: 'bg-[#F8F5F0]', previewAccent: 'bg-[#5B4636]' },
+        { id: 'midnight-dark', name: 'Midnight Dark', desc: 'Default Dark Mode', icon: 'fa-moon', previewBg: 'bg-[#0F172A]', previewAccent: 'bg-[#6366F1]' },
+        { id: 'carbon-dark', name: 'Carbon Dark', desc: 'Developer minimal monochromatic', icon: 'fa-code', previewBg: 'bg-[#09090B]', previewAccent: 'bg-[#10B981]' },
+        { id: 'royal-dark', name: 'Royal Dark', desc: 'Luxury executive aesthetics', icon: 'fa-crown', previewBg: 'bg-[#1B0B16]', previewAccent: 'bg-[#D4AF37]' },
+        { id: 'neo-brutalism-light', name: 'Neo Brutalism Light', desc: 'High Contrast, Harsh Red, Pure Whites', icon: 'fa-cube', previewBg: 'bg-[#FFFFFF]', previewAccent: 'bg-[#FF3B30]', specialBorder: 'border-[4px] border-black rounded-none' },
+        { id: 'neo-brutalism-dark', name: 'Neo Brutalism Dark', desc: 'High Contrast, Harsh Red, Pure Blacks', icon: 'fa-cubes', previewBg: 'bg-[#000000]', previewAccent: 'bg-[#FF3B30]', specialBorder: 'border-[4px] border-white rounded-none' },
     ];
 
     return (

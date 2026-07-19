@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 
 // --- CACHE HELPERS ---
 const CK = { stats: 'mcs_stats', moots: 'mcs_moots', notices: 'mcs_notices', vault: 'mcs_vault', isc: 'mcs_isc' };

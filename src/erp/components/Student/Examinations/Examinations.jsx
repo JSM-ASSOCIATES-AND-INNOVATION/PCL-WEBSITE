@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
-import { generateCalendarICS } from "../../../lib/calendarGenerator";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { generateCalendarICS } from "../../../LIB/calendarGenerator";
 
 // --- CACHE HELPERS ---
 const CK = { exams: 'exam_upcoming', marks: 'exam_marks', grades: 'exam_grades', analytics: 'exam_analytics' };

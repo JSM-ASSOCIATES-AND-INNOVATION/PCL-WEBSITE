@@ -1,10 +1,11 @@
 import React, { Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-import Preloader from './components/UI/Preloader/Preloader';
-import ScrollToTop from './components/UI/ScrollToTop';
+import Preloader from './COMPONENTS/UI/Preloader/Preloader';
+import ScrollToTop from './COMPONENTS/UI/ScrollToTop';
 import App from './App';
-import { ErpProvider } from './erp/context/ErpContext';
-import ErpApp from './erp/ErpApp';
+import { SiteProvider } from './CONTEXT/SiteContext';
+import { ErpProvider } from './ERP/context/ErpContext';
+import ErpApp from './ERP/ErpApp';
 
 const ErpWrapper = () => {
   return (
@@ -29,9 +30,11 @@ const RootApp = () => {
     <>
       <ScrollToTop />
       {isErpRoute ? <ErpWrapper /> : (
-        <Suspense fallback={<Preloader />}>
-          <App />
-        </Suspense>
+        <SiteProvider>
+          <Suspense fallback={<Preloader />}>
+            <App />
+          </Suspense>
+        </SiteProvider>
       )}
     </>
   );

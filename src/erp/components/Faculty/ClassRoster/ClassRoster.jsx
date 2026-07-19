@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
-import { generatePDF } from "../../../lib/pdfGenerator";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { generatePDF } from "../../../LIB/pdfGenerator";
 
 export default function ClassRoster() {
     const { userSession } = useERP();

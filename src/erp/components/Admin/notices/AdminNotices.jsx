@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import { theme } from "../../../theme";
 
 const CACHE_KEY = "admin_notices";

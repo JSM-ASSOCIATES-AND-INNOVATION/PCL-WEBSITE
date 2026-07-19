@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { generateCalendarICS } from "../../../lib/calendarGenerator";
+import { generateCalendarICS } from "../../../LIB/calendarGenerator";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const START_HOUR = 8; // 8 AM

@@ -18,14 +18,14 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    /* Light Mode (Stark White & Burgundy Red) */
+    /* Light Mode (Stark White & Burgundy Red - but using Dark Mode Gold) */
     --bg-color: #f8f9fa;
     --text-color: #111111;
     
-    --primary-color: #D4AF37; /* Metallic Gold */
-    --primary-hover: #b5952f;
-    --primary-glow: rgba(212, 175, 55, 0.4);
-    --primary-light: #f3d56a;
+    --primary-color: #FFBF00;
+    --primary-hover: #e5aa00;
+    --primary-glow: rgba(255, 191, 0, 0.4);
+    --primary-light: #ffd040;
     
     --card-bg: rgba(255, 255, 255, 0.85);
     --card-solid: rgba(255, 255, 255, 0.98);

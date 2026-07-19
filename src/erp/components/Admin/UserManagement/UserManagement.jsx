@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { sendSystemEmail } from '../../../lib/EmailService';
-import { supabase } from '../../../lib/supabase/supabaseClient';
+import { sendSystemEmail } from '../../../LIB/EmailService';
+import { supabase } from '../../../LIB/supabase/supabaseClient';
 import { theme } from "../../../theme";
 import { createClient } from '@supabase/supabase-js';
 import AdminStudentCVModal from './AdminStudentCVModal';

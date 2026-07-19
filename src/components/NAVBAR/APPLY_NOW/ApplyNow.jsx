@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import campusImg from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
+import { useSite } from '../../../CONTEXT/SiteContext';
 
 export default function ApplyNow() {
   const navigate = useNavigate();
+  const { isAdmissionsOpen } = useSite();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,8 +42,7 @@ export default function ApplyNow() {
     setIsSubmitting(true);
     
     try {
-      // Automatically import supabase inside the submit to avoid top-level import issues if it's not setup yet
-      const { supabase } = await import('../../../lib/supabaseClient');
+      const { supabase } = await import('../../../LIB/supabaseClient');
       
       const { error } = await supabase
         .from('admissions_applications')
@@ -136,7 +137,15 @@ export default function ApplyNow() {
               Submit your preliminary details. Our admissions team will contact you to guide you through the next steps.
             </p>
 
-            {isSuccess ? (
+            {!isAdmissionsOpen ? (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-3xl p-10 text-center">
+                <AlertCircle size={48} className="text-amber-500 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold mb-2 text-brand-text" style={{ fontFamily: "'Playfair Display', serif" }}>Admissions Closed</h3>
+                <p className="text-brand-text/80">
+                  We are not currently accepting new applications for the upcoming academic year. Please check back later or contact our administration office for further details.
+                </p>
+              </div>
+            ) : isSuccess ? (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

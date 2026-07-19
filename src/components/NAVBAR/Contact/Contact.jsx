@@ -22,7 +22,7 @@ export default function Contact() {
     setIsSubmitting(true);
     
     try {
-      const { supabase } = await import('../../../lib/supabaseClient');
+      const { supabase } = await import('../../../LIB/supabaseClient');
       
       const { error } = await supabase
         .from('helpdesk_tickets')

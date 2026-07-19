@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase/supabaseClient';
+import { supabase } from '../LIB/supabase/supabaseClient';
 
 const ErpContext = createContext();
 export const useERP = () => useContext(ErpContext);
@@ -22,6 +22,7 @@ export const ErpProvider = ({ children }) => {
     });
 
     const [notices, setNotices] = useState([]);
+    const [events, setEvents] = useState([]);
 
     // --- 1.5 GLOBAL UI STATE ---
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
@@ -43,9 +44,9 @@ export const ErpProvider = ({ children }) => {
         
         // Auto-detect system preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return 'dark-luxury';
+            return 'midnight-dark';
         }
-        return 'marble-executive';
+        return 'lex-light';
     });
 
     const [layoutPreference, setLayoutPreference] = useState(() => {
@@ -277,6 +278,18 @@ export const ErpProvider = ({ children }) => {
         }
     }, [userSession]);
 
+    // --- 6.5 GLOBAL EVENTS FETCH ---
+    useEffect(() => {
+        if (userSession) {
+            supabase.from('admin_events').select('*').order('event_date', { ascending: false })
+                .then(({ data, error }) => { 
+                    if (data && !error) {
+                        setEvents(data);
+                    }
+                });
+        }
+    }, [userSession]);
+
     // --- 7. LEGACY FALLBACKS (Prevents components from crashing if they use old features) ---
     const [attendanceCache, setAttendanceCache] = useState({});
     const updateAttendanceCache = (id, data) => setAttendanceCache(prev => ({ ...prev, [id]: data }));
@@ -383,6 +396,31 @@ export const ErpProvider = ({ children }) => {
                 return { success: true, data };
             } catch (e) {
                 console.error('Refresh notices failed', e);
+                return { success: false, error: e };
+            }
+        },
+        events, addEvent: async (eventData) => {
+            if (!userSession) return { success: false };
+            try {
+                const { data, error } = await supabase.from('admin_events').insert([
+                    { ...eventData, author_id: userSession.db_id }
+                ]).select();
+                if (error) throw error;
+                if (data && data.length > 0) setEvents(prev => [data[0], ...prev]);
+                return { success: true, data };
+            } catch (e) {
+                console.error('Add event failed', e);
+                return { success: false, error: e };
+            }
+        }, deleteEvent: async (id) => {
+            if (!userSession) return { success: false };
+            try {
+                const { error } = await supabase.from('admin_events').delete().eq('id', id);
+                if (error) throw error;
+                setEvents(prev => prev.filter(e => e.id !== id));
+                return { success: true };
+            } catch (e) {
+                console.error('Delete event failed', e);
                 return { success: false, error: e };
             }
         },

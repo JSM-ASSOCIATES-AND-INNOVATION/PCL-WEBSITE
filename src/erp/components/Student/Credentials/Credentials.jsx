@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 
 // Import Autonomous Child Modules
 import PersonalInfo from "./PersonalInfo";

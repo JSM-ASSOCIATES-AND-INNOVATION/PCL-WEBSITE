@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { theme } from "../../../theme";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import { useERP } from "../../../context/ErpContext";
 
 export default function CourseVault() {

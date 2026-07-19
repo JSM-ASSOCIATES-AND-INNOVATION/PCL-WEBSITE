@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../../lib/supabaseClient';
+import { supabase } from '../../../LIB/supabaseClient';
 
 export default function EventsPage() {
     const [events, setEvents] = useState([]);

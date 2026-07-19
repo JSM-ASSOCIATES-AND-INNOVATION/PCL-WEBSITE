@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import { theme } from "../../../theme";
 
 const CACHE_KEYS = {

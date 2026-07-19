@@ -2,7 +2,7 @@
 import React from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../lib/supabase/supabaseClient";
+import { supabase } from "../../../LIB/supabase/supabaseClient";
 import { useSyncEngine } from "../../../hooks/useSyncEngine";
 
 export default function StudentDashboard({ setActiveTab }) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useERP } from '../../context/ErpContext';
-import { supabase } from '../../lib/supabase/supabaseClient';
+import { supabase } from '../../LIB/supabase/supabaseClient';
 
 export default function IntelligentBot() {
     const { userSession } = useERP();

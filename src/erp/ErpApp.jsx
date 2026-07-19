@@ -24,6 +24,7 @@ import Credentials from './components/Student/Credentials/Credentials';
 import QuestionnaireModal from './components/shared/QuestionnaireModal';
 import DialogContainer from './components/shared/DialogContainer';
 import CredentialVerification from './components/Public/CredentialVerification';
+import GlobalSearch from './components/shared/GlobalSearch';
 
 // ==========================================
 // 3. STUDENT PORTAL MODULES
@@ -66,14 +67,21 @@ import UserManagement from './components/Admin/UserManagement/UserManagement';
 import AdminTimetableBuilder from './components/Admin/AdminTimetableBuilder/AdminTimetableBuilder';
 import AdminMentorship from './components/Admin/AdminMentorship/AdminMentorship';
 import AdminApprovals from './components/Admin/AdminApprovals/AdminApprovals';
+import AdminLeaveManagement from './components/Admin/LeaveManagement/AdminLeaveManagement';
 import AdminExaminations from './components/Admin/Examinations/AdminExaminations';
 import AdminNotices from './components/Admin/notices/AdminNotices';
 import AdminFees from './components/Admin/AdminFees/AdminFees';
 import AdminMootCourt from './components/Admin/AdminMootCourt/AdminMootCourt';
 import AdminPlacements from './components/Admin/AdminPlacements/AdminPlacements';
 import AdminLegalAid from './components/Admin/AdminLegalAid/AdminLegalAid';
+import AdminAdmissions from './components/Admin/AdminAdmissions/AdminAdmissions';
+import SQLStudio from './components/Admin/AdminDashboard/SQLStudio';
+import AdminFacultyDirectory from './components/Admin/AdminFacultyDirectory/AdminFacultyDirectory';
+import AdminHelpdesk from './components/Admin/AdminHelpdesk/AdminHelpdesk';
+import AdminSiteEditor from './components/Admin/AdminSiteEditor/AdminSiteEditor';
+import EventsBoard from './components/notices/EventsBoard';
 import SessionTimeoutGuard from './components/shared/SessionTimeoutGuard';
-import { LiveClock, GlobalSearch, RoleActionButton } from './components/shared/LiveHeaderComponents';
+import { RoleActionButton } from './components/shared/LiveHeaderComponents';
 import IntelligentBot from './components/shared/IntelligentBot';
 
 export default function App() {
@@ -218,11 +226,18 @@ export default function App() {
         case 'curriculum': return <AdminTimetableBuilder />;
         case 'allocations': return <AdminMentorship />;
         case 'adminapprovals': return <AdminApprovals />;
+        case 'leavemanagement': return <AdminLeaveManagement />;
         case 'examinations': return <AdminExaminations />;
         case 'finance': return <AdminFees />;
         case 'mootcourt': return <AdminMootCourt />;
         case 'placements': return <AdminPlacements />;
         case 'legalaid': return <AdminLegalAid />;
+        case 'adminadmissions': return <AdminAdmissions />;
+        case 'sql': return <SQLStudio />;
+        case 'faculty': return <AdminFacultyDirectory />;
+        case 'helpdesk': return <AdminHelpdesk />;
+        case 'siteeditor': return <AdminSiteEditor />;
+        case 'events': return <EventsBoard />;
         case 'credentials': return <Credentials />;
         default: return <ModuleUnderConstruction tabName={activeTab} role="Admin" />;
       }
@@ -260,19 +275,19 @@ export default function App() {
           {/* MOBILE NAV (Bottom Bar & Drawer Menu) - Always active on mobile */}
           <MobileNav userSession={userSession} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} />
 
-          <main className="flex-1 flex flex-col h-screen overflow-hidden bg-themeApp relative min-w-0">
-            <header className={`flex h-20 lg:h-24 items-center justify-between px-4 lg:px-8 border-b border-themeBorder bg-themeApp shrink-0 relative z-20 min-w-0 gap-2`}>
-              {/* Left: Branding & Page Title */}
-              <div className="flex items-center gap-3 lg:gap-4 shrink-0 mr-2 lg:mr-4 min-w-0">
+            <main className="flex-1 flex flex-col h-screen overflow-hidden bg-themeApp relative min-w-0">
+              <header className={`flex h-16 lg:h-24 items-center justify-between px-3 lg:px-8 bg-themePanel border-b-[length:var(--border-width)] border-themeBorder text-themeText relative z-20 min-w-0 gap-2 shrink-0`}>
+                {/* Left: Branding & Page Title */}
+                <div className="flex items-center gap-2 lg:gap-4 shrink-0 mr-1 lg:mr-4 min-w-0">
                 <div className="flex lg:hidden w-8 h-8 rounded-themePanel bg-themeElevated border border-themeBorderStrong items-center justify-center shadow-themeElevated shrink-0">
                     <i className={`fa-solid ${userSession.role === 'admin' ? 'fa-fingerprint' : 'fa-landmark'} ${roleColors.text} text-xs`}></i>
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <h2 className={`${theme.text.heading} text-lg lg:text-2xl text-themeText capitalize tracking-tight leading-none lg:leading-tight truncate`}>
+                  <h2 className={`${theme.text.heading} text-base lg:text-2xl text-themeText capitalize tracking-tight leading-none lg:leading-tight truncate`}>
                     {getPageTitle(activeTab)}
                   </h2>
                   <p className={`${theme.text.overline} ${theme.text.muted} mt-0.5 lg:mt-1 hidden sm:block truncate`}>
-                    JSM Associates & Innovations • Academic ERP
+                    Prudentia College of Law • Engineered by JSM Associates & Innovations
                   </p>
                 </div>
               </div>
@@ -287,10 +302,6 @@ export default function App() {
                 <div className="hidden lg:block">
                   <RoleActionButton role={userSession.role} setActiveTab={setActiveTab} />
                 </div>
-                
-                <div className="hidden lg:block">
-                    <LiveClock />
-                </div>
 
                 <button onClick={() => setActiveTab('notices')} className={`${theme.action.iconBtn} relative group bg-themePanel shadow-sm scale-90 lg:scale-100`}>
                   <i className={`fa-regular fa-bell group-hover:${roleColors.text} transition-colors text-lg`}></i>
@@ -304,9 +315,9 @@ export default function App() {
                 {/* Profile Avatar Button */}
                 <button 
                   onClick={() => setActiveTab('credentials')}
-                  className={`flex items-center gap-2.5 hover:bg-themeElevated p-1.5 lg:pr-4 rounded-full transition-all border border-transparent hover:border-themeBorder group ${navLayout === 'topnav' ? 'lg:hidden' : ''}`}
+                  className={`flex items-center gap-1.5 hover:bg-themeElevated p-1 lg:pr-4 rounded-full transition-all border border-transparent hover:border-themeBorder group ${navLayout === 'topnav' ? 'lg:hidden' : ''}`}
                 >
-                  <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-themePanel border border-themeBorderStrong flex items-center justify-center font-black text-[10px] lg:text-xs text-themeText relative overflow-hidden group-hover:border-themeAccent transition-colors`}>
+                  <div className={`w-7 h-7 lg:w-9 lg:h-9 rounded-full bg-themePanel border border-themeBorderStrong flex items-center justify-center font-black text-[9px] lg:text-xs text-themeText relative overflow-hidden group-hover:border-themeAccent transition-colors`}>
                     <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themePanel"></div>
                     {(() => {
                       const name = userSession?.name || '';
@@ -329,7 +340,7 @@ export default function App() {
               </div>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-4 sm:p-8 pb-28 lg:pb-8 no-scrollbar relative z-10 scroll-smooth" id="jsm-main-scroll-container">     {renderContent()}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-8 pb-28 lg:pb-8 no-scrollbar relative z-10 scroll-smooth" id="jsm-main-scroll-container">     {renderContent()}
             </div>
           </main>
         </div>

@@ -1,0 +1,53 @@
+--- MISSING FROM CURRENT (Exist in V1 but missing here) ---
+  ./App.js
+  ./assets/pcl_logo.png
+  ./assets/pcl_logo.svg
+  ./components/Admin/AdminAdmissions/AdminAdmissions.jsx
+  ./components/Admin/AdminDashboard/InfrastructureModal.jsx
+  ./components/Admin/AdminDashboard/SQLStudio.jsx
+  ./components/Admin/AdminFacultyDirectory/AdminFacultyDirectory.jsx
+  ./components/Admin/AdminHelpdesk/AdminHelpdesk.jsx
+  ./components/Admin/AdminSiteEditor/AdminSiteEditor.jsx
+  ./components/notices/EventsBoard.jsx
+
+--- REVERTED/MODIFIED (Files that differ from V1) ---
+  ./components/Admin/AdminApprovals/AdminApprovals.jsx
+  ./components/Admin/AdminDashboard/AdminDashboard.jsx
+  ./components/Admin/AdminFees/AdminFees.jsx
+  ./components/Admin/AdminMentorship/AdminMentorship.jsx
+  ./components/Admin/AdminSidebar/AdminSidebar.jsx
+  ./components/Admin/AdminTimetableBuilder/AdminTimetableBuilder.jsx
+  ./components/Admin/Examinations/AdminExaminations.jsx
+  ./components/Admin/UserManagement/AdminStudentCVModal.jsx
+  ./components/Admin/UserManagement/UserManagement.jsx
+  ./components/Faculty/Approvals/Approvals.jsx
+  ./components/Faculty/ClassRoster/ClassRoster.jsx
+  ./components/Faculty/CourseMaterials/CourseMaterials.jsx
+  ./components/Faculty/FacultyDashboard/FacultyDashboard.jsx
+  ./components/Faculty/FacultyMentorship/FacultyMentorship.jsx
+  ./components/Faculty/FacultySidebar/FacultySidebar.jsx
+  ./components/Faculty/FacultyTimetable/FacultyTimetable.jsx
+  ./components/Login/Login.jsx
+  ./components/Student/Achievements/Achievements.jsx
+  ./components/Student/Attendance/Attendance.jsx
+  ./components/Student/CVBuilder/CVBuilder.jsx
+  ./components/Student/CourseVault/CourseVault.jsx
+  ./components/Student/Examinations/Examinations.jsx
+  ./components/Student/Fees/Fees.jsx
+  ./components/Student/Internships/Internships.jsx
+  ./components/Student/Mentorship/Mentorship.jsx
+  ./components/Student/StudentDashboard/StudentDashboard.jsx
+  ./components/Student/Timetable/Timetable.jsx
+  ./components/Student/sidebar/Sidebar.jsx
+  ./components/notices/NoticeBoard.jsx
+  ./components/shared/MobileNav.jsx
+  ./components/shared/TopNav.jsx
+  ./context/ErpContext.jsx
+  ./lib/emailTemplates.js
+
+--- ADDED (New files in current not in V1) ---
+  ./ErpApp.jsx
+  ./components/Admin/AdminTimetableBuilder/AdminElectiveResolution.jsx
+  ./components/Student/ElectiveBidding/ElectiveBidding.jsx
+
+Total Exact Matches: 45

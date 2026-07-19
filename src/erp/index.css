@@ -12,97 +12,130 @@
     transition: background-color 5000s ease-in-out 0s;
   }
 
+  /* 1. Lex Light (Default) */
   :root {
-    --bg-app: #080808;
-    --bg-panel: #121212;
-    --bg-elevated: #1C1C1C;
-    --text-primary: #F5F5F0;
-    --text-secondary: #A1A1AA;
-    --accent: #D4AF37;
-    --accent-muted: #C5A880;
-    --border-color: rgba(212, 175, 55, 0.1);
-    --border-strong: rgba(212, 175, 55, 0.2);
-    --radius-panel: 0.75rem;
-    --radius-btn: 0.5rem;
-    --border-width: 1px;
-    --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-  }
-
-  [data-theme="marble-executive"] {
-    --bg-app: #F9FAFB;
+    --bg-app: #F8FAFC;
     --bg-panel: #FFFFFF;
-    --bg-elevated: #F3F4F6;
+    --bg-elevated: #FFFFFF;
     --text-primary: #111827;
-    --text-secondary: #4B5563;
-    --accent: #1E3A8A;
+    --text-secondary: #6B7280;
+    --accent: #4F46E5;
     --accent-muted: #3B82F6;
-    --border-color: rgba(30, 58, 138, 0.15);
-    --border-strong: rgba(30, 58, 138, 0.3);
-    --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --border-color: #E5E7EB;
+    --border-strong: #D1D5DB;
+    --radius-panel: 18px;
+    --radius-btn: 14px;
+    --border-width: 1px;
+    --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Standardized Chart Colors */
+    --chart-attendance: #3B82F6; /* Blue */
+    --chart-fees: #22C55E; /* Green */
+    --chart-results: #8B5CF6; /* Purple */
+    --chart-library: #F97316; /* Orange */
+    --chart-website: #06B6D4; /* Cyan */
+    --chart-research: #EC4899; /* Pink */
   }
 
-  [data-theme="midnight-justice"] {
-    --bg-app: #0B1120;
-    --bg-panel: #111827;
-    --bg-elevated: #1F2937;
+  /* 2. Ivory Light */
+  [data-theme="ivory-light"] {
+    --bg-app: #F8F5F0;
+    --bg-panel: #FFFCF8;
+    --bg-elevated: #FFF9F1;
+    --text-primary: #2D2D2D;
+    --text-secondary: #5B4636;
+    --accent: #5B4636;
+    --accent-muted: #C69C3D;
+    --border-color: rgba(91, 70, 54, 0.15);
+    --border-strong: rgba(91, 70, 54, 0.3);
+    --radius-panel: 14px;
+    --radius-btn: 10px;
+    --border-width: 1px;
+    --shadow-elevated: 0 10px 15px -3px rgba(91, 70, 54, 0.08);
+  }
+
+  /* 3. Midnight Dark */
+  [data-theme="midnight-dark"] {
+    --bg-app: #0F172A;
+    --bg-panel: #1E293B;
+    --bg-elevated: #111827;
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
-    --accent: #E2E8F0;
-    --accent-muted: #94A3B8;
-    --border-color: rgba(226, 232, 240, 0.1);
-    --border-strong: rgba(226, 232, 240, 0.2);
+    --accent: #6366F1;
+    --accent-muted: #8B5CF6;
+    --border-color: rgba(248, 250, 252, 0.1);
+    --border-strong: rgba(248, 250, 252, 0.2);
+    --radius-panel: 18px;
+    --radius-btn: 14px;
+    --border-width: 1px;
+    --shadow-elevated: 0 0 20px rgba(99, 102, 241, 0.15);
   }
 
-  [data-theme="emerald-chancery"] {
-    --bg-app: #061410;
-    --bg-panel: #0B1E17;
-    --bg-elevated: #122E23;
-    --text-primary: #ECFDF5;
-    --text-secondary: #6EE7B7;
-    --accent: #CBA86B;
-    --accent-muted: #D1D5DB;
-    --border-color: rgba(203, 168, 107, 0.15);
-    --border-strong: rgba(203, 168, 107, 0.3);
+  /* 4. Carbon Dark */
+  [data-theme="carbon-dark"] {
+    --bg-app: #09090B;
+    --bg-panel: #18181B;
+    --bg-elevated: #0F0F11;
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --accent: #10B981;
+    --accent-muted: #059669;
+    --border-color: rgba(250, 250, 250, 0.05);
+    --border-strong: rgba(250, 250, 250, 0.1);
+    --radius-panel: 14px;
+    --radius-btn: 10px;
+    --border-width: 1px;
+    --shadow-elevated: none;
   }
 
-  [data-theme="crimson-advocate"] {
-    --bg-app: #110707;
-    --bg-panel: #1A0B0B;
-    --bg-elevated: #261313;
-    --text-primary: #FEF2F2;
-    --text-secondary: #FECACA;
-    --accent: #FCA5A5;
-    --accent-muted: #EF4444;
-    --border-color: rgba(252, 165, 165, 0.15);
-    --border-strong: rgba(252, 165, 165, 0.3);
+  /* 5. Royal Dark */
+  [data-theme="royal-dark"] {
+    --bg-app: #1B0B16;
+    --bg-panel: #2B1320;
+    --bg-elevated: #160812;
+    --text-primary: #F7F4ED;
+    --text-secondary: #D4AF37;
+    --accent: #D4AF37;
+    --accent-muted: #8B6A2D;
+    --border-color: rgba(212, 175, 55, 0.15);
+    --border-strong: rgba(212, 175, 55, 0.3);
+    --radius-panel: 20px;
+    --radius-btn: 16px;
+    --border-width: 1px;
+    --shadow-elevated: 0 10px 30px rgba(212, 175, 55, 0.1);
   }
 
-  [data-theme="imperial-crown"] {
-    --bg-app: #0B0710;
-    --bg-panel: #130D1A;
-    --bg-elevated: #1E1528;
-    --text-primary: #FAF5FF;
-    --text-secondary: #D8B4FE;
-    --accent: #FDE047;
-    --accent-muted: #E879F9;
-    --border-color: rgba(253, 224, 71, 0.15);
-    --border-strong: rgba(253, 224, 71, 0.3);
-  }
-
-  [data-theme="structural-neo-brutalism"] {
-    --bg-app: #f4f4f0;
-    --bg-panel: #ffffff;
-    --bg-elevated: #ffffff;
+  /* 6. Neo Brutalism Light */
+  [data-theme="neo-brutalism-light"] {
+    --bg-app: #FFFFFF;
+    --bg-panel: #FFFFFF;
+    --bg-elevated: #FFFFFF;
     --text-primary: #000000;
     --text-secondary: #000000;
-    --accent: #FF3333;
-    --accent-muted: #E60000;
+    --accent: #FF3B30;
+    --accent-muted: #E0352B;
     --border-color: #000000;
     --border-strong: #000000;
     --radius-panel: 0px;
     --radius-btn: 0px;
     --border-width: 4px;
-    --shadow-elevated: 6px 6px 0px #000000;
+    --shadow-elevated: none;
+  }
+
+  /* 7. Neo Brutalism Dark */
+  [data-theme="neo-brutalism-dark"] {
+    --bg-app: #000000;
+    --bg-panel: #111111;
+    --bg-elevated: #000000;
+    --text-primary: #FFFFFF;
+    --text-secondary: #FFFFFF;
+    --accent: #FF3B30;
+    --accent-muted: #E0352B;
+    --border-color: #FFFFFF;
+    --border-strong: #FFFFFF;
+    --radius-panel: 0px;
+    --radius-btn: 0px;
+    --border-width: 4px;
+    --shadow-elevated: none;
   }
 
   body {
@@ -120,7 +153,7 @@
     ::-webkit-scrollbar-thumb {
       background: var(--bg-elevated);
       border-radius: var(--radius-btn);
-      border: 1px solid var(--border-color);
+      border: var(--border-width) solid var(--border-color);
     }
     ::-webkit-scrollbar-thumb:hover {
       background: var(--accent);
@@ -140,11 +173,11 @@
   
   /* Retained for backward compatibility during migration, but stripped of glass effects */
   .glass {
-    @apply bg-[#0a0a0a] border border-[#222222];
+    @apply bg-[#0a0a0a] border-[length:var(--border-width)] border-[#222222];
   }
 
   .glass-card {
-    @apply bg-[#141414] border border-[#333333];
+    @apply bg-[#141414] border-[length:var(--border-width)] border-[#333333];
   }
 }
 
