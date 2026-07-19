@@ -7,6 +7,11 @@
   --p-distance: 12px;
 }
 
+.carousel-container:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 4px;
+}
+
 .carousel-track {
   display: flex;
 }
@@ -24,7 +29,7 @@
   backdrop-filter: blur(10px);
   overflow: hidden;
   cursor: grab;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
 }
 
 .carousel-item:active {
@@ -58,14 +63,6 @@
   transform: translateX(-50%);
 }
 
-.carousel-indicator.active {
-  background-color: var(--primary-color);
-}
-
-.carousel-indicator.inactive {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
 .carousel-item-header {
   margin-bottom: 0;
   padding: 0;
@@ -78,19 +75,21 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: var(--primary-color);
   margin: 20px;
 }
 
 .carousel-icon {
   height: 16px;
   width: 16px;
-  color: #120F17;
+  color: #000;
 }
 
 .carousel-item-content {
   padding: 15px;
   padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .carousel-item-title {
@@ -110,9 +109,10 @@
 .carousel-explore-btn {
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   font-size: 13px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-color);
   text-decoration: none;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -121,6 +121,57 @@
 
 .carousel-explore-btn:hover {
   color: var(--primary-color);
+}
+
+.carousel-explore-arrow {
+  transition: transform 0.3s ease;
+}
+
+.carousel-explore-btn:hover .carousel-explore-arrow {
+  transform: translateX(3px);
+}
+
+/* Prev / next navigation */
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+}
+
+.carousel-nav-btn:hover:not(:disabled) {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.carousel-nav-btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.carousel-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.carousel-nav-prev {
+  left: -6px;
+}
+
+.carousel-nav-next {
+  right: -6px;
 }
 
 .carousel-indicators-container {
@@ -134,19 +185,21 @@
   display: flex;
   width: auto;
   justify-content: center;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   padding: 0;
 }
 
 .carousel-indicator {
-  height: 6px;
-  width: 6px;
+  height: 3px;
+  width: 18px;
   border: none;
   padding: 0;
   appearance: none;
-  border-radius: 50%;
+  border-radius: 2px;
   cursor: pointer;
-  transition: all 150ms ease;
+  background-color: var(--card-border);
+  transition: width 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
 }
 
 .carousel-indicator:focus-visible {
@@ -155,10 +208,44 @@
 }
 
 .carousel-indicator.active {
+  width: 28px;
   background-color: var(--primary-color);
   box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .carousel-indicator.inactive {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--card-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-item,
+  .carousel-nav-btn,
+  .carousel-indicator,
+  .carousel-explore-arrow {
+    transition: none !important;
+  }
+}
+
+/* Mobile Adjustments for Navigation Buttons */
+@media (max-width: 900px) {
+  .carousel-container {
+    padding-bottom: 20px;
+  }
+  .carousel-controls-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 25px;
+  }
+  .carousel-nav-btn {
+    position: static;
+    transform: none;
+    width: 30px;
+    height: 30px;
+  }
+  .carousel-indicators-container {
+    margin-top: 0;
+    width: auto;
+  }
 }

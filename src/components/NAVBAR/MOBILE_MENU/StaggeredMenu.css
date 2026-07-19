@@ -11,7 +11,7 @@
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   z-index: 100;
   overflow: hidden;
 }
@@ -97,11 +97,9 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: clamp(260px, 80vw, 420px);
-  height: 100vh;
-  background: var(--card-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  width: clamp(260px, 80vw, 500px);
+  height: 100dvh;
+  background: var(--bg-color) !important;
   display: flex;
   flex-direction: column;
   padding: 6em 2em 2em 2em;
@@ -109,10 +107,11 @@
   z-index: 100;
   pointer-events: auto;
   opacity: 0;
-  border-left: 1px solid var(--card-border);
+  border-left: 1px solid var(--card-border) !important;
+  box-shadow: -20px 0 60px var(--glass-shadow);
 }
 
-[data-position='left'] .staggered-menu-panel {
+.staggered-menu-panel[data-position='left'] {
   right: auto;
   left: 0;
   border-left: none;
@@ -130,7 +129,7 @@
   opacity: 0;
 }
 
-[data-position='left'] .sm-prelayers {
+.sm-prelayers[data-position='left'] {
   right: auto;
   left: 0;
 }
@@ -139,7 +138,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  height: 100vh;
+  height: 100dvh;
   width: 100%;
   transform: translateX(0);
   opacity: 0;
@@ -222,14 +221,13 @@
   position: relative;
   color: var(--text-color);
   font-family: 'Playfair Display', serif;
-  font-weight: 600;
-  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(2rem, 7vw, 3.5rem);
   cursor: pointer;
-  line-height: 1;
+  line-height: 1.1;
   letter-spacing: -1px;
-  transition:
-    background 0.25s,
-    color 0.25s;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-block;
   text-decoration: none;
   padding-right: 1em;
@@ -248,6 +246,7 @@
 
 .sm-panel-item:hover {
   color: var(--primary-color);
+  transform: translateX(15px);
 }
 
 .sm-panel-list[data-numbering] {
@@ -270,10 +269,59 @@
   opacity: var(--sm-num-opacity, 0);
 }
 
+/* Accordion sub-menu (mobile "Discover PCL" style items).
+   display:grid + grid-template-rows is used instead of height:auto/0
+   because height cannot be CSS-transitioned to/from auto — the old
+   approach snapped open/closed instantly despite having a transition. */
+.sm-accordion-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.35s ease, opacity 0.25s ease;
+  padding-left: 40px;
+}
+
+.sm-accordion-content.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.sm-accordion-inner {
+  overflow: hidden;
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sm-accordion-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+
+.sm-accordion-link:hover,
+.sm-accordion-link:focus-visible {
+  color: var(--primary-color);
+}
+
 @media (max-width: 1024px) {
   .staggered-menu-panel, .sm-prelayers {
     width: 100%;
     left: 0;
     right: 0;
+  }
+  .staggered-menu-panel {
+    padding: 5em 1.5rem 1.5rem 1.5rem;
+  }
+  .sm-panel-list {
+    gap: 1.25rem;
+  }
+  .sm-panel-item {
+    font-size: 2.25rem;
   }
 }

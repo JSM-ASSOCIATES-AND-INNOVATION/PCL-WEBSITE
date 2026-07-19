@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 import CLETracker from "./CLETracker";
 
 // --- CACHE HELPERS ---

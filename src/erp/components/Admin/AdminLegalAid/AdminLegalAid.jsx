@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
-export default function AdminLegalAid() {
+export default function AdminLegalAid({ isHubView = false }) {
     const [diaries, setDiaries] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -51,20 +51,25 @@ export default function AdminLegalAid() {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated">
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder flex flex-col md:flex-row justify-between items-start lg:items-center gap-6">
-                <div className="relative z-10 w-full lg:w-auto flex-1">
-                    <div className="flex items-center gap-4 lg:gap-5 mb-3 lg:mb-2">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel bg-themeElevated border-theme border-themeBorderStrong flex items-center justify-center shrink-0">
-                            <i className="fa-solid fa-scale-unbalanced text-themeAccent text-2xl lg:text-3xl"></i>
+        <div className={`w-full ${isHubView ? 'bg-transparent text-themeText font-sans' : 'max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated'}`}>
+            {/* Header */}
+            {!isHubView && (
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    {/* Background Decorations */}
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 mix-blend-overlay pointer-events-none"></div>
+
+                    <div className="flex items-center gap-4 lg:gap-5 relative z-10 mb-2">
+                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                            <i className="fa-solid fa-hand-holding-hand text-white text-2xl lg:text-3xl drop-shadow-md"></i>
                         </div>
                         <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText mb-1`}>Legal Aid & CLE Tracker</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Manage pro-bono cases and review student CLE diaries.</p>
+                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Legal Aid Clinic (CLE)</h1>
+                            <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Review and verify student clinic diaries.</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             <div className="bg-themePanel rounded-themePanel border-theme border-themeBorder p-6">
                 <h2 className="text-xl font-bold text-themeText mb-4">Pending CLE Diaries</h2>

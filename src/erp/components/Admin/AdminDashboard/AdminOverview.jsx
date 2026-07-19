@@ -16,11 +16,13 @@ export default function AdminOverview() {
     });
 
     const [insights, setInsights] = useState([
-        { label: "Total Revenue YTD", value: "₹0", sub: "Loading...", color: "text-emerald-500" },
-        { label: "Total Admissions", value: "0", sub: "Loading...", color: "text-blue-500" },
-        { label: "Active Students", value: "0", sub: "Loading...", color: "text-indigo-500" },
-        { label: "Active Faculty", value: "0", sub: "Loading...", color: "text-teal-500" }
+        { label: "Total Revenue YTD", value: "₹0", sub: "Loading...", color: "text-themeAccent" },
+        { label: "Total Admissions", value: "0", sub: "Loading...", color: "text-themeAccent" },
+        { label: "Web Traffic", value: "0", sub: "Loading...", color: "text-themeAccent" },
+        { label: "Unique Visitors", value: "0", sub: "Loading...", color: "text-themeAccent" }
     ]);
+
+    const [topClicks, setTopClicks] = useState([]);
 
     const [tasks, setTasks] = useState({
         leaves: 0,
@@ -33,80 +35,34 @@ export default function AdminOverview() {
         let isMounted = true;
         const fetchData = async () => {
             try {
-                const query = `
-                    WITH 
-                        current_year_start AS (SELECT date_trunc('year', current_date) as start_date),
-                        monthly_att AS (
-                            SELECT EXTRACT(MONTH FROM date) as m, sum(case when status='present' then 1 else 0 end) as p, count(*) as t 
-                            FROM attendance CROSS JOIN current_year_start WHERE date >= start_date GROUP BY m
-                        ),
-                        monthly_fees AS (
-                            SELECT EXTRACT(MONTH FROM created_at) as m, sum(amount) as s 
-                            FROM fee_invoices CROSS JOIN current_year_start WHERE created_at >= start_date AND status='paid' GROUP BY m
-                        ),
-                        monthly_adm AS (
-                            SELECT EXTRACT(MONTH FROM created_at) as m, count(*) as c 
-                            FROM admissions_applications CROSS JOIN current_year_start WHERE created_at >= start_date GROUP BY m
-                        ),
-                        monthly_tickets AS (
-                            SELECT EXTRACT(MONTH FROM created_at) as m, count(*) as c 
-                            FROM helpdesk_tickets CROSS JOIN current_year_start WHERE created_at >= start_date GROUP BY m
-                        ),
-                        monthly_growth AS (
-                            SELECT EXTRACT(MONTH FROM created_at) as m, count(*) as c 
-                            FROM profiles CROSS JOIN current_year_start WHERE created_at >= start_date GROUP BY m
-                        )
-                    SELECT json_build_object(
-                        'graphs', json_build_object(
-                            'att', COALESCE((SELECT json_agg(json_build_object('m', m, 'p', p, 't', t)) FROM monthly_att), '[]'::json),
-                            'fees', COALESCE((SELECT json_agg(json_build_object('m', m, 's', s)) FROM monthly_fees), '[]'::json),
-                            'adm', COALESCE((SELECT json_agg(json_build_object('m', m, 'c', c)) FROM monthly_adm), '[]'::json),
-                            'tic', COALESCE((SELECT json_agg(json_build_object('m', m, 'c', c)) FROM monthly_tickets), '[]'::json),
-                            'gro', COALESCE((SELECT json_agg(json_build_object('m', m, 'c', c)) FROM monthly_growth), '[]'::json)
-                        ),
-                        'insights', json_build_object(
-                            'total_revenue', COALESCE((SELECT sum(amount) FROM fee_invoices CROSS JOIN current_year_start WHERE created_at >= start_date AND status='paid'), 0),
-                            'total_adm', (SELECT count(*) FROM admissions_applications CROSS JOIN current_year_start WHERE created_at >= start_date),
-                            'students', (SELECT count(*) FROM profiles WHERE role='student'),
-                            'faculty', (SELECT count(*) FROM profiles WHERE role='faculty')
-                        ),
-                        'tasks', json_build_object(
-                            'leaves', (SELECT count(*) FROM faculty_leaves WHERE status='pending'),
-                            'admissions', (SELECT count(*) FROM admissions_applications WHERE status='pending'),
-                            'tickets', (SELECT count(*) FROM helpdesk_tickets WHERE status='open'),
-                            'docs', (SELECT count(*) FROM student_documents WHERE status='pending')
-                        )
-                    ) as overview_data
-                `;
-
-                const { data, error } = await supabase.rpc('admin_exec_sql', { query_text: query });
+                const { data, error } = await supabase.rpc('get_admin_dashboard_stats');
                 if (error) throw error;
                 if (!isMounted) return;
 
-                if (Array.isArray(data) && data.length > 0) {
-                    const d = data[0].overview_data;
+                if (data) {
+                    const d = data;
                     
                     const newGraph = {
                         attendance: Array(12).fill(0),
                         fees: Array(12).fill(0),
                         admissions: Array(12).fill(0),
                         support: Array(12).fill(0),
-                        growth: Array(12).fill(0)
+                        traffic: Array(12).fill(0)
                     };
                     
                     d.graphs.att.forEach(a => newGraph.attendance[a.m - 1] = a.t > 0 ? (a.p / a.t) * 100 : 0);
                     
-                    let maxFee = 1, maxAdm = 1, maxTic = 1, maxGro = 1;
+                    let maxFee = 1, maxAdm = 1, maxTic = 1, maxTraf = 1;
                     d.graphs.fees.forEach(f => { newGraph.fees[f.m - 1] = f.s; if (f.s > maxFee) maxFee = f.s; });
                     d.graphs.adm.forEach(a => { newGraph.admissions[a.m - 1] = a.c; if (a.c > maxAdm) maxAdm = a.c; });
                     d.graphs.tic.forEach(t => { newGraph.support[t.m - 1] = t.c; if (t.c > maxTic) maxTic = t.c; });
-                    d.graphs.gro.forEach(g => { newGraph.growth[g.m - 1] = g.c; if (g.c > maxGro) maxGro = g.c; });
+                    d.graphs.traffic?.forEach(g => { newGraph.traffic[g.m - 1] = g.c; if (g.c > maxTraf) maxTraf = g.c; });
                     
                     for(let i=0; i<12; i++) {
                         newGraph.fees[i] = (newGraph.fees[i] / maxFee) * 100;
                         newGraph.admissions[i] = (newGraph.admissions[i] / maxAdm) * 100;
                         newGraph.support[i] = (newGraph.support[i] / maxTic) * 100;
-                        newGraph.growth[i] = (newGraph.growth[i] / maxGro) * 100;
+                        newGraph.traffic[i] = (newGraph.traffic[i] / maxTraf) * 100;
                     }
                     
                     setGraphData(newGraph);
@@ -120,9 +76,11 @@ export default function AdminOverview() {
                     setInsights([
                         { label: "Total Revenue YTD", value: formatCurrency(d.insights.total_revenue), sub: "Fees Collected", color: "text-emerald-500" },
                         { label: "Admissions Volume", value: String(d.insights.total_adm), sub: "Applications Processed", color: "text-blue-500" },
-                        { label: "Active Students", value: String(d.insights.students), sub: "Enrolled in ERP", color: "text-indigo-500" },
-                        { label: "Active Faculty", value: String(d.insights.faculty), sub: "On Payroll", color: "text-teal-500" }
+                        { label: "Web Traffic", value: String(d.insights.total_traffic || 0), sub: "Total Page Views", color: "text-indigo-500" },
+                        { label: "Unique Visitors", value: String(d.insights.unique_visitors || 0), sub: "Sessions YTD", color: "text-purple-500" }
                     ]);
+
+                    setTopClicks(d.insights.top_clicks || []);
                     
                     setTasks({
                         leaves: d.tasks.leaves || 0,
@@ -152,11 +110,11 @@ export default function AdminOverview() {
     }, [insights.length]);
 
     const tabs = [
-        { id: 'attendance', label: 'Attendance', color: 'bg-emerald-500' },
-        { id: 'fees', label: 'Fees', color: 'bg-blue-500' },
-        { id: 'admissions', label: 'Admissions', color: 'bg-indigo-500' },
-        { id: 'support', label: 'Support', color: 'bg-amber-500' },
-        { id: 'growth', label: 'Growth', color: 'bg-teal-500' }
+        { id: 'attendance', label: 'Attendance', color: 'bg-themeAccent' },
+        { id: 'fees', label: 'Fees', color: 'bg-themeAccent' },
+        { id: 'admissions', label: 'Admissions', color: 'bg-themeAccent' },
+        { id: 'support', label: 'Support', color: 'bg-themeAccent' },
+        { id: 'traffic', label: 'Web Traffic', color: 'bg-themeAccent' }
     ];
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -291,6 +249,26 @@ export default function AdminOverview() {
 
                     </div>
                 </div>
+
+                {/* Top Interactions */}
+                {topClicks.length > 0 && (
+                    <div className={`bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-5 flex-1 flex flex-col shadow-sm`}>
+                        <h2 className={`${theme.text.heading} text-sm text-themeText tracking-tight mb-4 flex justify-between`}>
+                            <span>Top Website Interactions</span>
+                            <i className="fa-solid fa-mouse-pointer text-themeTextSec text-xs"></i>
+                        </h2>
+                        <div className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar pr-1">
+                            {topClicks.map((click, idx) => (
+                                <div key={idx} className="w-full flex items-center justify-between p-2.5 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder">
+                                    <span className="text-xs font-bold text-themeText truncate max-w-[70%]">{click.text}</span>
+                                    <span className="text-[10px] font-black bg-themePanel px-2 py-1 border-[length:var(--border-width)] border-themeBorder rounded text-themeAccent">
+                                        {click.count} clicks
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
             </div>
         </div>

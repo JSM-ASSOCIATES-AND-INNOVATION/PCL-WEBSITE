@@ -1,388 +1,422 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { theme } from "../../../theme";
+import React, { useState, useEffect } from "react";
 import { useERP } from "../../../context/ErpContext";
-import { generateCalendarICS } from "../../../LIB/calendarGenerator";
+import { supabase } from "../../../lib/supabase/supabaseClient";
+import { generateCalendarICS } from "../../../lib/calendarGenerator";
+import WeeklyChart from "../../shared/WeeklyChart";
+import SubjectFlipCard from "../../shared/SubjectFlipCard";
 
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const START_HOUR = 8; // 8 AM
-const END_HOUR = 18; // 6 PM
-const HOUR_HEIGHT = 90; // px per hour
+const SUBJECT_COLORS = {
+    blue: { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', solid: 'bg-blue-500' },
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20', solid: 'bg-emerald-500' },
+    purple: { bg: 'bg-purple-500/10', text: 'text-purple-500', border: 'border-purple-500/20', solid: 'bg-purple-500' },
+    orange: { bg: 'bg-orange-500/10', text: 'text-orange-500', border: 'border-orange-500/20', solid: 'bg-orange-500' },
+    rose: { bg: 'bg-rose-500/10', text: 'text-rose-500', border: 'border-rose-500/20', solid: 'bg-rose-500' },
+    amber: { bg: 'bg-amber-500/10', text: 'text-amber-500', border: 'border-amber-500/20', solid: 'bg-amber-500' },
+    gray: { bg: 'bg-themeElevated', text: 'text-themeTextSec', border: 'border-themeBorder', solid: 'bg-themeBorderStrong' }
+};
 
 export default function Timetable() {
-    const { userSession, getTimetableForBatch } = useERP();
-    
-    const batchId = userSession?.academic_batch || 'BATCH-2026';
-    const timetableObj = getTimetableForBatch(batchId);
-    
-    // Flatten all classes
-    const allClasses = useMemo(() => {
-        return Object.values(timetableObj).flatMap(dayObj => Object.values(dayObj));
-    }, [timetableObj]);
-
-    const [activeDay, setActiveDay] = useState("Monday");
+    const { userSession } = useERP();
+    const [activeTab, setActiveTab] = useState('today');
+    const [selectedLecture, setSelectedLecture] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [viewMode, setViewMode] = useState("week"); // 'week' | 'day'
 
-    useEffect(() => {
-        const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-        if (days.includes(today)) setActiveDay(today);
-        
-        // Auto-switch to day view on small screens
-        const handleResize = () => {
-            if (window.innerWidth < 1024) {
-                setViewMode("day");
-            } else {
-                setViewMode("week");
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
+    const [schedule, setSchedule] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-        const timer = setInterval(() => setCurrentTime(new Date()), 60000);
-        return () => {
-            clearInterval(timer);
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
+    const fetchSchedule = async () => {
+        if (!userSession?.academic_batch) return;
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('class_schedule')
+                .select(`
+                    id, batch, day_of_week, start_time, end_time,
+                    subject:subjects(name, theme_color, credits, faculty:profiles(full_name)),
+                    room:academic_classrooms(name)
+                `)
+                .eq('batch', userSession.academic_batch);
 
-    // --- TIME & LOGIC HELPERS ---
+            if (error) throw error;
 
-    const parseDbTime = (t) => {
-        if (!t) return 0;
-        const [h, m] = t.split(':');
-        return parseInt(h, 10) * 60 + parseInt(m, 10);
-    };
-
-    const formatTime = (timeString) => {
-        if (!timeString) return "";
-        const [hourStr, minuteStr] = timeString.split(':');
-        const hour = parseInt(hourStr, 10);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const formattedHour = hour % 12 || 12;
-        return `${formattedHour}:${minuteStr} ${ampm}`;
-    };
-
-    const isClassLive = (startTime, endTime, day) => {
-        const today = new Date().toLocaleDateString("en-US", { weekday: 'long' });
-        if (day !== today) return false;
-        const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-        return currentTotalMinutes >= parseDbTime(startTime) && currentTotalMinutes <= parseDbTime(endTime);
-    };
-
-    const getNextDateForDay = (dayOfWeek, timeStr) => {
-        const dmap = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const targetDayIndex = dmap.indexOf(dayOfWeek);
-        const today = new Date();
-        const todayIndex = today.getDay();
-        let daysUntil = targetDayIndex - todayIndex;
-        if (daysUntil < 0) daysUntil += 7;
-        
-        const [hours, minutes] = timeStr.split(':');
-        const targetDate = new Date(today);
-        targetDate.setDate(today.getDate() + daysUntil);
-        targetDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-        return targetDate;
-    };
-
-    const handleExportICS = () => {
-        if (allClasses.length === 0) return;
-        const events = allClasses.map(cls => ({
-            title: cls.subjects?.name || 'Class',
-            description: `Faculty: ${cls.faculty?.full_name || 'TBA'} | Type: ${cls.class_type}`,
-            location: cls.room || 'TBA',
-            startDate: getNextDateForDay(cls.day_of_week, cls.start_time),
-            endDate: getNextDateForDay(cls.day_of_week, cls.end_time)
-        }));
-        generateCalendarICS("My_Timetable", events);
-    };
-
-    // Calculate Conflict Detection & Timeline Positions
-    const processedClasses = useMemo(() => {
-        const classes = JSON.parse(JSON.stringify(allClasses)); // deep copy
-        const daysMap = {};
-        classes.forEach(c => {
-            if (!daysMap[c.day_of_week]) daysMap[c.day_of_week] = [];
-            daysMap[c.day_of_week].push(c);
-        });
-
-        const processed = [];
-
-        Object.keys(daysMap).forEach(day => {
-            let dayClasses = daysMap[day];
-            dayClasses.sort((a, b) => parseDbTime(a.start_time) - parseDbTime(b.start_time));
+            const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 0: 'Sunday' };
+            const nowTime = new Date();
+            const currentMins = nowTime.getHours() * 60 + nowTime.getMinutes();
             
-            // Overlap clustering
-            let clusters = [];
-            dayClasses.forEach(cls => {
-                const start = parseDbTime(cls.start_time);
-                const end = parseDbTime(cls.end_time);
-                cls._start = start;
-                cls._end = end;
+            const formatted = (data || []).map(s => {
+                const sTime = s.start_time.slice(0, 5);
+                const eTime = s.end_time.slice(0, 5);
                 
-                let addedToCluster = false;
-                for (let cluster of clusters) {
-                    if (start < cluster.maxEnd) {
-                        cluster.classes.push(cls);
-                        cluster.maxEnd = Math.max(cluster.maxEnd, end);
-                        addedToCluster = true;
-                        break;
-                    }
-                }
-                if (!addedToCluster) {
-                    clusters.push({ classes: [cls], maxEnd: end });
-                }
+                // Calculate past/current/upcoming status dynamically based on time
+                const sMins = parseInt(sTime.split(':')[0]) * 60 + parseInt(sTime.split(':')[1]);
+                const eMins = parseInt(eTime.split(':')[0]) * 60 + parseInt(eTime.split(':')[1]);
+                
+                let status = 'upcoming';
+                if (currentMins >= eMins) status = 'past';
+                else if (currentMins >= sMins && currentMins < eMins) status = 'current';
+
+                return {
+                    id: s.id,
+                    day: daysMap[s.day_of_week],
+                    time: sTime,
+                    endTime: eTime,
+                    subject: s.subject?.name || 'Unknown',
+                    color: s.subject?.theme_color || 'gray',
+                    credits: s.subject?.credits || 4,
+                    room: s.room?.name || 'TBA',
+                    faculty: s.subject?.faculty?.full_name || 'TBA',
+                    status
+                };
             });
 
-            // Column assignment within clusters
-            clusters.forEach(cluster => {
-                let columns = [];
-                cluster.classes.forEach(cls => {
-                    let placed = false;
-                    for (let i = 0; i < columns.length; i++) {
-                        let col = columns[i];
-                        let lastInCol = col[col.length - 1];
-                        if (cls._start >= lastInCol._end) {
-                            col.push(cls);
-                            cls._colIndex = i;
-                            placed = true;
-                            break;
-                        }
-                    }
-                    if (!placed) {
-                        columns.push([cls]);
-                        cls._colIndex = columns.length - 1;
-                    }
-                });
-                cluster.classes.forEach(cls => {
-                    cls._colCount = columns.length;
-                    cls.hasConflict = columns.length > 1;
-                });
+            // Sort by time
+            formatted.sort((a, b) => {
+                const tA = parseInt(a.time.replace(':', ''));
+                const tB = parseInt(b.time.replace(':', ''));
+                return tA - tB;
             });
-            
-            processed.push(...dayClasses);
-        });
-        
-        return processed;
-    }, [allClasses]);
 
-    // Premium Color Theme Mapper
-    const getCategoryColor = (cat, hasConflict) => {
-        if (hasConflict) return "bg-red-500/20 border-red-500/50 text-red-500";
-        switch (cat?.toLowerCase()) {
-            case "core": return "text-themeAccent border-themeBorderStrong bg-themeElevated";
-            case "practical": return "text-emerald-500 border-emerald-500/30 bg-emerald-500/10";
-            case "elective": return "text-blue-500 border-blue-500/30 bg-blue-500/10";
-            default: return "text-themeTextSec border-themeBorderStrong bg-themePanel";
+            setSchedule(formatted);
+        } catch (err) {
+            console.error("Failed to fetch schedule:", err);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getClassStyle = (cls) => {
-        const top = ((cls._start - START_HOUR * 60) / 60) * HOUR_HEIGHT;
-        const height = ((cls._end - cls._start) / 60) * HOUR_HEIGHT;
-        const width = 100 / cls._colCount;
-        const left = cls._colIndex * width;
+    useEffect(() => {
+        fetchSchedule();
+    }, [userSession?.academic_batch]);
 
-        return {
-            top: `${Math.max(0, top)}px`,
-            height: `${height}px`,
-            width: `calc(${width}% - 4px)`,
-            left: `calc(${left}% + 2px)`,
-            position: 'absolute'
-        };
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const exportCalendar = () => {
+        const fakeSchedule = schedule.reduce((acc, curr) => {
+            acc[curr.day] = acc[curr.day] || [];
+            acc[curr.day].push({
+                course_code: curr.subject,
+                course_name: curr.subject,
+                faculty_name: curr.faculty,
+                room: curr.room,
+                start_time: curr.time,
+                end_time: curr.endTime
+            });
+            return acc;
+        }, {});
+        const ics = generateCalendarICS(fakeSchedule, userSession?.academic_batch || 'Timetable');
+        const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${userSession?.academic_batch || 'Timetable'}.ics`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     };
 
-    const hoursList = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i);
+    const renderTodayTimeline = () => {
+        // Fallback to Monday if it's Sunday, just so the demo isn't empty, otherwise use exact today
+        const actualDayNum = new Date().getDay();
+        const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 0: 'Sunday' };
+        let currentDayName = daysMap[actualDayNum];
+        if (currentDayName === 'Sunday') currentDayName = 'Monday'; // Demo fallback
 
-    return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated">
+        const todayClasses = schedule.filter(c => c.day === currentDayName);
 
-            {/* HEADER */}
-            <div className={`${theme.layout.panel} p-6 lg:p-8 rounded-themePanel flex flex-col md:flex-row md:items-end justify-between gap-6 border-theme border-themeBorder relative overflow-hidden`}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none print:hidden"></div>
+        if (loading) {
+            return <div className="h-64 flex items-center justify-center"><i className="fa-solid fa-spinner fa-spin text-themeAccent text-3xl"></i></div>;
+        }
 
-                <div className="relative z-10 flex flex-col gap-2">
-                    <h1 className={`${theme.text.heading} text-2xl lg:text-3xl text-themeText tracking-tight`}>Class Timetable</h1>
-                    <div className="flex items-center gap-3">
-                        <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>{batchId} • Current View:</p>
-                        <div className="flex bg-themeElevated rounded-lg p-1 border-theme border-themeBorderStrong">
-                            <button onClick={() => setViewMode('day')} className={`px-3 py-1 text-[10px] uppercase font-bold rounded-md transition-all ${viewMode === 'day' ? 'bg-themeAccent text-[#050505]' : 'text-themeTextSec hover:text-themeText'}`}>Day</button>
-                            <button onClick={() => setViewMode('week')} className={`px-3 py-1 text-[10px] uppercase font-bold rounded-md transition-all ${viewMode === 'week' ? 'bg-themeAccent text-[#050505]' : 'text-themeTextSec hover:text-themeText'}`}>Week</button>
-                        </div>
+        if (todayClasses.length === 0) {
+            return (
+                <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50 mt-4">
+                    <i className="fa-regular fa-calendar text-4xl mb-4 text-themeTextSec"></i>
+                    <p className="text-sm font-bold text-themeTextSec">No classes scheduled for today.</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex flex-col relative py-4">
+                <div className="absolute left-[72px] right-0 h-px bg-themeAccent z-10 flex items-center top-[30%] opacity-50">
+                    <div className="absolute -left-16 text-[10px] font-black tracking-widest text-themeAccent bg-themeApp pr-2">
+                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-themeAccent shadow-[0_0_8px_rgba(var(--color-themeAccent),0.8)] -ml-1"></div>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto z-10">
-                    <button
-                        onClick={handleExportICS}
-                        className={`print:hidden w-full md:w-auto px-6 py-3.5 bg-themeElevated hover:bg-neutral-800 text-themeAccent border-theme border-themeBorderStrong rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2`}
-                    >
-                        <i className="fa-solid fa-calendar-plus"></i> Export ICS
-                    </button>
-                    <button
-                        onClick={() => window.print()}
-                        className={`print:hidden w-full md:w-auto ${theme.action.btnPrimary} flex items-center justify-center gap-2 px-6 py-3.5 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest active:scale-95`}
-                    >
-                        <i className="fa-solid fa-file-export text-[#050505]"></i> Print PDF
-                    </button>
+                {todayClasses.map((lec) => {
+                    const c = SUBJECT_COLORS[lec.color] || SUBJECT_COLORS.gray;
+                    const isPast = lec.status === 'past';
+                    const isCurrent = lec.status === 'current';
+                    
+                    return (
+                        <div key={lec.id} className={`flex gap-6 relative group ${isPast ? 'opacity-40 grayscale-[50%]' : ''}`}>
+                            <div className="w-16 flex flex-col items-end shrink-0 pt-4">
+                                <span className="text-xs font-black text-themeText">{lec.time}</span>
+                                <span className="text-[9px] font-bold text-themeTextSec">{lec.endTime}</span>
+                            </div>
+                            
+                            <div className="relative w-px bg-themeBorder flex-col flex items-center">
+                                <div className={`w-3 h-3 rounded-full border-[3px] border-themeApp z-10 mt-4 transition-colors ${isCurrent ? c.solid + ' animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.5)]' : 'bg-themeBorderStrong group-hover:' + c.solid}`}></div>
+                            </div>
+
+                            <div className="flex-1 pb-8 pt-2">
+                                <div 
+                                    onClick={() => setSelectedLecture(lec)}
+                                    className={`w-full rounded-2xl p-5 border transition-all cursor-pointer ${isCurrent ? `${c.bg} ${c.border} shadow-lg scale-[1.02]` : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong shadow-sm hover:shadow-md hover:scale-[1.01]'}`}
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-2 h-2 rounded-full ${c.solid}`}></div>
+                                            <h3 className={`text-lg font-black tracking-tight ${isCurrent ? c.text : 'text-themeText'}`}>{lec.subject}</h3>
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest bg-themeElevated px-2 py-1 rounded-full text-themeTextSec border border-themeBorderStrong shadow-sm">{lec.room}</span>
+                                    </div>
+                                    <div className="flex items-center gap-4 mt-3">
+                                        <span className="text-xs font-bold text-themeTextSec flex items-center gap-1.5"><i className="fa-regular fa-user"></i> {lec.faculty}</span>
+                                        <span className="text-xs font-bold text-themeTextSec flex items-center gap-1.5"><i className="fa-regular fa-clock"></i> 60m</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    const renderWeeklyGrid = () => {
+        const uniqueSubjects = [];
+        const seen = new Set();
+        schedule.forEach(c => {
+            if (!seen.has(c.subject)) {
+                seen.add(c.subject);
+                uniqueSubjects.push({
+                    subject: c.subject,
+                    faculty: c.faculty,
+                    color: c.color,
+                    nextClass: { day: c.day, time: c.time, endTime: c.endTime, room: c.room }
+                });
+            }
+        });
+
+        return (
+            <div className="hidden lg:flex flex-col gap-8 animate-fade-in w-full">
+                <div>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Enrolled Subjects Overview</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {uniqueSubjects.map((s, i) => (
+                            <SubjectFlipCard 
+                                key={i}
+                                subject={s.subject}
+                                faculty={s.faculty}
+                                color={s.color}
+                                nextClass={s.nextClass}
+                            />
+                        ))}
+                    </div>
+                </div>
+                {loading ? (
+                    <div className="h-64 flex items-center justify-center"><i className="fa-solid fa-spinner fa-spin text-themeAccent text-3xl"></i></div>
+                ) : schedule.length === 0 ? (
+                    <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50">
+                        <i className="fa-solid fa-calendar-xmark text-4xl mb-4 text-themeTextSec"></i>
+                        <p className="text-sm font-bold text-themeTextSec">No timetable published for your batch yet.</p>
+                    </div>
+                ) : (
+                    <WeeklyChart 
+                        schedule={schedule} 
+                        onLectureClick={(lecture) => setSelectedLecture(lecture)} 
+                        role="student"
+                    />
+                )}
+            </div>
+        );
+    };
+
+    const renderCalendar = () => (
+        <div className="flex flex-col gap-4 animate-fade-in">
+            <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm flex items-center justify-between">
+                <div>
+                    <h3 className="text-lg font-black text-themeText tracking-tight">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
+                    <p className="text-xs font-bold text-themeTextSec">Academic Calendar</p>
+                </div>
+                <div className="flex gap-2">
+                    <button className="w-8 h-8 rounded-full bg-themeElevated text-themeText hover:bg-themeBorder transition-colors"><i className="fa-solid fa-chevron-left text-xs"></i></button>
+                    <button className="w-8 h-8 rounded-full bg-themeElevated text-themeText hover:bg-themeBorder transition-colors"><i className="fa-solid fa-chevron-right text-xs"></i></button>
                 </div>
             </div>
 
-            {/* DAY SELECTOR (MOBILE/DAY VIEW ONLY) */}
-            {viewMode === 'day' && (
-                <div className="w-full overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory print:hidden">
-                    <div className={`flex gap-2 p-1.5 ${theme.layout.panelElevated} rounded-themePanel min-w-max border-theme border-themeBorder`}>
-                        {days.map((day) => (
-                            <button
-                                key={day}
-                                onClick={() => setActiveDay(day)}
-                                className={`px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 snap-center shrink-0 ${activeDay === day
-                                    ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong scale-[1.02]"
-                                    : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
-                                    }`}
+            <div className="grid gap-4">
+                <div className="bg-themePanel border border-themeBorder rounded-2xl p-5 shadow-sm flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col items-center justify-center shrink-0">
+                        <span className="text-xs font-black uppercase tracking-widest text-purple-500">Aug</span>
+                        <span className="text-xl font-black text-purple-500">19</span>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="text-base font-black text-themeText">CAT II Examinations</h4>
+                        <p className="text-xs font-bold text-themeTextSec mt-1">Continuous Assessment Test II begins for all semesters.</p>
+                    </div>
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-themeElevated text-themeTextSec border border-themeBorderStrong">Exam</span>
+                </div>
+            </div>
+        </div>
+    );
+
+    const LectureSideSheet = () => {
+        if (!selectedLecture) return null;
+        const c = SUBJECT_COLORS[selectedLecture.color] || SUBJECT_COLORS.gray;
+
+        return (
+            <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedLecture(null)}></div>
+                <div className="relative w-full max-w-md bg-themeApp h-full border-l border-themeBorder shadow-2xl flex flex-col animate-[slideInRight_0.3s_ease-out]">
+                    <div className={`${c.bg} p-6 border-b ${c.border} relative overflow-hidden`}>
+                        <div className={`absolute top-0 right-0 w-48 h-48 ${c.solid} opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none`}></div>
+                        <div className="flex justify-between items-start mb-6 relative z-10">
+                            <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-themeApp/80 backdrop-blur-md ${c.text} shadow-sm border ${c.border}`}>{selectedLecture.day}, {selectedLecture.time} - {selectedLecture.endTime}</span>
+                            <button onClick={() => setSelectedLecture(null)} className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-themeText flex items-center justify-center transition-colors">
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <h2 className={`text-2xl font-black tracking-tight mb-2 ${c.text} relative z-10 drop-shadow-sm`}>{selectedLecture.subject}</h2>
+                        <div className="flex items-center gap-4 text-xs font-bold text-themeTextSec relative z-10">
+                            <span className="flex items-center gap-1.5"><i className="fa-regular fa-user"></i> {selectedLecture.faculty}</span>
+                            <span className="flex items-center gap-1.5"><i className="fa-solid fa-location-dot"></i> {selectedLecture.room}</span>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 custom-scrollbar">
+                        <div className="grid grid-cols-2 gap-3">
+                            <button className="bg-themePanel border border-themeBorder hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
+                                <i className="fa-solid fa-book-open text-themeAccent"></i> Syllabus
+                            </button>
+                            <button className="bg-themePanel border border-themeBorder hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
+                                <i className="fa-solid fa-folder-open text-themeAccent"></i> Material
+                            </button>
+                        </div>
+
+                        <div>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Subject Workspace</h3>
+                            <div className="bg-themePanel border border-themeBorder rounded-2xl p-4 flex justify-between items-center shadow-sm">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Credits</span>
+                                    <span className="text-xl font-black text-themeText">{selectedLecture.credits || 4}</span>
+                                </div>
+                                <div className="w-px h-8 bg-themeBorderStrong"></div>
+                                <div className="flex flex-col gap-1 items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Attendance</span>
+                                    <span className="text-xl font-black text-emerald-500">100%</span>
+                                </div>
+                                <div className="w-px h-8 bg-themeBorderStrong"></div>
+                                <div className="flex flex-col gap-1 items-end">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Today</span>
+                                    <span className="text-sm font-black text-themeText">Module 1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="w-full min-h-screen bg-themeApp text-themeText font-sans pb-32">
+            <div className="bg-themePanel border-b border-themeBorder shadow-sm">
+                <div className="max-w-[1200px] mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-2xl font-black tracking-tight text-themeText">Academic Planning</h1>
+                        <p className="text-xs font-bold text-themeTextSec mt-1">Your official schedule and subject workspaces.</p>
+                    </div>
+                    
+                    <div className="flex bg-themeElevated p-1 rounded-xl border border-themeBorderStrong overflow-x-auto w-full md:w-auto no-scrollbar">
+                        {['Today', 'Week', 'Calendar', 'Changes'].map(tab => (
+                            <button 
+                                key={tab}
+                                onClick={() => setActiveTab(tab.toLowerCase())}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all shrink-0 ${
+                                    activeTab === tab.toLowerCase() 
+                                    ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder' 
+                                    : 'text-themeTextSec hover:text-themeText'
+                                }`}
                             >
-                                {day}
+                                {tab}
                             </button>
                         ))}
                     </div>
                 </div>
-            )}
+            </div>
 
-            {/* ADVANCED TIMETABLE ENGINE GRID (DESKTOP ONLY) */}
-            <div className={`hidden lg:block ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder overflow-x-auto bg-themeApp`}>
-                <div className="min-w-[800px] w-full flex flex-col p-4 lg:p-6">
-                    {/* Header Row */}
-                    <div className="flex border-b-theme border-themeBorderStrong pb-4 mb-4">
-                        <div className="w-16 lg:w-20 shrink-0"></div> {/* Time Column Spacer */}
-                        {(viewMode === 'week' ? days : [activeDay]).map(day => (
-                            <div key={day} className="flex-1 text-center">
-                                <h3 className={`text-xs lg:text-sm font-black uppercase tracking-widest ${activeDay === day && viewMode === 'week' ? 'text-themeAccent' : 'text-themeTextSec'}`}>{day}</h3>
+            <div className="max-w-[1200px] mx-auto p-6 flex flex-col lg:flex-row gap-8 items-start mt-4">
+                <div className="flex-1 w-full overflow-x-auto pb-4">
+                    {activeTab === 'today' && renderTodayTimeline()}
+                    {activeTab === 'week' && (
+                        <>
+                            {renderWeeklyGrid()}
+                            <div className="lg:hidden p-8 border border-themeBorder border-dashed rounded-2xl text-center flex flex-col items-center justify-center bg-themePanel mt-4">
+                                <i className="fa-solid fa-desktop text-3xl text-themeTextSec mb-4"></i>
+                                <h3 className="text-sm font-black text-themeText mb-1">Desktop Recommended</h3>
+                                <p className="text-xs font-bold text-themeTextSec">The weekly timetable chart requires a larger screen. Please use a tablet or desktop, or switch to the 'Today' timeline view.</p>
                             </div>
-                        ))}
+                        </>
+                    )}
+                    {activeTab === 'calendar' && renderCalendar()}
+                    {activeTab === 'changes' && (
+                        <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50">
+                            <i className="fa-solid fa-code-compare text-4xl mb-4 text-themeTextSec"></i>
+                            <p className="text-sm font-bold text-themeTextSec">No recent timetable changes.</p>
+                        </div>
+                    )}
+                </div>
+
+                <div className="w-full lg:w-80 shrink-0 flex flex-col gap-6 sticky top-32">
+                    <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm relative overflow-hidden group">
+                        <div className="absolute -right-12 -top-12 w-32 h-32 bg-themeAccent/10 rounded-full blur-2xl group-hover:bg-themeAccent/20 transition-all"></div>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Daily Academic Pulse</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1">
+                                <span className="text-3xl font-black text-themeText">{schedule.length}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Total Classes</span>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-3xl font-black text-emerald-500">100%</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Overall Attd.</span>
+                            </div>
+                            <div className="col-span-2 pt-4 border-t border-themeBorderStrong mt-2">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Next Up</p>
+                                {schedule.find(s => s.status === 'upcoming') ? (
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                        <div>
+                                            <p className="text-sm font-black text-themeText">{schedule.find(s => s.status === 'upcoming').subject}</p>
+                                            <p className="text-[10px] font-bold text-themeTextSec">{schedule.find(s => s.status === 'upcoming').room} at {schedule.find(s => s.status === 'upcoming').time}</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="text-xs font-bold text-themeTextSec">No upcoming classes today.</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Timeline Body */}
-                    <div className="relative flex">
-                        {/* Time Column */}
-                        <div className="w-16 lg:w-20 shrink-0 flex flex-col relative z-20">
-                            {hoursList.map(hour => (
-                                <div key={hour} style={{ height: `${HOUR_HEIGHT}px` }} className="relative">
-                                    <span className="absolute top-0 -translate-y-1/2 right-4 text-[10px] lg:text-xs font-bold text-themeTextSec opacity-70">
-                                        {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Grid Lines & Classes */}
-                        <div className="flex-1 relative flex">
-                            {/* Horizontal Grid Lines */}
-                            <div className="absolute inset-0 z-0 flex flex-col pointer-events-none">
-                                {hoursList.map(hour => (
-                                    <div key={`grid-${hour}`} style={{ height: `${HOUR_HEIGHT}px` }} className="border-t-theme border-themeBorder border-dashed opacity-50 w-full"></div>
-                                ))}
-                            </div>
-
-                            {/* Current Time Indicator Line */}
-                            {currentTime.getHours() >= START_HOUR && currentTime.getHours() <= END_HOUR && (
-                                <div 
-                                    className="absolute left-0 right-0 z-30 pointer-events-none flex items-center"
-                                    style={{ top: `${((currentTime.getHours() * 60 + currentTime.getMinutes() - START_HOUR * 60) / 60) * HOUR_HEIGHT}px` }}
-                                >
-                                    <div className="w-2 h-2 rounded-full bg-themeAccent -translate-x-1"></div>
-                                    <div className="flex-1 border-t-2 border-themeAccent opacity-80"></div>
-                                </div>
-                            )}
-
-                            {/* Day Columns */}
-                            {(viewMode === 'week' ? days : [activeDay]).map((day, idx) => {
-                                const dayClasses = processedClasses.filter(c => c.day_of_week === day);
-                                return (
-                                    <div key={`col-${day}`} className={`flex-1 relative z-10 ${idx !== 0 ? 'border-l-theme border-themeBorder/50' : ''}`}>
-                                        {dayClasses.map(cls => {
-                                            const isLive = isClassLive(cls.start_time, cls.end_time, cls.day_of_week);
-                                            const conflictClasses = cls.hasConflict ? "ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] z-20" : "";
-                                            
-                                            return (
-                                                <div 
-                                                    key={cls.id} 
-                                                    style={getClassStyle(cls)}
-                                                    className={`rounded-lg p-2 lg:p-3 overflow-hidden border-theme backdrop-blur-md transition-all hover:scale-[1.02] hover:z-30 group cursor-pointer ${getCategoryColor(cls.class_type, cls.hasConflict)} ${conflictClasses} ${isLive ? 'ring-2 ring-themeAccent shadow-[0_0_20px_rgba(245,158,11,0.2)]' : ''}`}
-                                                    title={`${cls.subjects?.name} | ${formatTime(cls.start_time)} - ${formatTime(cls.end_time)}${cls.hasConflict ? '\n⚠️ CONFLICT DETECTED' : ''}`}
-                                                >
-                                                    <div className="flex flex-col h-full gap-1">
-                                                        <h4 className={`text-[10px] lg:text-xs font-black leading-tight ${cls.hasConflict ? 'text-red-100' : 'text-themeText'} line-clamp-2`}>
-                                                            {cls.subjects?.name}
-                                                        </h4>
-                                                        <span className={`text-[8px] lg:text-[9px] font-bold uppercase tracking-widest ${cls.hasConflict ? 'text-red-300' : 'text-themeTextSec'}`}>
-                                                            {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
-                                                        </span>
-                                                        <div className="mt-auto flex justify-between items-end opacity-80">
-                                                            <span className="text-[9px] truncate"><i className="fa-solid fa-location-dot mr-1"></i>{cls.room || 'TBA'}</span>
-                                                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-black/20 uppercase">
-                                                                {cls.class_type || 'Core'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                );
-                            })}
-                        </div>
+                    <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Personal Calendar Sync</h3>
+                        <p className="text-xs font-bold text-themeTextSec mb-4 leading-relaxed">
+                            Sync official updates, extra classes, and holidays directly to your Apple or Google Calendar.
+                        </p>
+                        <button onClick={exportCalendar} className="w-full bg-themeElevated border border-themeBorderStrong hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
+                            <i className="fa-regular fa-calendar-plus text-themeAccent"></i> Export as .ICS
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* MOBILE LIST VIEW */}
-            <div className="flex lg:hidden w-full flex-col gap-4">
-                {processedClasses.filter(c => c.day_of_week === activeDay).length === 0 ? (
-                    <div className="p-8 text-center bg-themePanel rounded-themePanel border-theme border-themeBorder border-dashed mt-2">
-                        <i className="fa-regular fa-calendar-xmark text-4xl text-themeTextSec opacity-50 mb-3"></i>
-                        <h4 className="text-themeText font-bold">No Classes Scheduled</h4>
-                        <p className="text-xs text-themeTextSec mt-1">You have a free day today!</p>
-                    </div>
-                ) : (
-                    processedClasses.filter(c => c.day_of_week === activeDay).map(cls => {
-                        const isLive = isClassLive(cls.start_time, cls.end_time, cls.day_of_week);
-                        const conflictClasses = cls.hasConflict ? "ring-1 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "";
-                        return (
-                            <div key={`mobile-${cls.id}`} className={`p-5 rounded-themePanel border-theme flex flex-col gap-3 relative overflow-hidden ${getCategoryColor(cls.class_type, cls.hasConflict)} ${conflictClasses} ${isLive ? 'ring-2 ring-themeAccent shadow-[0_0_20px_rgba(245,158,11,0.2)]' : ''}`}>
-                                {isLive && (
-                                    <div className="absolute top-0 right-0 w-16 h-16 bg-themeAccent/20 blur-xl rounded-full pointer-events-none"></div>
-                                )}
-                                <div className="flex justify-between items-start gap-4 z-10">
-                                    <div className="flex-1">
-                                        <h4 className={`text-[13px] font-black leading-tight mb-2 uppercase tracking-wide ${cls.hasConflict ? 'text-red-400' : 'text-themeText'}`}>{cls.subjects?.name}</h4>
-                                        <div className="flex flex-col gap-1.5 mt-1">
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest flex items-center ${cls.hasConflict ? 'text-red-300' : 'text-themeTextSec'}`}>
-                                                <i className="fa-regular fa-clock w-4"></i>
-                                                {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest flex items-center">
-                                                <i className="fa-solid fa-location-dot w-4"></i>
-                                                {cls.room || 'TBA'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    {isLive && (
-                                        <span className="bg-themeAccent text-black text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md animate-pulse shrink-0">
-                                            Live Now
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="mt-1 pt-3 border-t border-current/10 flex justify-between items-center z-10">
-                                    <span className="text-[10px] font-medium opacity-80 uppercase tracking-widest"><i className="fa-solid fa-chalkboard-user mr-1.5"></i> {cls.faculty?.full_name || 'TBA'}</span>
-                                    <span className="text-[9px] font-bold px-2 py-1 rounded bg-black/20 uppercase tracking-widest">
-                                        {cls.class_type || 'Core'}
-                                    </span>
-                                </div>
-                            </div>
-                        )
-                    })
-                )}
-            </div>
-
+            <LectureSideSheet />
         </div>
     );
 }

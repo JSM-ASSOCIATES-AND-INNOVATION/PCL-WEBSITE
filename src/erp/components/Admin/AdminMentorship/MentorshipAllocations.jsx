@@ -287,21 +287,21 @@ export default function MentorshipAllocations() {
     return (
         <div className="flex flex-col gap-6 animate-fade-in relative pb-10">
             {isProcessing && (
-                <div className="fixed bottom-6 right-6 bg-themeElevated px-5 py-3 rounded-full border-[length:var(--border-width)] border-themeBorderStrong flex items-center gap-3 animate-fade-in z-50 shadow-2xl">
+                <div className="fixed bottom-6 right-6 bg-themeElevated px-5 py-3 rounded-full border border-themeBorderStrong flex items-center gap-3 animate-fade-in z-50 shadow-2xl">
                     <i className="fa-solid fa-circle-notch fa-spin text-themeAccent text-sm"></i>
                     <span className="text-xs font-black uppercase tracking-widest text-themeAccent">{actionMessage}</span>
                 </div>
             )}
 
             {/* 2. CONTROL PANEL */}
-            <div className={`${theme.layout.panel} rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-3 lg:p-6 flex flex-col xl:flex-row items-center justify-between gap-3 lg:gap-6 relative overflow-hidden z-20`}>
+            <div className={`${theme.layout.panel} rounded-2xl border border-themeBorder p-3 lg:p-6 flex flex-col xl:flex-row items-center justify-between gap-3 lg:gap-6 relative overflow-hidden z-20`}>
                 <div className="flex items-center justify-between xl:justify-start gap-4 w-full xl:w-auto shrink-0">
-                    <div className="bg-themePanel p-2.5 lg:p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex items-center justify-between gap-4 lg:gap-6 w-full xl:w-auto">
+                    <div className="bg-themePanel p-2.5 lg:p-4 rounded-2xl border border-themeBorder flex items-center justify-between gap-4 lg:gap-6 w-full xl:w-auto">
                         <div>
                             <p className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeAccent mb-0.5">Max Capacity</p>
                             <p className="text-[9px] lg:text-xs font-semibold text-themeTextSec opacity-70">Per Faculty Mentor</p>
                         </div>
-                        <div className="flex items-center bg-themeElevated rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong overflow-hidden">
+                        <div className="flex items-center bg-themeElevated rounded-2xl border border-themeBorderStrong overflow-hidden">
                             <button disabled={isProcessing} onClick={() => setMaxCapacity(Math.max(1, maxCapacity - 1))} className="w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center text-themeAccent hover:bg-neutral-800 transition-colors border-r border-themeBorderStrong active:scale-95 disabled:opacity-50">
                                 <i className="fa-solid fa-minus text-[10px] lg:text-xs"></i>
                             </button>
@@ -326,21 +326,21 @@ export default function MentorshipAllocations() {
                     <button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isProcessing}
-                        className="col-span-1 w-full sm:w-auto px-3 lg:px-6 py-2.5 lg:py-4 bg-themeElevated hover:bg-blue-500/10 text-themeTextSec hover:text-blue-500 border-[length:var(--border-width)] border-themeBorder hover:border-blue-500/30 rounded-themePanel text-[9px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
+                        className="col-span-1 w-full sm:w-auto px-3 lg:px-6 py-2.5 lg:py-4 bg-themeElevated hover:bg-blue-500/10 text-themeTextSec hover:text-blue-500 border border-themeBorder hover:border-blue-500/30 rounded-2xl text-[9px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
                     >
                         <i className="fa-solid fa-upload"></i> <span className="hidden sm:inline">Bulk </span>CSV
                     </button>
                     <button
                         onClick={handleClearAll}
                         disabled={totalAllocated === 0 || isProcessing}
-                        className="col-span-1 w-full sm:w-auto px-3 lg:px-6 py-2.5 lg:py-4 bg-themeElevated hover:bg-themeElevated text-themeTextSec hover:text-rose-400 border-[length:var(--border-width)] border-themeBorder hover:border-themeBorderStrong rounded-themePanel text-[9px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
+                        className="col-span-1 w-full sm:w-auto px-3 lg:px-6 py-2.5 lg:py-4 bg-themeElevated hover:bg-themeElevated text-themeTextSec hover:text-rose-400 border border-themeBorder hover:border-themeBorderStrong rounded-2xl text-[9px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center justify-center gap-2 active:scale-95"
                     >
                         <i className="fa-solid fa-trash-can"></i> Clear All
                     </button>
                     <button
                         onClick={handleAutoAllocate}
                         disabled={filteredStudents.length === 0 || isProcessing}
-                        className="col-span-2 w-full sm:w-auto px-4 lg:px-6 py-3 lg:py-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 active:scale-[0.98] shadow-lg"
+                        className="col-span-2 w-full sm:w-auto px-4 lg:px-6 py-3 lg:py-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-2xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 active:scale-[0.98] shadow-lg"
                     >
                         <i className="fa-solid fa-wand-magic-sparkles text-sm lg:text-base"></i> Auto-Allocate View
                     </button>
@@ -358,25 +358,25 @@ export default function MentorshipAllocations() {
                                 <h2 className="text-base lg:text-lg font-black text-themeText tracking-tight">Unallocated Students</h2>
                                 <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mt-1">Search & Filter</p>
                             </div>
-                            <span className="text-[9px] lg:text-[10px] font-black bg-themePanel text-themeTextSec px-3 py-1.5 rounded-lg border-[length:var(--border-width)] border-themeBorder">
+                            <span className="text-[9px] lg:text-[10px] font-black bg-themePanel text-themeTextSec px-3 py-1.5 rounded-lg border border-themeBorder">
                                 {filteredStudents.length} / {unallocatedStudents.length}
                             </span>
                         </div>
 
                         {/* Search & Filters */}
-                        <div className="flex flex-col gap-2 p-3 bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel">
+                        <div className="flex flex-col gap-2 p-3 bg-themePanel border border-themeBorder rounded-2xl">
                             <input 
                                 type="text"
                                 placeholder="Search Name or Reg No..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded px-3 py-2 text-xs font-bold text-themeText focus:border-indigo-500 outline-none"
+                                className="w-full bg-themeElevated border border-themeBorderStrong rounded px-3 py-2 text-xs font-bold text-themeText focus:border-indigo-500 outline-none"
                             />
                             <div className="grid grid-cols-2 gap-2">
                                 <select 
                                     value={filterProgramme}
                                     onChange={(e) => setFilterProgramme(e.target.value)}
-                                    className="w-full bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded px-3 py-2 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
+                                    className="w-full bg-themeElevated border border-themeBorderStrong rounded px-3 py-2 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
                                 >
                                     <option value="All">All Programmes</option>
                                     <option value="BA.LLB">BA.LLB</option>
@@ -386,7 +386,7 @@ export default function MentorshipAllocations() {
                                 <select 
                                     value={filterSemester}
                                     onChange={(e) => setFilterSemester(e.target.value)}
-                                    className="w-full bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded px-3 py-2 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
+                                    className="w-full bg-themeElevated border border-themeBorderStrong rounded px-3 py-2 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
                                 >
                                     <option value="All">All Semesters</option>
                                     <option value="1">Sem 1</option>
@@ -402,7 +402,7 @@ export default function MentorshipAllocations() {
                                 <div 
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    className={`${theme.layout.panel} rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-3 lg:p-4 h-[250px] lg:h-[600px] overflow-y-auto no-scrollbar flex flex-col gap-2 relative transition-colors ${snapshot.isDraggingOver ? 'bg-themeElevated/50 border-indigo-500 shadow-inner' : ''}`}
+                                    className={`${theme.layout.panel} rounded-2xl border border-themeBorder p-3 lg:p-4 h-[250px] lg:h-[600px] overflow-y-auto no-scrollbar flex flex-col gap-2 relative transition-colors ${snapshot.isDraggingOver ? 'bg-themeElevated/50 border-indigo-500 shadow-inner' : ''}`}
                                 >
                                     {isLoading ? (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 opacity-60">
@@ -423,7 +423,7 @@ export default function MentorshipAllocations() {
                                                             ref={provided.innerRef}
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
-                                                            className={`bg-themePanel p-2.5 lg:p-3 rounded-themePanel border-[length:var(--border-width)] flex flex-col group transition-all ${snapshot.isDragging ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] bg-themeElevated z-50 scale-105' : 'border-themeBorder hover:border-themeBorderStrong'}`}
+                                                            className={`bg-themePanel p-2.5 lg:p-3 rounded-2xl border flex flex-col group transition-all ${snapshot.isDragging ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] bg-themeElevated z-50 scale-105' : 'border-themeBorder hover:border-themeBorderStrong'}`}
                                                         >
                                                         <div className="flex items-start justify-between mb-2">
                                                             <div className="min-w-0 pr-2">
@@ -433,9 +433,9 @@ export default function MentorshipAllocations() {
                                                             <i className="fa-solid fa-grip-vertical text-themeTextSec opacity-30 group-hover:opacity-100 transition-opacity mt-1"></i>
                                                         </div>
                                                         <div className="flex flex-wrap gap-1.5">
-                                                            <span className="bg-themeApp border-[length:var(--border-width)] border-themeBorderStrong px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-themeTextSec tracking-widest">{student.programme}</span>
-                                                            <span className="bg-themeApp border-[length:var(--border-width)] border-themeBorderStrong px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-themeTextSec tracking-widest">Sem {student.semester}</span>
-                                                            <span className="bg-themeApp border-[length:var(--border-width)] border-themeBorderStrong px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-themeTextSec tracking-widest">Sec {student.section}</span>
+                                                            <span className="bg-themeApp border border-themeBorderStrong px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-themeTextSec tracking-widest">{student.programme}</span>
+                                                            <span className="bg-themeApp border border-themeBorderStrong px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-themeTextSec tracking-widest">Sem {student.semester}</span>
+                                                            <span className="bg-themeApp border border-themeBorderStrong px-1.5 py-0.5 rounded text-[8px] font-black uppercase text-themeTextSec tracking-widest">Sec {student.section}</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -455,7 +455,7 @@ export default function MentorshipAllocations() {
                                 <h2 className="text-base lg:text-lg font-black text-themeText tracking-tight">Faculty Mentors</h2>
                                 <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mt-1">Drag & Drop Allocation</p>
                             </div>
-                            <span className="text-[9px] lg:text-[10px] font-black bg-themePanel text-themeTextSec px-3 py-1.5 rounded-lg border-[length:var(--border-width)] border-themeBorder">
+                            <span className="text-[9px] lg:text-[10px] font-black bg-themePanel text-themeTextSec px-3 py-1.5 rounded-lg border border-themeBorder">
                                 {faculty.length} Mentors Available
                             </span>
                         </div>
@@ -463,7 +463,7 @@ export default function MentorshipAllocations() {
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5">
                             {isLoading ? (
                                 Array(3).fill(0).map((_, i) => (
-                                    <div key={i} className={`${theme.layout.panel} rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col overflow-hidden h-[300px] animate-pulse`}>
+                                    <div key={i} className={`${theme.layout.panel} rounded-2xl border border-themeBorder flex flex-col overflow-hidden h-[300px] animate-pulse`}>
                                         <div className="p-4 lg:p-5 border-b-[length:var(--border-width)] border-themeBorder bg-themeApp h-32"></div>
                                         <div className="p-3 lg:p-4 flex flex-col gap-2 flex-1"></div>
                                     </div>
@@ -474,21 +474,21 @@ export default function MentorshipAllocations() {
                                 const loadPercentage = Math.min((currentLoad / maxCapacity) * 100, 100);
 
                                 return (
-                                    <div key={fac.id} className={`${theme.layout.panel} rounded-themePanel border-[length:var(--border-width)] flex flex-col overflow-hidden transition-all duration-300 ${isFull ? 'border-themeBorderStrong' : 'border-themeBorder'}`}>
+                                    <div key={fac.id} className={`${theme.layout.panel} rounded-2xl border flex flex-col overflow-hidden transition-all duration-300 ${isFull ? 'border-themeBorderStrong' : 'border-themeBorder'}`}>
 
                                         <div className="p-4 border-b-[length:var(--border-width)] border-themeBorder bg-themeApp shrink-0">
                                             <div className="flex justify-between items-start mb-3">
-                                                <div className="w-10 h-10 bg-indigo-500/10 text-indigo-500 rounded-themePanel flex items-center justify-center font-black text-base border-[length:var(--border-width)] border-indigo-500/20 shrink-0">
+                                                <div className="w-10 h-10 bg-indigo-500/10 text-indigo-500 rounded-2xl flex items-center justify-center font-black text-base border border-indigo-500/20 shrink-0">
                                                     {fac.name.charAt(0)}
                                                 </div>
-                                                <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border-[length:var(--border-width)] ${isFull ? 'bg-themeElevated text-indigo-500 border-indigo-500/30' : 'bg-themeElevated text-themeTextSec border-themeBorderStrong'}`}>
+                                                <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border ${isFull ? 'bg-themeElevated text-indigo-500 border-indigo-500/30' : 'bg-themeElevated text-themeTextSec border-themeBorderStrong'}`}>
                                                     {currentLoad} / {maxCapacity}
                                                 </span>
                                             </div>
                                             <h3 className="text-sm font-black text-themeText truncate mb-0.5">{fac.name}</h3>
                                             <p className="text-[9px] font-bold text-themeTextSec opacity-70 uppercase tracking-widest truncate">{fac.department}</p>
 
-                                            <div className="w-full h-1.5 bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded-full mt-4 overflow-hidden">
+                                            <div className="w-full h-1.5 bg-themeElevated border border-themeBorderStrong rounded-full mt-4 overflow-hidden">
                                                 <div
                                                     className={`h-full rounded-full transition-all duration-500 ${isFull ? 'bg-indigo-500' : 'bg-emerald-500'}`}
                                                     style={{ width: `${loadPercentage}%` }}
@@ -515,7 +515,7 @@ export default function MentorshipAllocations() {
                                                                             ref={provided.innerRef}
                                                                             {...provided.draggableProps}
                                                                             {...provided.dragHandleProps}
-                                                                            className={`bg-themePanel border-[length:var(--border-width)] p-2 lg:p-2.5 rounded-themePanel flex items-center justify-between group transition-all ${snapshot.isDragging ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] bg-themeElevated z-50 scale-105' : 'border-themeBorder hover:border-themeBorderStrong'}`}
+                                                                            className={`bg-themePanel border p-2 lg:p-2.5 rounded-2xl flex items-center justify-between group transition-all ${snapshot.isDragging ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] bg-themeElevated z-50 scale-105' : 'border-themeBorder hover:border-themeBorderStrong'}`}
                                                                         >
                                                                         <div className="min-w-0 pr-2">
                                                                             <p className="text-[10px] lg:text-xs font-black text-themeText truncate">{student.name}</p>
@@ -526,7 +526,7 @@ export default function MentorshipAllocations() {
                                                                             <button
                                                                                 onClick={() => handleRemoveStudent(fac.id, student.id)}
                                                                                 disabled={isProcessing}
-                                                                                className="w-6 h-6 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong text-themeTextSec opacity-70 hover:text-rose-500 hover:border-themeBorderStrong hover:bg-themeElevated flex items-center justify-center transition-colors lg:opacity-0 lg:group-hover:opacity-100 shrink-0 disabled:opacity-50"
+                                                                                className="w-6 h-6 rounded-lg bg-themeElevated border border-themeBorderStrong text-themeTextSec opacity-70 hover:text-rose-500 hover:border-themeBorderStrong hover:bg-themeElevated flex items-center justify-center transition-colors lg:opacity-0 lg:group-hover:opacity-100 shrink-0 disabled:opacity-50"
                                                                                 title="Remove from Mentor"
                                                                             >
                                                                                 <i className="fa-solid fa-xmark text-[10px]"></i>

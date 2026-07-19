@@ -1,14 +1,15 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
 export default function AdminApprovals() {
-    const [activeTab, setActiveTab] = useState("escalated_grievances"); // 'escalated_grievances', 'document_verification'
+    const [activeTab, setActiveTab] = useState("faculty_leaves"); // 'faculty_leaves', 'escalated_grievances'
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Data
+    const [facultyLeaves, setFacultyLeaves] = useState([]);
     const [grievances, setGrievances] = useState([]);
     const [pendingDocuments, setPendingDocuments] = useState([]);
 
@@ -24,6 +25,10 @@ export default function AdminApprovals() {
                 { data: leavesData },
                 { data: grievancesData }
             ] = await Promise.all([
+                // Fetch faculty leaves
+
+                supabase.from('faculty_leaves').select('*').order('created_at', { ascending: false }),
+                
                 // Fetch escalated grievances (assigned_to IS NULL)
                 supabase.from('grievances')
                     .select('*, reporter:profiles!grievances_reporter_id_fkey(full_name, role), accused:profiles!grievances_accused_id_fkey(full_name, role)')
@@ -39,6 +44,12 @@ export default function AdminApprovals() {
 
             const { data: allProfiles } = await supabase.from('profiles').select('id, full_name, role');
             
+            const enrichedLeaves = (leavesData || []).map(l => {
+                const p = allProfiles?.find(prof => prof.id === l.faculty_id);
+                return { ...l, faculty_name: p?.full_name || 'Unknown Faculty' };
+            });
+
+            setFacultyLeaves(enrichedLeaves);
             setGrievances(grievancesData || []);
             setPendingDocuments(arguments[0][2]?.data || []);
 
@@ -49,7 +60,42 @@ export default function AdminApprovals() {
         }
     }, []);
 
+    const handleLeaveAction = async (leaveId, newStatus, remarks = "") => {
+        setIsProcessing(true);
+        try {
+            const { error } = await supabase
+                .from('faculty_leaves')
+                .update({ status: newStatus, admin_remarks: remarks })
+                .eq('id', leaveId)
+                .select();
+            
+            if (error) throw error;
 
+            // Notify Requester
+            const leaveData = error ? null : (await supabase.from('faculty_leaves').select('faculty_id, start_date, end_date').eq('id', leaveId).single()).data;
+            if (leaveData && leaveData.faculty_id) {
+                const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+                await supabase.from('notices').insert([{
+                    notice_id: noticeId,
+                    title: `Leave Request ${newStatus}`,
+                    category: 'System Alert',
+                    target_audience: 'person',
+                    target_id: leaveData.faculty_id,
+                    priority: 'high',
+                    content: `Your leave request from ${new Date(leaveData.start_date).toLocaleDateString()} to ${new Date(leaveData.end_date).toLocaleDateString()} has been ${newStatus}.`,
+                    author_name: 'Admin',
+                    author_id: null
+                }]);
+            }
+            window.erpDialog.alert(`Faculty leave request has been ${newStatus}.`);
+            fetchData();
+        } catch (error) {
+            console.error("Error updating leave:", error);
+            window.erpDialog.alert("Failed to process leave request.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     const handleGrievanceAction = async (grievanceId, newStatus, notes = "") => {
         setIsProcessing(true);
@@ -64,6 +110,23 @@ export default function AdminApprovals() {
                 .eq('id', grievanceId);
             
             if (error) throw error;
+
+            // Notify Requester
+            const grievanceData = error ? null : (await supabase.from('grievances').select('reporter_id, category').eq('id', grievanceId).single()).data;
+            if (grievanceData && grievanceData.reporter_id) {
+                const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+                await supabase.from('notices').insert([{
+                    notice_id: noticeId,
+                    title: `Grievance Update`,
+                    category: 'System Alert',
+                    target_audience: 'person',
+                    target_id: grievanceData.reporter_id,
+                    priority: 'high',
+                    content: `Your grievance regarding ${grievanceData.category} has been marked as ${newStatus}.`,
+                    author_name: 'Admin',
+                    author_id: null
+                }]);
+            }
             window.erpDialog.alert(`Escalated grievance marked as ${newStatus}.`);
             fetchData();
         } catch (error) {
@@ -83,6 +146,23 @@ export default function AdminApprovals() {
                 .eq('id', docId);
             
             if (error) throw error;
+
+            // Notify Requester
+            const docData = error ? null : (await supabase.from('student_documents').select('student_id, document_type').eq('id', docId).single()).data;
+            if (docData && docData.student_id) {
+                const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+                await supabase.from('notices').insert([{
+                    notice_id: noticeId,
+                    title: `Document ${newStatus}`,
+                    category: 'System Alert',
+                    target_audience: 'person',
+                    target_id: docData.student_id,
+                    priority: 'normal',
+                    content: `Your uploaded document (${docData.document_type}) has been ${newStatus}.`,
+                    author_name: 'Admin',
+                    author_id: null
+                }]);
+            }
             window.erpDialog.alert(`Document marked as ${newStatus}.`);
             fetchData();
         } catch (error) {
@@ -124,38 +204,42 @@ export default function AdminApprovals() {
     return (
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated relative">
             
-            {/* Header */}
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText">
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themeElevated rounded-full lg:-translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 lg:w-64 lg:h-64 bg-indigo-500/10 rounded-full lg:translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
-
-                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                    <div className="flex items-center gap-4 lg:gap-5">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel flex items-center justify-center shrink-0">
-                            <i className="fa-solid fa-scale-balanced text-themeAccent text-2xl lg:text-3xl"></i>
-                        </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText mb-1`}>Admin Approvals & Investigations</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Manage faculty leaves, document verifications, and escalated grievances.</p>
-                        </div>
+            {/* Header and Tabs */}
+            <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                {/* Background Decorations */}
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                
+                <div className="flex items-center gap-4 lg:gap-5 relative z-10 mb-2">
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                        <i className="fa-solid fa-scale-balanced text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                    </div>
+                    <div>
+                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Admin Approvals & Investigations</h1>
+                        <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Manage faculty leaves, document verifications, and escalated grievances.</p>
                     </div>
                 </div>
-            </div>
 
-            {/* Tabs */}
-            <div className="flex bg-themeElevated p-1.5 rounded-xl border-theme border-themeBorder w-fit relative z-10 overflow-x-auto max-w-full">
-                <button 
-                    onClick={() => setActiveTab('escalated_grievances')}
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-lg text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'escalated_grievances' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-themeTextSec hover:text-themeText'}`}
-                >
-                    Escalated Grievances
-                </button>
-                <button 
-                    onClick={() => setActiveTab('document_verification')}
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-lg text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${activeTab === 'document_verification' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-themeTextSec hover:text-themeText'}`}
-                >
-                    Document Verification
-                </button>
+                {/* Tabs */}
+                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+                    <button 
+                        onClick={() => setActiveTab('faculty_leaves')}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'faculty_leaves' ? 'bg-white text-themeAccent shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-white scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                    >
+                        Faculty Leaves
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('escalated_grievances')}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'escalated_grievances' ? 'bg-rose-500 text-white shadow-[0_4px_15px_rgba(225,29,72,0.3)] border border-rose-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                    >
+                        Escalated Grievances
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('document_verification')}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'document_verification' ? 'bg-blue-500 text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)] border border-blue-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                    >
+                        Document Verification
+                    </button>
+                </div>
             </div>
 
             {isLoading ? (
@@ -166,7 +250,52 @@ export default function AdminApprovals() {
             ) : (
                 <div className="relative z-10">
                     
+                    {activeTab === 'faculty_leaves' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {facultyLeaves.length === 0 ? (
+                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
+                                    <p className="text-sm font-semibold text-themeTextSec">No pending leave requests from Faculty.</p>
+                                </div>
+                            ) : (
+                                facultyLeaves.map(req => (
+                                    <div key={req.id} className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-5 flex flex-col gap-4 relative overflow-hidden`}>
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-themeAccent"></div>
+                                        <div className="flex justify-between items-start pl-2">
+                                            <div>
+                                                <p className="text-sm font-black text-themeText mb-0.5">{req.faculty_name}</p>
+                                                <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">{req.start_date} to {req.end_date}</p>
+                                            </div>
+                                            {getStatusBadge(req.status)}
+                                        </div>
+                                        
+                                        <div className="flex gap-2">
+                                            <span className="bg-themePanel border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.leave_type}</span>
+                                            <span className="bg-themePanel border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.total_days} Days</span>
+                                        </div>
 
+                                        <div className="bg-themeElevated p-3 rounded-lg border-theme border-themeBorder">
+                                            <p className="text-xs text-themeText italic">"{req.reason}"</p>
+                                        </div>
+
+                                        {req.status === 'pending' ? (
+                                            <div className="flex gap-2 mt-auto">
+                                                <button onClick={() => handleLeaveAction(req.id, 'approved', 'Approved by Administration')} disabled={isProcessing} className="flex-1 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Approve</button>
+                                                <button onClick={() => {
+                                                    const reason = window.prompt("Reason for rejection:");
+                                                    if(reason) handleLeaveAction(req.id, 'rejected', reason);
+                                                }} disabled={isProcessing} className="flex-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Reject</button>
+                                            </div>
+                                        ) : (
+                                            <div className="mt-auto border-t-theme border-themeBorderStrong pt-3">
+                                                <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec mb-1">Admin Remarks</p>
+                                                <p className="text-xs text-themeText">{req.admin_remarks || "N/A"}</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
 
                     {activeTab === 'escalated_grievances' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

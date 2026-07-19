@@ -1,10 +1,12 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import './StaggeredMenu.css';
 
 export const StaggeredMenu = ({
   position = 'right',
-  colors = ['#111111', '#050505'],
+  colors = ['var(--bg-color)', 'var(--card-bg)'],
   items = [],
   socialItems = [],
   displaySocials = true,
@@ -17,6 +19,7 @@ export const StaggeredMenu = ({
   changeMenuColorOnOpen = true,
   isFixed = false,
   closeOnClickAway = true,
+  showApplyButton = true,
   onMenuOpen,
   onMenuClose
 }) => {
@@ -32,6 +35,7 @@ export const StaggeredMenu = ({
   const textInnerRef = useRef(null);
   const textWrapRef = useRef(null);
   const [textLines, setTextLines] = useState(['Menu', 'Close']);
+  const location = useLocation();
 
   const openTlRef = useRef(null);
   const closeTweenRef = useRef(null);
@@ -41,6 +45,13 @@ export const StaggeredMenu = ({
   const toggleBtnRef = useRef(null);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef(null);
+
+  // Respect prefers-reduced-motion: scale every tween duration way down
+  // instead of skipping animation logic entirely (keeps the code path
+  // the same, just near-instant).
+  const motionScale = useRef(
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0.05 : 1
+  ).current;
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -109,11 +120,11 @@ export const StaggeredMenu = ({
     const tl = gsap.timeline({ paused: true });
 
     layerStates.forEach((ls, i) => {
-      tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
+      tl.fromTo(ls.el, { xPercent: ls.start }, { xPercent: 0, duration: 0.5 * motionScale, ease: 'power4.out' }, i * 0.07 * motionScale);
     });
-    const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0;
-    const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0);
-    const panelDuration = 0.65;
+    const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 * motionScale : 0;
+    const panelInsertTime = lastTime + (layerStates.length ? 0.08 * motionScale : 0);
+    const panelDuration = 0.65 * motionScale;
     tl.fromTo(
       panel,
       { xPercent: panelStart },
@@ -129,9 +140,9 @@ export const StaggeredMenu = ({
         {
           yPercent: 0,
           rotate: 0,
-          duration: 1,
+          duration: 1 * motionScale,
           ease: 'power4.out',
-          stagger: { each: 0.1, from: 'start' }
+          stagger: { each: 0.1 * motionScale, from: 'start' }
         },
         itemsStart
       );
@@ -139,12 +150,12 @@ export const StaggeredMenu = ({
         tl.to(
           numberEls,
           {
-            duration: 0.6,
+            duration: 0.6 * motionScale,
             ease: 'power2.out',
             '--sm-num-opacity': 1,
-            stagger: { each: 0.08, from: 'start' }
+            stagger: { each: 0.08 * motionScale, from: 'start' }
           },
-          itemsStart + 0.1
+          itemsStart + 0.1 * motionScale
         );
       }
     }
@@ -156,7 +167,7 @@ export const StaggeredMenu = ({
           socialTitle,
           {
             opacity: 1,
-            duration: 0.5,
+            duration: 0.5 * motionScale,
             ease: 'power2.out'
           },
           socialsStart
@@ -168,9 +179,9 @@ export const StaggeredMenu = ({
           {
             y: 0,
             opacity: 1,
-            duration: 0.55,
+            duration: 0.55 * motionScale,
             ease: 'power3.out',
-            stagger: { each: 0.08, from: 'start' },
+            stagger: { each: 0.08 * motionScale, from: 'start' },
             onComplete: () => {
               gsap.set(socialLinks, { clearProps: 'opacity' });
             }
@@ -182,7 +193,7 @@ export const StaggeredMenu = ({
 
     openTlRef.current = tl;
     return tl;
-  }, []);
+  }, [motionScale, position]);
 
   const playOpen = useCallback(() => {
     if (busyRef.current) return;
@@ -212,7 +223,7 @@ export const StaggeredMenu = ({
     const offscreen = position === 'left' ? -100 : 100;
     closeTweenRef.current = gsap.to(all, {
       xPercent: offscreen,
-      duration: 0.32,
+      duration: 0.32 * motionScale,
       ease: 'power3.in',
       overwrite: 'auto',
       onComplete: () => {
@@ -231,18 +242,18 @@ export const StaggeredMenu = ({
         busyRef.current = false;
       }
     });
-  }, [position]);
+  }, [position, motionScale]);
 
   const animateIcon = useCallback(opening => {
     const icon = iconRef.current;
     if (!icon) return;
     spinTweenRef.current?.kill();
     if (opening) {
-      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { rotate: 225, duration: 0.8 * motionScale, ease: 'power4.out', overwrite: 'auto' });
     } else {
-      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut', overwrite: 'auto' });
+      spinTweenRef.current = gsap.to(icon, { rotate: 0, duration: 0.35 * motionScale, ease: 'power3.inOut', overwrite: 'auto' });
     }
-  }, []);
+  }, [motionScale]);
 
   const animateColor = useCallback(
     opening => {
@@ -253,15 +264,15 @@ export const StaggeredMenu = ({
         const targetColor = opening ? openMenuButtonColor : menuButtonColor;
         colorTweenRef.current = gsap.to(btn, {
           color: targetColor,
-          delay: 0.18,
-          duration: 0.3,
+          delay: 0.18 * motionScale,
+          duration: 0.3 * motionScale,
           ease: 'power2.out'
         });
       } else {
         gsap.set(btn, { color: menuButtonColor });
       }
     },
-    [openMenuButtonColor, menuButtonColor, changeMenuColorOnOpen]
+    [openMenuButtonColor, menuButtonColor, changeMenuColorOnOpen, motionScale]
   );
 
   React.useEffect(() => {
@@ -298,10 +309,10 @@ export const StaggeredMenu = ({
     const finalShift = ((lineCount - 1) / lineCount) * 100;
     textCycleAnimRef.current = gsap.to(inner, {
       yPercent: -finalShift,
-      duration: 0.5 + lineCount * 0.07,
+      duration: (0.5 + lineCount * 0.07) * motionScale,
       ease: 'power4.out'
     });
-  }, []);
+  }, [motionScale]);
 
   const toggleMenu = useCallback(() => {
     const target = !openRef.current;
@@ -331,6 +342,7 @@ export const StaggeredMenu = ({
     }
   }, [playClose, animateIcon, animateColor, animateText, onMenuClose]);
 
+  // Close on outside click
   React.useEffect(() => {
     if (!closeOnClickAway || !open) return;
 
@@ -351,6 +363,60 @@ export const StaggeredMenu = ({
     };
   }, [closeOnClickAway, open, closeMenu]);
 
+  // Close on Escape
+  React.useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = e => {
+      if (e.key === 'Escape') closeMenu();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, closeMenu]);
+
+  // Lock body scroll while the drawer is open, so the page behind it
+  // doesn't keep scrolling.
+  React.useEffect(() => {
+    if (open) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = previousOverflow;
+      };
+    }
+  }, [open]);
+
+  // Move focus into the panel on open, and back to the toggle button on
+  // close, so keyboard users land somewhere sensible.
+  React.useEffect(() => {
+    if (open) {
+      const firstFocusable = panelRef.current?.querySelector('a, button');
+      firstFocusable?.focus();
+    } else {
+      toggleBtnRef.current?.focus({ preventScroll: true });
+    }
+  }, [open]);
+
+  // Close whenever the route changes (a nav click already closes it, but
+  // this covers programmatic navigation too) and reset the accordion.
+  const firstRender = useRef(true);
+  React.useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    if (openRef.current) closeMenu();
+    setOpenAccordion(null);
+  }, [location.pathname, closeMenu]);
+
+  const handleNavigate = useCallback(() => {
+    if (openRef.current) closeMenu();
+  }, [closeMenu]);
+
+  const isActive = link => {
+    const path = (link || '').split('#')[0];
+    return path && path !== '/' && location.pathname.startsWith(path);
+  };
+
   return (
     <div
       className={(className ? className + ' ' : '') + 'staggered-menu-wrapper' + (isFixed ? ' fixed-wrapper' : '')}
@@ -358,18 +424,6 @@ export const StaggeredMenu = ({
       data-position={position}
       data-open={open || undefined}
     >
-      <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
-        {(() => {
-          const raw = colors && colors.length ? colors.slice(0, 4) : ['var(--bg-color)', 'var(--card-bg)'];
-          let arr = [...raw];
-          if (arr.length >= 3) {
-            const mid = Math.floor(arr.length / 2);
-            arr.splice(mid, 1);
-          }
-          return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
-        })()}
-      </div>
-      
       <button
         ref={toggleBtnRef}
         className="sm-toggle"
@@ -394,52 +448,131 @@ export const StaggeredMenu = ({
         </span>
       </button>
 
-      <aside id="staggered-menu-panel" ref={panelRef} className="staggered-menu-panel" aria-hidden={!open}>
-        <div className="sm-panel-inner">
+      {typeof document !== 'undefined' && createPortal(
+        <>
+          <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true" data-position={position}>
+            {(() => {
+              const raw = colors && colors.length ? colors.slice(0, 4) : ['var(--bg-color)', 'var(--card-bg)'];
+              let arr = [...raw];
+              if (arr.length >= 3) {
+                const mid = Math.floor(arr.length / 2);
+                arr.splice(mid, 1);
+              }
+              return arr.map((c, i) => <div key={i} className="sm-prelayer" style={{ background: c }} />);
+            })()}
+          </div>
+          <aside
+            id="staggered-menu-panel"
+            ref={panelRef}
+            className="staggered-menu-panel"
+            role="dialog"
+            aria-modal={open}
+            aria-label="Site menu"
+            aria-hidden={!open}
+            data-position={position}
+            {...(!open ? { inert: '' } : {})}
+          >
+            {/* Mobile Menu Header with Logo and Close Button */}
+            <div className="sm-panel-header lg:hidden" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+              <Link
+                to="/"
+                onClick={closeMenu}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'var(--text-color)' }}
+              >
+                <div className="brand-crest" style={{ transform: 'scale(0.9)', margin: 0 }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.1' }}>
+                  <span style={{ fontWeight: 700, letterSpacing: '1.5px', fontSize: '1rem' }}>PRUDENTIA</span>
+                  <span style={{ fontSize: '0.6rem', letterSpacing: '1.8px', opacity: 0.9 }}>COLLEGE OF LAW</span>
+                </div>
+              </Link>
+              
+              <button 
+                onClick={closeMenu}
+                style={{
+                  background: 'rgba(128,128,128,0.1)',
+                  border: '1px solid var(--card-border)',
+                  color: 'var(--text-color)',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+                aria-label="Close menu"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            <div className="sm-panel-inner">
           <ul className="sm-panel-list" role="list" data-numbering={displayItemNumbering || undefined}>
             {items && items.length ? (
-              items.map((it, idx) => (
-                <li className="sm-panel-itemWrap" key={it.label + idx}>
-                  {it.subItems ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                      <button 
-                        className="sm-panel-item" 
-                        onClick={() => setOpenAccordion(openAccordion === idx ? null : idx)}
-                        style={{ background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: 0 }}
-                        data-index={idx + 1}
-                      >
-                        <span className="sm-panel-itemLabel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                          <span>{it.label}</span>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: openAccordion === idx ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </span>
-                      </button>
-                      <div 
-                        style={{ 
-                          height: openAccordion === idx ? 'auto' : 0, 
-                          overflow: 'hidden', 
-                          opacity: openAccordion === idx ? 1 : 0, 
-                          transition: 'all 0.3s ease',
-                          paddingLeft: '40px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '15px'
-                        }}
-                      >
-                        <div style={{ height: '10px' }}></div>
-                        {it.subItems.map((sub, sIdx) => (
-                          <a key={sIdx} href={sub.link} style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '16px', letterSpacing: '0.5px' }}>{sub.label}</a>
-                        ))}
+              items.map((it, idx) => {
+                const hasSub = it.subItems && it.subItems.length > 0;
+                const accordionId = `sm-accordion-${idx}`;
+                return (
+                  <li className="sm-panel-itemWrap" key={it.label + idx}>
+                    {hasSub ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+                          <Link
+                            to={it.link}
+                            className="sm-panel-item"
+                            style={{ flex: 1, paddingRight: '0.5em' }}
+                            aria-label={it.ariaLabel}
+                            aria-current={isActive(it.link) ? 'page' : undefined}
+                            onClick={handleNavigate}
+                          >
+                            <span className="sm-panel-itemLabel">{it.label}</span>
+                          </Link>
+                          <button
+                            type="button"
+                            aria-expanded={openAccordion === idx}
+                            aria-controls={accordionId}
+                            aria-label={`Toggle ${it.label} submenu`}
+                            onClick={() => setOpenAccordion(openAccordion === idx ? null : idx)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 0 12px', color: 'inherit', display: 'inline-flex', alignSelf: 'flex-start', marginTop: '0.35em' }}
+                          >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: openAccordion === idx ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                        </div>
+                        <div id={accordionId} className={`sm-accordion-content${openAccordion === idx ? ' is-open' : ''}`}>
+                          <ul className="sm-accordion-inner">
+                            {it.subItems.map((sub, sIdx) => (
+                              <li key={sIdx}>
+                                <Link
+                                  to={sub.link}
+                                  className="sm-accordion-link"
+                                  aria-current={isActive(sub.link) ? 'page' : undefined}
+                                  onClick={handleNavigate}
+                                >
+                                  {sub.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <a className="sm-panel-item" href={it.link} aria-label={it.ariaLabel} data-index={idx + 1}>
-                      <span className="sm-panel-itemLabel">{it.label}</span>
-                    </a>
-                  )}
-                </li>
-              ))
+                    ) : (
+                      <Link
+                        className="sm-panel-item"
+                        to={it.link}
+                        aria-label={it.ariaLabel}
+                        aria-current={isActive(it.link) ? 'page' : undefined}
+                        onClick={handleNavigate}
+                      >
+                        <span className="sm-panel-itemLabel">{it.label}</span>
+                      </Link>
+                    )}
+                  </li>
+                );
+              })
             ) : (
               <li className="sm-panel-itemWrap" aria-hidden="true">
                 <span className="sm-panel-item">
@@ -462,29 +595,54 @@ export const StaggeredMenu = ({
               </ul>
             </div>
           )}
-          <div style={{ marginTop: '30px', paddingBottom: '20px' }}>
-            <a 
-              href="/apply" 
-              style={{
-                display: 'block',
-                width: '100%',
-                textAlign: 'center',
-                padding: '15px 0',
-                background: 'var(--primary-color)',
-                color: '#fff',
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-                fontWeight: 'bold',
-                borderRadius: '8px',
-                textDecoration: 'none',
-                boxShadow: '0 10px 20px var(--primary-glow)'
-              }}
-            >
-              Apply Now
-            </a>
-          </div>
+          {showApplyButton && (
+            <div style={{ marginTop: '30px', paddingBottom: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <a
+                href="/erp"
+                onClick={handleNavigate}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'center',
+                  padding: '15px 0',
+                  background: 'transparent',
+                  border: '1px solid var(--primary-color)',
+                  color: 'var(--primary-color)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  fontWeight: 'bold',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                }}
+              >
+                ERP Portal
+              </a>
+              <Link
+                to="/apply"
+                onClick={handleNavigate}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  textAlign: 'center',
+                  padding: '15px 0',
+                  background: 'var(--primary-color)',
+                  color: '#000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  fontWeight: 'bold',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  boxShadow: '0 10px 20px var(--primary-glow)'
+                }}
+              >
+                Apply Now
+              </Link>
+            </div>
+          )}
         </div>
       </aside>
+      </>
+      , document.body)}
     </div>
   );
 };

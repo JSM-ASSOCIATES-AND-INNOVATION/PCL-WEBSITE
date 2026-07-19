@@ -1,147 +1,185 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useSiteContent } from '../../../LIB/hooks/useSiteContent';
+import Preloader from '../../UI/Preloader/Preloader';
 import classroom2 from '../../../ASSETS/CAMPUS/pcl_classroom_2.webp';
+import styles from './Programs.module.css';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function CourseBBALLB() {
-  return (
-    <div className="h-screen w-full relative overflow-x-hidden overflow-y-auto bg-brand-bg text-brand-text">
-      {/* Background Elements */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#050505] to-[#000000] z-0" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[500px] bg-[#FFBF00]/5 blur-[120px] rounded-full pointer-events-none z-0" />
+  const contentRef = useRef(null);
+  
+  // CMS Integration
+  const { content, loading } = useSiteContent('/programs/bba-llb', 'program_details');
 
-      <div className="relative z-20 pt-32 pb-20 px-6 md:px-12 max-w-5xl mx-auto">
+  useEffect(() => {
+    if (loading) return; // Wait for content before animating
+    
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        '.gsap-fade-up',
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, 
+          y: 0, 
+          duration: 0.8, 
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: contentRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none none'
+          }
+        }
+      );
+    }, contentRef);
+
+    return () => ctx.revert();
+  }, [loading]);
+
+  if (loading) return <Preloader />;
+
+  // CMS Fallbacks
+  const cms = {
+    badge1: content?.badge1 || "5 Years Integrated",
+    badge2: content?.badge2 || "Undergraduate",
+    title: content?.title || "BBA. LL.B",
+    title_highlight: content?.title_highlight || "Honors",
+    description: content?.description || "A dynamic integrated undergraduate program merging Business Administration with Legal Education. Tailored for future leaders in Corporate Law and Management.",
+    overview_text: content?.overview_text || "The Bachelor of Business Administration and Bachelor of Legislative Law (BBA. LL.B) is designed for students aiming to specialize in corporate and commercial law. This five-year integrated program bridges the gap between management principles and legal frameworks, providing a comprehensive understanding of how businesses operate within legal boundaries.",
+    focus_1: content?.focus_1 || "Corporate Governance & Law",
+    focus_2: content?.focus_2 || "Business Management Principles",
+    focus_3: content?.focus_3 || "Mergers & Acquisitions",
+    focus_4: content?.focus_4 || "Intellectual Property Rights",
+    focus_5: content?.focus_5 || "Financial Accounting for Lawyers",
+    curriculum_m1_title: content?.curriculum_m1_title || "Years 1 & 2",
+    curriculum_m1_badge: content?.curriculum_m1_badge || "Foundational",
+    curriculum_m1_desc: content?.curriculum_m1_desc || "Principles of Management, Financial Accounting, Business Statistics, Law of Contracts.",
+    curriculum_m2_title: content?.curriculum_m2_title || "Years 3 & 4",
+    curriculum_m2_badge: content?.curriculum_m2_badge || "Core Law & Business",
+    curriculum_m2_desc: content?.curriculum_m2_desc || "Company Law, Property Law, Strategic Management, Labor Law, Taxation.",
+    curriculum_m3_title: content?.curriculum_m3_title || "Year 5",
+    curriculum_m3_badge: content?.curriculum_m3_badge || "Clinical & Advanced",
+    curriculum_m3_desc: content?.curriculum_m3_desc || "Corporate Governance, Drafting & Pleading, Moot Court, Professional Ethics.",
+    fact_duration: content?.fact_duration || "5 Years (10 Semesters)",
+    fact_eligibility: content?.fact_eligibility || "10+2 (Intermediate) with 45% aggregate",
+    fact_mode: content?.fact_mode || "TS LAWCET / Management"
+  };
+
+  return (
+    <div className={styles.pageWrapper}>
+      <div className={styles.ambientBackground} />
+      <div className={styles.auroraGlow} />
+
+      <div className={styles.contentContainer} ref={contentRef}>
         
         {/* Navigation */}
-        <Link to="/programs" className="inline-flex items-center text-brand-muted hover:text-[#FFBF00] transition-colors mb-12 uppercase tracking-widest text-sm font-semibold">
+        <Link to="/programs" className="inline-flex items-center text-[var(--text-muted)] hover:text-[var(--primary-color)] transition-colors mb-12 uppercase tracking-widest text-sm font-semibold relative z-10 gsap-fade-up">
           <span className="mr-2">←</span> Back to Programs
         </Link>
 
         {/* Header */}
-        <div className="mb-16">
-          <div className="flex items-center gap-4 mb-6">
-            <span className="px-4 py-1 border border-[#FFBF00]/30 rounded-full text-[#FFBF00] text-sm tracking-widest uppercase">5 Years Integrated</span>
-            <span className="px-4 py-1 border border-brand-border rounded-full text-brand-muted text-sm tracking-widest uppercase">Undergraduate</span>
+        <div className="mb-16 relative z-10 gsap-fade-up">
+          <div className="flex flex-wrap items-center gap-4 mb-6">
+            <span className="px-4 py-1 border border-[var(--primary-color)]/30 rounded-full text-[var(--primary-color)] text-sm tracking-widest uppercase bg-[var(--primary-color)]/5 backdrop-blur-sm">{cms.badge1}</span>
+            <span className="px-4 py-1 border border-[var(--card-border)] rounded-full text-[var(--text-muted)] text-sm tracking-widest uppercase bg-[var(--card-bg)] backdrop-blur-sm">{cms.badge2}</span>
           </div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold text-brand-text mb-6"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold text-[var(--text-color)] mb-6"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            BBA. LL.B <span className="text-[#FFBF00] italic">Honors</span>
+            {cms.title} <span className="text-[var(--primary-color)] italic">{cms.title_highlight}</span>
           </motion.h1>
-          <p className="text-xl text-brand-muted max-w-3xl leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
-            A premier integrated undergraduate program designed for ambitious students seeking to dominate the spheres of Corporate Law and Business Administration.
+          <p className="text-lg md:text-xl text-[var(--text-muted)] max-w-3xl leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            {cms.description}
           </p>
         </div>
 
         {/* Image */}
-        <div className="w-full h-[400px] md:h-[500px] bg-brand-card border border-brand-border rounded-2xl overflow-hidden mb-16 relative flex items-center justify-center group">
-          <img src={classroom2} alt="BBA LLB Classroom" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="absolute inset-0 ring-1 ring-inset ring-[#FFBF00]/20 rounded-2xl pointer-events-none"></div>
+        <div className="w-full h-[300px] md:h-[500px] rounded-3xl overflow-hidden mb-16 relative flex items-center justify-center group shadow-2xl gsap-fade-up z-10">
+          <img src={classroom2} alt="BBA LLB Classroom" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="absolute inset-0 ring-1 ring-inset ring-[var(--primary-color)]/30 rounded-3xl pointer-events-none"></div>
         </div>
 
         {/* Content Details */}
-        <div className="grid md:grid-cols-3 gap-12">
-          <div className="md:col-span-2 space-y-8">
-            <section>
-              <h2 className="text-3xl font-bold mb-4 text-brand-text" style={{ fontFamily: "'Playfair Display', serif" }}>Program Overview</h2>
-              <p className="text-brand-muted leading-relaxed text-lg">
-                The Bachelor of Business Administration and Bachelor of Legislative Law (BBA. LL.B) is a specialized five-year program merging business acumen with legal prowess. It is tailored to equip students with the managerial skills and legal expertise required to navigate the complex corporate landscape, preparing them for top-tier roles in legal consultancy, corporate management, and commercial litigation.
+        <div className="grid md:grid-cols-3 gap-8 md:gap-12 relative z-10 flex-col-reverse md:flex-row">
+          <div className="md:col-span-2 space-y-12">
+            <section className="gsap-fade-up">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--text-color)]" style={{ fontFamily: "'Playfair Display', serif" }}>Program Overview</h2>
+              <p className="text-[var(--text-muted)] leading-relaxed text-base md:text-lg">
+                {cms.overview_text}
               </p>
             </section>
             
-            <section>
-              <h2 className="text-3xl font-bold mb-4 text-brand-text" style={{ fontFamily: "'Playfair Display', serif" }}>Core Focus Areas</h2>
-              <ul className="space-y-4">
-                {[
-                  "Corporate Law & Governance",
-                  "Mergers, Acquisitions & Finance Law",
-                  "Business Administration & Management",
-                  "Intellectual Property Rights",
-                  "International Trade & Arbitration"
-                ].map((item, idx) => (
-                  <li key={idx} className="flex items-center gap-4 bg-brand-card border border-brand-border p-4 rounded-lg">
-                    <div className="w-2 h-2 rounded-full bg-[#FFBF00]"></div>
-                    <span className="text-brand-muted">{item}</span>
-                  </li>
+            <section className="gsap-fade-up">
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--text-color)]" style={{ fontFamily: "'Playfair Display', serif" }}>Core Focus Areas</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[cms.focus_1, cms.focus_2, cms.focus_3, cms.focus_4, cms.focus_5].map((item, idx) => (
+                  <div key={idx} className={`${styles.glassCard} !p-4 flex items-start gap-4`}>
+                    <div className="w-2 h-2 rounded-full bg-[var(--primary-color)] mt-2 shadow-[0_0_10px_var(--primary-glow)] shrink-0"></div>
+                    <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </section>
-            <section className="mt-12">
-              <h2 className="text-3xl font-bold mb-6 text-brand-text" style={{ fontFamily: "'Playfair Display', serif" }}>Curriculum Overview</h2>
-              <div className="border border-brand-border rounded-xl bg-brand-bg overflow-hidden shadow-sm">
-                {/* Desktop Header */}
-                <div className="hidden md:grid grid-cols-1 md:grid-cols-3 bg-brand-card border-b border-brand-border p-4">
-                  <div className="text-brand-text font-semibold">Semester Group</div>
-                  <div className="col-span-2 text-[#FFBF00] font-semibold">Key Subjects Covered</div>
+
+            <section className="mt-12 gsap-fade-up">
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--text-color)]" style={{ fontFamily: "'Playfair Display', serif" }}>Curriculum Overview</h2>
+              <div className={styles.dataGrid}>
+                <div className={`hidden md:grid grid-cols-3 ${styles.gridHeader}`}>
+                  <div>Semester Group</div>
+                  <div className="col-span-2 text-[var(--primary-color)]">Key Subjects Covered</div>
                 </div>
                 
-                {/* Rows */}
-                <div className="divide-y divide-brand-border">
-                  <div className="grid grid-cols-1 md:grid-cols-3 p-4 hover:bg-brand-card transition-colors gap-2 md:gap-4">
-                    <div className="text-brand-muted font-semibold">
-                      <span className="md:hidden text-brand-text text-sm block mb-1 uppercase tracking-wider">Semester Group</span>
-                      Years 1 & 2 (Foundational)
-                    </div>
-                    <div className="md:col-span-2 text-brand-muted text-sm flex flex-col justify-center">
-                      <span className="md:hidden text-[#FFBF00] font-semibold block mb-1 mt-2 uppercase tracking-wider">Key Subjects Covered</span>
-                      Principles of Management, Business Economics, Financial Accounting, Law of Contracts, Torts.
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 p-4 hover:bg-brand-card transition-colors gap-2 md:gap-4">
-                    <div className="text-brand-muted font-semibold">
-                      <span className="md:hidden text-brand-text text-sm block mb-1 uppercase tracking-wider">Semester Group</span>
-                      Years 3 & 4 (Core Law)
-                    </div>
-                    <div className="md:col-span-2 text-brand-muted text-sm flex flex-col justify-center">
-                      <span className="md:hidden text-[#FFBF00] font-semibold block mb-1 mt-2 uppercase tracking-wider">Key Subjects Covered</span>
-                      Company Law, Corporate Finance, Constitutional Law, Criminal Law, Property Law, Trade Law.
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 p-4 hover:bg-brand-card transition-colors gap-2 md:gap-4">
-                    <div className="text-brand-muted font-semibold">
-                      <span className="md:hidden text-brand-text text-sm block mb-1 uppercase tracking-wider">Semester Group</span>
-                      Year 5 (Clinical & Advanced)
-                    </div>
-                    <div className="md:col-span-2 text-brand-muted text-sm flex flex-col justify-center">
-                      <span className="md:hidden text-[#FFBF00] font-semibold block mb-1 mt-2 uppercase tracking-wider">Key Subjects Covered</span>
-                      Moot Court, Drafting & Pleading, Alternate Dispute Resolution (ADR), Taxation Law.
-                    </div>
-                  </div>
+                <div className={styles.gridRow}>
+                  <div className={styles.gridCellPrimary}>{cms.curriculum_m1_title}<br/><span className="text-xs text-[var(--text-muted)] uppercase tracking-widest block mt-1">{cms.curriculum_m1_badge}</span></div>
+                  <div className={`${styles.gridCellMuted} md:col-span-2`}>{cms.curriculum_m1_desc}</div>
+                </div>
+                <div className={styles.gridRow}>
+                  <div className={styles.gridCellPrimary}>{cms.curriculum_m2_title}<br/><span className="text-xs text-[var(--text-muted)] uppercase tracking-widest block mt-1">{cms.curriculum_m2_badge}</span></div>
+                  <div className={`${styles.gridCellMuted} md:col-span-2`}>{cms.curriculum_m2_desc}</div>
+                </div>
+                <div className={styles.gridRow}>
+                  <div className={styles.gridCellPrimary}>{cms.curriculum_m3_title}<br/><span className="text-xs text-[var(--text-muted)] uppercase tracking-widest block mt-1">{cms.curriculum_m3_badge}</span></div>
+                  <div className={`${styles.gridCellMuted} md:col-span-2`}>{cms.curriculum_m3_desc}</div>
                 </div>
               </div>
             </section>
           </div>
 
           {/* Quick Facts Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-brand-card border border-brand-border p-8 rounded-2xl sticky top-24">
-              <h3 className="text-xl font-bold text-[#FFBF00] mb-6 border-b border-brand-border pb-4">Quick Facts</h3>
+          <div className="space-y-6 gsap-fade-up order-first md:order-last mb-8 md:mb-0">
+            <div className={`${styles.glassCard} sticky top-24`}>
+              <h3 className="text-xl font-bold text-[var(--primary-color)] mb-6 border-b border-[var(--card-border)] pb-4 font-['Playfair_Display']">Quick Facts</h3>
               
               <div className="space-y-6">
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-widest mb-1">Duration</p>
-                  <p className="text-brand-text font-semibold">5 Years (10 Semesters)</p>
+                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Duration</p>
+                  <p className="text-[var(--text-color)] font-semibold text-sm md:text-base">{cms.fact_duration}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-widest mb-1">Eligibility</p>
-                  <p className="text-brand-text font-semibold">10+2 (Intermediate) with 45% aggregate</p>
+                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Eligibility</p>
+                  <p className="text-[var(--text-color)] font-semibold text-sm md:text-base">{cms.fact_eligibility}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500 uppercase tracking-widest mb-1">Admission Mode</p>
-                  <p className="text-brand-text font-semibold">TS LAWCET / Management</p>
+                  <p className="text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Admission Mode</p>
+                  <p className="text-[var(--text-color)] font-semibold text-sm md:text-base">{cms.fact_mode}</p>
                 </div>
               </div>
               
-              <div className="mt-8 space-y-4">
-                <button className="w-full py-4 bg-transparent border-2 border-[#FFBF00] text-[#FFBF00] font-bold uppercase tracking-widest rounded hover:bg-[#FFBF00] hover:text-black transition-colors">
-                  View Curriculum
+              <div className="mt-8 flex flex-col gap-4">
+                <button className={`${styles.magneticBtn} ${styles.magneticBtnOutline}`}>
+                  View Full Syllabus
                 </button>
-                <button className="w-full py-4 bg-[#FFBF00] text-black font-bold uppercase tracking-widest rounded hover:bg-white transition-colors">
+                <Link to="/apply" className={styles.magneticBtn}>
                   Apply Now
-                </button>
+                </Link>
               </div>
             </div>
           </div>

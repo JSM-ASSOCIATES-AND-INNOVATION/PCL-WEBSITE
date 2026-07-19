@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../LIB/supabase/supabaseClient';
+import { supabase } from '../lib/supabase/supabaseClient';
 
 const ErpContext = createContext();
 export const useERP = () => useContext(ErpContext);
@@ -44,9 +44,9 @@ export const ErpProvider = ({ children }) => {
         
         // Auto-detect system preference
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return 'midnight-dark';
+            return 'dark-luxury';
         }
-        return 'lex-light';
+        return 'marble-executive';
     });
 
     const [layoutPreference, setLayoutPreference] = useState(() => {
@@ -63,7 +63,7 @@ export const ErpProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        document.body.setAttribute('data-theme', activeTheme);
+        document.documentElement.setAttribute('data-theme', activeTheme);
         localStorage.setItem('jsmerp_theme', activeTheme);
     }, [activeTheme]);
 
@@ -75,6 +75,16 @@ export const ErpProvider = ({ children }) => {
     const changeNavLayout = (layout) => {
         setNavLayout(layout);
         localStorage.setItem('jsmerp_nav_layout', layout);
+    };
+
+    // Sidebar Navigation Mode (Hubs vs Expanded)
+    const [sidebarMode, setSidebarMode] = useState(() => {
+        return localStorage.getItem('jsmerp_sidebar_mode') || 'hubs'; // 'hubs' | 'expanded'
+    });
+
+    const changeSidebarMode = (mode) => {
+        setSidebarMode(mode);
+        localStorage.setItem('jsmerp_sidebar_mode', mode);
     };
 
     // --- 2. SECURE PROFILE FETCHER (BACKGROUND REVALIDATION) ---
@@ -156,6 +166,7 @@ export const ErpProvider = ({ children }) => {
             } else {
                 setUserSession(null);
                 setNotices([]);
+                setEvents([]);
                 setIsAppLoading(false);
                 localStorage.removeItem('jsmerp_master_session'); // Purge cache on logout
             }
@@ -242,11 +253,16 @@ export const ErpProvider = ({ children }) => {
             };
 
             // Initial fetch
-            supabase.from('admin_notices').select('*').order('created_at', { ascending: false })
+            supabase.from('notices').select('*').order('created_at', { ascending: false })
                 .then(({ data }) => { 
                     if (data) {
                         setNotices(data.filter(filterNotice));
                     }
+                });
+
+            supabase.from('admin_events').select('*').order('event_date', { ascending: true })
+                .then(({ data }) => {
+                    if (data) setEvents(data);
                 });
 
             // Request Push Notification Permission
@@ -256,7 +272,7 @@ export const ErpProvider = ({ children }) => {
 
             // Realtime Listener for new notices (Push Notifications)
             const noticeChannel = supabase.channel('realtime_notices')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'admin_notices' }, (payload) => {
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notices' }, (payload) => {
                     const newNotice = payload.new;
                     if (filterNotice(newNotice)) {
                         setNotices(prev => [newNotice, ...prev]);
@@ -278,18 +294,6 @@ export const ErpProvider = ({ children }) => {
         }
     }, [userSession]);
 
-    // --- 6.5 GLOBAL EVENTS FETCH ---
-    useEffect(() => {
-        if (userSession) {
-            supabase.from('admin_events').select('*').order('event_date', { ascending: false })
-                .then(({ data, error }) => { 
-                    if (data && !error) {
-                        setEvents(data);
-                    }
-                });
-        }
-    }, [userSession]);
-
     // --- 7. LEGACY FALLBACKS (Prevents components from crashing if they use old features) ---
     const [attendanceCache, setAttendanceCache] = useState({});
     const updateAttendanceCache = (id, data) => setAttendanceCache(prev => ({ ...prev, [id]: data }));
@@ -303,7 +307,7 @@ export const ErpProvider = ({ children }) => {
         if (!userSession) return;
         const fetchMaster = async () => {
             try {
-                const { data, error } = await supabase.from('timetable').select('*');
+                const { data, error } = await supabase.from('class_schedule').select('*');
                 if (error) throw error;
                 // Organize into nested object for fast lookup
                 const organized = {};
@@ -327,7 +331,7 @@ export const ErpProvider = ({ children }) => {
         const fetchFaculty = async () => {
             try {
                 const { data, error } = await supabase
-                    .from('timetable')
+                    .from('class_schedule')
                     .select('*, subjects(name, code)')
                     .eq('faculty_id', userSession.db_id)
                     .order('start_time', { ascending: true });
@@ -350,6 +354,7 @@ export const ErpProvider = ({ children }) => {
         layoutPreference, changeLayout,
         activeTheme, changeTheme,
         navLayout, changeNavLayout,
+        sidebarMode, changeSidebarMode,
         notices, addNotice: async (notice) => {
             if (!userSession) return;
             try {
@@ -365,7 +370,7 @@ export const ErpProvider = ({ children }) => {
                     author_name: notice.author_name || userSession.name,
                     author_id: userSession.db_id
                 };
-                const { data, error } = await supabase.from('admin_notices').insert([insertData]).select();
+                const { data, error } = await supabase.from('notices').insert([insertData]).select();
                 if (error) throw error;
                 // realtime listener handles state update, but we can optimistically update
                 if (data && data.length > 0) {
@@ -379,7 +384,7 @@ export const ErpProvider = ({ children }) => {
         }, deleteNotice: async (id) => {
             if (!userSession) return;
             try {
-                const { error } = await supabase.from('admin_notices').delete().eq('id', id);
+                const { error } = await supabase.from('notices').delete().eq('id', id);
                 if (error) throw error;
                 setNotices(prev => prev.filter(n => n.id !== id));
                 return { success: true };
@@ -390,7 +395,7 @@ export const ErpProvider = ({ children }) => {
         }, refreshNotices: async () => {
             if (!userSession) return;
             try {
-                const { data, error } = await supabase.from('admin_notices').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
                 setNotices(data);
                 return { success: true, data };
@@ -402,11 +407,21 @@ export const ErpProvider = ({ children }) => {
         events, addEvent: async (eventData) => {
             if (!userSession) return { success: false };
             try {
-                const { data, error } = await supabase.from('admin_events').insert([
-                    { ...eventData, author_id: userSession.db_id }
-                ]).select();
+                const insertData = {
+                    title: eventData.title,
+                    description: eventData.description,
+                    event_date: eventData.event_date,
+                    location: eventData.location || "TBA",
+                    image_url: eventData.image_url || null,
+                    is_public: eventData.is_public || false,
+                    author_name: userSession.name,
+                    author_id: userSession.db_id
+                };
+                const { data, error } = await supabase.from('admin_events').insert([insertData]).select();
                 if (error) throw error;
-                if (data && data.length > 0) setEvents(prev => [data[0], ...prev]);
+                if (data && data.length > 0) {
+                    setEvents(prev => [...prev, data[0]].sort((a, b) => new Date(a.event_date) - new Date(b.event_date)));
+                }
                 return { success: true, data };
             } catch (e) {
                 console.error('Add event failed', e);
@@ -421,6 +436,33 @@ export const ErpProvider = ({ children }) => {
                 return { success: true };
             } catch (e) {
                 console.error('Delete event failed', e);
+                return { success: false, error: e };
+            }
+        }, updateEventGallery: async (id, urls) => {
+            if (!userSession) return { success: false };
+            try {
+                const { data, error } = await supabase.from('admin_events')
+                    .update({ image_urls: urls })
+                    .eq('id', id)
+                    .select();
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    setEvents(prev => prev.map(e => e.id === id ? { ...e, image_urls: urls } : e));
+                }
+                return { success: true, data };
+            } catch (e) {
+                console.error('Update event gallery failed', e);
+                return { success: false, error: e };
+            }
+        }, refreshEvents: async () => {
+            if (!userSession) return;
+            try {
+                const { data, error } = await supabase.from('admin_events').select('*').order('event_date', { ascending: true });
+                if (error) throw error;
+                setEvents(data);
+                return { success: true, data };
+            } catch (e) {
+                console.error('Refresh events failed', e);
                 return { success: false, error: e };
             }
         },

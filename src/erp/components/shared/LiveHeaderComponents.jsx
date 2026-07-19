@@ -40,9 +40,9 @@ export function GlobalSearch() {
 
 export function RoleActionButton({ role, setActiveTab }) {
     const config = {
-        student: { label: "Submit Task", icon: "fa-cloud-arrow-up", color: "bg-emerald-500", text: "text-black", border: "border-emerald-700", tab: "assignments" },
-        faculty: { label: "Grade Entry", icon: "fa-check-double", color: "bg-blue-500", text: "text-white", border: "border-blue-700", tab: "marks" },
-        admin: { label: "New Notice", icon: "fa-bullhorn", color: "bg-rose-500", text: "text-white", border: "border-rose-700", tab: "notices" }
+        student: { label: "Submit Task", icon: "fa-cloud-arrow-up", tab: "assignments" },
+        faculty: { label: "My Courses", icon: "fa-book-open", tab: "materials" },
+        admin: { label: "New Notice", icon: "fa-bullhorn", tab: "notices" }
     };
 
     const action = config[role] || config.student;
@@ -50,7 +50,7 @@ export function RoleActionButton({ role, setActiveTab }) {
     return (
         <button 
             onClick={() => setActiveTab(action.tab)}
-            className={`hidden xl:flex items-center px-5 py-2.5 rounded-themeBtn ${action.color} ${action.text} text-[10px] font-black uppercase tracking-[0.1em] border-theme ${action.border} hover:scale-105 transition-transform shadow-themeElevated shrink-0`}
+            className={`hidden xl:flex items-center px-5 py-2.5 rounded-full bg-themeAccent/10 hover:bg-themeAccent/20 text-themeAccent text-[10px] font-black uppercase tracking-[0.1em] border border-themeAccent/20 hover:border-themeAccent/50 transition-all duration-300 shadow-sm shrink-0`}
         >
             <i className={`fa-solid ${action.icon} mr-2`}></i> {action.label}
         </button>

@@ -1,0 +1,276 @@
+/* Programs.module.css */
+
+.pageWrapper {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding-bottom: 80px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Background Effects */
+.ambientBackground {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--primary-glow) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.8;
+}
+
+.auroraGlow {
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 60vh;
+  background: conic-gradient(from 90deg at 50% 50%, var(--primary-glow), transparent, var(--primary-glow), transparent);
+  filter: blur(120px);
+  animation: slowSpin 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+@keyframes slowSpin {
+  from { transform: translateX(-50%) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg); }
+}
+
+.contentContainer {
+  position: relative;
+  z-index: 10;
+  padding-top: 140px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Tab Navigation */
+.tabNav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 60px;
+  background: var(--card-bg);
+  padding: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(20px);
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tabBtn {
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+  z-index: 1;
+}
+
+.tabBtn:hover {
+  color: var(--text-color);
+}
+
+.tabBtn.active {
+  color: #000000;
+}
+
+.activeTabIndicator {
+  position: absolute;
+  inset: 0;
+  background: var(--primary-color);
+  border-radius: 999px;
+  z-index: -1;
+  box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+/* Program Cards */
+.programGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 768px) {
+  .programGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .programGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.programCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.5s ease;
+  backdrop-filter: blur(20px);
+}
+
+.programCard:hover {
+  transform: translateY(-8px);
+  border-color: var(--primary-color);
+  box-shadow: 0 20px 40px var(--glass-shadow);
+}
+
+.cardImageWrapper {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.programCard:hover .cardImage {
+  transform: scale(1.05);
+}
+
+.cardContent {
+  padding: 32px;
+}
+
+/* Generic Glass Card */
+.glassCard {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  padding: 32px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glassCard:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 30px var(--primary-glow);
+}
+
+/* Data Grid (for curriculum, fees, etc) */
+.dataGrid {
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+}
+
+.gridHeader {
+  background: rgba(128, 128, 128, 0.05);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-color);
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-bottom: 1px solid var(--card-border);
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .gridRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.gridRow:last-child {
+  border-bottom: none;
+}
+
+.gridRow:hover {
+  background: rgba(128, 128, 128, 0.05);
+}
+
+.gridCellPrimary {
+  padding: 24px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-color);
+}
+
+.gridCellAccent {
+  padding: 24px;
+  font-family: 'Outfit', sans-serif;
+  color: #FFBF00;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.gridCellMuted {
+  padding: 24px;
+  font-family: 'Outfit', sans-serif;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+/* Magnetic Button (Shared) */
+.magneticBtn {
+  position: relative;
+  padding: 16px 32px;
+  border-radius: 999px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+  background: #FFBF00;
+  color: #000;
+  border: none;
+  box-shadow: 0 10px 30px rgba(255, 191, 0, 0.2);
+  width: 100%;
+}
+.magneticBtn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(255, 191, 0, 0.4);
+}
+.magneticBtnOutline {
+  background: transparent;
+  color: #FFBF00;
+  border: 1px solid rgba(255, 191, 0, 0.3);
+  box-shadow: none;
+}
+.magneticBtnOutline:hover {
+  background: rgba(255, 191, 0, 0.05);
+  border-color: #FFBF00;
+}

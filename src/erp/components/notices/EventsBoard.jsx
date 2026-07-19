@@ -6,7 +6,7 @@ import { useERP } from "../../context/ErpContext";
 import { theme } from "../../theme";
 
 export default function EventsBoard() {
-    const { userSession, events, addEvent, deleteEvent } = useERP();
+    const { userSession, events, addEvent, deleteEvent, updateEventGallery } = useERP();
 
     // --- STATE ---
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -20,6 +20,10 @@ export default function EventsBoard() {
     const [imageUrl, setImageUrl] = useState("");
     const [isPublic, setIsPublic] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Gallery State
+    const [galleryInput, setGalleryInput] = useState("");
+    const [isGalleryUpdating, setIsGalleryUpdating] = useState(false);
 
     const role = userSession?.role || "student";
     const canCreate = role === "faculty" || role === "admin";
@@ -58,7 +62,7 @@ export default function EventsBoard() {
 
         } catch (error) {
             console.error("Error creating event:", error);
-            alert("Failed to create event. Please try again.");
+            window.erpDialog?.alert("Failed to create event. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -68,7 +72,23 @@ export default function EventsBoard() {
         if (!window.confirm("Are you sure you want to delete this event?")) return;
         const { success } = await deleteEvent(id);
         if (success) setSelectedEvent(null);
-        else alert("Failed to delete event.");
+        else window.erpDialog?.alert("Failed to delete event.");
+    };
+
+    const handleAddGalleryImage = async () => {
+        if (!galleryInput.trim() || !selectedEvent) return;
+        setIsGalleryUpdating(true);
+        const currentUrls = selectedEvent.image_urls || [];
+        const newUrls = [...currentUrls, galleryInput.trim()];
+        
+        const { success, data } = await updateEventGallery(selectedEvent.id, newUrls);
+        if (success && data && data.length > 0) {
+            setSelectedEvent(data[0]); // Update local modal state with latest DB record
+            setGalleryInput("");
+        } else {
+            window.erpDialog?.alert("Failed to add image to gallery.");
+        }
+        setIsGalleryUpdating(false);
     };
 
     return (
@@ -96,6 +116,19 @@ export default function EventsBoard() {
                     )}
                 </div>
             </div>
+
+            {/* 1.5 ACTION REQUIRED BANNER */}
+            {canCreate && events.some(e => new Date(e.event_date) < new Date() && (!e.image_urls || e.image_urls.length === 0)) && (
+                <div className="bg-rose-500/10 border-l-4 border-rose-500 p-4 rounded-themePanel flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
+                    <div className="flex items-center gap-3">
+                        <i className="fa-solid fa-triangle-exclamation text-rose-500 text-xl"></i>
+                        <div>
+                            <h3 className="text-rose-500 font-bold text-sm tracking-wide">Action Required: Upload Event Photos</h3>
+                            <p className="text-themeTextSec text-xs">You have past events missing photo galleries. Click on a past event below to upload photos.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* 2. EVENTS GRID */}
             {(!events || events.length === 0) ? (
@@ -204,6 +237,44 @@ export default function EventsBoard() {
                             <div className={`${theme.text.secondary} prose prose-sm max-w-none leading-relaxed whitespace-pre-wrap`}>
                                 {selectedEvent.description}
                             </div>
+
+                            {/* 3.5 GALLERY UPLOADER (For Past Events) */}
+                            {new Date(selectedEvent.event_date) < new Date() && (
+                                <div className="mt-8 border-t-theme border-themeBorder pt-6">
+                                    <h4 className={`${theme.text.heading} text-lg text-themeText mb-4`}>Event Photo Gallery</h4>
+                                    
+                                    {selectedEvent.image_urls && selectedEvent.image_urls.length > 0 ? (
+                                        <div className="grid grid-cols-3 gap-2 mb-4">
+                                            {selectedEvent.image_urls.map((url, i) => (
+                                                <div key={i} className="aspect-square rounded-themePanel overflow-hidden border-theme border-themeBorder">
+                                                    <img src={url} alt="Gallery" className="w-full h-full object-cover" />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="text-themeTextSec text-xs italic mb-4">No photos uploaded for this event yet.</p>
+                                    )}
+
+                                    {canCreate && (
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="url"
+                                                placeholder="Paste image URL here..."
+                                                value={galleryInput}
+                                                onChange={(e) => setGalleryInput(e.target.value)}
+                                                className={`flex-1 ${theme.layout.input} rounded-themePanel px-4 py-2 text-sm`}
+                                            />
+                                            <button
+                                                onClick={handleAddGalleryImage}
+                                                disabled={isGalleryUpdating || !galleryInput.trim()}
+                                                className="bg-purple-600 text-white px-4 py-2 rounded-themePanel text-sm font-bold disabled:opacity-50"
+                                            >
+                                                {isGalleryUpdating ? 'Adding...' : 'Add Image'}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="flex flex-col sm:flex-row gap-4 mt-8">
                                 <button

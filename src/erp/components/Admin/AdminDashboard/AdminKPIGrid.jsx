@@ -106,7 +106,7 @@ export default function AdminKPIGrid() {
                     {/* Front */}
                     <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
-                            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 flex items-center justify-center text-sm shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-user-graduate"></i>
                             </div>
                             <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-1.5 py-0.5 rounded">Expand</span>
@@ -126,7 +126,7 @@ export default function AdminKPIGrid() {
                                 Object.entries(data.students.byBatch).map(([batch, count]) => (
                                     <div key={batch} className="flex justify-between items-center bg-themePanel p-1.5 px-2 rounded border border-themeBorder">
                                         <span className="text-[9px] font-bold text-themeText truncate pr-2">{batch}</span>
-                                        <span className="text-[9px] font-black text-indigo-500 bg-indigo-500/10 px-1.5 py-0.5 rounded">{count}</span>
+                                        <span className="text-[9px] font-black text-themeAccent bg-themeAccent/10 px-1.5 py-0.5 rounded">{count}</span>
                                     </div>
                                 ))
                             )}
@@ -141,7 +141,7 @@ export default function AdminKPIGrid() {
                     {/* Front */}
                     <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
-                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20 flex items-center justify-center text-sm shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-chalkboard-user"></i>
                             </div>
                             <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-1.5 py-0.5 rounded">Expand</span>
@@ -160,7 +160,7 @@ export default function AdminKPIGrid() {
                             ) : (
                                 data.faculty.list.map(fac => (
                                     <div key={fac.id} onClick={(e) => { e.stopPropagation(); console.log("Routing to profile:", fac.id); }} className="flex items-center gap-2 bg-themePanel p-1.5 rounded border border-themeBorder hover:border-themeAccent transition-colors cursor-pointer">
-                                        <div className="w-4 h-4 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+                                        <div className="w-4 h-4 rounded-full bg-themeAccent/10 text-themeAccent flex items-center justify-center shrink-0">
                                             <i className="fa-solid fa-user text-[8px]"></i>
                                         </div>
                                         <div className="flex flex-col overflow-hidden">
@@ -180,12 +180,12 @@ export default function AdminKPIGrid() {
                     {/* Front */}
                     <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-sm shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-clipboard-user"></i>
                             </div>
                             {data.attendance.total > 0 ? (
                                 <div className="flex gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-themeAccent shadow-[0_0_8px_var(--theme-accent-color)] animate-pulse"></span>
                                 </div>
                             ) : (
                                 <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec bg-themeElevated px-1.5 py-0.5 rounded border border-themeBorder truncate max-w-[60px]">Awaiting</span>
@@ -214,7 +214,7 @@ export default function AdminKPIGrid() {
                     {/* Front */}
                     <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start mb-1">
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-sm shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-stamp"></i>
                             </div>
                         </div>
@@ -246,7 +246,7 @@ export default function AdminKPIGrid() {
                     {/* Front */}
                     <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center text-sm shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-indian-rupee-sign"></i>
                             </div>
                         </div>

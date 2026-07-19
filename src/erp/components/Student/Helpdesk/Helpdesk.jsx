@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
 export default function Helpdesk() {
     const { userSession } = useERP();
@@ -84,6 +84,19 @@ export default function Helpdesk() {
 
             if (error) throw error;
 
+            // Notify Admin
+            const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+            await supabase.from('notices').insert([{
+                notice_id: noticeId,
+                title: 'New Support Ticket',
+                category: 'System Alert',
+                target_audience: 'admin',
+                priority: 'normal',
+                content: `A new support ticket (${ticketForm.subject}) has been raised under ${ticketForm.category}.`,
+                author_name: userSession?.name || 'System',
+                author_id: userId
+            }]);
+
             setStatusMessage({ type: "success", text: "Ticket routed to the Support Team." });
             fetchTickets(); // Refresh list
 
@@ -149,60 +162,38 @@ export default function Helpdesk() {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated">
+        <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 animate-fade-in selection:bg-themeElevated">
 
             {/* Header Banner */}
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText flex flex-col lg:flex-row justify-between items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-themeElevated rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+            <div className={`rounded-themePanel p-6 lg:p-8 relative overflow-hidden bg-themeAccent text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-themeElevated`}>
+                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
 
-                <div className="relative z-10 text-center lg:text-left flex-1">
-                    <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-4 mb-2">
-                        <div className={`w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel lg:rounded-themePanel border-theme border-themeBorderStrong bg-themeElevated flex items-center justify-center text-themeAccent text-2xl lg:text-3xl  shrink-0`}>
-                            <i className="fa-solid fa-headset"></i>
+                <div className="relative z-10 w-full lg:w-auto flex-1">
+                    <div className="flex items-center gap-4 mb-3 lg:mb-2">
+                        <div className="w-14 h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-themePanel flex items-center justify-center shrink-0">
+                            <i className="fa-solid fa-headset text-white text-2xl lg:text-3xl drop-shadow-sm"></i>
                         </div>
                         <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText`}>Helpdesk Support</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium mt-1`}>Raise tickets for issues or submit anonymous grievances.</p>
+                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm`}>Helpdesk Support</h1>
+                            <p className="text-white/80 text-xs lg:text-sm font-medium">Raise tickets for campus, academic, or IT issues.</p>
                         </div>
                     </div>
                 </div>
 
-                <button
-                    onClick={() => setShowTicketModal(true)}
-                    className="w-full lg:w-auto px-6 py-4 bg-white hover:bg-neutral-200 text-[#050505] rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] relative z-10 shrink-0 flex items-center justify-center gap-2 group overflow-hidden"
-                >
-                    <div className="absolute inset-0 w-full h-full -translate-x-full group-hover:"></div>
-                    <i className="fa-solid fa-plus text-[#050505]"></i> Raise New Ticket
-                </button>
-            </div>
-
-            {/* TAB NAVIGATION */}
-            <div className="flex p-1.5 bg-themePanel rounded-themePanel w-full lg:w-fit border-theme border-themeBorder overflow-x-auto no-scrollbar">
-                <button
-                    onClick={() => setActiveTab('tickets')}
-                    className={`flex-1 lg:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === 'tickets'
-                        ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong"
-                        : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
-                        }`}
-                >
-                    <i className="fa-solid fa-ticket"></i> Support Tickets
-                </button>
-                <button
-                    onClick={() => setActiveTab('grievance')}
-                    className={`flex-1 lg:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === 'grievance'
-                        ? "bg-themeElevated text-rose-400 border-theme border-rose-500/30"
-                        : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
-                        }`}
-                >
-                    <i className="fa-solid fa-user-secret"></i> Anonymous Grievance
-                </button>
+                <div className="relative z-10 w-full lg:w-auto shrink-0 mt-4 lg:mt-0 flex justify-center">
+                    <button
+                        onClick={() => setShowTicketModal(true)}
+                        className="w-full sm:w-auto px-6 py-3.5 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-xs font-black uppercase tracking-widest transition-opacity shadow-sm flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                        <i className="fa-solid fa-plus"></i> Raise New Ticket
+                    </button>
+                </div>
             </div>
 
             {/* TICKETS CONTENT */}
-            {activeTab === 'tickets' && (
-                <div className="flex flex-col gap-4 lg:gap-5 animate-fade-in">
-                    <h2 className={`${theme.text.heading} text-lg lg:text-xl text-themeText tracking-tight ml-2`}><i className="fa-solid fa-ticket text-themeTextSec opacity-70 mr-2"></i> My Support Tickets</h2>
+            <div className="flex flex-col gap-4 lg:gap-5 animate-fade-in mt-2">
+                <h2 className={`${theme.text.heading} text-lg lg:text-xl text-themeText tracking-tight ml-2`}><i className="fa-solid fa-ticket text-themeTextSec opacity-70 mr-2"></i> My Support Tickets</h2>
 
                     {tickets.length === 0 ? (
                         <div className="w-full py-16 lg:py-20 flex flex-col items-center justify-center bg-themeApp border-theme border-dashed border-themeBorder rounded-themePanel text-center px-4">
@@ -241,62 +232,7 @@ export default function Helpdesk() {
                             </div>
                         ))
                     )}
-                </div>
-            )}
-
-            {/* GRIEVANCE CONTENT */}
-            {activeTab === 'grievance' && (
-                <div className="flex flex-col gap-6 animate-fade-in w-full max-w-3xl mx-auto">
-                    <div className="bg-rose-500/10 border-theme border-rose-500/30 p-5 rounded-themePanel flex gap-4">
-                        <i className="fa-solid fa-user-shield text-rose-400 text-xl shrink-0 mt-1"></i>
-                        <div>
-                            <h3 className="text-rose-400 font-black text-sm lg:text-base uppercase tracking-widest mb-2">100% Anonymous Cell</h3>
-                            <p className="text-themeTextSec text-xs lg:text-sm font-medium leading-relaxed">
-                                Use this form to report sensitive issues like ragging, harassment, or assault. 
-                                <strong className="text-rose-300 ml-1">No personal identifiers are attached to your submission.</strong>
-                                You will receive a 6-character tracking code. Please save it to track your case offline.
-                            </p>
-                        </div>
-                    </div>
-
-                    <form onSubmit={handleGrievanceSubmit} className="bg-themeElevated p-6 rounded-themePanel border-theme border-themeBorder flex flex-col gap-5">
-                        
-                        {grievanceStatus.text && (
-                            <div className={`p-4 rounded-themePanel text-xs font-black uppercase tracking-widest flex items-center gap-2 border-theme ${grievanceStatus.type === "success" ? "bg-themePanel border-emerald-500/30 text-emerald-400" : "bg-themePanel border-rose-500/30 text-rose-400"}`}>
-                                <i className={`fa-solid ${grievanceStatus.type === "success" ? "fa-check-circle" : "fa-triangle-exclamation"}`}></i>
-                                {grievanceStatus.text}
-                            </div>
-                        )}
-
-                        <div>
-                            <label className={`block text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-2 ml-1`}>Grievance Details</label>
-                            <textarea
-                                rows="6"
-                                value={grievanceForm.description}
-                                onChange={(e) => setGrievanceForm({ description: e.target.value })}
-                                placeholder="Please describe the incident in detail..."
-                                className="w-full bg-themePanel border-theme border-themeBorder rounded-themePanel px-4 py-4 text-xs lg:text-sm font-bold text-themeText focus:border-rose-500 outline-none transition-all resize-none placeholder:text-neutral-600"
-                                required
-                            ></textarea>
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className={`w-full py-4 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center gap-2 overflow-hidden group shrink-0 ${isSubmitting
-                                ? 'bg-themePanel text-neutral-600 cursor-not-allowed border-theme border-themeBorder '
-                                : 'bg-rose-600 hover:bg-rose-500 text-white active:scale-[0.98]'
-                                }`}
-                        >
-                            {isSubmitting ? (
-                                <><i className="fa-solid fa-circle-notch fa-spin text-lg"></i> Submitting securely...</>
-                            ) : (
-                                <><i className="fa-solid fa-lock"></i> Submit Anonymously</>
-                            )}
-                        </button>
-                    </form>
-                </div>
-            )}
+            </div>
 
             {/* NEW TICKET MODAL */}
             {showTicketModal && (

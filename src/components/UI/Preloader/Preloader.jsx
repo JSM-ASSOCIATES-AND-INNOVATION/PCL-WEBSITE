@@ -2,26 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Preloader.css';
 
+const DISPLAY_DURATION = 1500; // ms the preloader stays up once shown
+
 export default function Preloader() {
-  const [show, setShow] = useState(false);
+  // Computed once, synchronously, on first render — avoids the brief
+  // flash where the preloader was absent before the old effect-based
+  // check could run.
+  const [show, setShow] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !sessionStorage.getItem('pcl_preloader_shown');
+  });
 
   useEffect(() => {
-    // Check if the preloader has already been shown in this session
-    const hasLoaded = sessionStorage.getItem('pcl_preloader_shown');
-    
-    if (!hasLoaded) {
-      setShow(true);
-      sessionStorage.setItem('pcl_preloader_shown', 'true');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (show) {
-      const timer = setTimeout(() => {
-        setShow(false);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
+    if (!show) return;
+    sessionStorage.setItem('pcl_preloader_shown', 'true');
+    const timer = setTimeout(() => setShow(false), DISPLAY_DURATION);
+    return () => clearTimeout(timer);
   }, [show]);
 
   return (
@@ -30,16 +26,22 @@ export default function Preloader() {
         <motion.div 
           className="preloader-overlay"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1, ease: "easeInOut" }}
+          exit={{ opacity: 0, scale: 1.02 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <div className="preloader-container">
+            {/* Sits behind the logo and drives the pulsing glow via
+                opacity/transform only, so the svg's own filter never
+                has to be recalculated every frame. */}
+            <div className="preloader-glow" aria-hidden="true" />
             <svg 
               className="preloader-svg" 
               shapeRendering="geometricPrecision" 
               version="1.1" 
               viewBox="0 0 1024 1024" 
               xmlns="http://www.w3.org/2000/svg"
+              role="img"
+              aria-label="Prudentia College of Law"
             >
               <path d="M551.999878,502.384857 C459.869415,502.390869 368.238953,502.396484 276.608490,502.402100 C270.898193,502.402435 270.297668,501.774994 270.893402,496.077850 C272.063721,484.885742 278.794556,478.133698 288.693634,473.953583 C300.176331,469.104736 312.355865,467.224457 324.597748,465.772156 C344.130951,463.454803 363.747559,462.615143 383.420319,462.630066 C471.885315,462.697235 560.350403,462.649109 648.815491,462.697052 C672.829590,462.710052 696.752136,464.097443 720.354614,468.847778 C729.197266,470.627472 737.837280,473.172150 745.230408,478.713837 C751.303894,483.266327 754.634766,489.309326 755.274536,496.907745 C755.616272,500.965607 754.152100,502.489716 749.921997,502.457001 C729.098267,502.295715 708.272400,502.401794 687.447327,502.401062 C642.464844,502.399536 597.482422,502.390411 551.999878,502.384857 z"/>
               <path d="M518.000000,558.905518 C443.346497,558.899353 369.192963,558.897888 295.039459,558.882263 C286.896973,558.880554 286.929596,558.842712 286.965790,550.946228 C287.000183,543.447998 286.932465,535.949219 286.953552,528.450806 C286.975403,520.689575 286.998505,520.677795 294.568604,520.677551 C418.380157,520.673645 542.191711,520.673157 666.003235,520.671387 C688.332642,520.671082 710.663940,520.822571 732.990051,520.551453 C738.158203,520.488708 739.601807,522.150208 739.400269,527.114380 C739.042297,535.931824 739.162354,544.776489 739.344116,553.604309 C739.419067,557.247437 738.004944,558.825195 734.460449,558.816467 C730.295227,558.806213 726.129883,558.913269 721.964600,558.913452 C654.143066,558.916321 586.321533,558.910217 518.000000,558.905518 z"/>

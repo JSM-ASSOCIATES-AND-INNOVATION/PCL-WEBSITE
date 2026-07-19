@@ -1,209 +1,77 @@
-import React, { useState } from "react";
-import { theme } from "../../../theme";
+import React from "react";
+import SidebarFramework from "../../shared/Navigation/SidebarFramework";
 import { useERP } from "../../../context/ErpContext";
 
-// ==========================================
-// 1. MASTER ADMIN NAVIGATION ARCHITECTURE
-// ==========================================
-const ADMIN_NAV_GROUPS = [
+export const ADMIN_NAV_GROUPS = [
     {
         category: "Master Control",
         links: [
             { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-server" },
-            { id: "notices", label: "Broadcast", icon: "fa-solid fa-satellite-dish" },
-            { id: "events", label: "Events", icon: "fa-solid fa-calendar-star" }
+            { id: "notices", label: "Broadcasts", icon: "fa-solid fa-bullhorn" },
+            { id: "operations", label: "Operations HQ", icon: "fa-solid fa-gears" },
+            { id: "academic", label: "Academic Hub", icon: "fa-solid fa-graduation-cap" },
+            { id: "clinics", label: "Clinics Hub", icon: "fa-solid fa-scale-balanced" },
+            { id: "website", label: "Website Hub", icon: "fa-solid fa-globe" },
+            { id: "finance", label: "Finance Ledger", icon: "fa-solid fa-indian-rupee-sign" },
+            { id: "sql", label: "SQL Studio", icon: "fa-solid fa-database" },
+            { id: "credentials", label: "Security & Settings", icon: "fa-solid fa-shield-halved" }
+        ]
+    }
+];
+
+const BOTTOM_NAV_LINKS = [
+    { id: "dashboard", label: "Home", icon: "fa-solid fa-server" },
+    { id: "operations", label: "Operations", icon: "fa-solid fa-gears" },
+    { id: "academic", label: "Academic", icon: "fa-solid fa-graduation-cap" },
+    { id: "website", label: "Website", icon: "fa-solid fa-globe" },
+];
+
+export const ADMIN_NAV_EXPANDED = [
+    {
+        category: "Master Control",
+        links: [
+            { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-server" },
+            { id: "notices", label: "Broadcasts", icon: "fa-solid fa-bullhorn" }
         ]
     },
     {
-        category: "External Relations",
+        category: "Command Hubs",
         links: [
-            { id: "adminadmissions", label: "Admissions", icon: "fa-solid fa-user-plus" },
-            { id: "helpdesk", label: "Public Inquiries", icon: "fa-solid fa-headset" },
-            { id: "siteeditor", label: "Site Editor (CMS)", icon: "fa-solid fa-globe" }
+            { id: "operations", label: "Operations HQ", icon: "fa-solid fa-gears" },
+            { id: "academic", label: "Academic Hub", icon: "fa-solid fa-graduation-cap" },
+            { id: "clinics", label: "Clinics Hub", icon: "fa-solid fa-scale-balanced" },
+            { id: "website", label: "Website Hub", icon: "fa-solid fa-globe" }
         ]
     },
     {
-        category: "Identity & Operations",
+        category: "Core Integrations",
         links: [
-            { id: "users", label: "Users", icon: "fa-solid fa-users-gear" },
-            { id: "faculty", label: "Faculty Directory", icon: "fa-solid fa-chalkboard-user" },
-            { id: "curriculum", label: "Master Timetable", icon: "fa-solid fa-calendar-days" },
-            { id: "allocations", label: "Mentorship", icon: "fa-solid fa-network-wired" },
-            { id: "leavemanagement", label: "Leave Management", icon: "fa-solid fa-plane-departure" },
             { id: "finance", label: "Finance Ledger", icon: "fa-solid fa-indian-rupee-sign" }
-        ]
-    },
-    {
-        category: "Assessments",
-        links: [
-            { id: "adminapprovals", label: "Approvals & Investigations", icon: "fa-solid fa-scale-balanced" },
-            { id: "examinations", label: "Exams", icon: "fa-solid fa-file-shield" }
-        ]
-    },
-    {
-        category: "Law Specializations",
-        links: [
-            { id: "mootcourt", label: "Moot Court Society", icon: "fa-solid fa-gavel" },
-            { id: "placements", label: "Placements & Drives", icon: "fa-solid fa-briefcase" },
-            { id: "legalaid", label: "Legal Aid Clinic", icon: "fa-solid fa-scale-unbalanced" }
         ]
     },
     {
         category: "System",
         links: [
+            { id: "sql", label: "SQL Studio", icon: "fa-solid fa-database" },
             { id: "credentials", label: "Security", icon: "fa-solid fa-fingerprint" }
         ]
     }
 ];
 
 export default function AdminSidebar({ userSession, activeTab, setActiveTab, onLogout }) {
-    const { isSidebarCollapsed, toggleSidebar, notices } = useERP();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    // Default all groups to expanded
-    const [expandedGroups, setExpandedGroups] = useState(
-        ADMIN_NAV_GROUPS.reduce((acc, group, idx) => {
-            acc[idx] = true;
-            return acc;
-        }, {})
-    );
-
-    const toggleGroup = (idx) => {
-        setExpandedGroups(prev => ({
-            ...prev,
-            [idx]: !prev[idx]
-        }));
-    };
-
-    // Dynamically calculate initials
-    const initials = userSession?.name
-        ? userSession.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
-        : "AD";
-
-    const displayName = userSession?.name || "System Admin";
-
-    // --- MOBILE BOTTOM NAV HELPERS ---
-    const bottomNavLinks = [
-        { id: "dashboard", icon: "fa-server", label: "Home" },
-        { id: "users", icon: "fa-users-gear", label: "Users" },
-        { id: "adminapprovals", icon: "fa-scale-balanced", label: "Approvals" },
-        { id: "notices", icon: "fa-satellite-dish", label: "Broadcast" },
-    ];
+    const { sidebarMode } = useERP();
+    
+    const currentConfig = sidebarMode === 'expanded' ? ADMIN_NAV_EXPANDED : ADMIN_NAV_GROUPS;
 
     return (
-        <>
-            {/* DESKTOP SIDEBAR */}
-            <aside className={`hidden lg:flex bg-themeApp text-themeText flex-col shrink-0 h-screen selection:bg-themeElevated border-r border-themeBorder relative overflow-hidden transition-all duration-300 shadow-[20px_0_40px_rgba(0,0,0,0.3)] ${isSidebarCollapsed ? 'w-[80px]' : 'w-[280px]'}`}>
-
-                {/* Brand Header */}
-                <div className="h-24 flex items-center justify-between px-6 border-b border-themeBorder shrink-0 relative z-10 backdrop-blur-md bg-themeApp/80">
-                    <div className="flex items-center gap-3">
-                        <img src="/ASSETS/LOGOS/pcl_logo.svg" alt="PCL Logo" className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
-                        {!isSidebarCollapsed && (
-                            <span className="text-xl font-bold tracking-tight text-themeText">
-                                PCL<span className="text-themeAccent drop-shadow-[0_0_8px_var(--theme-accent)]">ERP</span>
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                {/* Navigation Menu */}
-                <div className="flex-1 overflow-y-auto py-6 px-3 no-scrollbar relative z-10">
-                    <nav className="flex flex-col gap-6">
-                        {ADMIN_NAV_GROUPS.map((group, groupIndex) => {
-                            const isExpanded = expandedGroups[groupIndex];
-                            return (
-                                <div key={groupIndex} className="flex flex-col gap-1.5">
-                                    {!isSidebarCollapsed ? (
-                                        <button 
-                                            onClick={() => toggleGroup(groupIndex)}
-                                            className="flex items-center justify-between w-full px-3 mb-1 group outline-none"
-                                        >
-                                            <p className="text-[10px] font-black text-themeTextSec opacity-70 group-hover:text-themeAccent uppercase tracking-widest transition-colors drop-shadow-sm">
-                                                {group.category}
-                                            </p>
-                                            <i className={`fa-solid fa-chevron-down text-[8px] text-neutral-600 transition-transform duration-300 ${isExpanded ? 'rotate-180 text-themeAccent drop-shadow-[0_0_5px_var(--theme-accent)]' : ''}`}></i>
-                                        </button>
-                                    ) : (
-                                        <div className="w-full border-b border-themeBorder my-2 opacity-50"></div>
-                                    )}
-                                    
-                                    <div className={`flex flex-col gap-1.5 overflow-hidden transition-all duration-500 origin-top ${isExpanded || isSidebarCollapsed ? 'max-h-[500px] opacity-100 scale-y-100' : 'max-h-0 opacity-0 scale-y-0'}`}>
-                                        {group.links.map((link) => {
-                                            const isActive = activeTab === link.id;
-                                            return (
-                                                <button
-                                                    key={link.id}
-                                                    onClick={() => setActiveTab(link.id)}
-                                                    title={isSidebarCollapsed ? link.label : ""}
-                                                    className={`w-full flex items-center justify-between p-3 rounded-themePanel text-[11px] uppercase tracking-widest font-black transition-all duration-300 group relative ${isActive
-                                                        ? "bg-themeElevated/60 text-themeAccent border-l-[3px] border-l-themeAccent shadow-[inset_0_0_20px_rgba(0,0,0,0.5),0_0_15px_rgba(139,92,246,0.15)] backdrop-blur-sm"
-                                                        : "text-themeTextSec hover:text-themeText hover:bg-themeElevated/40 border-l-[3px] border-transparent"
-                                                        } ${isSidebarCollapsed ? "justify-center" : "px-4"}`}
-                                                >
-                                                    <div className={`flex items-center ${isSidebarCollapsed ? "justify-center w-full" : "gap-4"}`}>
-                                                        <div className={`w-6 flex justify-center transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}>
-                                                            <i className={`${link.icon} text-lg ${isActive ? "text-themeAccent" : "opacity-70 group-hover:opacity-100 group-hover:text-themeAccent"}`}></i>
-                                                        </div>
-                                                        {!isSidebarCollapsed && (
-                                                            <span className="truncate group-hover:translate-x-1 transition-transform duration-300">{link.label}</span>
-                                                        )}
-                                                    </div>
-                                                    {!isSidebarCollapsed && ((link.highlight) || (link.id === 'notices' && notices?.length > 0)) && !isActive && (
-                                                        <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
-                                                    )}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </nav>
-                </div>
-
-                {/* Minimalist Footer */}
-                <div className={`p-4 bg-themeApp/30 backdrop-blur-md shrink-0 relative z-10 flex ${isSidebarCollapsed ? 'flex-col' : 'flex-row'} items-center justify-between gap-2 mt-auto border-t border-themeBorder/50 shadow-[0_-10px_20px_rgba(0,0,0,0.2)]`}>
-                    <button 
-                        onClick={toggleSidebar}
-                        className={`flex-1 w-full flex items-center justify-center gap-2 p-3 rounded-themeBtn text-themeTextSec hover:text-themeText hover:bg-themeElevated transition-all border-theme border-transparent hover:border-themeBorder`}
-                        title="Toggle Sidebar"
-                    >
-                        <i className={`fa-solid ${isSidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'} text-sm`}></i>
-                    </button>
-                    <button 
-                        onClick={onLogout}
-                        className={`flex-1 w-full flex items-center justify-center gap-2 p-3 rounded-themeBtn text-rose-500 hover:bg-rose-500/10 transition-all border-theme border-transparent hover:border-rose-500/20`}
-                        title="Sign Out"
-                    >
-                        <i className="fa-solid fa-power-off text-sm"></i>
-                    </button>
-                </div>
-            </aside>
-
-            {/* =========================================
-                MOBILE APP LAYOUT (Hidden on Desktop)
-            ========================================= */}
-
-            {/* 1. Mobile Top App Bar */}
-            <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-themeApp border-b-theme border-themeBorder z-40 flex items-center justify-between px-4">
-                <div className="flex items-center gap-3">
-                    <img src="/ASSETS/LOGOS/pcl_logo.svg" alt="PCL Logo" className="w-8 h-8 object-contain" />
-                    <span className={`${theme.text.heading} text-lg tracking-tight text-themeText`}>
-                        PCL<span className="text-themeAccent font-black">ERP</span>
-                    </span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => setIsMobileMenuOpen(true)}
-                        className="w-10 h-10 rounded-themePanel bg-themeElevated border-theme border-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText"
-                    >
-                        <i className="fa-solid fa-bars-staggered"></i>
-                    </button>
-                </div>
-            </header>
-
-
-        </>
+        <SidebarFramework 
+            config={currentConfig}
+            bottomLinks={BOTTOM_NAV_LINKS}
+            userSession={userSession}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onLogout={onLogout}
+            customBrandContext="Admin"
+        />
     );
 }

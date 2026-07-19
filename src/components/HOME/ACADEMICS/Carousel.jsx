@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 
 import './Carousel.css';
 
@@ -42,8 +43,8 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
             <div className="carousel-item-title" style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', letterSpacing: '0' }}>{item.title}</div>
             <p className="carousel-item-description" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
             {item.link && (
-              <Link to={item.link} className="carousel-explore-btn" style={{ color: '#FFBF00', fontWeight: 'bold', marginTop: 'auto', paddingTop: '10px' }}>
-                View Details <span style={{ marginLeft: '4px', color: '#FFBF00' }}>→</span>
+              <Link to={item.link} className="carousel-explore-btn" style={{ marginTop: 'auto', paddingTop: '10px' }}>
+                View Details <ArrowRight size={13} className="carousel-explore-arrow" />
               </Link>
             )}
           </div>
@@ -60,7 +61,9 @@ export default function Carousel({
   autoplayDelay = 3000,
   pauseOnHover = false,
   loop = false,
-  round = false
+  round = false,
+  showArrows = true,
+  ariaLabel = 'Carousel'
 }) {
   const containerPadding = 0; // Removed extra container padding to fit mobile better
   const itemWidth = baseWidth - containerPadding * 2;
@@ -76,6 +79,10 @@ export default function Carousel({
   const [isHovered, setIsHovered] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const prefersReducedMotion = useRef(
+    typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ).current;
 
   const containerRef = useRef(null);
   useEffect(() => {
@@ -115,7 +122,7 @@ export default function Carousel({
     }
   }, [itemsForRender.length, loop, position]);
 
-  const effectiveTransition = isJumping ? { duration: 0 } : SPRING_OPTIONS;
+  const effectiveTransition = isJumping || prefersReducedMotion ? { duration: 0 } : SPRING_OPTIONS;
 
   const handleAnimationStart = () => {
     setIsAnimating(true);
@@ -155,6 +162,23 @@ export default function Carousel({
     setIsAnimating(false);
   };
 
+  const goTo = (idx) => {
+    const max = itemsForRender.length - 1;
+    setPosition(Math.max(0, Math.min(idx, max)));
+  };
+  const goNext = () => goTo(position + 1);
+  const goPrev = () => goTo(position - 1);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      goNext();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      goPrev();
+    }
+  };
+
   const handleDragEnd = (_, info) => {
     const { offset, velocity } = info;
     const direction =
@@ -185,10 +209,18 @@ export default function Carousel({
   const activeIndex =
     items.length === 0 ? 0 : loop ? (position - 1 + items.length) % items.length : Math.min(position, items.length - 1);
 
+  const atStart = !loop && position === 0;
+  const atEnd = !loop && position === itemsForRender.length - 1;
+
   return (
     <div
       ref={containerRef}
       className={`carousel-container ${round ? 'round' : ''}`}
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
       style={{
         width: `${baseWidth}px`,
         ...(round && { height: `${baseWidth}px`, borderRadius: '50%' })
@@ -224,23 +256,47 @@ export default function Carousel({
           />
         ))}
       </motion.div>
-      <div className={`carousel-indicators-container ${round ? 'round' : ''}`}>
-        <div className="carousel-indicators">
-          {items.map((_, index) => (
-            <motion.button
-              type="button"
-              key={index}
-              className={`carousel-indicator ${activeIndex === index ? 'active' : 'inactive'}`}
-              aria-label={`Go to slide ${index + 1}`}
-              aria-current={activeIndex === index}
-              animate={{
-                scale: activeIndex === index ? 1.2 : 1
-              }}
-              onClick={() => setPosition(loop ? index + 1 : index)}
-              transition={{ duration: 0.15 }}
-            />
-          ))}
+
+      <div className={`carousel-controls-container ${round ? 'round' : ''}`}>
+        {showArrows && itemsForRender.length > 1 && (
+          <button
+            type="button"
+            onClick={goPrev}
+            disabled={atStart}
+            aria-label="Previous slide"
+            className="carousel-nav-btn carousel-nav-prev"
+          >
+            <ChevronLeft size={16} strokeWidth={2.5} />
+          </button>
+        )}
+
+        <div className="carousel-indicators-container">
+          <div className="carousel-indicators">
+            {items.map((_, index) => (
+              <motion.button
+                type="button"
+                key={index}
+                className={`carousel-indicator ${activeIndex === index ? 'active' : 'inactive'}`}
+                aria-label={`Go to slide ${index + 1}`}
+                aria-current={activeIndex === index}
+                onClick={() => setPosition(loop ? index + 1 : index)}
+                transition={{ duration: 0.2 }}
+              />
+            ))}
+          </div>
         </div>
+
+        {showArrows && itemsForRender.length > 1 && (
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={atEnd}
+            aria-label="Next slide"
+            className="carousel-nav-btn carousel-nav-next"
+          >
+            <ChevronRight size={16} strokeWidth={2.5} />
+          </button>
+        )}
       </div>
     </div>
   );

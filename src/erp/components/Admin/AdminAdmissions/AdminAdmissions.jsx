@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 import { createClient } from '@supabase/supabase-js';
-import { sendSystemEmail } from '../../../LIB/EmailService';
+import { sendSystemEmail } from '../../../lib/EmailService';
 
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
 const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA';
@@ -10,7 +10,7 @@ const provisionClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
 });
 
-export default function AdminAdmissions() {
+export default function AdminAdmissions({ isHubView = false }) {
     const [applications, setApplications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState("all");
@@ -39,7 +39,7 @@ export default function AdminAdmissions() {
             const { data: appData, error: appError } = await supabase
                 .from("admissions_applications")
                 .select("*")
-                .order("created_at", { ascending: false });
+                .order("submitted_at", { ascending: false });
 
             if (appError) {
                 console.warn("Table admissions_applications might not exist or no rows:", appError);
@@ -58,27 +58,28 @@ export default function AdminAdmissions() {
                 setIsAdmissionsOpen(settingsData.value.is_open !== false);
             }
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.error("Error fetching applications:", error);
         } finally {
             setIsLoading(false);
         }
     };
 
-    const toggleAdmissionsStatus = async () => {
+    const handleToggleAdmissions = async () => {
         setIsTogglingStatus(true);
-        const newStatus = !isAdmissionsOpen;
         try {
+            const newState = !isAdmissionsOpen;
             const { error } = await supabase
                 .from("system_settings")
-                .upsert({
-                    key: 'admissions_status',
-                    value: { is_open: newStatus }
-                });
+                .upsert({ 
+                    key: "admissions_status", 
+                    value: { is_open: newState } 
+                }, { onConflict: 'key' });
+                
             if (error) throw error;
-            setIsAdmissionsOpen(newStatus);
+            setIsAdmissionsOpen(newState);
+            window.erpDialog?.alert(`Admissions are now ${newState ? 'OPEN' : 'CLOSED'}`);
         } catch (error) {
-            console.error("Error toggling admissions status:", error);
-            alert("Failed to change admissions status.");
+            window.erpDialog?.alert("Failed to toggle admissions status");
         } finally {
             setIsTogglingStatus(false);
         }
@@ -94,11 +95,13 @@ export default function AdminAdmissions() {
             if (error) throw error;
             fetchApplications();
         } catch (error) {
-            alert("Failed to reject application.");
+            window.erpDialog?.alert("Failed to reject application.");
         }
     };
 
     const handleApprovePipeline = async (app) => {
+        if (!window.confirm(`Are you sure you want to approve ${app.name} and provision their ERP account?`)) return;
+
         setShowProvisionModal(true);
         setProvisionStatus("running");
         setProvisionLogs([
@@ -141,8 +144,6 @@ export default function AdminAdmissions() {
             }).eq("id", app.id);
             if (updateError) throw updateError;
 
-
-
             // 3. Generate Password & Auth
             const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
             let generatedPassword = "Jsm#";
@@ -155,7 +156,6 @@ export default function AdminAdmissions() {
             });
 
             if (authError) {
-                // If user already exists, it might throw an error. We should handle it or fail gracefully.
                 if (authError.message.includes("already registered")) {
                     addLog(`[WARNING] A user with email ${app.email} is already registered in Auth.`);
                     throw new Error("User already exists in Authentication system.");
@@ -226,39 +226,54 @@ export default function AdminAdmissions() {
     const filteredApps = filter === "all" ? applications : applications.filter(a => a.status === filter);
 
     return (
-        <div className="flex flex-col gap-6 animate-fade-in p-6 lg:p-8">
-            <div className="flex justify-between items-end">
-                <div>
-                    <h1 className={`font-black text-3xl lg:text-4xl text-black tracking-tighter mb-2 uppercase`}>
-                        Admissions <span className="text-[#b388ff]">Command Center</span>
-                    </h1>
-                    <p className={`text-sm text-black/70 font-bold uppercase tracking-widest flex items-center gap-3`}>
-                        Review and process incoming website applications.
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-black border-2 border-black shadow-[2px_2px_0_0_#050505] ${isAdmissionsOpen ? 'bg-[#00e676] text-black' : 'bg-[#ff4d4d] text-white'}`}>
-                            {isAdmissionsOpen ? 'INTAKE OPEN' : 'INTAKE CLOSED'}
-                        </span>
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <button 
-                        onClick={toggleAdmissionsStatus} 
-                        disabled={isTogglingStatus}
-                        className={`p-3 font-black text-xs uppercase tracking-widest border-2 border-black shadow-[4px_4px_0_0_#050505] active:translate-y-px active:translate-x-px active:shadow-none rounded transition-all ${isAdmissionsOpen ? 'bg-[#ff4d4d] text-white hover:bg-red-600' : 'bg-[#00e676] text-black hover:bg-green-500'}`}
-                    >
-                        {isTogglingStatus ? 'Processing...' : isAdmissionsOpen ? 'Close Applications' : 'Open Applications'}
-                    </button>
-                    <button onClick={fetchApplications} className="p-3 bg-white border-2 border-black shadow-[4px_4px_0_0_#050505] active:translate-y-px active:translate-x-px active:shadow-none rounded text-black hover:bg-gray-100 transition-all">
-                        <i className="fa-solid fa-rotate-right"></i>
-                    </button>
-                </div>
-            </div>
+        <div className={`flex flex-col gap-6 animate-fade-in ${isHubView ? 'w-full' : 'max-w-7xl mx-auto p-6 lg:p-8 pb-32'}`}>
+            {/* Header and Tabs */}
+            {!isHubView && (
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80 mb-4`}>
+                    {/* Background Decorations */}
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 mix-blend-overlay pointer-events-none"></div>
 
-            <div className="flex gap-4 mb-4">
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+                        <div className="flex items-center gap-4 lg:gap-5">
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-user-graduate text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white drop-shadow-md`}>Admissions Command Center</h1>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-widest border border-white/20 ${isAdmissionsOpen ? 'bg-emerald-500/20 text-emerald-100' : 'bg-rose-500/20 text-rose-100'}`}>
+                                        {isAdmissionsOpen ? 'INTAKE OPEN' : 'INTAKE CLOSED'}
+                                    </span>
+                                </div>
+                                <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Review and process incoming website applications.</p>
+                            </div>
+                        </div>
+                        
+                        <div className="flex gap-3 w-full lg:w-auto">
+                            <button
+                                onClick={handleToggleAdmissions}
+                                disabled={isTogglingStatus}
+                                className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/20 backdrop-blur-md ${isAdmissionsOpen ? 'bg-rose-500/20 hover:bg-rose-500 text-white' : 'bg-emerald-500/20 hover:bg-emerald-500 text-white'}`}
+                            >
+                                <i className={`fa-solid ${isAdmissionsOpen ? 'fa-lock' : 'fa-lock-open'}`}></i>
+                                {isTogglingStatus ? 'Processing...' : (isAdmissionsOpen ? 'Close Admissions' : 'Open Admissions')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-2'}`}>
                 {['all', 'pending', 'approved', 'rejected'].map(f => (
                     <button 
                         key={f}
                         onClick={() => setFilter(f)}
-                        className={`px-4 py-2 rounded uppercase tracking-widest text-xs font-black border-2 border-black transition-all shadow-[2px_2px_0_0_#050505] active:translate-y-px active:translate-x-px active:shadow-none ${filter === f ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'}`}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
+                            filter === f 
+                                ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
+                                : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
+                        }`}
                     >
                         {f}
                     </button>
@@ -270,61 +285,63 @@ export default function AdminAdmissions() {
                     <div className="animate-spin w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full"></div>
                 </div>
             ) : (
-                <div className="bg-white rounded border-2 border-black shadow-[8px_8px_0_0_#050505] overflow-hidden">
+                <div className="bg-themePanel rounded-themePanel border-theme border-themeBorder shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-black border-b-2 border-black text-xs uppercase tracking-widest text-white font-black">
+                            <thead className="bg-themeElevated border-b-theme border-themeBorder text-xs uppercase tracking-widest text-themeTextSec font-black">
                                 <tr>
-                                    <th className="p-4 border-r-2 border-white/20">Applicant</th>
-                                    <th className="p-4 border-r-2 border-white/20">Program</th>
-                                    <th className="p-4 border-r-2 border-white/20">Marks / Exams</th>
-                                    <th className="p-4 border-r-2 border-white/20">Date</th>
-                                    <th className="p-4 border-r-2 border-white/20">Status</th>
+                                    <th className="p-4 border-r-theme border-themeBorder">Applicant</th>
+                                    <th className="p-4 border-r-theme border-themeBorder">Program</th>
+                                    <th className="p-4 border-r-theme border-themeBorder">Marks / Exams</th>
+                                    <th className="p-4 border-r-theme border-themeBorder">Date</th>
+                                    <th className="p-4 border-r-theme border-themeBorder">Status</th>
                                     <th className="p-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y-2 divide-black">
+                            <tbody className="divide-y divide-themeBorder">
                                 {filteredApps.length === 0 ? (
-                                    <tr><td colSpan="6" className="p-8 text-center text-black font-black uppercase tracking-widest">No applications found.</td></tr>
+                                    <tr><td colSpan="6" className="p-8 text-center text-themeTextSec font-black uppercase tracking-widest">No applications found.</td></tr>
                                 ) : (
                                     filteredApps.map(app => (
-                                        <tr key={app.id} className="hover:bg-gray-100 transition-colors">
-                                            <td className="p-4 border-r-2 border-black">
-                                                <p className="font-black text-black uppercase">{app.name}</p>
-                                                <p className="text-xs text-black/70 font-bold uppercase tracking-widest mt-1">{app.email}</p>
-                                                <p className="text-xs text-black/70 font-bold uppercase tracking-widest mt-0.5">{app.phone}</p>
+                                        <tr key={app.id} className="hover:bg-themeElevated transition-colors group">
+                                            <td className="p-4 border-r-theme border-themeBorder">
+                                                <p className="font-black text-themeText">{app.name}</p>
+                                                <p className="text-xs text-themeTextSec font-medium mt-1">{app.email}</p>
+                                                <p className="text-xs text-themeTextSec font-medium mt-0.5">{app.phone}</p>
                                             </td>
-                                            <td className="p-4 text-sm font-black text-black border-r-2 border-black uppercase tracking-widest">{app.program}</td>
-                                            <td className="p-4 border-r-2 border-black">
-                                                <p className="text-xs text-black font-black uppercase tracking-widest mb-1">10th: <span className="text-[#b388ff]">{app.marks_10th}</span> | 12th: <span className="text-[#00e676]">{app.marks_inter}</span></p>
-                                                {app.exam_tglawcet && <p className="text-xs text-black font-black uppercase tracking-widest">TGLAWCET: <span className="bg-black text-[#ffea00] px-1 rounded">{app.exam_tglawcet}</span></p>}
-                                                {app.exam_clat && <p className="text-xs text-black font-black uppercase tracking-widest">CLAT: <span className="bg-black text-[#00e676] px-1 rounded">{app.exam_clat}</span></p>}
-                                                {app.exam_other && <p className="text-[10px] text-black font-bold uppercase tracking-widest mt-1 opacity-70">Other Exam: {app.exam_other}</p>}
-                                                {app.family_in_legal === 'Yes' && <p className="text-[10px] text-black font-bold uppercase tracking-widest mt-1 opacity-70">Legal Family: {app.family_in_legal_who}</p>}
+                                            <td className="p-4 text-sm font-black text-themeText border-r-theme border-themeBorder">{app.program}</td>
+                                            <td className="p-4 border-r-theme border-themeBorder">
+                                                <p className="text-xs text-themeText font-black uppercase tracking-widest mb-1">
+                                                    10th: <span className="text-indigo-400">{app.marks_10th}</span> | 12th: <span className="text-emerald-400">{app.marks_inter}</span>
+                                                </p>
+                                                {app.exam_tglawcet && <p className="text-xs text-themeText font-black uppercase tracking-widest">TGLAWCET: <span className="text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">{app.exam_tglawcet}</span></p>}
+                                                {app.exam_clat && <p className="text-xs text-themeText font-black uppercase tracking-widest mt-1">CLAT: <span className="text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">{app.exam_clat}</span></p>}
+                                                {app.exam_other && <p className="text-[10px] text-themeTextSec font-bold uppercase tracking-widest mt-2">Other Exam: {app.exam_other}</p>}
+                                                {app.family_in_legal === 'Yes' && <p className="text-[10px] text-themeTextSec font-bold uppercase tracking-widest mt-1">Legal Family: {app.family_in_legal_who}</p>}
                                             </td>
-                                            <td className="p-4 text-xs text-black font-bold border-r-2 border-black">
+                                            <td className="p-4 text-xs text-themeTextSec font-medium border-r-theme border-themeBorder">
                                                 {new Date(app.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="p-4 border-r-2 border-black">
-                                                <span className={`px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest border-2 border-black shadow-[2px_2px_0_0_#050505] inline-block mb-1 ${
-                                                    app.status === 'approved' ? 'bg-[#00e676] text-black' :
-                                                    app.status === 'rejected' ? 'bg-[#ff4d4d] text-black' :
-                                                    'bg-[#ffea00] text-black'
+                                            <td className="p-4 border-r-theme border-themeBorder">
+                                                <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border border-themeBorder inline-block mb-2 ${
+                                                    app.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                                                    app.status === 'rejected' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' :
+                                                    'bg-amber-500/10 text-amber-400 border-amber-500/30'
                                                 }`}>
                                                     {app.status}
                                                 </span>
-                                                {app.erp_id && <p className="text-[10px] font-black uppercase tracking-widest text-black/70">ID: <span className="text-black select-all">{app.erp_id}</span></p>}
+                                                {app.erp_id && <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">ID: <span className="text-themeText select-all">{app.erp_id}</span></p>}
                                             </td>
                                             <td className="p-4 text-right space-x-2">
                                                 {app.status === 'pending' && (
-                                                    <>
-                                                        <button onClick={() => handleApprovePipeline(app)} className="p-2.5 bg-[#00e676] border-2 border-black shadow-[2px_2px_0_0_#050505] active:translate-y-px active:translate-x-px active:shadow-none text-black hover:bg-[#00c853] rounded transition-all" title="Approve">
+                                                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button onClick={() => handleApprovePipeline(app)} className="w-8 h-8 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-lg transition-all" title="Approve">
                                                             <i className="fa-solid fa-check"></i>
                                                         </button>
-                                                        <button onClick={() => handleReject(app.id)} className="p-2.5 bg-[#ff4d4d] border-2 border-black shadow-[2px_2px_0_0_#050505] active:translate-y-px active:translate-x-px active:shadow-none text-black hover:bg-[#ff3333] rounded transition-all" title="Reject">
+                                                        <button onClick={() => handleReject(app.id)} className="w-8 h-8 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all" title="Reject">
                                                             <i className="fa-solid fa-xmark"></i>
                                                         </button>
-                                                    </>
+                                                    </div>
                                                 )}
                                             </td>
                                         </tr>
@@ -338,71 +355,73 @@ export default function AdminAdmissions() {
 
             {/* Automation Pipeline Modal */}
             {showProvisionModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white border-4 border-black rounded-lg w-full max-w-2xl overflow-hidden shadow-[12px_12px_0_0_#050505] flex flex-col h-[500px]">
-                        <div className="bg-[#b388ff] border-b-4 border-black p-4 flex justify-between items-center shrink-0">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-themePanel border-theme border-themeBorder rounded-themePanel w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
+                        <div className="bg-themeElevated border-b-theme border-themeBorder p-5 flex justify-between items-center shrink-0">
                             <div className="flex items-center gap-3">
-                                <i className="fa-solid fa-robot text-black text-xl"></i>
-                                <span className="font-mono text-sm font-black text-black tracking-widest uppercase">Pipeline Execution</span>
+                                <i className="fa-solid fa-robot text-themeAccent text-xl"></i>
+                                <span className="font-mono text-sm font-black text-themeText tracking-widest uppercase">Pipeline Execution</span>
                             </div>
                             {provisionStatus !== "running" && (
-                                <button onClick={() => { setShowProvisionModal(false); setGeneratedCredentials(null); }} className="w-8 h-8 flex items-center justify-center bg-white border-2 border-black rounded shadow-[2px_2px_0_0_#050505] active:shadow-none active:translate-y-px active:translate-x-px text-black transition-all">
+                                <button onClick={() => { setShowProvisionModal(false); setGeneratedCredentials(null); }} className="w-8 h-8 flex items-center justify-center bg-themeApp hover:bg-themeElevated rounded-full border border-themeBorderStrong text-themeTextSec hover:text-themeText transition-all">
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                             )}
                         </div>
 
                         {provisionStatus === "success" && generatedCredentials ? (
-                            <div className="flex-1 bg-[#ffea00] p-6 lg:p-8 overflow-y-auto flex flex-col items-center justify-center text-center">
-                                <div className="w-16 h-16 bg-[#00e676] text-black border-4 border-black shadow-[4px_4px_0_0_#050505] rounded flex items-center justify-center text-3xl mb-4">
+                            <div className="flex-1 p-6 lg:p-8 overflow-y-auto flex flex-col items-center justify-center text-center bg-emerald-500/5">
+                                <div className="w-16 h-16 bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-3xl mb-4">
                                     <i className="fa-solid fa-check"></i>
                                 </div>
-                                <h3 className={`font-black uppercase tracking-widest text-2xl text-black mb-1`}>Student Provisioned!</h3>
-                                <p className={`text-sm font-bold text-black/70 mb-6 uppercase tracking-widest`}>Securely share these credentials with the student.</p>
+                                <h3 className={`font-black uppercase tracking-widest text-2xl text-themeText mb-1`}>Student Provisioned!</h3>
+                                <p className={`text-sm font-medium text-themeTextSec mb-6 uppercase tracking-widest`}>Securely share these credentials with the student.</p>
 
-                                <div className="w-full max-w-sm bg-white p-6 border-4 border-black flex flex-col gap-5 relative overflow-hidden text-left shadow-[8px_8px_0_0_#050505]">
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-black/70">Generated ERP ID</span>
-                                        <div className="bg-neutral-100 border-2 border-black p-3 text-lg font-black text-black tracking-widest select-all">
+                                <div className="w-full max-w-sm bg-themeApp p-6 rounded-2xl border border-themeBorderStrong flex flex-col gap-5 text-left shadow-lg">
+                                    <div className="flex flex-col gap-2">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Generated ERP ID</span>
+                                        <div className="bg-themePanel border border-themeBorder p-3 rounded-lg text-base font-black text-themeText tracking-widest select-all text-center">
                                             {generatedCredentials.id}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-black/70">Temporary Password</span>
-                                        <div className="bg-neutral-100 border-2 border-black p-3 text-lg font-black text-black tracking-widest select-all">
+                                    <div className="flex flex-col gap-2">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Temporary Password</span>
+                                        <div className="bg-themePanel border border-themeBorder p-3 rounded-lg text-base font-black text-themeText tracking-widest select-all text-center">
                                             {generatedCredentials.password}
                                         </div>
                                     </div>
-                                    <p className="text-[10px] font-bold text-black/60 leading-tight">These credentials have been emailed to the applicant. They will be prompted to change their password upon first login.</p>
+                                    <p className="text-[10px] font-bold text-themeTextSec leading-relaxed text-center mt-2">These credentials have been emailed to the applicant. They will be prompted to change their password upon first login.</p>
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex-1 bg-black p-4 font-mono text-xs md:text-sm overflow-y-auto flex flex-col gap-1 shadow-inner">
+                            <div className="flex-1 bg-[#0a0a0a] p-5 font-mono text-xs md:text-sm overflow-y-auto flex flex-col gap-1.5 shadow-inner">
                                 {provisionLogs.map((log, i) => (
                                     <div key={i} className={`font-bold
-                                        ${log.includes('[FATAL ERROR]') || log.includes('[WARNING]') ? 'text-[#ff4d4d]' : ''}
-                                        ${log.includes('[SUCCESS]') ? 'text-[#00e676]' : ''}
-                                        ${log.includes('[AUTH]') ? 'text-[#ffea00]' : ''}
-                                        ${log.includes('[DATABASE]') || log.includes('[EMAIL]') ? 'text-[#b388ff]' : ''}
-                                        ${!log.match(/\[(FATAL ERROR|WARNING|SUCCESS|AUTH|DATABASE|EMAIL)\]/) ? 'text-white' : ''}
+                                        ${log.includes('[FATAL ERROR]') || log.includes('[WARNING]') ? 'text-rose-500' : ''}
+                                        ${log.includes('[SUCCESS]') ? 'text-emerald-400' : ''}
+                                        ${log.includes('[AUTH]') ? 'text-amber-400' : ''}
+                                        ${log.includes('[DATABASE]') || log.includes('[EMAIL]') ? 'text-indigo-400' : ''}
+                                        ${log.includes('[SYSTEM]') ? 'text-blue-400' : ''}
+                                        ${log.includes('[FINANCE]') ? 'text-emerald-400' : ''}
+                                        ${!log.match(/\[(FATAL ERROR|WARNING|SUCCESS|AUTH|DATABASE|EMAIL|SYSTEM|FINANCE)\]/) ? 'text-white/80' : ''}
                                     `}>
                                         {log}
                                     </div>
                                 ))}
                                 {provisionStatus === "running" && (
-                                    <div className="text-white animate-pulse font-black mt-2">_</div>
+                                    <div className="text-white/50 animate-pulse font-black mt-2">_</div>
                                 )}
                                 <div ref={logsEndRef} />
                             </div>
                         )}
 
-                        <div className="bg-white border-t-4 border-black p-4 shrink-0 flex justify-end">
+                        <div className="bg-themeElevated border-t-theme border-themeBorder p-4 shrink-0 flex justify-end">
                             {provisionStatus === "running" ? (
-                                <div className="text-black font-mono text-sm font-black tracking-widest animate-pulse px-4 py-2 border-2 border-black shadow-[4px_4px_0_0_#050505] bg-[#ffea00] inline-block">PIPELINE ACTIVE...</div>
+                                <div className="text-amber-400 font-mono text-sm font-black tracking-widest animate-pulse px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded">PIPELINE ACTIVE...</div>
                             ) : (
                                 <button
                                     onClick={() => { setShowProvisionModal(false); setGeneratedCredentials(null); }}
-                                    className="bg-black text-white border-2 border-black shadow-[4px_4px_0_0_rgba(0,0,0,0.5)] active:shadow-none active:translate-y-1 active:translate-x-1 px-6 py-2 font-black uppercase tracking-widest rounded transition-all"
+                                    className="bg-themeApp hover:bg-neutral-800 text-themeText border border-themeBorderStrong px-6 py-2.5 font-black uppercase tracking-widest rounded-lg transition-colors"
                                 >
                                     {provisionStatus === "success" ? "Done & Close" : "Close Pipeline"}
                                 </button>

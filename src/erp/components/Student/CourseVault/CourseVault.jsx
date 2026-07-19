@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 import { useERP } from "../../../context/ErpContext";
 
 export default function CourseVault() {
@@ -415,7 +415,7 @@ function BiddingEngine({ biddingData, userSession }) {
         <div className="flex flex-col gap-6 animate-fade-in">
             {/* Header & Wallet */}
             <div className="bg-themeElevated rounded-themePanel p-5 lg:p-8 relative overflow-hidden border-theme border-themeBorder flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
                 <div className="relative z-10 text-center md:text-left flex-1">
                     <h2 className="text-xl lg:text-2xl font-black tracking-tight text-themeText mb-1"><i className="fa-solid fa-vote-yea text-themeAccent mr-2"></i> Elective Voting Engine</h2>
                     <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Cast your point-votes for the electives you want to see offered this semester.</p>

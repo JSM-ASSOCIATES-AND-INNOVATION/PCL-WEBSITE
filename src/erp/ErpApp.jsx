@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-
 import { theme } from './theme';
 import { useERP } from './context/ErpContext';
 import './index.css';
+import pclLogo from '../ASSETS/LOGOS/pcl_logo.svg';
 
 // ==========================================
 // 1. AUTH & LAYOUT IMPORTS
@@ -18,7 +19,7 @@ import AdminSidebar from './components/Admin/AdminSidebar/AdminSidebar';
 // ==========================================
 // 2. SHARED PORTAL MODULES
 // ==========================================
-import NoticeBoard from './components/notices/NoticeBoard';
+import Notices from './components/Student/Notices/Notices';
 import Helpdesk from './components/Student/Helpdesk/Helpdesk';
 import Credentials from './components/Student/Credentials/Credentials';
 import QuestionnaireModal from './components/shared/QuestionnaireModal';
@@ -30,20 +31,24 @@ import GlobalSearch from './components/shared/GlobalSearch';
 // 3. STUDENT PORTAL MODULES
 // ==========================================
 import StudentDashboard from './components/Student/StudentDashboard/StudentDashboard';
-import Attendance from './components/Student/Attendance/Attendance';
+import StudentAcademicHub from './components/Student/StudentAcademicHub/StudentAcademicHub';
+import StudentCareerHub from './components/Student/StudentCareerHub/StudentCareerHub';
+import StudentSupportHub from './components/Student/StudentSupportHub/StudentSupportHub';
+
+// Standalone Student Components for Expanded Mode
 import CourseVault from './components/Student/CourseVault/CourseVault';
-import Timetable from './components/Student/Timetable/Timetable';
+import Attendance from './components/Student/Attendance/Attendance';
 import Assignments from './components/Student/Assignments/Assignments';
+import Timetable from './components/Student/Timetable/Timetable';
 import Examinations from './components/Student/Examinations/Examinations';
+import Mentorship from './components/Student/Mentorship/Mentorship';
 import Internships from './components/Student/Internships/Internships';
 import MootCourt from './components/Student/MootCourt/MootCourt';
-import Achievements from './components/Student/Achievements/Achievements';
-import CVBuilder from './components/Student/CVBuilder/CVBuilder';
 import Fees from './components/Student/Fees/Fees';
 import Leave from './components/Student/Leave/Leave';
-import Mentorship from './components/Student/Mentorship/Mentorship';
-import ElectiveBidding from './components/Student/ElectiveBidding/ElectiveBidding';
 import StudentApprovals from './components/Student/Approvals/StudentApprovals';
+import Achievements from './components/Student/Achievements/Achievements';
+import CVBuilder from './components/Student/CVBuilder/CVBuilder';
 
 
 // ==========================================
@@ -52,12 +57,12 @@ import StudentApprovals from './components/Student/Approvals/StudentApprovals';
 import FacultyDashboard from './components/Faculty/FacultyDashboard/FacultyDashboard';
 import ClassRoster from './components/Faculty/ClassRoster/ClassRoster';
 import FacultyTimetable from './components/Faculty/FacultyTimetable/FacultyTimetable';
-import CourseMaterials from './components/Faculty/CourseMaterials/CourseMaterials';
-import FacultyAssignments from './components/Faculty/FacultyAssignments/FacultyAssignments';
+import FacultyCourses from './components/Faculty/FacultyCourses/FacultyCourses';
 import MarksEntry from './components/Faculty/MarksEntry/MarksEntry';
 import FacultyMentorship from './components/Faculty/FacultyMentorship/FacultyMentorship';
-import Approvals from './components/Faculty/Approvals/Approvals';
+import FacultyClinicsHub from './components/Faculty/FacultyClinicsHub/FacultyClinicsHub';
 import FacultyLeave from './components/Faculty/FacultyLeave/FacultyLeave';
+import FacultyAttendance from './components/Faculty/FacultyAttendance/FacultyAttendance';
 
 // ==========================================
 // 5. ADMIN PORTAL MODULES
@@ -80,6 +85,10 @@ import AdminFacultyDirectory from './components/Admin/AdminFacultyDirectory/Admi
 import AdminHelpdesk from './components/Admin/AdminHelpdesk/AdminHelpdesk';
 import AdminSiteEditor from './components/Admin/AdminSiteEditor/AdminSiteEditor';
 import EventsBoard from './components/notices/EventsBoard';
+import AdminOperationsHub from './components/Admin/AdminOperationsHub/AdminOperationsHub';
+import AdminAcademicHub from './components/Admin/AdminAcademicHub/AdminAcademicHub';
+import AdminClinicsHub from './components/Admin/AdminClinicsHub/AdminClinicsHub';
+import AdminWebsiteHub from './components/Admin/AdminWebsiteHub/AdminWebsiteHub';
 import SessionTimeoutGuard from './components/shared/SessionTimeoutGuard';
 import { RoleActionButton } from './components/shared/LiveHeaderComponents';
 import IntelligentBot from './components/shared/IntelligentBot';
@@ -110,7 +119,8 @@ export default function App() {
 
       attendance: "Attendance Tracker",
       coursevault: "Course Vault",
-      timetable: userSession?.role === 'faculty' ? "My Teaching Schedule" : "Schedule & Timetable",
+      timetable: userSession?.role === 'faculty' ? "My Teaching Schedule" : "Academic Schedule & Hub",
+      materials: userSession?.role === 'faculty' ? "My Courses" : "Course Vault",
       assignments: userSession?.role === 'faculty' ? "Assignment Engine" : "Assignment Portal",
       examinations: "Examinations Hub",
       bidding: "Elective Bidding",
@@ -152,7 +162,18 @@ export default function App() {
   if (isAppLoading) {
     return (
       <div className="w-full h-screen bg-themeApp flex flex-col items-center justify-center selection:bg-themePanel">
-        <i className="fa-solid fa-landmark text-5xl text-neutral-800 mb-6"></i>
+        <div 
+          style={{
+            width: '64px', 
+            height: '64px', 
+            backgroundColor: '#262626', /* neutral-800 equivalent */
+            WebkitMaskImage: `url(${pclLogo})`,
+            WebkitMaskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            marginBottom: '1.5rem'
+          }} 
+        />
         <div className="flex items-center gap-3">
           <i className="fa-solid fa-circle-notch fa-spin text-xl text-neutral-500"></i>
           <h1 className="text-xl font-black tracking-widest text-themeText uppercase">Initializing ERP System...</h1>
@@ -177,22 +198,27 @@ export default function App() {
     if (role === 'student') {
       switch (activeTab) {
         case 'dashboard': return <StudentDashboard setActiveTab={setActiveTab} />;
-        case 'notices': return <NoticeBoard />;
+        case 'notices': return <Notices />;
+        // Compact Hubs
+        case 'academic_center': return <StudentAcademicHub />;
+        case 'career_center': return <StudentCareerHub />;
+        case 'support_center': return <StudentSupportHub />;
+        // Granular (Expanded Mode)
+        case 'vault': return <CourseVault />;
         case 'attendance': return <Attendance />;
-        case 'coursevault': return <CourseVault />;
-        case 'timetable': return <Timetable />;
         case 'assignments': return <Assignments />;
+        case 'timetable': return <Timetable />;
         case 'examinations': return <Examinations />;
+        case 'mentorship': return <Mentorship />;
         case 'internships': return <Internships />;
         case 'mootcourt': return <MootCourt />;
+        case 'fees': return <Fees />;
+        case 'leave': return <Leave />;
+        case 'approvals': return <StudentApprovals />;
+        case 'helpdesk': return <Helpdesk />;
         case 'achievements': return <Achievements />;
         case 'cvbuilder': return <CVBuilder />;
-        case 'fees': return <Fees />;
-        case 'leave': return <StudentApprovals />;
-        case 'approvals': return <StudentApprovals />;
-        case 'mentorship': return <Mentorship />;
-        case 'bidding': return <ElectiveBidding />;
-        case 'helpdesk': return <Helpdesk />;
+        
         case 'credentials': return <Credentials />;
         default: return <ModuleUnderConstruction tabName={activeTab} role="Student" />;
       }
@@ -202,14 +228,13 @@ export default function App() {
     if (role === 'faculty') {
       switch (activeTab) {
         case 'dashboard': return <FacultyDashboard setActiveTab={setActiveTab} />;
-        case 'notices': return <NoticeBoard />;
+        case 'notices': return <Notices />;
         case 'timetable': return <FacultyTimetable setActiveTab={setActiveTab} />;
+        case 'attendance': return <FacultyAttendance />;
         case 'roster': return <ClassRoster />;
-        case 'materials': return <CourseMaterials />;
-        case 'assignments': return <FacultyAssignments />;
-        case 'marks': return <MarksEntry />;
+        case 'materials': return <FacultyCourses setActiveTab={setActiveTab} />;
         case 'mentorship': return <FacultyMentorship />;
-        case 'approvals': return <Approvals />;
+        case 'clinics': return <FacultyClinicsHub />;
         case 'facultyleave': return <FacultyLeave />;
         case 'helpdesk': return <Helpdesk />;
         case 'credentials': return <Credentials />;
@@ -221,6 +246,10 @@ export default function App() {
     if (role === 'admin') {
       switch (activeTab) {
         case 'dashboard': return <AdminDashboard setActiveTab={setActiveTab} />;
+        case 'operations': return <AdminOperationsHub />;
+        case 'academic': return <AdminAcademicHub />;
+        case 'clinics': return <AdminClinicsHub />;
+        case 'website': return <AdminWebsiteHub />;
         case 'notices': return <AdminNotices />;
         case 'users': return <UserManagement />;
         case 'curriculum': return <AdminTimetableBuilder />;
@@ -260,11 +289,11 @@ export default function App() {
           
           {/* CLASSIC SIDEBAR RENDER (Desktop Only) */}
           {navLayout === 'classic' && (
-            <div className="hidden lg:block h-screen shrink-0 border-r border-themeBorder bg-themePanel shadow-themeElevated z-30">
+            <>
               {userSession.role === 'student' && <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} userSession={userSession} />}
               {userSession.role === 'faculty' && <FacultySidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} userSession={userSession} />}
               {userSession.role === 'admin' && <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} userSession={userSession} />}
-            </div>
+            </>
           )}
 
           {/* TOP NAV RENDER (Universal Desktop Layout) */}
@@ -276,71 +305,92 @@ export default function App() {
           <MobileNav userSession={userSession} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} />
 
             <main className="flex-1 flex flex-col h-screen overflow-hidden bg-themeApp relative min-w-0">
-              <header className={`flex h-16 lg:h-24 items-center justify-between px-3 lg:px-8 bg-themePanel border-b-[length:var(--border-width)] border-themeBorder text-themeText relative z-20 min-w-0 gap-2 shrink-0`}>
-                {/* Left: Branding & Page Title */}
-                <div className="flex items-center gap-2 lg:gap-4 shrink-0 mr-1 lg:mr-4 min-w-0">
-                <div className="flex lg:hidden w-8 h-8 rounded-themePanel bg-themeElevated border border-themeBorderStrong items-center justify-center shadow-themeElevated shrink-0">
-                    <i className={`fa-solid ${userSession.role === 'admin' ? 'fa-fingerprint' : 'fa-landmark'} ${roleColors.text} text-xs`}></i>
-                </div>
-                <div className="flex flex-col min-w-0">
-                  <h2 className={`${theme.text.heading} text-base lg:text-2xl text-themeText capitalize tracking-tight leading-none lg:leading-tight truncate`}>
-                    {getPageTitle(activeTab)}
-                  </h2>
-                  <p className={`${theme.text.overline} ${theme.text.muted} mt-0.5 lg:mt-1 hidden sm:block truncate`}>
-                    Prudentia College of Law • Engineered by JSM Associates & Innovations
-                  </p>
-                </div>
-              </div>
-
-              {/* Center: Global Search */}
-              <div className="hidden xl:flex flex-1 justify-center max-w-md mx-2 min-w-0">
-                <GlobalSearch />
-              </div>
-
-              {/* Right: Quick Actions, Clock, Notifications, Profile */}
-              <div className="flex items-center gap-2 lg:gap-4 shrink-0">
-                <div className="hidden lg:block">
-                  <RoleActionButton role={userSession.role} setActiveTab={setActiveTab} />
-                </div>
-
-                <button onClick={() => setActiveTab('notices')} className={`${theme.action.iconBtn} relative group bg-themePanel shadow-sm scale-90 lg:scale-100`}>
-                  <i className={`fa-regular fa-bell group-hover:${roleColors.text} transition-colors text-lg`}></i>
-                  {notices?.length > 0 && (
-                    <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b] animate-pulse"></span>
-                  )}
-                </button>
-
-                <div className={`w-px h-6 bg-themeBorder hidden ${navLayout === 'topnav' ? 'sm:hidden' : 'sm:block'}`}></div>
-
-                {/* Profile Avatar Button */}
-                <button 
-                  onClick={() => setActiveTab('credentials')}
-                  className={`flex items-center gap-1.5 hover:bg-themeElevated p-1 lg:pr-4 rounded-full transition-all border border-transparent hover:border-themeBorder group ${navLayout === 'topnav' ? 'lg:hidden' : ''}`}
-                >
-                  <div className={`w-7 h-7 lg:w-9 lg:h-9 rounded-full bg-themePanel border border-themeBorderStrong flex items-center justify-center font-black text-[9px] lg:text-xs text-themeText relative overflow-hidden group-hover:border-themeAccent transition-colors`}>
-                    <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themePanel"></div>
-                    {(() => {
-                      const name = userSession?.name || '';
-                      const cleanName = name.replace(/[^a-zA-Z\s]/g, '').trim();
-                      const parts = cleanName.split(/\s+/).filter(Boolean);
-                      if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-                      if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-                      return userSession?.role?.substring(0, 2).toUpperCase() || 'US';
-                    })()}
+              <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10 scroll-smooth flex flex-col" id="jsm-main-scroll-container">
+                {/* Spacer for TopNav if present */}
+                {navLayout === 'topnav' && <div className="h-[72px] lg:h-[84px] shrink-0 w-full pointer-events-none transition-all duration-500"></div>}
+                
+                <header className={`mx-3 lg:mx-8 ${navLayout === 'topnav' ? 'mt-1 lg:mt-2' : 'mt-2 lg:mt-4'} mb-2 lg:mb-4 h-16 lg:h-20 flex items-center justify-between px-4 lg:px-6 bg-themePanel/60 backdrop-blur-2xl border border-themeBorder shadow-lg rounded-2xl lg:rounded-3xl text-themeText sticky ${navLayout === 'topnav' ? 'top-[72px] lg:top-[80px]' : 'top-2 lg:top-4'} z-[90] min-w-0 gap-2 shrink-0 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/5 before:to-transparent before:rounded-2xl lg:before:rounded-3xl before:pointer-events-none transition-all duration-500`}>
+                  {/* Left: Branding & Page Title */}
+                  <div className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0 relative z-10">
+                  <div className="flex lg:hidden w-10 h-10 rounded-xl bg-themeElevated border border-white/10 items-center justify-center shadow-md shrink-0 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-themeAccent/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div 
+                          className={`w-4 h-4 bg-current ${roleColors.text} relative z-10`}
+                          style={{
+                              WebkitMaskImage: `url(${pclLogo})`,
+                              WebkitMaskSize: 'contain',
+                              WebkitMaskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center'
+                          }}
+                      />
                   </div>
-                  <div className="hidden lg:flex flex-col items-start">
-                    <span className="text-xs font-bold text-themeText group-hover:text-themeAccent transition-colors leading-tight truncate max-w-[120px]">
-                      {userSession?.name || (userSession?.role === 'admin' ? 'System Admin' : userSession?.role === 'faculty' ? 'Professor' : 'Student')}
-                    </span>
-                    <span className="text-[9px] font-black text-themeTextSec uppercase tracking-widest">
-                      Profile & Settings
-                    </span>
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-2 lg:gap-3">
+                        <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-themeAccent shadow-[0_0_8px_currentColor] animate-pulse shrink-0"></div>
+                        <h2 className={`${theme.text.heading} text-lg lg:text-2xl text-themeText capitalize tracking-tight leading-none truncate drop-shadow-sm`}>
+                          {getPageTitle(activeTab)}
+                        </h2>
+                    </div>
+                    <p className={`${theme.text.overline} ${theme.text.muted} mt-1 hidden sm:block truncate opacity-60 tracking-[0.2em]`}>
+                      Prudentia College of Law • Workspace
+                    </p>
                   </div>
-                </button>
-              </div>
-            </header>
+                </div>
 
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-8 pb-28 lg:pb-8 no-scrollbar relative z-10 scroll-smooth" id="jsm-main-scroll-container">     {renderContent()}
+                {/* Center: Global Search */}
+                <div className="hidden xl:flex flex-1 justify-center max-w-md mx-4 min-w-0 relative z-10">
+                  <GlobalSearch />
+                </div>
+
+                {/* Right: Quick Actions, Notifications, Profile */}
+                <div className="flex items-center gap-2 lg:gap-4 shrink-0 relative z-10">
+                  <div className="hidden lg:block">
+                    <RoleActionButton role={userSession.role} setActiveTab={setActiveTab} />
+                  </div>
+
+                  <button onClick={() => setActiveTab('notices')} className={`w-10 h-10 rounded-xl bg-themeElevated/50 hover:bg-themeElevated border border-white/5 hover:border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:${roleColors.text} transition-all duration-300 relative group shadow-sm`}>
+                    <i className={`fa-regular fa-bell text-lg group-hover:scale-110 transition-transform`}></i>
+                    {notices?.length > 0 && (
+                      <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b] animate-pulse border-2 border-themePanel"></span>
+                    )}
+                  </button>
+
+                  <div className={`w-px h-6 bg-themeBorderStrong/50 mx-1 hidden ${navLayout === 'topnav' ? 'sm:hidden' : 'sm:block'}`}></div>
+
+                  {/* Profile Avatar Button */}
+                  <button 
+                    onClick={() => setActiveTab('credentials')}
+                    className={`flex items-center gap-3 hover:bg-themeElevated/80 p-1 lg:pr-4 rounded-full transition-all duration-300 border border-transparent hover:border-themeBorderStrong group outline-none ${navLayout === 'topnav' ? 'lg:hidden' : ''}`}
+                  >
+                    <div className={`w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-themeElevated border border-white/10 flex items-center justify-center font-black text-[10px] lg:text-xs text-themeText relative overflow-hidden group-hover:border-themeAccent group-hover:text-themeAccent transition-colors shadow-sm shrink-0`}>
+                      <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themeElevated z-10 shadow-sm"></div>
+                      <div className="absolute inset-0 bg-themeAccent/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                      <span className="relative z-10">
+                      {(() => {
+                        const name = userSession?.name || '';
+                        const cleanName = name.replace(/[^a-zA-Z\s]/g, '').trim();
+                        const parts = cleanName.split(/\s+/).filter(Boolean);
+                        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+                        return userSession?.role?.substring(0, 2).toUpperCase() || 'US';
+                      })()}
+                      </span>
+                    </div>
+                    <div className="hidden lg:flex flex-col items-start min-w-0">
+                      <span className="text-xs font-bold text-themeText group-hover:text-themeAccent transition-colors leading-tight truncate max-w-[120px]">
+                        {userSession?.name || (userSession?.role === 'admin' ? 'System Admin' : userSession?.role === 'faculty' ? 'Professor' : 'Student')}
+                      </span>
+                      <span className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mt-0.5 opacity-80">
+                        Settings
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </header>
+
+              <div className="flex-1 p-3 sm:p-8 pb-28 lg:pb-8 flex flex-col">
+                {renderContent()}
+              </div>
             </div>
           </main>
         </div>

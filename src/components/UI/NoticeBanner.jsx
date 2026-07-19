@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Megaphone, X } from 'lucide-react';
 import { supabase } from '../../LIB/supabaseClient';
 
 export default function NoticeBanner() {
@@ -13,7 +14,7 @@ export default function NoticeBanner() {
                 .eq('is_public', true)
                 .order('created_at', { ascending: false })
                 .limit(5);
-            
+
             if (!error && data) {
                 setNotices(data);
             }
@@ -32,47 +33,90 @@ export default function NoticeBanner() {
 
     if (!visible || notices.length === 0) return null;
 
+    const renderNotice = (n, key) => (
+        <span key={key} className="text-sm font-medium text-white/90 flex items-center gap-4 shrink-0">
+            <span className="text-[var(--primary-color)]/60">•</span>
+            {n.title}
+            {n.priority === 'urgent' && (
+                <span className="bg-rose-500/90 text-white px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest">
+                    Urgent
+                </span>
+            )}
+        </span>
+    );
+
     return (
-        <div className="text-white overflow-hidden relative z-50 shadow-none border-b border-white/10" style={{ background: "rgba(0,0,0,0.2)" }}>
-            <div className="max-w-7xl mx-auto px-4 py-1 flex items-center justify-between">
-                <div className="flex items-center gap-3 w-full">
-                    <div className="flex-shrink-0 bg-[var(--primary-color)] text-black px-3 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                        <i className="fa-solid fa-bullhorn animate-pulse"></i> Announcements
+        <div
+            role="region"
+            aria-label="Site announcements"
+            className="text-white relative z-50 border-b border-red-900 shadow-lg font-sans"
+            style={{ background: 'linear-gradient(90deg, #991b1b, #dc2626, #991b1b)', backgroundSize: '200% auto', animation: 'gradient 10s ease infinite' }}
+        >
+            <div className="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 w-full min-w-0">
+                    <div className="flex-shrink-0 bg-white text-red-700 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                        <Megaphone size={11} strokeWidth={2.5} />
+                        Announcements
+                        <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75 animate-ping"></span>
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                        </span>
                     </div>
-                    <div className="flex-1 overflow-hidden relative h-6">
-                        <div className="absolute whitespace-nowrap animate-marquee flex gap-12 items-center h-full">
-                            {notices.map((n, i) => (
-                                <span key={n.id} className="text-sm font-medium flex items-center gap-4">
-                                    <span className="text-[var(--primary-color)] opacity-70">|</span> 
-                                    {n.title}
-                                    {n.priority === 'urgent' && <span className="bg-white text-black px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ml-2">Urgent</span>}
-                                </span>
-                            ))}
-                            {/* Duplicate for seamless looping */}
-                            {notices.map((n, i) => (
-                                <span key={n.id + '-dup'} className="text-sm font-medium flex items-center gap-4">
-                                    <span className="text-[var(--primary-color)] opacity-70">|</span> 
-                                    {n.title}
-                                    {n.priority === 'urgent' && <span className="bg-white text-black px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest ml-2">Urgent</span>}
-                                </span>
-                            ))}
+
+                    <div className="pcl-notice-viewport flex-1 min-w-0 overflow-hidden relative h-6">
+                        <div className="pcl-notice-marquee absolute whitespace-nowrap flex gap-12 items-center h-full" aria-hidden="true">
+                            {notices.map((n) => renderNotice(n, n.id))}
+                            {notices.map((n) => renderNotice(n, n.id + '-dup'))}
                         </div>
+
+                        {/* Screen-reader accessible, non-animated list */}
+                        <span className="sr-only">
+                            {notices.map((n) => n.title).join('. ')}
+                        </span>
                     </div>
                 </div>
-                <button onClick={() => setVisible(false)} className="flex-shrink-0 ml-4 text-white/70 hover:text-white transition-colors">
-                    <i className="fa-solid fa-xmark"></i>
+
+                <button
+                    onClick={() => setVisible(false)}
+                    aria-label="Dismiss announcements"
+                    className="flex-shrink-0 text-white/60 hover:text-[var(--primary-color)] transition-colors p-1 rounded-full hover:bg-white/5"
+                >
+                    <X size={14} strokeWidth={2.5} />
                 </button>
             </div>
-            <style jsx>{`
-                @keyframes marquee {
+
+            <style>{`
+                .pcl-notice-viewport {
+                    mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+                    -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+                }
+                .pcl-notice-marquee {
+                    animation: pcl-marquee 30s linear infinite;
+                }
+                .pcl-notice-marquee:hover {
+                    animation-play-state: paused;
+                }
+                @keyframes pcl-marquee {
                     0% { transform: translateX(0%); }
                     100% { transform: translateX(-50%); }
                 }
-                .animate-marquee {
-                    animation: marquee 30s linear infinite;
+                @keyframes gradient {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
                 }
-                .animate-marquee:hover {
-                    animation-play-state: paused;
+                @media (prefers-reduced-motion: reduce) {
+                    .pcl-notice-marquee {
+                        animation: none;
+                        position: static;
+                        overflow-x: auto;
+                        white-space: nowrap;
+                    }
+                    .pcl-notice-viewport {
+                        overflow-x: auto;
+                        mask-image: none;
+                        -webkit-mask-image: none;
+                    }
                 }
             `}</style>
         </div>

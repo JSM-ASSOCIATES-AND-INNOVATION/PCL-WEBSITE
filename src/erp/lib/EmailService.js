@@ -30,6 +30,14 @@ export const EMAIL_TEMPLATES = {
     CUSTOM_ANNOUNCEMENT: (params) => ({
         subject: `JSM ERP Notice: ${params.title}`,
         message_body: `${params.announcement_body}\n\n- JSM Administration`,
+    }),
+    BLOG_ACCEPTED: (params) => ({
+        subject: `Congratulations! Your Blog Post has been Published`,
+        message_body: `Dear ${params.author_name},\n\nWe are thrilled to inform you that your blog post titled "${params.title}" has been reviewed and APPROVED by the Editorial Board.\n\nIt is now live on the JSM website! You can view and share it using the following link:\n${params.post_url}\n\nThank you for your valuable contribution to our academic community.\n\n- Website Administration`,
+    }),
+    BLOG_REJECTED: (params) => ({
+        subject: `Update regarding your Blog Post Submission`,
+        message_body: `Dear ${params.author_name},\n\nThank you for submitting your blog post titled "${params.title}".\n\nAfter careful review, the Editorial Board has decided not to publish this piece at this time. ${params.feedback ? `\n\nFeedback: ${params.feedback}` : ''}\n\nWe appreciate your effort and encourage you to submit future articles.\n\n- Website Administration`,
     })
 };
 

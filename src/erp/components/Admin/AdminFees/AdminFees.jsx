@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { theme } from '../../../theme';
 import { useERP } from '../../../context/ErpContext';
-import { supabase } from '../../../LIB/supabase/supabaseClient';
+import { supabase } from '../../../lib/supabase/supabaseClient';
 
 export default function AdminFees() {
     const { userSession } = useERP();
@@ -180,35 +180,37 @@ export default function AdminFees() {
     return (
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in relative z-10 selection:bg-themeElevated">
             
-            {/* Header */}
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText">
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themeElevated rounded-full lg:-translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 lg:w-64 lg:h-64 bg-emerald-500/10 rounded-full lg:translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
-
-                <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
-                    <div className="flex items-center gap-4 lg:gap-5">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel flex items-center justify-center shrink-0">
-                            <i className="fa-solid fa-coins text-emerald-500 text-2xl lg:text-3xl"></i>
-                        </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText mb-1`}>Finance Ledger</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Master finance control center.</p>
-                        </div>
+            {/* Header and Tabs */}
+            <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                {/* Background Decorations */}
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                
+                <div className="flex items-center gap-4 lg:gap-5 relative z-10 mb-2">
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                        <i className="fa-solid fa-coins text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                    </div>
+                    <div>
+                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Finance Ledger</h1>
+                        <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Master finance control center.</p>
                     </div>
                 </div>
-            </div>
 
-            {/* Tabs */}
-            <div className="flex bg-themeElevated p-1.5 rounded-xl border-theme border-themeBorder w-fit relative z-10 overflow-x-auto max-w-full gap-1">
-                {['overview', 'invoice', 'ledger'].map(tab => (
-                    <button 
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`whitespace-nowrap px-6 py-2.5 rounded-lg text-xs lg:text-sm font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-500 text-[#0a0a0a] shadow-lg shadow-emerald-500/20' : 'text-themeTextSec hover:text-themeText'}`}
-                    >
-                        {tab === 'overview' ? 'Overview' : tab === 'invoice' ? 'Generate Invoices' : 'Student Ledgers'}
-                    </button>
-                ))}
+                {/* Tabs */}
+                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+                    {['overview', 'invoice', 'ledger'].map(tab => (
+                        <button 
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
+                                activeTab === tab 
+                                    ? 'bg-white text-themeAccent shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-white scale-100' 
+                                    : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
+                            }`}
+                        >
+                            {tab === 'overview' ? 'Overview' : tab === 'invoice' ? 'Generate Invoices' : 'Student Ledgers'}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Content */}

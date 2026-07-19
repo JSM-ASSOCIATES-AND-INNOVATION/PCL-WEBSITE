@@ -11,15 +11,15 @@ export function useSiteContent(pagePath, sectionName) {
             try {
                 const { data, error: fetchError } = await supabase
                     .from('website_content')
-                    .select('content')
+                    .select('content_data')
                     .eq('page_path', pagePath)
-                    .eq('section_name', sectionName)
+                    .eq('section_id', sectionName)
                     .maybeSingle();
 
                 if (fetchError) throw fetchError;
                 
-                if (data && data.content) {
-                    setContent(data.content);
+                if (data && data.content_data) {
+                    setContent(data.content_data);
                 }
             } catch (err) {
                 console.error(`Failed to fetch content for ${pagePath} - ${sectionName}:`, err);

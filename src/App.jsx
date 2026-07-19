@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './COMPONENTS/NAVBAR/Navbar';
-import Footer from './COMPONENTS/UI/Footer/Footer';
+import PremiumFooter from './COMPONENTS/UI/PremiumFooter/PremiumFooter';
 import Home from './COMPONENTS/HOME/Home';
 import About from './COMPONENTS/NAVBAR/ABOUT/About';
 import LeadershipProfile from './COMPONENTS/NAVBAR/ABOUT/LeadershipProfile/LeadershipProfile';
@@ -8,6 +8,9 @@ import UnderConstruction from './PAGES/UnderConstruction';
 import Gallery from './COMPONENTS/NAVBAR/CAMPUS/Gallery/Gallery';
 import Preloader from './COMPONENTS/UI/Preloader/Preloader';
 import ScrollToTop from './COMPONENTS/UI/ScrollToTop';
+import Affiliations from './COMPONENTS/NAVBAR/ABOUT/Affiliations';
+import Careers from './COMPONENTS/NAVBAR/CAREERS/Careers';
+import PlacementCell from './COMPONENTS/NAVBAR/CAREERS/PlacementCell';
 import Programs from './COMPONENTS/NAVBAR/PROGRAMS/Programs';
 import CourseBALLB from './COMPONENTS/NAVBAR/PROGRAMS/CourseBALLB';
 import CourseBBALLB from './COMPONENTS/NAVBAR/PROGRAMS/CourseBBALLB';
@@ -16,12 +19,19 @@ import Faculty from './COMPONENTS/NAVBAR/ABOUT/Faculty';
 import FacultyProfile from './COMPONENTS/NAVBAR/ABOUT/FacultyProfile';
 import Facilities from './COMPONENTS/NAVBAR/CAMPUS/FACILITIES/Facilities';
 import FacilityDetail from './COMPONENTS/NAVBAR/CAMPUS/FACILITIES/FacilityDetail';
+import Library from './COMPONENTS/NAVBAR/CAMPUS/LIBRARY/Library';
+import MootCourt from './COMPONENTS/NAVBAR/CAMPUS/MOOT_COURT/MootCourt';
+import LegalAid from './COMPONENTS/NAVBAR/CAMPUS/LEGAL_AID/LegalAid';
 import Contact from './COMPONENTS/NAVBAR/CONTACT/Contact';
 import EventsPage from './COMPONENTS/NAVBAR/EVENTS/EventsPage';
-import BlogsPage from './COMPONENTS/NAVBAR/EVENTS/BlogsPage';
+import EventDetail from './COMPONENTS/NAVBAR/EVENTS/EventDetail';
+import BlogsPage from './COMPONENTS/NAVBAR/BLOGS/BlogsPage';
+import BlogDetail from './COMPONENTS/NAVBAR/BLOGS/BlogDetail';
+import SubmitBlog from './COMPONENTS/NAVBAR/BLOGS/SubmitBlog';
 import ApplyNow from './COMPONENTS/NAVBAR/APPLY_NOW/ApplyNow';
 import TermsAndConditions from './COMPONENTS/LEGAL/TermsAndConditions';
 import PrivacyPolicy from './COMPONENTS/LEGAL/PrivacyPolicy';
+import WebsiteTracker from './COMPONENTS/UI/WebsiteTracker';
 
 function App() {
   const location = useLocation();
@@ -29,6 +39,7 @@ function App() {
 
   return (
     <>
+      <WebsiteTracker />
       <ScrollToTop />
       <Preloader />
       <Routes>
@@ -40,7 +51,7 @@ function App() {
         <Route path="/about/faculty" element={<><Navbar /><Faculty /></>} />
         <Route path="/about/faculty/:id" element={<><Navbar /><FacultyProfile /></>} />
         <Route path="/about/governing-body" element={<UnderConstruction title="Governing Body" />} />
-        <Route path="/about/affiliations" element={<UnderConstruction title="Affiliations" />} />
+        <Route path="/about/affiliations" element={<><Navbar /><Affiliations /></>} />
         
         <Route path="/programs" element={<><Navbar /><Programs /></>} />
         <Route path="/programs/ba-llb" element={<><Navbar /><CourseBALLB /></>} />
@@ -52,17 +63,18 @@ function App() {
         <Route path="/campus/facilities" element={<><Navbar /><Facilities /></>} />
         <Route path="/campus/facilities/:id" element={<><Navbar /><FacilityDetail /></>} />
         <Route path="/campus/gallery" element={<Gallery />} />
-        <Route path="/campus/moot-court" element={<UnderConstruction title="Moot Court Society" />} />
-        <Route path="/campus/legal-aid" element={<UnderConstruction title="Legal Aid Clinic" />} />
-        <Route path="/campus/library" element={<UnderConstruction title="Library & Infrastructure" />} />
+        <Route path="/campus/moot-court" element={<><Navbar /><MootCourt /></>} />
+        <Route path="/campus/legal-aid" element={<><Navbar /><LegalAid /></>} />
+        <Route path="/campus/library" element={<><Navbar /><Library /></>} />
         
-        <Route path="/careers" element={<UnderConstruction title="Careers" />} />
-        <Route path="/careers/placement" element={<UnderConstruction title="Placement Cell" />} />
-        <Route path="/careers/industry" element={<UnderConstruction title="Industry Integration" />} />
-        <Route path="/careers/opportunities" element={<UnderConstruction title="Opportunities" />} />
+        <Route path="/careers" element={<><Navbar /><Careers /></>} />
+        <Route path="/careers/placement" element={<><Navbar /><PlacementCell /></>} />
 
         <Route path="/events" element={<><Navbar /><EventsPage /></>} />
+        <Route path="/events/:id" element={<><Navbar /><EventDetail /></>} />
         <Route path="/blogs" element={<><Navbar /><BlogsPage /></>} />
+        <Route path="/blogs/submit" element={<><Navbar /><SubmitBlog /></>} />
+        <Route path="/blogs/:id" element={<><Navbar /><BlogDetail /></>} />
 
         <Route path="/contact" element={<><Navbar /><Contact /></>} />
         <Route path="/apply" element={<ApplyNow />} />
@@ -71,7 +83,7 @@ function App() {
 
         <Route path="*" element={<UnderConstruction title="Page Not Found" />} />
       </Routes>
-      {!isHome && <Footer />}
+      {!isHome && <PremiumFooter />}
     </>
   )
 }

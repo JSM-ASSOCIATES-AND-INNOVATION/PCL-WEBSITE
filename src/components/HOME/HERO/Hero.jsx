@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import campusLogoImg from '../../../ASSETS/LOGOS/pcl_campus_logo.webp';
 import outdoorImg from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
 import { useSite } from '../../../CONTEXT/SiteContext';
+import { useSiteContent } from '../../../LIB/hooks/useSiteContent';
 
 // --- ANIMATIONS ---
 const containerVariants = {
@@ -79,165 +80,180 @@ const AnimatedHeadline = ({ text, className, style }) => {
 
 const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
   const { isAdmissionsOpen } = useSite();
+  const { content } = useSiteContent('/', 'hero');
   const isMobile = windowWidth <= 768;
+
+  const title1 = content?.title1 || "Advancing";
+  const title2 = content?.title2 || "Integrated Legal Education";
+  const desc = content?.description || "Where rigorous scholarship meets uncompromising integrity. Shaping the vanguards of modern jurisprudence at Prudentia College of Law.";
+  const btn1Text = content?.btn1_text || "Apply Now";
+  const btn1Link = content?.btn1_link || "/apply";
+  const btn2Text = content?.btn2_text || "Explore Programs";
+  const btn2Link = content?.btn2_link || "/programs";
+  const btn3Text = content?.btn3_text || "Campus";
+  const btn3Link = content?.btn3_link || "/campus/facilities";
 
   return (
     <section 
       ref={ref} 
       {...props} 
-      className="relative w-full min-h-screen pt-[120px] pb-[80px] flex flex-col items-center justify-center overflow-hidden"
+      className="slide relative w-full h-[100dvh] min-h-[100dvh] flex flex-col justify-between overflow-hidden bg-[var(--bg-color)]"
     >
       {/* BACKGROUND SCENE */}
-      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black">
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
         <motion.div
           initial={{ scale: 1.18 }}
-          animate={{ scale: 1 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true }}
           transition={{ duration: 2.5, ease: "easeOut" }}
           className="w-full h-full bg-cover bg-center origin-center"
           style={{ backgroundImage: `url(${windowWidth <= 900 ? campusLogoImg : outdoorImg})` }}
         />
         
         {/* Cinematic Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(0,0,0,0.55)] via-[rgba(0,0,0,0.35)] to-transparent mix-blend-multiply"></div>
-        
-        {/* Subtle Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] pointer-events-none"></div>
-        
-        {/* Noise Texture */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+        <div className="absolute inset-0" style={{ backgroundColor: 'var(--hero-overlay-1)' }}></div>
+        <div className="absolute inset-0 mix-blend-multiply" style={{ background: 'linear-gradient(to bottom, var(--hero-overlay-2-start), var(--hero-overlay-2-mid), var(--hero-overlay-2-end))' }}></div>
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at center, transparent 0%, var(--hero-overlay-3) 100%)' }}></div>
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </div>
 
-      {/* CONTENT FOREGROUND */}
+      {/* Spacer for top navbar offset (since we are flex-col justify-between) */}
+      <div className="flex-shrink-0 h-[60px] md:h-[120px] w-full relative z-10"></div>
+
+      {/* CONTENT FOREGROUND (Centered perfectly) */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
-        animate="visible"
-        className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center text-center mt-auto"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        className="relative z-10 w-full max-w-[1400px] mx-auto flex-1 flex flex-col items-center justify-center text-center px-4 md:px-8"
       >
         
-        {/* Badge (24px mb = mb-6) */}
-        {isAdmissionsOpen && (
-          <motion.div 
-            variants={badgeVariants}
-            className="mb-[24px] inline-flex items-center gap-3 px-5 py-2 h-[44px] rounded-full border border-white/20 bg-black/40 text-[var(--primary-color)] text-xs font-semibold uppercase tracking-widest backdrop-blur-md"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary-color)] animate-pulse shadow-[0_0_10px_var(--primary-color)]"></span>
-            Admissions Open 2026 - 2027
-          </motion.div>
-        )}
+        {/* Badge */}
+        <motion.div 
+          variants={badgeVariants}
+          className={`mb-3 md:mb-[32px] inline-flex items-center gap-2 md:gap-3 px-4 md:px-6 py-2 md:py-2.5 rounded-sm border text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] backdrop-blur-md shadow-lg ${isAdmissionsOpen ? 'border-[var(--primary-color)]/50 text-[var(--primary-color)]' : 'border-rose-500/50 text-rose-500'}`}
+          style={{ backgroundColor: 'var(--hero-badge-bg)' }}
+        >
+          <span className={`w-1.5 h-1.5 rounded-full ${isAdmissionsOpen ? 'bg-[var(--primary-color)] animate-pulse shadow-[0_0_10px_var(--primary-color)]' : 'bg-rose-500'}`}></span>
+          {isAdmissionsOpen ? "Admissions Open 2026 - 2027" : "Admissions Closed 2026 - 2027"}
+        </motion.div>
 
-        {/* Headline (28px mb = mb-[28px]) */}
-        <div className="mb-[28px] text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
+        {/* Headline */}
+        <div className="mb-4 md:mb-[36px] w-full max-w-[1100px]" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-color)' }}>
           <AnimatedHeadline 
-            text="Advancing" 
-            className="text-[38px] md:text-[52px] lg:text-[64px] xl:text-[72px] font-bold leading-[1.05] tracking-[-0.04em] drop-shadow-2xl" 
+            text={title1} 
+            className="text-[2.75rem] sm:text-[3.5rem] md:text-[5rem] lg:text-[76px] font-bold leading-[1.1] tracking-[-0.01em] drop-shadow-2xl" 
           />
           <AnimatedHeadline 
-            text="Integrated Legal Education" 
-            className="text-[38px] md:text-[52px] lg:text-[64px] xl:text-[72px] font-medium italic leading-[1.05] tracking-[-0.04em] text-[var(--primary-color)] drop-shadow-[0_0_30px_rgba(255,191,0,0.3)]" 
+            text={title2} 
+            className="text-[2.25rem] sm:text-[3rem] md:text-[4rem] lg:text-[64px] font-bold italic leading-[1.1] tracking-[-0.01em] text-[var(--primary-color)] drop-shadow-[0_0_30px_rgba(255,191,0,0.2)]" 
           />
         </div>
 
-        {/* Paragraph (40px mb = mb-[40px]) */}
-        <motion.p 
+        {/* Paragraph Capsule */}
+        <motion.div 
           variants={paragraphVariants}
-          className="mb-[40px] text-[15px] md:text-[17px] text-gray-200 font-light max-w-[700px] mx-auto drop-shadow-md"
-          style={{ fontFamily: "'Outfit', sans-serif", lineHeight: 1.9 }}
+          className="mb-6 md:mb-[48px] backdrop-blur-xl rounded-full px-6 md:px-12 py-4 md:py-5 max-w-[700px] mx-auto shadow-2xl"
+          style={{ backgroundColor: 'var(--hero-pill-bg)', border: '1px solid var(--hero-border)' }}
         >
-          Where rigorous scholarship meets uncompromising integrity. Shaping the vanguards of modern jurisprudence at Prudentia College of Law.
-        </motion.p>
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg font-light drop-shadow-md text-center" style={{ fontFamily: "'Outfit', sans-serif", lineHeight: 1.5, color: 'var(--text-muted)' }}>
+            {desc}
+          </p>
+        </motion.div>
 
-        {/* Buttons (60px mb = mb-[60px]) */}
+        {/* Buttons */}
         <motion.div 
           variants={containerVariants}
-          className="mb-[60px] flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 w-full sm:w-auto px-2"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 w-full sm:w-auto px-4 relative bottom-4 md:bottom-8"
         >
           {isAdmissionsOpen && (
-            <motion.div variants={buttonVariants} className="w-full sm:w-auto">
-              <Link to="/apply" className="group w-full sm:w-auto flex items-center justify-center gap-2 h-[56px] px-8 bg-[var(--primary-color)] text-black font-bold uppercase tracking-[0.1em] text-sm rounded-[18px] transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(255,191,0,0.25)]">
-                Apply Now
+            <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
+              <Link 
+                to={btn1Link} 
+                className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 bg-[var(--primary-color)] text-[#000000] !important font-extrabold uppercase tracking-[0.15em] text-[11px] rounded-[18px] shadow-[0_10px_30px_rgba(255,191,0,0.25)] hover:shadow-[0_15px_40px_rgba(255,191,0,0.35)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
+                style={{ color: '#000000' }}
+              >
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+                {btn1Text} <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform duration-500" />
               </Link>
             </motion.div>
           )}
 
-          <motion.div variants={buttonVariants} className="w-full sm:w-auto">
-            <Link to="/programs" className="group w-full sm:w-auto flex items-center justify-center gap-2 h-[56px] px-8 bg-white/10 border border-white/20 text-white font-bold uppercase tracking-[0.1em] text-sm rounded-[18px] backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/40">
-              Explore Programs
+          <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
+            <Link 
+              to={btn2Link} 
+              className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 font-bold uppercase tracking-[0.1em] text-[11px] rounded-[18px] backdrop-blur-md transition-all hover:-translate-y-1 duration-500"
+              style={{ color: 'var(--text-color)', backgroundColor: 'var(--hero-border)', border: '1px solid var(--card-border)' }}
+            >
+              {btn2Text}
             </Link>
           </motion.div>
 
-          <motion.div variants={buttonVariants} className="w-full sm:w-auto hidden md:block">
-            <Link to="/campus/facilities" className="group flex items-center justify-center gap-2 h-[56px] px-4 text-white/70 hover:text-white font-semibold uppercase tracking-wider text-sm transition-colors">
-              Campus <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px] hidden md:block">
+            <Link 
+              to={btn3Link} 
+              className="group flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-4 font-semibold uppercase tracking-wider text-[11px] transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              {btn3Text} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
         </motion.div>
 
       </motion.div>
 
-      {/* METRICS (Desktop: Glass Strip, Mobile: Swipeable Cards) */}
+      {/* METRICS (Natural Flex Block at Bottom) */}
       <motion.div 
         variants={metricsVariants}
         initial="hidden"
-        animate="visible"
-        className="relative z-10 w-full mt-auto"
+        whileInView="visible"
+        viewport={{ once: true }}
+        className="w-full z-20 mb-6 md:mb-10 px-4"
       >
         {isMobile ? (
-          /* Mobile Metrics - Swipeable Horizontal Scroll */
-          <div className="w-full overflow-x-auto pb-4 px-4 snap-x hide-scrollbar">
-            <div className="flex gap-4 min-w-max justify-center">
-              <div className="snap-center shrink-0 w-[110px] h-[80px] bg-white/5 border border-white/10 backdrop-blur-[16px] rounded-[16px] flex flex-col items-center justify-center p-2 text-center">
-                <h4 className="text-white font-bold text-[11px] mb-1">BCI</h4>
-                <p className="text-gray-400 text-[9px]">Approved</p>
-              </div>
-              <div className="snap-center shrink-0 w-[110px] h-[80px] bg-white/5 border border-white/10 backdrop-blur-[16px] rounded-[16px] flex flex-col items-center justify-center p-2 text-center">
-                <h4 className="text-white font-bold text-[11px] mb-1">OU</h4>
-                <p className="text-gray-400 text-[9px]">Affiliated</p>
-              </div>
-              <div className="snap-center shrink-0 w-[110px] h-[80px] bg-white/5 border border-white/10 backdrop-blur-[16px] rounded-[16px] flex flex-col items-center justify-center p-2 text-center">
-                <h4 className="text-white font-bold text-[11px] mb-1">240</h4>
-                <p className="text-gray-400 text-[9px]">Seats</p>
-              </div>
+          /* Mobile Metrics - Grid Layout (No Scroll) */
+          <div className="w-full grid grid-cols-3 gap-2 pb-2">
+            <div className="w-full h-[70px] backdrop-blur-xl rounded-[12px] flex flex-col items-center justify-center p-2 text-center shadow-lg" style={{ backgroundColor: 'var(--hero-metrics-bg)', border: '1px solid var(--hero-metrics-border)' }}>
+              <h4 className="font-bold text-[11px] mb-0.5" style={{ color: 'var(--text-color)' }}>BCI</h4>
+              <p className="font-medium text-[9px]" style={{ color: 'var(--text-muted)' }}>Approved</p>
+            </div>
+            <div className="w-full h-[70px] backdrop-blur-xl rounded-[12px] flex flex-col items-center justify-center p-2 text-center shadow-lg" style={{ backgroundColor: 'var(--hero-metrics-bg)', border: '1px solid var(--hero-metrics-border)' }}>
+              <h4 className="font-bold text-[11px] mb-0.5" style={{ color: 'var(--text-color)' }}>OU</h4>
+              <p className="font-medium text-[9px]" style={{ color: 'var(--text-muted)' }}>Affiliated</p>
+            </div>
+            <div className="w-full h-[70px] backdrop-blur-xl rounded-[12px] flex flex-col items-center justify-center p-2 text-center shadow-lg" style={{ backgroundColor: 'var(--hero-metrics-bg)', border: '1px solid var(--hero-metrics-border)' }}>
+              <h4 className="font-bold text-[11px] mb-0.5" style={{ color: 'var(--text-color)' }}>240</h4>
+              <p className="font-medium text-[9px]" style={{ color: 'var(--text-muted)' }}>Seats</p>
             </div>
           </div>
         ) : (
-          /* Desktop Metrics - Unified Glass Strip */
-          <div className="max-w-5xl mx-auto px-6">
-            <div className="w-full h-[92px] rounded-[22px] bg-white/5 border border-white/10 backdrop-blur-[16px] shadow-2xl flex items-center justify-around px-10 relative overflow-hidden">
-              {/* Subtle inner glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
+          /* Desktop Metrics - Floating Strip */
+          <div className="max-w-[1200px] mx-auto">
+            <div className="w-full h-[100px] rounded-[24px] backdrop-blur-xl shadow-2xl flex items-center justify-around px-12 relative overflow-hidden" style={{ backgroundColor: 'var(--hero-metrics-bg)', border: '1px solid var(--hero-metrics-border)' }}>
               
               <div className="flex items-center gap-5 relative z-10">
-                <div className="w-[44px] h-[44px] rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)] flex items-center justify-center border border-[var(--primary-color)]/20">
-                  <FileText size={20} />
-                </div>
                 <div>
-                  <h4 className="text-white font-bold uppercase tracking-wide text-sm">BCI Approved</h4>
-                  <p className="text-gray-400 text-[11px] tracking-widest mt-0.5">ORDER: 286/2026</p>
+                  <h4 className="font-extrabold text-[17px]" style={{ color: 'var(--text-color)' }}>BCI Approved</h4>
+                  <p className="font-medium text-[13px] mt-0.5" style={{ color: 'var(--text-muted)' }}>Order No: 286/2026</p>
                 </div>
               </div>
 
-              <div className="w-px h-[40px] bg-white/10 relative z-10"></div>
+              <div className="w-px h-[40px] relative z-10" style={{ backgroundColor: 'var(--hero-metrics-border)' }}></div>
 
               <div className="flex items-center gap-5 relative z-10">
-                <div className="w-[44px] h-[44px] rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)] flex items-center justify-center border border-[var(--primary-color)]/20">
-                  <Landmark size={20} />
-                </div>
                 <div>
-                  <h4 className="text-white font-bold uppercase tracking-wide text-sm">OU Affiliated</h4>
-                  <p className="text-gray-400 text-[11px] tracking-widest mt-0.5">CODE: 1720</p>
+                  <h4 className="font-extrabold text-[17px]" style={{ color: 'var(--text-color)' }}>Osmania University</h4>
+                  <p className="font-medium text-[13px] mt-0.5" style={{ color: 'var(--text-muted)' }}>College Code: 1720</p>
                 </div>
               </div>
 
-              <div className="w-px h-[40px] bg-white/10 relative z-10"></div>
+              <div className="w-px h-[40px] relative z-10" style={{ backgroundColor: 'var(--hero-metrics-border)' }}></div>
 
               <div className="flex items-center gap-5 relative z-10">
-                <div className="w-[44px] h-[44px] rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)] flex items-center justify-center border border-[var(--primary-color)]/20">
-                  <GraduationCap size={20} />
-                </div>
                 <div>
-                  <h4 className="text-white font-bold uppercase tracking-wide text-sm">Phase I Intake</h4>
-                  <p className="text-gray-400 text-[11px] tracking-widest mt-0.5">240 SEATS</p>
+                  <h4 className="font-extrabold text-[17px]" style={{ color: 'var(--text-color)' }}>Phase I Intake</h4>
+                  <p className="font-medium text-[13px] mt-0.5" style={{ color: 'var(--text-muted)' }}>Regulated 240 Seats</p>
                 </div>
               </div>
 

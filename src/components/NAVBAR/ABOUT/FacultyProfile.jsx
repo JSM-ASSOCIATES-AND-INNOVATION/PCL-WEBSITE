@@ -1,43 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import snehaImage from '../../../ASSETS/PEOPLE/pcl_founder.png';
+import { supabase } from '../../../LIB/supabase/supabaseClient';
 
-// Mock database for now since we only have Sneha
-const facultyDatabase = {
-  sneha: {
-    name: 'Sneha Mulla',
-    designation: 'Founder',
-    department: 'Department of Legal Studies',
-    specialisation: 'Constitutional Law, Human Rights',
-    email: 'sneha@prudentia.edu.in',
-    degrees: 'B.B.A., LL.B. (Hons.), LL.M.',
-    office: 'Block A, Room 101',
-    phone: '+91 XXXXX XXXXX',
-    linkedin: '#',
-    scholar: '#',
-    image: snehaImage,
-    education: [
-      { degree: 'Master of Laws (LL.M.)', institution: 'Rank I' },
-      { degree: 'B.B.A., LL.B. (Hons.)', institution: 'Batch Topper' },
-      { degree: 'UGC-NET and KSET', institution: 'Qualified' }
-    ],
-    research: [
-      { area: 'Cyber Law and Privacy' },
-      { area: 'Competition Law' },
-      { area: 'Artificial Intelligence and Law' }
-    ],
-    projects: [
-      { title: 'Legal Aid Clinic Expansion Project', role: 'Coordinator' }
-    ],
-    patents: [],
-    awards: [
-      { title: 'Excellence in Teaching Award', year: '2023' }
-    ]
-  }
-};
-
-const TABS = [
+const ALL_TABS = [
   { id: 'education', label: 'Education' },
   { id: 'research', label: 'Research' },
   { id: 'projects', label: 'Projects' },
@@ -48,187 +14,312 @@ const TABS = [
 export default function FacultyProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const faculty = facultyDatabase[id];
-  const [activeTab, setActiveTab] = useState('education');
+  const [faculty, setFaculty] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFaculty() {
+        try {
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('profiles')
+                .select(`
+                    id,
+                    full_name,
+                    avatar_url,
+                    faculty_profiles (
+                        designation,
+                        specialisation,
+                        bio,
+                        office,
+                        email,
+                        phone,
+                        linkedin,
+                        scholar,
+                        education,
+                        research,
+                        projects,
+                        patents,
+                        awards,
+                        is_public
+                    )
+                `)
+                .eq('id', id)
+                .single();
+                
+            if (data && data.faculty_profiles && data.faculty_profiles.is_public) {
+                // Flatten the data for easier rendering
+                setFaculty({
+                    name: data.full_name || 'Unknown',
+                    image: data.avatar_url || 'https://via.placeholder.com/600x800?text=No+Photo',
+                    department: 'Faculty of Law', // Defaulting since we don't fetch department relations right now
+                    ...data.faculty_profiles
+                });
+            } else {
+                setFaculty(null);
+            }
+        } catch(e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchFaculty();
+  }, [id]);
+
+  const availableTabs = useMemo(() => {
+    if (!faculty) return [];
+    return ALL_TABS.filter((tab) => {
+        const val = faculty[tab.id];
+        if (Array.isArray(val)) return val.length > 0;
+        return val != null; // For safety
+    });
+  }, [faculty]);
+
+  const [activeTab, setActiveTab] = useState('');
+  useEffect(() => {
+      if (availableTabs.length > 0 && !activeTab) {
+          setActiveTab(availableTabs[0].id);
+      }
+  }, [availableTabs, activeTab]);
+
+  const currentTab = availableTabs.some((t) => t.id === activeTab) ? activeTab : availableTabs[0]?.id;
+
+  if (loading) {
+      return (
+          <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#050505] text-white px-6 text-center">
+              <i className="fa-solid fa-circle-notch fa-spin text-[#FFBF00] text-4xl"></i>
+          </div>
+      );
+  }
 
   if (!faculty) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-brand-bg text-brand-text">
-        <h2 className="text-3xl mb-4">Faculty not found</h2>
-        <button onClick={() => navigate('/about/faculty')} className="text-[#FFBF00] hover:underline">Return to Faculty Directory</button>
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#050505] text-white px-6 text-center">
+        <h2 className="text-4xl mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Faculty Not Found</h2>
+        <p className="text-gray-400 mb-8 font-sans">We couldn't find a profile for this faculty member, or their profile is private.</p>
+        <button
+          onClick={() => navigate('/about/faculty')}
+          className="text-[#FFBF00] font-bold uppercase tracking-widest text-sm hover:text-white transition-colors focus:outline-none"
+        >
+          Return to Directory
+        </button>
       </div>
     );
   }
 
+  // Split name for styling the last word
+  const nameParts = faculty.name.split(' ');
+  const lastName = nameParts.pop();
+  const firstNames = nameParts.join(' ');
+
   return (
-    <div className="h-screen w-full relative bg-brand-bg text-brand-text overflow-x-hidden overflow-y-auto">
+    <div className="min-h-screen w-full relative bg-[#050505] text-white overflow-x-hidden pb-32">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#050505] to-[#000000] z-0" />
-      
-      <div className="relative z-20 pt-32 pb-20 px-6 md:px-12 max-w-6xl mx-auto">
-        
-        <Link to="/about/faculty" className="inline-flex items-center text-brand-muted hover:text-[#FFBF00] transition-colors mb-12 uppercase tracking-widest text-sm font-semibold">
-          <span className="mr-2">←</span> Back to Directory
+
+      <div className="relative z-20 pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
+
+        <Link
+          to="/about/faculty"
+          className="inline-flex items-center text-gray-500 hover:text-[#FFBF00] transition-colors mb-16 uppercase tracking-widest text-xs font-bold focus:outline-none"
+        >
+          <span className="mr-3 text-lg leading-none">←</span> BACK TO DIRECTORY
         </Link>
 
-        {/* Profile Header */}
-        <div className="flex flex-col md:flex-row gap-12 mb-16">
-          <div className="md:w-1/3">
-            <div className="rounded-xl overflow-hidden border border-brand-border shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-              <img src={faculty.image} alt={faculty.name} className="w-full h-auto aspect-[3/4] object-cover" />
+        {/* Cinematic Profile Header */}
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 mb-32 items-center lg:items-start">
+          <motion.div 
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full sm:w-2/3 lg:w-5/12"
+          >
+            <div className="rounded-[32px] overflow-hidden border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.8)] relative aspect-[3/4] bg-white/[0.02]">
+              <img src={faculty.image} alt={faculty.name} className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
             </div>
-          </div>
-          
-          <div className="md:w-2/3 flex flex-col justify-center">
-            <motion.h1 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-4xl md:text-5xl font-bold text-brand-text mb-4"
+          </motion.div>
+
+          <div className="w-full lg:w-7/12 flex flex-col justify-center lg:pt-12">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 uppercase leading-[1.05]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              {faculty.name}
+              {firstNames} <br/>
+              <span className="text-[#FFBF00] italic">{lastName}</span>
             </motion.h1>
-            
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="mb-8"
-            >
-              <h2 className="text-xl text-brand-text font-semibold mb-2">{faculty.designation}</h2>
-              <p className="text-[#FFBF00] font-medium tracking-wide uppercase text-sm">{faculty.department}</p>
-            </motion.div>
 
             <motion.div 
+              initial={{ opacity: 0, scaleX: 0 }} 
+              animate={{ opacity: 1, scaleX: 1 }} 
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="h-[1px] w-32 bg-[#FFBF00]/50 mb-10 origin-left"
+            />
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mb-12">
+              <h2 className="text-2xl text-white font-semibold mb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>{faculty.designation}</h2>
+              <p className="text-[#FFBF00] font-bold tracking-widest uppercase text-sm">{faculty.department}</p>
+            </motion.div>
+
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="space-y-4 text-brand-muted"
+              transition={{ delay: 0.5 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-gray-400 text-sm"
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             >
-              <div className="flex gap-4">
-                <span className="text-gray-500 w-32 font-semibold">Specialisation :</span>
-                <span className="flex-1">{faculty.specialisation}</span>
-              </div>
-              <div className="flex gap-4">
-                <span className="text-gray-500 w-32 font-semibold">Email :</span>
-                <span className="flex-1 text-brand-text">{faculty.email}</span>
-              </div>
-              <div className="flex gap-4">
-                <span className="text-gray-500 w-32 font-semibold">Office Address :</span>
-                <span className="flex-1">{faculty.office}</span>
-              </div>
-              <div className="flex gap-4">
-                <span className="text-gray-500 w-32 font-semibold">Contact No :</span>
-                <span className="flex-1">{faculty.phone}</span>
-              </div>
-              
-              <div className="flex gap-6 mt-8 pt-6 border-t border-brand-border">
-                <a href={faculty.linkedin} className="flex items-center gap-2 text-brand-muted hover:text-[#FFBF00] transition-colors">
-                  <span>LinkedIn</span>
-                </a>
-                <a href={faculty.scholar} className="flex items-center gap-2 text-brand-muted hover:text-[#FFBF00] transition-colors">
-                  <span>Google Scholar</span>
-                </a>
-              </div>
+              {faculty.specialisation && (
+                <div className="flex flex-col gap-1">
+                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Specialisation</span>
+                    <span className="text-white font-medium text-base">{faculty.specialisation}</span>
+                </div>
+              )}
+              {faculty.office && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Office Address</span>
+                    <span className="text-white font-medium text-base">{faculty.office}</span>
+                  </div>
+              )}
+              {faculty.email && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Email</span>
+                    <a href={`mailto:${faculty.email}`} className="text-white hover:text-[#FFBF00] transition-colors font-medium text-base">
+                      {faculty.email}
+                    </a>
+                  </div>
+              )}
+              {faculty.phone && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Contact No</span>
+                    <a href={`tel:${faculty.phone.replace(/\s/g, '')}`} className="text-white hover:text-[#FFBF00] transition-colors font-medium text-base">
+                      {faculty.phone}
+                    </a>
+                  </div>
+              )}
             </motion.div>
+
+            {(faculty.linkedin || faculty.scholar) && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex gap-8 mt-12 pt-8 border-t border-white/10">
+                {faculty.linkedin && (
+                  <a href={faculty.linkedin} target="_blank" rel="noopener noreferrer" className="text-white uppercase tracking-widest text-xs font-bold hover:text-[#FFBF00] transition-colors flex items-center gap-2">
+                    LinkedIn <span className="text-[#FFBF00]">↗</span>
+                  </a>
+                )}
+                {faculty.scholar && (
+                  <a href={faculty.scholar} target="_blank" rel="noopener noreferrer" className="text-white uppercase tracking-widest text-xs font-bold hover:text-[#FFBF00] transition-colors flex items-center gap-2">
+                    Google Scholar <span className="text-[#FFBF00]">↗</span>
+                  </a>
+                )}
+              </motion.div>
+            )}
           </div>
         </div>
 
         {/* Details Tabs */}
-        <div className="mt-16">
-          <div className="flex flex-wrap border-b border-[#FFBF00]/30 mb-8">
-            {TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-4 text-sm font-semibold tracking-wider transition-colors relative ${
-                  activeTab === tab.id ? 'text-[#FFBF00]' : 'text-brand-muted hover:text-brand-text'
-                }`}
-              >
-                {tab.label}
-                {activeTab === tab.id && (
-                  <motion.div 
-                    layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-[#FFBF00]"
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+        {availableTabs.length > 0 && (
+          <div className="mt-24 w-full">
+            <div className="flex flex-nowrap overflow-x-auto border-b border-white/10 mb-16 hide-scrollbar gap-8 md:gap-16">
+              {availableTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`pb-6 text-sm md:text-base font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap focus:outline-none ${
+                    currentTab === tab.id ? 'text-[#FFBF00]' : 'text-gray-600 hover:text-gray-300'
+                  }`}
+                >
+                  {tab.label}
+                  {currentTab === tab.id && (
+                    <motion.div layoutId="activeProfileTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FFBF00]" />
+                  )}
+                </button>
+              ))}
+            </div>
 
-          <div className="min-h-[300px]">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="px-2"
-              >
-                {activeTab === 'education' && (
-                  <div className="space-y-8">
-                    {faculty.education.length > 0 ? faculty.education.map((edu, idx) => (
-                      <div key={idx}>
-                        <h4 className="text-brand-text font-bold text-lg mb-1 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FFBF00]"></span>
-                          {edu.degree}
-                        </h4>
-                        <p className="text-brand-muted ml-3.5">{edu.institution}</p>
-                      </div>
-                    )) : <p className="text-gray-500 italic">No details available.</p>}
-                  </div>
-                )}
-                
-                {activeTab === 'research' && (
-                  <div className="space-y-6">
-                    <h3 className="text-xl text-[#FFBF00] font-bold mb-4">Area of Specialisation</h3>
-                    <ul className="space-y-4">
-                      {faculty.research.length > 0 ? faculty.research.map((res, idx) => (
-                        <li key={idx} className="flex items-start gap-3">
-                          <span className="text-[#FFBF00] mt-1">•</span>
-                          <span className="text-brand-muted">{res.area}</span>
-                        </li>
-                      )) : <p className="text-gray-500 italic">No details available.</p>}
-                    </ul>
-                  </div>
-                )}
-
-                {activeTab === 'projects' && (
-                  <div className="space-y-6">
-                    {faculty.projects.length > 0 ? faculty.projects.map((proj, idx) => (
-                      <div key={idx} className="bg-brand-card border border-brand-border p-6 rounded-lg border-l-2 border-[#FFBF00]">
-                        <h4 className="text-brand-text font-bold text-lg mb-2">{proj.title}</h4>
-                        <p className="text-[#FFBF00] text-sm uppercase tracking-wider">{proj.role}</p>
-                      </div>
-                    )) : <p className="text-gray-500 italic">No projects listed.</p>}
-                  </div>
-                )}
-
-                {activeTab === 'patents' && (
-                  <div className="space-y-6">
-                    {faculty.patents.length > 0 ? faculty.patents.map((pat, idx) => (
-                       <p key={idx} className="text-brand-muted">{pat}</p>
-                    )) : <p className="text-gray-500 italic">No patents listed.</p>}
-                  </div>
-                )}
-
-                {activeTab === 'awards' && (
-                  <div className="space-y-6">
-                    {faculty.awards.length > 0 ? faculty.awards.map((award, idx) => (
-                      <div key={idx} className="flex items-center gap-4 bg-brand-card border border-brand-border p-4 rounded-lg">
-                        <div className="text-2xl">🏆</div>
-                        <div>
-                          <h4 className="text-brand-text font-bold">{award.title}</h4>
-                          <p className="text-brand-muted text-sm">{award.year}</p>
+            <div className="min-h-[300px]">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentTab}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="px-2 max-w-4xl"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
+                >
+                  {currentTab === 'education' && faculty.education && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                      {faculty.education.map((edu, idx) => (
+                        <div key={idx} className="relative pl-6 border-l border-white/10">
+                          <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full bg-[#FFBF00]" />
+                          <h4 className="text-white font-bold text-xl md:text-2xl mb-2 leading-snug">{edu.degree}</h4>
+                          <p className="text-gray-400 text-base">{edu.institution}</p>
                         </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {currentTab === 'research' && faculty.research && (
+                    <div className="space-y-8">
+                      <h3 className="text-sm text-gray-500 font-bold uppercase tracking-widest mb-6">Areas of Specialisation</h3>
+                      <div className="flex flex-wrap gap-4">
+                        {faculty.research.map((res, idx) => (
+                          <div key={idx} className="px-6 py-3 rounded-full border border-white/10 bg-white/[0.02] text-white text-base hover:border-[#FFBF00]/50 hover:bg-[#FFBF00]/5 transition-all">
+                            {res.area || res}
+                          </div>
+                        ))}
                       </div>
-                    )) : <p className="text-gray-500 italic">No awards listed.</p>}
-                  </div>
-                )}
-              </motion.div>
-            </AnimatePresence>
+                    </div>
+                  )}
+
+                  {currentTab === 'projects' && faculty.projects && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {faculty.projects.map((proj, idx) => (
+                        <div key={idx} className="bg-white/[0.02] border border-white/5 p-8 rounded-[24px] hover:border-[#FFBF00]/30 transition-colors">
+                          <h4 className="text-white font-bold text-xl mb-4 leading-snug">{proj.title}</h4>
+                          <p className="inline-block px-3 py-1 rounded bg-[#FFBF00]/10 text-[#FFBF00] text-xs uppercase tracking-widest font-bold">
+                            {proj.role}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {currentTab === 'patents' && faculty.patents && (
+                    <div className="space-y-6">
+                      {faculty.patents.map((pat, idx) => (
+                        <div key={idx} className="flex items-start gap-4">
+                          <span className="text-[#FFBF00] text-xl mt-1">✦</span>
+                          <p className="text-gray-300 text-lg md:text-xl leading-relaxed">{pat.title || pat}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {currentTab === 'awards' && faculty.awards && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {faculty.awards.map((award, idx) => (
+                        <div key={idx} className="flex items-center gap-6 bg-white/[0.02] border border-white/5 p-6 rounded-[24px]">
+                          <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#FFBF00]/10 text-[#FFBF00]">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M12 15l-3.46 1.82.66-3.86L6.37 10.2l3.87-.56L12 6l1.76 3.64 3.87.56-2.83 2.76.66 3.86z"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <h4 className="text-white font-bold text-lg mb-1">{award.title}</h4>
+                            <p className="text-gray-500 font-medium">{award.year}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </div>

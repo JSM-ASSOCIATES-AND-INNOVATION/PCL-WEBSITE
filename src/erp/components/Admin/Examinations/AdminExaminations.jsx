@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 import { theme } from "../../../theme";
 
 const CACHE_KEYS = {
@@ -37,7 +37,7 @@ const LABEL_CLS = `block text-[9px] lg:text-[10px] font-black uppercase tracking
 const SUBMIT_CLS =
     "w-full py-3.5 lg:py-4 mt-2 bg-themeAccent hover:bg-themeAccentMuted text-themeText rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2";
 
-export default function AdminExaminations() {
+export default function AdminExaminations({ isHubView = false }) {
     const [view, setView] = useState("schedule");
 
     // Initialize from cache
@@ -165,34 +165,40 @@ export default function AdminExaminations() {
     ];
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated">
-            {/* ═══ HEADER ═══ */}
-            <div className={`${theme.layout.panelElevated} p-6 lg:p-8 relative overflow-hidden text-themeText flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6`}>
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-                <div className="flex items-center gap-4 lg:gap-5 relative z-10">
-                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel border-theme border-themeBorderStrong bg-themeElevated flex items-center justify-center shrink-0 shadow-lg">
-                        <i className="fa-solid fa-building-columns text-2xl lg:text-3xl text-themeAccent"></i>
-                    </div>
-                    <div>
-                        <span className="px-2 lg:px-2.5 py-1 bg-themeAccent/10 text-themeAccent border-theme border-themeAccent/20 rounded-md text-[8px] lg:text-[9px] font-black uppercase tracking-widest mb-1.5 lg:mb-2 inline-block">Controller of Exams</span>
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tight leading-none mb-1 text-themeText">Examinations HQ</h1>
-                        <p className={`text-xs lg:text-sm font-medium ${theme.text.muted}`}>Schedule assessments and lock academic ledgers.</p>
-                    </div>
-                </div>
+        <div className={`w-full ${isHubView ? 'bg-transparent text-themeText font-sans' : 'max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated'}`}>
+            
+            {!isHubView && (
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 mix-blend-overlay pointer-events-none"></div>
 
-                <div className="flex p-1.5 bg-themeElevated border-theme border-themeBorder rounded-themePanel w-full xl:w-auto relative z-10 overflow-x-auto no-scrollbar">
-                    {tabs.map((t) => (
-                        <button
-                            key={t.id}
-                            onClick={() => setView(t.id)}
-                            className={`flex-1 xl:flex-none px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center justify-center gap-2 ${
-                                view === t.id ? "bg-themePanel text-themeAccent shadow-sm border-theme border-themeBorderStrong" : "text-themeTextSec opacity-70 hover:text-themeText"
-                            }`}
-                        >
-                            <i className={`fa-solid ${t.icon}`}></i> {t.label}
-                        </button>
-                    ))}
+                    <div className="flex items-center gap-4 lg:gap-5 relative z-10">
+                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                            <i className="fa-solid fa-building-columns text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                        </div>
+                        <div>
+                            <span className="px-2 lg:px-2.5 py-1 bg-white/20 text-white border border-white/30 rounded-md text-[8px] lg:text-[9px] font-black uppercase tracking-widest mb-1.5 lg:mb-2 inline-block shadow-sm">Controller of Exams</span>
+                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Examinations HQ</h1>
+                            <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Schedule assessments and lock academic ledgers.</p>
+                        </div>
+                    </div>
                 </div>
+            )}
+
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-full xl:w-auto overflow-x-auto no-scrollbar ${!isHubView ? '-mt-2 lg:-mt-4' : 'mb-6 lg:mb-8'}`}>
+                {tabs.map((t) => (
+                    <button
+                        key={t.id}
+                        onClick={() => setView(t.id)}
+                        className={`flex-1 xl:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${
+                            view === t.id 
+                            ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
+                            : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
+                        }`}
+                    >
+                        <i className={`fa-solid ${t.icon} ${view === t.id ? 'animate-pulse' : ''}`}></i> {t.label}
+                    </button>
+                ))}
             </div>
 
             {/* ═══ VIEW: SCHEDULE EXAMS ═══ */}

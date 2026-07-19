@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
 // --- CACHE HELPERS ---
 const CK = { stats: 'mcs_stats', moots: 'mcs_moots', notices: 'mcs_notices', vault: 'mcs_vault', isc: 'mcs_isc' };
@@ -182,7 +182,7 @@ export default function MootCourt() {
 
             {/* ═══════════════ BRAND HEADER ═══════════════ */}
             <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText">
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themePanel/20 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
 
                 <div className="relative z-10 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
                     <div className="text-center lg:text-left flex-1">
@@ -337,7 +337,7 @@ export default function MootCourt() {
                         <>
                             {/* ISC Profile Card */}
                             <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder">
-                                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themePanel/20 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
                                 <div className="relative z-10 flex flex-col lg:flex-row justify-between lg:items-center gap-6">
                                     <div>
                                         <span className="px-3 py-1 bg-amber-500/10 text-amber-500 border-theme border-amber-500/20 rounded-md text-[9px] font-black uppercase tracking-widest mb-3 inline-block">Official ISC Standing</span>

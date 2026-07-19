@@ -40,6 +40,22 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
                 details: `Action taken via ERP by Admin`
             }]);
 
+            // Notify Requester
+            if (request.faculty_id) {
+                const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+                await supabase.from('notices').insert([{
+                    notice_id: noticeId,
+                    title: `Leave Request ${actionType === 'Reject' ? 'Rejected' : 'Approved'}`,
+                    category: 'System Alert',
+                    target_audience: 'person',
+                    target_id: request.faculty_id,
+                    priority: 'high',
+                    content: `Your leave request from ${new Date(request.start_date).toLocaleDateString()} to ${new Date(request.end_date).toLocaleDateString()} has been ${actionType === 'Reject' ? 'Rejected' : 'Approved'}.`,
+                    author_name: 'Admin',
+                    author_id: null
+                }]);
+            }
+
             window.erpDialog?.alert(`Leave request has been updated successfully.`);
 
             // If replacing, ideally we trigger the replacement engine modal.

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
-import { generatePDF } from "../../../LIB/pdfGenerator";
+import { supabase } from "../../../lib/supabase/supabaseClient";
+import { generatePDF } from "../../../lib/pdfGenerator";
 
 export default function ClassRoster() {
     const { userSession } = useERP();
@@ -64,7 +64,7 @@ export default function ClassRoster() {
             try {
                 // Fetch directly from the global timetable engine
                 const { data, error } = await supabase
-                    .from('timetable')
+                    .from('class_schedule')
                     .select('*, subjects(name, code)')
                     .eq('faculty_id', userSession.db_id);
 

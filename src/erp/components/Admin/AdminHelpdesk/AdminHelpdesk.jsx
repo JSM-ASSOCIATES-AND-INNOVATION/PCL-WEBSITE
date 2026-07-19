@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
-export default function AdminHelpdesk() {
+export default function AdminHelpdesk({ isHubView = false }) {
     const [tickets, setTickets] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("all");
@@ -44,10 +44,28 @@ export default function AdminHelpdesk() {
             const { error } = await supabase
                 .from('helpdesk_tickets')
                 .update(updatePayload)
-                .eq('id', ticketId);
+                .eq('id', ticketId)
+                .select(); // We need the user_id to notify them
 
             if (error) throw error;
             
+            // Notify Requester
+            const ticketData = error ? null : (await supabase.from('helpdesk_tickets').select('*').eq('id', ticketId).single()).data;
+            if (ticketData && ticketData.user_id) {
+                const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+                await supabase.from('notices').insert([{
+                    notice_id: noticeId,
+                    title: isClosing ? 'Support Ticket Resolved' : 'Support Ticket Replied',
+                    category: 'System Alert',
+                    target_audience: 'person',
+                    target_id: ticketData.user_id,
+                    priority: 'high',
+                    content: `Your support ticket (${ticketData.ticket_id}) has been ${isClosing ? 'resolved' : 'replied to'} by the Admin.`,
+                    author_name: 'Admin',
+                    author_id: null
+                }]);
+            }
+
             setReplyText(prev => ({ ...prev, [ticketId]: '' }));
             fetchTickets();
         } catch (error) {
@@ -61,32 +79,34 @@ export default function AdminHelpdesk() {
     const filteredTickets = activeTab === "all" ? tickets : tickets.filter(t => t.category === activeTab);
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated">
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText flex flex-col lg:flex-row justify-between items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                
-                <div className="relative z-10 text-center lg:text-left flex-1">
-                    <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-4 mb-2">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel border-theme border-themeBorderStrong bg-themeElevated flex items-center justify-center text-themeAccent text-2xl lg:text-3xl shrink-0">
-                            <i className="fa-solid fa-headset"></i>
+        <div className={`w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated ${isHubView ? 'bg-transparent text-themeText font-sans' : ''}`}>
+            {/* Header and Tabs */}
+            {!isHubView && (
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    {/* Background Decorations */}
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    
+                    <div className="flex items-center gap-4 lg:gap-5 relative z-10 mb-2">
+                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                            <i className="fa-solid fa-headset text-white text-2xl lg:text-3xl drop-shadow-md"></i>
                         </div>
                         <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText`}>Admin Helpdesk</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium mt-1`}>Manage and reply to student tickets and public inquiries.</p>
+                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Admin Helpdesk</h1>
+                            <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Manage and reply to student tickets and public inquiries.</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            <div className="flex p-1.5 bg-themePanel rounded-themePanel w-full lg:w-fit border-theme border-themeBorder overflow-x-auto no-scrollbar">
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : ''}`}>
                 {['all', 'public_inquiry', 'IT Support', 'Finance', 'Academic', 'Administration'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
                             activeTab === tab 
-                            ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong" 
-                            : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
+                                ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
+                                : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
                         }`}
                     >
                         {tab === 'all' ? 'All Tickets' : tab === 'public_inquiry' ? 'Public Inquiries' : tab}

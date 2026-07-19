@@ -1,10 +1,13 @@
 import React, { forwardRef } from 'react';
 import entranceImg from '../../../ASSETS/CAMPUS/pcl_entrance.webp';
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useSiteContent } from '../../../LIB/hooks/useSiteContent';
 
 const Philosophy = forwardRef((props, ref) => {
   const textVariants = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
@@ -16,56 +19,71 @@ const Philosophy = forwardRef((props, ref) => {
     }
   };
 
+  const { content } = useSiteContent('/', 'about_snippet');
+
+  const tagline = content?.tagline || "Our Philosophy";
+  const heading1 = content?.heading1 || "Forging Legal";
+  const heading2 = content?.heading2 || "Excellence.";
+  const desc = content?.description || "Located in the strategic heart of Hyderabad, Prudentia transcends traditional education. We are an institution built on uncompromising rigor, designed to forge analytical minds capable of commanding courtrooms and navigating complex corporate governance.";
+  const btnText = content?.btn_text || "Explore Our Legacy";
+  const btnLink = content?.btn_link || "/about";
+
   return (
-    <section className="slide w-full relative flex items-center justify-center py-10 md:py-12" ref={ref} {...props}>
-      <div className="container w-full h-full md:h-[60vh] flex flex-col md:flex-row items-center gap-8 md:gap-0 mt-8 md:mt-0">
+    <section className="slide w-full h-full relative flex items-center justify-center bg-[var(--bg-color)] overflow-hidden" ref={ref} {...props}>
+      <div className="container relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-6 md:gap-16 pt-[80px] md:pt-[140px] pb-6 md:pb-10">
         
-        {/* Left Side: Visual */}
+        {/* Left Side: Clean Image Box */}
         <motion.div 
-          initial={{ opacity: 0, x: -50 }}
+          initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
+          viewport={{ once: true, margin: "100px" }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="w-full md:w-1/2 h-[30vh] md:h-full relative rounded-3xl md:rounded-r-none md:rounded-l-3xl overflow-hidden shadow-2xl"
+          className="w-full md:w-1/2 h-[30vh] md:h-[55vh] rounded-[24px] md:rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] shrink-0 group relative"
         >
           <div 
-            className="absolute inset-0 bg-cover bg-center origin-center hover:scale-105 transition-transform duration-[2s]" 
+            className="absolute inset-0 bg-cover bg-center origin-center group-hover:scale-105 transition-transform duration-[3s] ease-out" 
             style={{ backgroundImage: `url(${entranceImg})` }}
           ></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-700"></div>
         </motion.div>
 
-        {/* Right Side: Content */}
-        <div className="w-full md:w-1/2 h-full flex flex-col justify-center px-4 md:px-16 z-10">
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            className="glass-card bg-[var(--card-bg)]/80 backdrop-blur-2xl border border-[var(--card-border)] p-10 md:p-14 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative overflow-hidden group"
-          >
-            {/* Decorative Accent */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--primary-color)] to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
-            
-            <motion.h2 variants={textVariants} className="text-4xl md:text-6xl font-bold leading-tight mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Forging Legal <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary-color)] to-[var(--primary-light)]">
-                Excellence.
-              </span>
-            </motion.h2>
-
-            <motion.p variants={textVariants} className="text-base md:text-lg text-[var(--text-muted)] font-light leading-relaxed mb-8 italic text-justify">
-              Located in the strategic heart of Hyderabad, Prudentia transcends traditional education. We are an institution built on uncompromising rigor, designed to forge analytical minds capable of commanding courtrooms and navigating complex corporate governance.
-            </motion.p>
-
-            <motion.div variants={textVariants}>
-              <a href="/about" className="inline-flex items-center gap-3 text-[var(--primary-color)] font-bold tracking-widest uppercase text-xs hover:text-[var(--primary-hover)] transition-colors group/link pb-2 border-b border-[var(--primary-color)]/30 hover:border-[var(--primary-color)]">
-                Explore Our Legacy 
-                <span className="group-hover/link:translate-x-2 transition-transform">→</span>
-              </a>
-            </motion.div>
+        {/* Right Side: Clean Typography (No muddy cards) */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "100px" }}
+          className="w-full md:w-1/2 flex flex-col justify-center text-left"
+        >
+          <motion.div variants={textVariants} className="mb-3">
+            <span className="block text-[10px] uppercase tracking-[0.3em] text-[var(--primary-color)] font-bold">{tagline}</span>
           </motion.div>
-        </div>
+
+          <motion.h2 variants={textVariants} className="text-[2.25rem] sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[var(--text-color)] leading-[1.1] mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+            {heading1} <br/>
+            <span className="italic font-medium text-[var(--primary-color)]">
+              {heading2}
+            </span>
+          </motion.h2>
+
+          <motion.p variants={textVariants} className="text-xs sm:text-sm md:text-base lg:text-[15px] text-[var(--text-muted)] font-light leading-[1.6] md:leading-[1.8] mb-6 md:mb-10 text-justify">
+            {desc}
+          </motion.p>
+
+          <motion.div variants={textVariants}>
+            <Link 
+              to={btnLink} 
+              className="group/btn relative inline-flex items-center gap-3 px-8 py-3.5 bg-transparent border border-[var(--primary-color)]/50 rounded-full hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all duration-500 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+              
+              <span className="relative z-10 text-[var(--text-color)] group-hover/btn:!text-black font-extrabold uppercase tracking-[0.15em] text-[10px] transition-colors duration-500 flex items-center gap-2">
+                {btnText} 
+                <ArrowRight size={14} className="group-hover/btn:translate-x-1.5 transition-transform duration-500" />
+              </span>
+            </Link>
+          </motion.div>
+        </motion.div>
 
       </div>
     </section>

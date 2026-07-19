@@ -1,83 +1,93 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import logo from '../../../../ASSETS/LOGOS/pcl_logo.svg';
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-bg border-t border-brand-border text-brand-text py-8 md:py-12 px-4 md:px-6">
-      <div className="container mx-auto max-w-7xl">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8 md:gap-12 mb-8 md:mb-12">
+    <footer className="relative bg-[#050505] text-white overflow-hidden border-t border-white/10 pt-16 pb-8">
+      {/* Ambient glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[300px] bg-[var(--primary-glow)] rounded-[100%] blur-[120px] opacity-[0.04] pointer-events-none z-0" />
+
+      <div className="container mx-auto px-6 md:px-12 max-w-7xl relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
           
-          {/* Logo & Info */}
-          <div className="col-span-2 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <Link to="/" className="flex items-center gap-3 md:gap-4 text-brand-text mb-4 md:mb-6">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-center bg-contain bg-no-repeat brand-crest"></div>
-              <div className="flex flex-col leading-none text-left">
-                <span className="font-bold tracking-wider text-base md:text-lg">PRUDENTIA</span>
-                <span className="text-[10px] md:text-xs tracking-widest opacity-80 mt-1 uppercase">College of Law</span>
+          {/* Brand & Description */}
+          <div className="col-span-1 md:col-span-4">
+            <Link to="/" className="flex items-center gap-4 mb-6 group">
+              <img src={logo} alt="Prudentia College of Law Logo" className="h-16 w-auto group-hover:scale-105 transition-transform" />
+              <div className="flex flex-col">
+                <span className="font-bold tracking-[0.2em] text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                  PRUDENTIA
+                </span>
+                <span className="text-[10px] tracking-[0.3em] uppercase text-[var(--primary-color)] font-bold mt-1">
+                  College of Law
+                </span>
               </div>
             </Link>
-            <p className="text-brand-muted text-xs md:text-sm leading-relaxed mb-4 md:mb-6">
-              Advancing integrated legal education. Where rigorous scholarship meets uncompromising integrity.
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 pr-4">
+              Forging analytical minds capable of commanding courtrooms and navigating complex corporate governance. Located in the strategic heart of Hyderabad.
             </p>
-            <div className="flex justify-center md:justify-start gap-3 md:gap-4">
-              <a href="#" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-brand-border flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] hover:text-[#050505] transition-colors">
-                <FaInstagram size={14} className="md:w-[18px] md:h-[18px]" />
+            <div className="flex gap-4">
+              <a href="#" aria-label="Instagram" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] text-white hover:text-black transition-all">
+                <FaInstagram size={16} />
               </a>
-              <a href="#" className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-card border border-brand-border flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] hover:text-[#050505] transition-colors">
-                <FaWhatsapp size={14} className="md:w-[18px] md:h-[18px]" />
+              <a href="#" aria-label="WhatsApp" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] text-white hover:text-black transition-all">
+                <FaWhatsapp size={16} />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="col-span-1 md:col-span-1">
-            <h4 className="text-[var(--primary-color)] font-bold uppercase tracking-widest text-[11px] md:text-sm mb-4 md:mb-6 border-b border-brand-border pb-2 inline-block">Quick Links</h4>
-            <ul className="flex flex-col gap-2.5 md:gap-3">
-              <li><Link to="/" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Home</Link></li>
-              <li><Link to="/about" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">About Us</Link></li>
-              <li><Link to="/programs" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Academics</Link></li>
-              <li><Link to="/contact" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Contact Admin</Link></li>
-              <li><Link to="/apply" className="text-[var(--primary-color)] font-bold hover:text-white transition-colors text-[11px] md:text-sm">Apply Now ➔</Link></li>
+          <div className="col-span-1 md:col-span-2 md:col-start-6">
+            <h4 className="text-[var(--primary-color)] font-bold uppercase tracking-widest text-[11px] mb-6">
+              Quick Links
+            </h4>
+            <ul className="flex flex-col gap-3 text-sm">
+              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/programs" className="text-gray-400 hover:text-white transition-colors">Academics</Link></li>
+              <li><Link to="/campus/facilities" className="text-gray-400 hover:text-white transition-colors">Campus Life</Link></li>
+              <li><Link to="/apply" className="text-gray-400 hover:text-white transition-colors">Admissions</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
 
-          {/* Legal */}
-          <div className="col-span-1 md:col-span-1">
-            <h4 className="text-[var(--primary-color)] font-bold uppercase tracking-widest text-[11px] md:text-sm mb-4 md:mb-6 border-b border-brand-border pb-2 inline-block">Legal</h4>
-            <ul className="flex flex-col gap-2.5 md:gap-3">
-              <li><Link to="/terms" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Terms & Conds</Link></li>
-              <li><Link to="/privacy" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Privacy Policy</Link></li>
-              <li><a href="#" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Non-Discrim</a></li>
-              <li><a href="#" className="text-brand-muted hover:text-[var(--primary-color)] transition-colors text-[11px] md:text-sm">Accessibility</a></li>
-            </ul>
+          {/* Map Embed */}
+          <div className="col-span-1 md:col-span-4 md:col-start-9">
+            <h4 className="text-[var(--primary-color)] font-bold uppercase tracking-widest text-[11px] mb-6">
+              Find Us
+            </h4>
+            <div className="w-full h-[200px] rounded-xl overflow-hidden border border-white/10 opacity-80 hover:opacity-100 transition-opacity bg-white/5">
+              <iframe 
+                title="Prudentia College of Law Location"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12182.30520634488!2d78.4740613!3d17.385044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b78392bafbc2!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1699999999999!5m2!1sen!2sin" 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
           </div>
-
-          {/* Contact */}
-          <div className="col-span-2 md:col-span-1">
-            <h4 className="text-[var(--primary-color)] font-bold uppercase tracking-widest text-[11px] md:text-sm mb-4 md:mb-6 border-b border-brand-border pb-2 inline-block">Location</h4>
-            <p className="text-brand-muted text-[11px] md:text-sm leading-relaxed mb-3 md:mb-4">
-              3-23, Gurramguda,<br/>
-              Opp Badangpet Municipal Office,<br/>
-              Balapur Mandal, R.R. Dist,<br/>
-              Hyderabad - 501510
-            </p>
-            <p className="text-brand-muted text-[11px] md:text-sm">
-              <strong className="text-brand-text">Phone:</strong> +91 8599000777<br/>
-              <strong className="text-brand-text">Email:</strong> info@prudentiacollegeoflaw.com
-            </p>
-          </div>
-
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-brand-border pt-6 md:pt-8 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
-          <p className="text-brand-muted text-[9px] md:text-xs uppercase tracking-widest text-center md:text-left">
-            Copyright © {new Date().getFullYear()} Prudentia College of Law.
-          </p>
-          <p className="text-brand-muted text-[9px] md:text-xs uppercase tracking-widest text-center md:text-right">
-            By <span className="text-[var(--primary-color)] font-bold">JSM Associates & Innovation</span>
-          </p>
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-semibold tracking-widest text-gray-500 uppercase">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
+            <p>
+              &copy; {new Date().getFullYear()} Prudentia College of Law.
+            </p>
+            <span className="hidden md:inline text-white/20">|</span>
+            <p className="text-[#FFBF00]">
+              Powered by JSM Innovation x Prudentia
+            </p>
+          </div>
+          <div className="flex items-center gap-6">
+            <span className="text-white/40">v6.0</span>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+          </div>
         </div>
       </div>
     </footer>

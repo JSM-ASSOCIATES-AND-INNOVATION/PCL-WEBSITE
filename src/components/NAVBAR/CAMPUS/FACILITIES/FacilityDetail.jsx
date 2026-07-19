@@ -1,75 +1,160 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getFacilityById } from './facilitiesData.jsx';
+import { ArrowLeft, ArrowUpRight, AlertCircle, Loader2 } from 'lucide-react';
+import * as Icons from 'lucide-react';
+
+import { supabase } from '../../../../LIB/supabase/supabaseClient';
+import styles from '../../PROGRAMS/Programs.module.css';
+
+// Eager load all images in ASSETS/CAMPUS
+const imageImports = import.meta.glob('../../../../ASSETS/CAMPUS/*.{webp,png,jpg,jpeg}', { eager: true, import: 'default' });
+
+const getImage = (filename) => {
+  if (!filename) return null;
+  const match = Object.keys(imageImports).find(path => path.includes(filename));
+  return match ? imageImports[match] : null;
+};
 
 export default function FacilityDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const facility = getFacilityById(id);
+  const [facility, setFacility] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!facility) {
+  useEffect(() => {
+    async function fetchFacility() {
+      try {
+        const { data, error } = await supabase
+          .from('campus_facilities')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+        setFacility(data);
+      } catch (err) {
+        console.error("Error fetching facility details:", err);
+        setError("Facility not found or network error.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchFacility();
+  }, [id]);
+
+  if (loading) {
     return (
-      <div className="h-screen w-full flex flex-col items-center justify-center bg-brand-bg text-brand-text">
-        <h2 className="text-3xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>Facility not found</h2>
-        <button onClick={() => navigate('/campus/facilities')} className="text-[#FFBF00] hover:underline uppercase tracking-widest text-sm">Return to Facilities</button>
+      <div className={`${styles.pageWrapper} min-h-screen flex flex-col items-center justify-center`}>
+        <div className={styles.ambientBackground} />
+        <Loader2 className="w-12 h-12 text-[var(--primary-color)] animate-spin mb-4" />
+        <p className="text-[var(--text-muted)] tracking-widest uppercase text-sm font-bold relative z-10">Loading Details...</p>
       </div>
     );
   }
 
-  return (
-    <div className="h-screen w-full relative bg-brand-bg text-brand-text overflow-x-hidden overflow-y-auto">
-      {/* Background */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#111] to-[#000] z-0" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-[#FFBF00]/5 blur-[150px] rounded-full pointer-events-none z-0" />
+  if (error || !facility) {
+    return (
+      <div className={`${styles.pageWrapper} min-h-screen flex flex-col items-center justify-center bg-[var(--bg-color)] text-[var(--text-color)]`}>
+        <div className={styles.ambientBackground} />
+        <AlertCircle className="w-16 h-16 text-red-500 mb-6 relative z-10" />
+        <h2 className="text-4xl mb-4 font-bold relative z-10" style={{ fontFamily: "'Playfair Display', serif" }}>Facility not found</h2>
+        <button
+          onClick={() => navigate('/campus/facilities')}
+          className="relative z-10 hover:underline uppercase tracking-widest text-sm text-[var(--primary-color)] font-bold mt-4"
+        >
+          Return to Campus Facilities
+        </button>
+      </div>
+    );
+  }
 
-      <div className="relative z-20 pt-32 pb-20 px-6 md:px-12 max-w-5xl mx-auto">
-        <Link to="/campus/facilities" className="inline-flex items-center text-brand-muted hover:text-[#FFBF00] transition-colors mb-12 uppercase tracking-widest text-sm font-semibold">
-          <span className="mr-2">←</span> Back to Facilities
+  const IconComponent = Icons[facility.icon] || Icons.Building;
+  const imageSrc = getImage(facility.image);
+
+  return (
+    <div className={styles.pageWrapper}>
+      <div className={styles.ambientBackground} />
+      <div className={styles.auroraGlow} />
+
+      <div className={`${styles.contentContainer} max-w-5xl`}>
+        <Link
+          to="/campus/facilities"
+          className="inline-flex items-center text-[var(--text-muted)] hover:text-[var(--primary-color)] transition-colors mb-12 uppercase tracking-widest text-sm font-bold relative z-10"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" /> Back to Facilities
         </Link>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-brand-card border border-brand-border rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)]"
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className={`${styles.glassCard} p-0 overflow-hidden relative z-10 shadow-[0_20px_60px_rgba(0,0,0,0.3)] border border-[var(--card-border)] rounded-3xl`}
         >
-          {/* Hero Image Area */}
-          <div className="relative w-full h-[400px] md:h-[500px]">
-            <img 
-              src={facility.image} 
-              alt={facility.title} 
-              className="w-full h-full object-cover opacity-80"
+          {/* Hero */}
+          <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] border-b border-[var(--card-border)] overflow-hidden">
+            {imageSrc ? (
+              <>
+                <img src={imageSrc} alt={facility.title} className="absolute inset-0 w-full h-full object-cover opacity-70 scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-[var(--bg-color)]/60 to-transparent opacity-90" />
+              </>
+            ) : (
+              <div
+                className="absolute inset-0 opacity-[0.05]"
+                style={{
+                  backgroundImage:
+                    'linear-gradient(var(--primary-color) 1px, transparent 1px), linear-gradient(90deg, var(--primary-color) 1px, transparent 1px)',
+                  backgroundSize: '32px 32px',
+                }}
+                aria-hidden="true"
+              />
+            )}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(400px 300px at 50% 50%, var(--primary-glow), transparent 70%)',
+              }}
+              aria-hidden="true"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent"></div>
-            
-            <div className="absolute bottom-0 left-0 p-8 md:p-12 w-full">
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-2xl bg-brand-card p-3 rounded-full border border-[#FFBF00]/30 shadow-[0_0_15px_rgba(255,191,0,0.2)]">
-                  {facility.icon}
-                </span>
-                <span className="text-[#FFBF00] uppercase tracking-widest text-sm font-bold">
-                  {facility.categoryTitle}
-                </span>
+            <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 pb-16 z-10">
+              <div
+                className="w-20 h-20 rounded-3xl border border-[var(--primary-color)]/40 flex items-center justify-center bg-[var(--bg-color)]/80 backdrop-blur-xl mb-8 shadow-[0_0_40px_var(--primary-glow)]"
+              >
+                <IconComponent className="w-10 h-10 text-[var(--primary-color)]" />
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-brand-text mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <span
+                className="uppercase tracking-widest text-xs font-bold mb-5 font-mono text-[var(--primary-color)] bg-[var(--bg-color)]/50 px-4 py-2 rounded-full backdrop-blur-md border border-[var(--primary-color)]/30"
+              >
+                {facility.category_title}
+              </span>
+              <h1
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] drop-shadow-2xl max-w-4xl leading-tight"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 {facility.title}
               </h1>
             </div>
           </div>
 
-          {/* Content Area */}
-          <div className="p-8 md:p-12">
-            <div className="prose prose-invert prose-lg max-w-none">
-              <p className="text-brand-muted leading-relaxed text-lg md:text-xl font-light">
+          {/* Content */}
+          <div className="p-8 md:p-14 lg:p-20 bg-[var(--card-bg)]/30">
+            <div className="prose prose-invert prose-lg md:prose-xl max-w-4xl mx-auto">
+              <p className="text-[var(--text-color)] leading-loose font-light font-['Outfit'] opacity-90 text-center">
                 {facility.content}
               </p>
             </div>
-            
-            <div className="mt-16 pt-8 border-t border-brand-border flex flex-col md:flex-row gap-6 justify-between items-center">
-              <p className="text-gray-500 text-sm">Experience the Prudentia Advantage.</p>
-              <Link to="/apply" className="px-8 py-3 bg-[#FFBF00] text-black font-bold uppercase tracking-widest rounded hover:bg-white transition-colors">
-                Apply Now
+
+            <div className="mt-20 pt-10 border-t border-[var(--card-border)] flex flex-col md:flex-row gap-6 justify-between items-center max-w-4xl mx-auto">
+              <p className="text-[var(--text-muted)] text-sm font-bold tracking-widest uppercase">Experience the campus infrastructure in person.</p>
+              <Link
+                to="/campus/gallery"
+                className={styles.magneticBtn}
+                style={{ maxWidth: '280px', margin: '0' }}
+              >
+                Campus Gallery
+                <ArrowUpRight className="w-5 h-5 ml-2" />
               </Link>
             </div>
           </div>

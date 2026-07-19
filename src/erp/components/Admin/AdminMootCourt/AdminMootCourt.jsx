@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
-export default function AdminMootCourt() {
+export default function AdminMootCourt({ isHubView = false }) {
     const [activeTab, setActiveTab] = useState("moots"); // "moots" | "bids"
     const [moots, setMoots] = useState([]);
     const [bids, setBids] = useState([]);
@@ -58,9 +58,10 @@ export default function AdminMootCourt() {
         try {
             const { error } = await supabase.from('moot_competitions').insert({
                 ...mootForm,
-                status: 'Open Registration'
+                status: "Upcoming"
             });
             if (error) throw error;
+            window.erpDialog.alert("Moot Created successfully");
             setShowCreateModal(false);
             setMootForm({ moot_name: "", level: "National", event_date: "", venue: "", description: "" });
             fetchMoots();
@@ -72,10 +73,11 @@ export default function AdminMootCourt() {
         }
     };
 
-    const handleSelectTeam = async (bidId) => {
+    const handleSelectBid = async (bidId) => {
         try {
-            const { error } = await supabase.from('moot_bids').update({ status: 'SELECTED' }).eq('id', bidId);
+            const { error } = await supabase.from('moot_bids').update({ status: 'Selected' }).eq('id', bidId);
             if (error) throw error;
+            window.erpDialog.alert("Student Selected!");
             fetchBids();
         } catch (err) {
             console.error("Error selecting bid", err);
@@ -84,33 +86,38 @@ export default function AdminMootCourt() {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated">
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder flex flex-col md:flex-row justify-between items-start lg:items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themeElevated rounded-full lg:-translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="relative z-10 w-full lg:w-auto flex-1">
-                    <div className="flex items-center gap-4 lg:gap-5 mb-3 lg:mb-2">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel bg-themeElevated border-theme border-themeBorderStrong flex items-center justify-center shrink-0">
-                            <i className="fa-solid fa-gavel text-themeAccent text-2xl lg:text-3xl"></i>
+        <div className={`w-full ${isHubView ? 'bg-transparent text-themeText font-sans' : 'max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated'}`}>
+            {/* Header and Tabs */}
+            {!isHubView && (
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    {/* Background Decorations */}
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+                        <div className="flex items-center gap-4 lg:gap-5 mb-2">
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-gavel text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            </div>
+                            <div>
+                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Moot Court Society Admin</h1>
+                                <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Create competitions and blindly evaluate research memos.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText mb-1`}>Moot Court Society Admin</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Create competitions and blindly evaluate research memos.</p>
-                        </div>
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="w-full lg:w-auto px-6 py-3 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 border border-white/50"
+                        >
+                            <i className="fa-solid fa-plus"></i> Create Moot
+                        </button>
                     </div>
                 </div>
-                <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="w-full lg:w-auto px-6 py-4 bg-amber-500 hover:bg-amber-400 text-[#050505] rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] relative z-10 shrink-0 flex items-center justify-center gap-2"
-                >
-                    <i className="fa-solid fa-plus"></i> Create Moot
-                </button>
-            </div>
+            )}
 
-            <div className="flex p-1.5 bg-themePanel rounded-themePanel w-full lg:w-fit border-theme border-themeBorder overflow-x-auto no-scrollbar">
-                <button onClick={() => setActiveTab('moots')} className={`flex-1 lg:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === 'moots' ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong" : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"}`}>
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-6 lg:mb-8'}`}>
+                <button onClick={() => setActiveTab('moots')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'moots' ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-list"></i> Competitions
                 </button>
-                <button onClick={() => setActiveTab('bids')} className={`flex-1 lg:flex-none px-4 lg:px-8 py-2.5 lg:py-3 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === 'bids' ? "bg-themeElevated text-emerald-400 border-theme border-emerald-500/30" : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"}`}>
+                <button onClick={() => setActiveTab('bids')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'bids' ? 'bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)] border border-emerald-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-user-ninja"></i> Blind Evaluation Bids
                 </button>
             </div>

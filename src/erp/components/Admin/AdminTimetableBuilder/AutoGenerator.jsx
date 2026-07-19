@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../../../LIB/supabase/supabaseClient';
+import { supabase } from '../../../lib/supabase/supabaseClient';
 import { theme } from '../../../theme';
 
 export default function AutoGenerator({ batches, subjects, onGenerateComplete }) {
@@ -20,7 +20,7 @@ export default function AutoGenerator({ batches, subjects, onGenerateComplete })
 
             setProgress('Clearing old timetable...');
             // Drop old timetable
-            await supabase.from('timetable').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            await supabase.from('class_schedule').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 
             setProgress('Building schedule...');
             
@@ -105,7 +105,7 @@ export default function AutoGenerator({ batches, subjects, onGenerateComplete })
 
             if (newTimetable.length > 0) {
                 setProgress('Saving to database...');
-                const { error: insertErr } = await supabase.from('timetable').insert(newTimetable);
+                const { error: insertErr } = await supabase.from('class_schedule').insert(newTimetable);
                 if (insertErr) throw insertErr;
             }
 

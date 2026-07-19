@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
 // --- CACHE HELPERS ---
 const CK = { courses: 'me_courses', roster: 'me_roster', marks: 'me_marks', assigns: 'me_assign_marks' };

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useERP } from '../../context/ErpContext';
-import { supabase } from '../../LIB/supabase/supabaseClient';
+import { supabase } from '../../lib/supabase/supabaseClient';
+import pclLogo from '../../../ASSETS/LOGOS/pcl_logo.svg';
 
 export default function IntelligentBot() {
     const { userSession } = useERP();
@@ -193,7 +194,17 @@ export default function IntelligentBot() {
                     className="w-14 h-14 rounded-full bg-themePanel border-2 border-themeBorder shadow-2xl flex items-center justify-center cursor-pointer hover:scale-105 transition-transform relative group"
                     aria-label="Open Assistant"
                 >
-                    <i className="fa-solid fa-landmark text-themeAccent text-xl"></i>
+                    <div 
+                        className="bg-current text-themeAccent"
+                        style={{
+                            width: '24px', 
+                            height: '24px', 
+                            WebkitMaskImage: `url(${pclLogo})`,
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskRepeat: 'no-repeat',
+                            WebkitMaskPosition: 'center'
+                        }}
+                    />
                     <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-themePanel rounded-full animate-pulse"></span>
                 </button>
             ) : (

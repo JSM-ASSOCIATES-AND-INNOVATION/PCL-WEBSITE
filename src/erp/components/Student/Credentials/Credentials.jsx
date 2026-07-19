@@ -1,226 +1,469 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
-
-// Import Autonomous Child Modules
-import PersonalInfo from "./PersonalInfo";
-import AcademicDetails from "./AcademicDetails";
-import DigitalLocker from "./DigitalLocker";
+import { supabase } from "../../../lib/supabase/supabaseClient";
+import { calculateRelativeSemester } from "../../../utils/academicUtils";
 import SecuritySettings from "./SecuritySettings";
 import AppearanceSettings from "./AppearanceSettings";
 
 export default function Credentials() {
     const { userSession } = useERP();
-    const [view, setView] = useState("personal");
+    const [activeTab, setActiveTab] = useState("profile"); // profile, security, appearance
+    const [isLoading, setIsLoading] = useState(true);
     
-    const [headerData, setHeaderData] = useState(() => {
-        const studentId = userSession?.db_id || userSession?.id;
-        if (studentId) {
-            const cached = sessionStorage.getItem(`credentials_header_${studentId}`);
-            if (cached) {
-                try {
-                    return JSON.parse(cached);
-                } catch (e) {
-                    console.error("Failed to parse cached credentials header", e);
-                }
-            }
-        }
-        
-        return {
-            firstName: userSession?.name ? userSession.name.split(" ")[0] : "User",
-            lastName: userSession?.name ? userSession.name.split(" ").slice(1).join(" ") : "",
-            program: userSession?.academic_batch || "Law Program",
-            enrollmentNo: userSession?.id || "N/A",
-            phone: "Update in Profile",
-            dob: "--",
-            bloodGroup: "--",
-            email: userSession?.email || "Not Updated",
-            linkedIn: null
-        };
+    // Core Data State
+    const [profileData, setProfileData] = useState(null);
+    const [mentorData, setMentorData] = useState(null);
+
+    // One-Time Questionnaire State
+    const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+    const [qForm, setQForm] = useState({
+        preferredLawArea: "Litigation",
+        careerGoal: "Not Decided",
+        languages: [],
+        clubs: [],
+        internshipPref: "Any",
+        skills: []
     });
 
     useEffect(() => {
-        const studentId = userSession?.db_id || userSession?.id;
-        if (!studentId) return;
+        const fetchMasterRecord = async () => {
+            const studentId = userSession?.db_id || userSession?.id;
+            if (!studentId) return;
 
-        const fetchIdentityBanner = async () => {
             try {
-                const { data, error } = await supabase
+                // 1. Fetch Profile
+                const { data: pData, error: pError } = await supabase
                     .from('profiles')
-                    .select('erp_id, full_name, academic_batch, department, phone, dob, blood_group, email, questionnaire_data')
-                    .eq('id', studentId) 
+                    .select('*')
+                    .eq('id', studentId)
                     .single();
+                
+                if (pError) throw pError;
+                setProfileData(pData);
 
-                if (error) throw error;
+                // Check if Questionnaire is needed (assuming empty questionnaire_data means not done)
+                const qd = pData.questionnaire_data || {};
+                if (!qd.preferredLawArea && userSession?.role === 'student') {
+                    setShowQuestionnaire(true);
+                }
 
-                const nameParts = data.full_name ? data.full_name.split(" ") : ["User", ""];
-                const qd = data.questionnaire_data || {};
-
-                const freshData = {
-                    firstName: nameParts[0] || "",
-                    lastName: nameParts.slice(1).join(" ") || "",
-                    program: data.department || data.academic_batch || "B.B.A. LL.B. (Hons.)",
-                    enrollmentNo: data.erp_id || userSession.id,
-                    phone: data.phone || qd.emergencyPhone || "Not Updated",
-                    dob: data.dob ? new Date(data.dob).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "Not Updated",
-                    bloodGroup: data.blood_group || qd.bloodGroup || "--",
-                    email: data.email || "Not Updated",
-                    linkedIn: qd.linkedInProfile || null
-                };
-
-                setHeaderData(freshData);
-                sessionStorage.setItem(`credentials_header_${studentId}`, JSON.stringify(freshData));
+                // 2. Fetch Mentor (Only for students)
+                if (userSession?.role === 'student') {
+                    const { data: mData } = await supabase
+                        .from('mentorship')
+                        .select('faculty_id, profiles!mentorship_faculty_id_fkey(full_name)')
+                        .eq('student_id', studentId)
+                        .eq('status', 'active')
+                        .single();
+                    
+                    if (mData?.profiles) {
+                        setMentorData(mData.profiles.full_name);
+                    }
+                }
 
             } catch (err) {
-                console.error("Failed to load identity banner:", err);
+                console.error("Failed to load official record:", err);
+            } finally {
+                setIsLoading(false);
             }
         };
 
-        fetchIdentityBanner();
+        fetchMasterRecord();
     }, [userSession]);
 
-    // Compute proper initials
-    const getInitials = () => {
-        const fn = (headerData.firstName || '').replace(/[^a-zA-Z\s]/g, '').trim();
-        const ln = (headerData.lastName || '').replace(/[^a-zA-Z\s]/g, '').trim();
-        const lastParts = ln.split(/\s+/).filter(Boolean);
-        const firstInit = fn.charAt(0) || '';
-        const lastInit = lastParts.length > 0 ? lastParts[lastParts.length - 1].charAt(0) : '';
-        const result = (firstInit + lastInit).toUpperCase();
-        return result || (userSession?.role === 'admin' ? 'AD' : userSession?.role === 'faculty' ? 'FC' : 'ST');
+    // Derived helpers
+    const getInitials = (nameStr) => {
+        if (!nameStr) return "US";
+        const parts = nameStr.trim().split(" ");
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
     };
 
-    const allTabs = [
-        { id: 'personal', label: 'Personal', fullLabel: 'Personal Info', icon: 'fa-user' },
-        { id: 'academic', label: 'Academic', fullLabel: 'Academic Details', icon: 'fa-graduation-cap' },
-        { id: 'documents', label: 'Locker', fullLabel: 'Digital Locker', icon: 'fa-folder-open' },
-        { id: 'security', label: 'Security', fullLabel: 'Security & Login', icon: 'fa-shield-halved' },
-        { id: 'appearance', label: 'Theme', fullLabel: 'Appearance', icon: 'fa-palette' }
-    ];
+    const handleQuestionnaireSubmit = async (e) => {
+        e.preventDefault();
+        const studentId = userSession?.db_id || userSession?.id;
+        
+        try {
+            const updatedQData = {
+                ...profileData.questionnaire_data,
+                preferredLawArea: qForm.preferredLawArea,
+                careerGoal: qForm.careerGoal,
+                languages: qForm.languages,
+                clubs: qForm.clubs,
+                internshipPref: qForm.internshipPref,
+                skills: qForm.skills,
+                completedOn: new Date().toISOString()
+            };
 
-    const tabs = userSession?.role === 'admin' 
-        ? allTabs.filter(t => ['security', 'appearance'].includes(t.id))
-        : allTabs;
+            const { error } = await supabase
+                .from('profiles')
+                .update({ questionnaire_data: updatedQData })
+                .eq('id', studentId);
 
-    // Use a useEffect to override the initial state if admin (since useState evaluates immediately)
-    useEffect(() => {
-        if (userSession?.role === 'admin' && view !== 'security' && view !== 'appearance') {
-            setView('security');
+            if (error) throw error;
+            
+            setShowQuestionnaire(false);
+            setProfileData(prev => ({ ...prev, questionnaire_data: updatedQData }));
+            window.erpDialog?.alert("Onboarding questionnaire completed successfully.", "Record Updated");
+        } catch (error) {
+            console.error(error);
+            window.erpDialog?.alert("Failed to save questionnaire. Please try again.");
         }
-    }, [userSession?.role, view]);
+    };
+
+    const handleCheckboxChange = (field, val) => {
+        setQForm(prev => {
+            const arr = prev[field];
+            if (arr.includes(val)) {
+                return { ...prev, [field]: arr.filter(i => i !== val) };
+            } else {
+                return { ...prev, [field]: [...arr, val] };
+            }
+        });
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-40 opacity-50">
+                <i className="fa-solid fa-circle-notch fa-spin text-4xl text-themeAccent mb-4"></i>
+                <span className="text-sm font-black uppercase tracking-widest text-themeText">Retrieving Official Record...</span>
+            </div>
+        );
+    }
+
+    if (!profileData) return null;
+
+    const qd = profileData.questionnaire_data || {};
+    const roleTitle = userSession?.role === 'admin' ? 'Admin' : userSession?.role === 'faculty' ? 'Faculty' : 'Student';
 
     return (
-        <div className="w-full max-w-6xl mx-auto flex flex-col gap-4 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated">
-
-            {/* 1. MASTER PROFILE BANNER */}
-            <div className="bg-themeElevated rounded-themePanel p-1 relative overflow-hidden border-theme border-themeBorder">
-                <div className="absolute top-0 right-0 w-full h-32 lg:h-48 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-40 h-40 lg:w-80 lg:h-80 bg-themeElevated rounded-full translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
-
-                <div className="relative z-10 flex flex-row items-center gap-4 lg:gap-8 p-4 lg:p-8 w-full">
-                    {/* Avatar */}
-                    <div className="relative group shrink-0">
-                        <div className="w-16 h-16 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full bg-themePanel border-4 border-[#050505] flex items-center justify-center overflow-hidden relative">
-                            <div className="absolute inset-0 flex items-center justify-center text-xl md:text-3xl lg:text-4xl font-black text-[#050505]">
-                                {getInitials()}
-                            </div>
-                            <div className="absolute inset-0 bg-themeApp flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                <i className="fa-solid fa-camera text-themeText text-sm md:text-xl"></i>
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 md:bottom-1 md:right-1 w-6 h-6 md:w-10 md:h-10 bg-emerald-500 rounded-full border-3 md:border-4 border-[#050505] flex items-center justify-center" title="Identity Verified">
-                            <i className="fa-solid fa-check text-[#050505] text-[8px] md:text-xs font-black"></i>
-                        </div>
-                    </div>
-
-                    {/* Core Info */}
-                    <div className="flex-1 min-w-0">
-                        <h1 className="text-lg md:text-3xl lg:text-4xl font-black text-themeText tracking-tight mb-1 md:mb-2 truncate">
-                            {headerData.firstName} {headerData.lastName}
-                        </h1>
-                        
-                        {/* Tags Row */}
-                        <div className="flex flex-wrap items-center gap-1.5 md:gap-2 mb-2 md:mb-4">
-                            <span className="text-themeAccent font-bold text-[8px] md:text-xs tracking-widest uppercase bg-themeElevated px-2 md:px-3 py-1 md:py-1.5 rounded-lg border-theme border-themeBorderStrong truncate max-w-[160px] md:max-w-none">
-                                {headerData.program}
-                            </span>
-                            
-                            <span className="hidden sm:flex text-themeTextSec font-semibold text-[10px] md:text-xs tracking-wide bg-themeApp px-3 py-1.5 rounded-lg border-theme border-themeBorder items-center">
-                                <i className="fa-solid fa-envelope mr-1.5 opacity-70"></i>
-                                {headerData.email}
-                            </span>
-
-                            {headerData.linkedIn && (
-                                <a 
-                                    href={headerData.linkedIn} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="bg-themeApp px-2 md:px-3 py-1 md:py-1.5 rounded-lg border-theme border-themeBorder hover:bg-themeElevated transition-colors flex items-center justify-center"
-                                    title="LinkedIn Profile"
-                                >
-                                    <i className="fa-brands fa-linkedin text-blue-500 text-xs md:text-[14px]"></i>
-                                </a>
-                            )}
-                        </div>
-
-                        {/* Detail Chips - hidden on very small screens */}
-                        <div className="hidden sm:flex flex-wrap gap-2 lg:gap-3">
-                            <span className="px-3 py-1.5 bg-themeApp border-theme border-themeBorder rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">
-                                <i className="fa-solid fa-id-card text-purple-500 mr-1.5"></i> {headerData.enrollmentNo}
-                            </span>
-                            <span className="px-3 py-1.5 bg-themeApp border-theme border-themeBorder rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">
-                                <i className="fa-solid fa-droplet text-rose-500 mr-1.5"></i> {headerData.bloodGroup}
-                            </span>
-                            <span className="px-3 py-1.5 bg-themeApp border-theme border-themeBorder rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">
-                                <i className="fa-solid fa-cake-candles text-blue-500 mr-1.5"></i> {headerData.dob}
-                            </span>
-                            <span className="px-3 py-1.5 bg-themeApp border-theme border-themeBorder rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">
-                                <i className="fa-solid fa-phone text-emerald-500 mr-1.5"></i> {headerData.phone}
-                            </span>
-                        </div>
-
-                        {/* Mobile-only compact info row */}
-                        <div className="flex sm:hidden flex-wrap gap-1.5">
-                            <span className="px-2 py-1 bg-themeApp border-theme border-themeBorder rounded-md text-[8px] font-black uppercase tracking-widest text-themeTextSec">
-                                <i className="fa-solid fa-id-card text-purple-500 mr-1"></i> {headerData.enrollmentNo}
-                            </span>
-                            <span className="px-2 py-1 bg-themeApp border-theme border-themeBorder rounded-md text-[8px] font-black uppercase tracking-widest text-themeTextSec">
-                                <i className="fa-solid fa-droplet text-rose-500 mr-1"></i> {headerData.bloodGroup}
-                            </span>
-                        </div>
-                    </div>
+        <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated relative">
+            
+            {/* Top Action & Navigation Bar */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-themePanel px-6 py-4 rounded-xl border border-themeBorder shadow-sm gap-4">
+                <div className="flex bg-themeApp p-1.5 rounded-xl border border-themeBorder">
+                    <button
+                        onClick={() => setActiveTab("profile")}
+                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === "profile" ? 'bg-themeElevated text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
+                        }`}
+                    >
+                        <i className="fa-regular fa-user mr-2"></i> HR & Profile
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("security")}
+                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === "security" ? 'bg-themeElevated text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
+                        }`}
+                    >
+                        <i className="fa-solid fa-shield-halved mr-2"></i> Security
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("appearance")}
+                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === "appearance" ? 'bg-themeElevated text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
+                        }`}
+                    >
+                        <i className="fa-solid fa-palette mr-2"></i> Appearance
+                    </button>
                 </div>
-            </div>
-
-            {/* 2. SUB-NAVIGATION MENU — Compact & Scrollable on Mobile */}
-            <div className={`flex p-1 lg:p-1.5 ${theme.layout.panelElevated} rounded-xl lg:rounded-themePanel w-full overflow-x-auto no-scrollbar border-theme border-themeBorder`}>
-                <div className="flex w-full min-w-max gap-1 lg:gap-1.5">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setView(tab.id)}
-                            className={`flex-1 md:flex-none flex items-center justify-center gap-1.5 lg:gap-2 px-3 lg:px-6 py-2 lg:py-3 rounded-lg lg:rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap shrink-0 ${view === tab.id
-                                ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong shadow-sm"
-                                : "text-themeTextSec opacity-70 hover:text-themeText active:scale-[0.98] border-theme border-transparent"
-                                }`}
-                        >
-                            <i className={`fa-solid ${tab.icon} text-[10px] lg:text-xs ${view === tab.id ? 'text-themeAccent' : 'opacity-70'}`}></i> 
-                            <span className="hidden sm:inline">{tab.fullLabel}</span>
-                            <span className="sm:hidden">{tab.label}</span>
+                
+                {activeTab === "profile" && (
+                    <div className="flex gap-2">
+                        <button className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2">
+                            <i className="fa-solid fa-pen-to-square"></i> Edit
                         </button>
-                    ))}
-                </div>
+                        <button className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2">
+                            <i className="fa-solid fa-print"></i> Print
+                        </button>
+                        <button className="hidden sm:flex px-4 py-2 bg-themeAccent hover:opacity-90 text-[#0a0a0a] text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeAccent flex items-center gap-2">
+                            <i className="fa-solid fa-id-badge"></i> Download ID
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {/* 3. DYNAMIC CONTENT AREA */}
-            <div className={`${theme.layout.panel} rounded-themePanel lg:rounded-themePanel overflow-hidden p-4 lg:p-8 animate-fade-in border-theme border-themeBorder`}>
-                {view === "personal" && <PersonalInfo />}
-                {view === "academic" && <AcademicDetails />}
-                {view === "documents" && <DigitalLocker />}
-                {view === "security" && <SecuritySettings />}
-                {view === "appearance" && <AppearanceSettings />}
-            </div>
+            {/* TAB: SECURITY */}
+            {activeTab === "security" && (
+                <div className="animate-fade-in">
+                    <SecuritySettings />
+                </div>
+            )}
+
+            {/* TAB: APPEARANCE */}
+            {activeTab === "appearance" && (
+                <div className="animate-fade-in">
+                    <AppearanceSettings />
+                </div>
+            )}
+
+            {/* TAB: PROFILE */}
+            {activeTab === "profile" && (
+                <div className="flex flex-col gap-6 lg:gap-8 animate-fade-in">
+                    
+                    {/* 1. MASTER PROFILE BANNER */}
+                    <div className={`rounded-2xl p-6 lg:p-10 relative overflow-hidden bg-themeElevated border border-themeBorder shadow-sm transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-6 lg:gap-8`}>
+                        
+                        {/* Photo & Status */}
+                        <div className="relative group shrink-0 flex flex-col items-center">
+                            <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-xl bg-themePanel text-themeAccent border-[4px] border-themeBorderStrong flex items-center justify-center overflow-hidden relative shadow-sm">
+                                {profileData.avatar_url ? (
+                                    <img src={profileData.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="text-3xl lg:text-4xl font-black">
+                                        {getInitials(profileData.full_name)}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mt-3 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[9px] font-black uppercase tracking-widest rounded flex items-center gap-1.5 shadow-sm">
+                                <i className="fa-solid fa-circle text-[6px]"></i> Active {roleTitle}
+                            </div>
+                        </div>
+
+                        {/* Core Info Details */}
+                        <div className="flex-1 w-full text-center sm:text-left flex flex-col h-full justify-center">
+                            <h2 className="text-2xl lg:text-3xl font-black text-themeText tracking-tight mb-1">{profileData.full_name}</h2>
+                            <p className="text-sm font-bold text-themeTextSec uppercase tracking-widest mb-4">{profileData.department || (userSession?.role === 'student' ? "B.B.A. LL.B. (Hons.)" : "Department")}</p>
+                            
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-4 gap-x-2 mt-2 pt-4 border-t border-themeBorderStrong w-full">
+                                <div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec opacity-70 mb-0.5">{roleTitle} ID</p>
+                                    <p className="text-xs font-bold text-themeText">{profileData.erp_id || "N/A"}</p>
+                                </div>
+                                {userSession?.role === 'student' && (
+                                    <>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec opacity-70 mb-0.5">Semester</p>
+                                            <p className="text-xs font-bold text-themeText">{profileData.academic_batch ? `Semester ${calculateRelativeSemester(profileData.academic_batch)}` : "N/A"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec opacity-70 mb-0.5">Batch</p>
+                                            <p className="text-xs font-bold text-themeText">{profileData.academic_batch || "N/A"}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec opacity-70 mb-0.5">Faculty Mentor</p>
+                                            <p className="text-xs font-bold text-themeAccent">{mentorData || "Unassigned"}</p>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* If Questionnaire needs to be filled, show it here */}
+                    {showQuestionnaire && userSession?.role === 'student' && (
+                        <div className="bg-themeAccent/10 border-2 border-themeAccent/30 rounded-2xl p-6 lg:p-8 shadow-sm">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-10 h-10 rounded-full bg-themeAccent/20 flex items-center justify-center text-themeAccent shrink-0">
+                                    <i className="fa-solid fa-clipboard-list"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black text-themeAccent tracking-tight mb-0.5">Student Onboarding Questionnaire</h3>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-themeTextSec">Please complete this one-time survey to finalize your profile.</p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleQuestionnaireSubmit} className="flex flex-col gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-themeText">Preferred Area of Law</label>
+                                        <select className="bg-themePanel border border-themeBorder rounded-lg px-3 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" value={qForm.preferredLawArea} onChange={e => setQForm({...qForm, preferredLawArea: e.target.value})}>
+                                            <option>Litigation</option>
+                                            <option>Corporate Law</option>
+                                            <option>Criminal Law</option>
+                                            <option>Constitutional Law</option>
+                                            <option>Intellectual Property</option>
+                                            <option>Not Decided</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-themeText">Career Goal</label>
+                                        <select className="bg-themePanel border border-themeBorder rounded-lg px-3 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" value={qForm.careerGoal} onChange={e => setQForm({...qForm, careerGoal: e.target.value})}>
+                                            <option>Litigation</option>
+                                            <option>Corporate</option>
+                                            <option>Judiciary</option>
+                                            <option>Higher Studies</option>
+                                            <option>Government</option>
+                                            <option>Not Decided</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeText block mb-2">Clubs & Activities Interest</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {["Moot Court Society", "ADR Cell", "Legal Aid Clinic", "Debate Society", "NSS", "Sports", "Cultural Club"].map(club => (
+                                            <label key={club} className="flex items-center gap-2 bg-themePanel px-3 py-2 rounded border border-themeBorder cursor-pointer hover:border-themeAccent/50">
+                                                <input type="checkbox" checked={qForm.clubs.includes(club)} onChange={() => handleCheckboxChange('clubs', club)} className="accent-themeAccent" />
+                                                <span className="text-xs font-bold text-themeTextSec">{club}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeText block mb-2">Technical Skills</label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {["Legal Research", "Drafting", "Public Speaking", "MS Office", "AI Tools"].map(skill => (
+                                            <label key={skill} className="flex items-center gap-2 bg-themePanel px-3 py-2 rounded border border-themeBorder cursor-pointer hover:border-themeAccent/50">
+                                                <input type="checkbox" checked={qForm.skills.includes(skill)} onChange={() => handleCheckboxChange('skills', skill)} className="accent-themeAccent" />
+                                                <span className="text-xs font-bold text-themeTextSec">{skill}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="self-end px-6 py-3 bg-themeAccent text-[#0a0a0a] text-xs font-black uppercase tracking-widest rounded-lg shadow-md hover:opacity-90">
+                                    Submit Questionnaire
+                                </button>
+                            </form>
+                        </div>
+                    )}
+
+                    {/* Information Grid Layout */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                        
+                        {/* Personal Information */}
+                        <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-regular fa-user mr-2 text-themeTextSec"></i> Personal Information</h3>
+                            <div className="flex flex-col gap-4">
+                                <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Date of Birth</span>
+                                    <span className="text-xs font-bold text-themeText">{profileData.dob ? new Date(profileData.dob).toLocaleDateString('en-GB') : "Not Updated"}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Gender</span>
+                                    <span className="text-xs font-bold text-themeText">{profileData.gender || "Not Updated"}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Blood Group</span>
+                                    <span className="text-xs font-bold text-themeText">{profileData.blood_group || "Not Updated"}</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Nationality</span>
+                                    <span className="text-xs font-bold text-themeText">{profileData.nationality || "Indian"}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Contact Information */}
+                        <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-regular fa-address-book mr-2 text-themeTextSec"></i> Contact Information</h3>
+                            <div className="flex flex-col gap-4">
+                                <div className="grid grid-cols-[1fr_2fr] gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">College Email</span>
+                                    <span className="text-xs font-bold text-themeText break-all">{profileData.email || "Not Updated"}</span>
+                                </div>
+                                <div className="grid grid-cols-[1fr_2fr] gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Personal Email</span>
+                                    <span className="text-xs font-bold text-themeText break-all">{qd.personalEmail || "Not Updated"}</span>
+                                </div>
+                                <div className="grid grid-cols-[1fr_2fr] gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Mobile Number</span>
+                                    <span className="text-xs font-bold text-themeText">{profileData.phone || "Not Updated"}</span>
+                                </div>
+                                <div className="grid grid-cols-[1fr_2fr] gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Address</span>
+                                    <span className="text-xs font-bold text-themeText">{qd.currentAddress || "Not Updated"}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Academic/Professional Information */}
+                        <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-solid fa-briefcase mr-2 text-themeTextSec"></i> {userSession?.role === 'student' ? 'Academic Information' : 'Professional Information'}</h3>
+                            <div className="flex flex-col gap-4">
+                                <div className="grid grid-cols-2 gap-2">
+                                    <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Department</span>
+                                    <span className="text-xs font-bold text-themeText">{profileData.department || "N/A"}</span>
+                                </div>
+                                {userSession?.role === 'student' && (
+                                    <>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Admission Year</span>
+                                            <span className="text-xs font-bold text-themeText">{profileData.academic_batch?.split('-')[0] || "N/A"}</span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Current CGPA</span>
+                                            <span className="text-xs font-black text-themeAccent">{profileData.cgpa ? parseFloat(profileData.cgpa).toFixed(2) : "0.00"}</span>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Emergency Contact & Documents */}
+                        <div className="flex flex-col gap-6 lg:gap-8">
+                            <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-solid fa-truck-medical mr-2 text-themeTextSec"></i> Emergency Contact</h3>
+                                <div className="flex flex-col gap-4">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Name</span>
+                                        <span className="text-xs font-bold text-themeText">{qd.emergencyName || "Not Updated"}</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Relationship</span>
+                                        <span className="text-xs font-bold text-themeText">{qd.emergencyRelation || "Not Updated"}</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Phone Number</span>
+                                        <span className="text-xs font-bold text-themeText">{qd.emergencyPhone || "Not Updated"}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* 3. DIGITAL ID CARD PREVIEW */}
+                    <div className="w-full flex justify-center mt-4">
+                        <div className="w-full max-w-sm bg-themeElevated border-2 border-themeBorder rounded-2xl overflow-hidden shadow-2xl relative flex flex-col group hover:-translate-y-1 transition-transform duration-300">
+                            
+                            {/* ID Card Header */}
+                            <div className="bg-[#8b0000] p-4 text-center border-b-4 border-amber-500 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-black/10"></div>
+                                <h3 className="relative z-10 text-white font-black text-sm tracking-widest uppercase">Prudentia College of Law</h3>
+                            </div>
+
+                            {/* ID Card Body */}
+                            <div className="p-6 flex flex-col items-center bg-white">
+                                <div className="w-24 h-24 bg-neutral-200 border-2 border-neutral-300 rounded overflow-hidden mb-4 flex items-center justify-center">
+                                    {profileData.avatar_url ? (
+                                        <img src={profileData.avatar_url} alt="ID" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <i className="fa-solid fa-user text-4xl text-neutral-400"></i>
+                                    )}
+                                </div>
+                                
+                                <h4 className="text-xl font-black text-neutral-900 tracking-tight text-center leading-tight mb-1">{profileData.full_name}</h4>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-4">{profileData.department || (userSession?.role === 'student' ? "B.B.A. LL.B. (Hons.)" : "Department")}</p>
+
+                                <div className="w-full flex flex-col gap-2 border-t border-neutral-200 pt-4">
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="font-bold text-neutral-500 uppercase">{roleTitle} ID</span>
+                                        <span className="font-black text-neutral-900">{profileData.erp_id || "N/A"}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="font-bold text-neutral-500 uppercase">DOB</span>
+                                        <span className="font-black text-neutral-900">{profileData.dob ? new Date(profileData.dob).toLocaleDateString('en-GB') : "N/A"}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-xs">
+                                        <span className="font-bold text-neutral-500 uppercase">Blood Group</span>
+                                        <span className="font-black text-rose-600">{profileData.blood_group || "N/A"}</span>
+                                    </div>
+                                </div>
+
+                                {/* QR Code Placeholder */}
+                                <div className="mt-6 pt-4 border-t border-neutral-200 w-full flex flex-col items-center">
+                                    <div className="w-48 h-8 bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/e9/UPC-A-036000291452.svg')] bg-cover opacity-60 mix-blend-multiply mb-1"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

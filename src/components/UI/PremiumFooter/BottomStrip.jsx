@@ -1,0 +1,43 @@
+import React from 'react';
+import { ArrowUp, Activity } from 'lucide-react';
+import styles from './PremiumFooter.module.css';
+
+export default function BottomStrip() {
+  const handleScrollTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <>
+      <div className={styles.animatedDivider}></div>
+      <div className="flex flex-col md:flex-row justify-between items-center flex-wrap gap-6 pb-10">
+        
+        {/* Status */}
+        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--text-muted)] order-2 md:order-1">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_12px_#22c55e] animate-pulse"></div>
+          <span className="font-semibold">All Systems Operational</span>
+        </div>
+
+        {/* Copyright */}
+        <div className="text-sm text-[var(--text-muted)] order-3 md:order-2 text-center md:text-left">
+          &copy; {new Date().getFullYear()} Prudentia College of Law. 
+          <span className="hidden md:inline mx-2 text-white/20">|</span> 
+          <span className="text-[var(--primary-color)] font-medium block md:inline mt-1 md:mt-0">Powered by JSM Innovation x Prudentia</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-xs uppercase tracking-widest text-[var(--text-muted)] font-bold order-1 md:order-3">
+          <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full">v 7.0</span>
+          {/* Back to Top */}
+          <button 
+            onClick={handleScrollTop} 
+            className="flex items-center gap-2 text-[var(--primary-color)] hover:text-white transition-colors group" 
+            aria-label="Back to top"
+          >
+            Back To Top <ArrowUp size={16} className="group-hover:animate-bounce" />
+          </button>
+        </div>
+
+      </div>
+    </>
+  );
+}

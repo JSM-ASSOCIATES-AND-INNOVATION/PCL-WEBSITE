@@ -14,25 +14,49 @@
   --nav-bg: rgba(5, 5, 5, 0.6);
   --text-muted: #888888;
   --glass-shadow: rgba(0, 0, 0, 0.5);
+  
+  /* Hero Theme Variables */
+  --hero-overlay-1: rgba(0,0,0,0.5);
+  --hero-overlay-2-start: rgba(0,0,0,0.8);
+  --hero-overlay-2-mid: rgba(0,0,0,0.4);
+  --hero-overlay-2-end: rgba(0,0,0,0.9);
+  --hero-overlay-3: rgba(0,0,0,0.6);
+  --hero-badge-bg: rgba(0,0,0,0.3);
+  --hero-pill-bg: rgba(7,7,10,0.6);
+  --hero-metrics-bg: rgba(7,7,10,0.8);
+  --hero-border: rgba(255,255,255,0.05);
+  --hero-metrics-border: rgba(255,255,255,0.1);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    /* Light Mode (Stark White & Burgundy Red - but using Dark Mode Gold) */
+    /* Light Mode */
     --bg-color: #f8f9fa;
     --text-color: #111111;
     
     --primary-color: #FFBF00;
     --primary-hover: #e5aa00;
-    --primary-glow: rgba(255, 191, 0, 0.4);
+    --primary-glow: rgba(255, 191, 0, 0.15);
     --primary-light: #ffd040;
     
     --card-bg: rgba(255, 255, 255, 0.85);
     --card-solid: rgba(255, 255, 255, 0.98);
-    --card-border: rgba(0, 0, 0, 0.05);
-    --nav-bg: rgba(255, 255, 255, 0.8);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --nav-bg: rgba(255, 255, 255, 0.85);
     --text-muted: #555555;
     --glass-shadow: rgba(0, 0, 0, 0.05);
+    
+    /* Hero Theme Variables (Light) */
+    --hero-overlay-1: rgba(255,255,255,0.2);
+    --hero-overlay-2-start: rgba(255,255,255,0.4);
+    --hero-overlay-2-mid: rgba(255,255,255,0.2);
+    --hero-overlay-2-end: rgba(255,255,255,0.7);
+    --hero-overlay-3: rgba(255,255,255,0.3);
+    --hero-badge-bg: rgba(255,255,255,0.6);
+    --hero-pill-bg: rgba(255,255,255,0.8);
+    --hero-metrics-bg: rgba(255,255,255,0.9);
+    --hero-border: rgba(0,0,0,0.05);
+    --hero-metrics-border: rgba(0,0,0,0.08);
   }
 }
 
@@ -57,7 +81,7 @@ body {
   background: var(--nav-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--card-border);
 }
 
 /* Base Styles */

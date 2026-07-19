@@ -3,106 +3,184 @@ import { Briefcase, Gavel, Shield, Landmark } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Carousel from '../ACADEMICS/Carousel';
+import BorderGlow from './BorderGlow';
+import { useSiteContent } from '../../../LIB/hooks/useSiteContent';
 
 import ladyJusticeImg from '../../../ASSETS/CAMPUS/pcl_justice.webp';
+import classroom1 from '../../../ASSETS/CAMPUS/pcl_classroom_1.webp';
+import classroom2 from '../../../ASSETS/CAMPUS/pcl_classroom_2.webp';
+import classroom3 from '../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
+import entrance from '../../../ASSETS/CAMPUS/pcl_entrance.webp';
+import outdoor from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
+
+const IMAGE_MAP = {
+  justice: ladyJusticeImg,
+  classroom1: classroom1,
+  classroom2: classroom2,
+  classroom3: classroom3,
+  entrance: entrance,
+  outdoor: outdoor
+};
 
 const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
-  
+  const { content } = useSiteContent('/', 'advantages_snippet');
+  const advContent = content || {};
+
+  const {
+    hero_img = 'justice',
+    tagline = 'Why Prudentia',
+    heading1 = 'The Prudentia',
+    heading2 = 'Advantage.',
+    btn_text = 'Explore All Facilities',
+    btn_link = '/campus/facilities',
+    
+    card1_title = 'Industry Integration',
+    card1_desc = 'Direct pipelines into elite law firms and judicial chambers for sustained courtroom exposure.',
+    card1_link = '/campus/facilities/corporate-placements',
+    
+    card2_title = 'Practical Training',
+    card2_desc = 'Rigorous moot court and ADR simulations built to mirror real courtroom stakes.',
+    card2_link = '/campus/facilities/moot-court',
+    
+    card3_title = 'Legal Aid Clinic',
+    card3_desc = 'An in-house clinic where students deliver real defense to underserved communities.',
+    card3_link = '/campus/facilities/legal-aid-clinic',
+    
+    card4_title = 'Integrated Civil Services',
+    card4_desc = 'A dedicated partnership with Sharat Chandra Academy, shaping future judicial officers.',
+    card4_link = '/campus/facilities/integrated-coaching'
+  } = advContent;
+
+  const bgImage = IMAGE_MAP[hero_img] || ladyJusticeImg;
+
   const containerVars = {
     hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { staggerChildren: 0.1, delayChildren: 0.3 }
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.12, delayChildren: 0.25 }
     }
   };
 
   const itemVars = {
-    hidden: { opacity: 0, x: 50 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" } }
+    hidden: { opacity: 0, x: 40 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
   };
 
   const advantages = [
     {
       id: 'adv-1',
-      icon: <Briefcase size={22} />,
-      title: "Industry Integration",
-      desc: "Forged alliances with top-tier law firms and judicial bodies, ensuring continuous court exposure and elite clerkship pipelines.",
-      link: "/campus/facilities/corporate-placements"
+      icon: <Briefcase size={20} />,
+      title: card1_title,
+      desc: card1_desc,
+      link: card1_link
     },
     {
       id: 'adv-2',
-      icon: <Gavel size={22} />,
-      title: "Practical Training",
-      desc: "Immersion in advanced Moot Court warfare and Alternative Dispute Resolution (ADR) simulations.",
-      link: "/campus/facilities/moot-court"
+      icon: <Gavel size={20} />,
+      title: card2_title,
+      desc: card2_desc,
+      link: card2_link
     },
     {
       id: 'adv-3',
-      icon: <Shield size={22} />,
-      title: "Legal Aid Clinic",
-      desc: "Operating a dedicated in-house clinic, deploying students to defend underserved communities.",
-      link: "/campus/facilities/legal-aid-clinic"
+      icon: <Shield size={20} />,
+      title: card3_title,
+      desc: card3_desc,
+      link: card3_link
     },
     {
       id: 'adv-4',
-      icon: <Landmark size={22} />,
-      title: "Integrated Civil Services",
-      desc: "Exclusive partnership with Sharat Chandra Academy to forge the next generation of judicial officers.",
-      link: "/campus/facilities/integrated-coaching"
+      icon: <Landmark size={20} />,
+      title: card4_title,
+      desc: card4_desc,
+      link: card4_link
     }
   ];
 
+  const clampStyle = {
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+  };
+
   const AdvantageCard = ({ item }) => (
-    <Link to={item.link} className="block group w-full h-full">
-      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl rounded-2xl p-6 md:p-8 h-full flex flex-col items-start transition-all duration-500 hover:border-[var(--primary-color)] hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-[var(--primary-glow)] rounded-full blur-3xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"></div>
-        
-        <div className="w-12 h-12 rounded-xl bg-[var(--primary-glow)] text-[var(--primary-color)] flex items-center justify-center mb-6 border border-[var(--primary-color)]/30 group-hover:scale-110 transition-transform duration-500 shadow-sm relative z-10">
-          {React.cloneElement(item.icon, { size: 24 })}
+    <Link to={item.link} className="block group h-full">
+      <BorderGlow
+        className="h-full"
+        backgroundColor="transparent"
+        borderRadius={18}
+        glowColor="42 55% 58%"
+        glowIntensity={0.85}
+        edgeSensitivity={35}
+        coneSpread={22}
+        fillOpacity={0}
+        colors={['#D4AF37', '#B8925A', '#8B6914']}
+      >
+        <div className="p-5 md:p-6 h-full min-h-[220px] md:min-h-full flex flex-col bg-white/5 dark:bg-black/20 backdrop-blur-xl border border-white/10 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[18px]">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-11 h-11 shrink-0 rounded-xl bg-[var(--card-bg)] text-[var(--primary-color)] flex items-center justify-center border border-[var(--primary-color)]/30 group-hover:bg-[var(--primary-color)] group-hover:text-[#000] group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 shadow-[0_0_15px_var(--primary-glow)]">
+              {item.icon}
+            </div>
+            <h4
+              className="text-[17px] md:text-lg font-bold text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors leading-snug"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {item.title}
+            </h4>
+          </div>
+          <p className="text-[13px] md:text-[14px] text-[var(--text-muted)] leading-relaxed" style={clampStyle}>
+            {item.desc}
+          </p>
         </div>
-        <div className="relative z-10 flex flex-col flex-grow">
-          <h4 className="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>{item.title}</h4>
-          <p className="text-sm md:text-base text-[var(--text-muted)] leading-relaxed">{item.desc}</p>
-        </div>
-      </div>
+      </BorderGlow>
     </Link>
   );
 
   return (
-    <section className="slide w-full relative flex items-center justify-center py-10 md:py-16" ref={ref} {...props}>
-      <div className="container w-full h-full md:h-[60vh] flex flex-col md:flex-row gap-8 md:gap-0 mt-8 md:mt-0">
-        
+    <section className="slide w-full relative flex flex-col items-center justify-center pt-[90px] pb-4 md:pt-[100px] md:pb-6" ref={ref} {...props}>
+      <div className="container w-full max-w-[1300px] mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-12 px-4 md:px-0">
+
         {/* Left Side: Visual */}
-        <div className="w-full md:w-1/2 h-[30vh] md:h-full relative overflow-hidden md:rounded-r-3xl md:shadow-2xl">
-          <motion.div 
-            initial={{ scale: 1.1 }}
+        <div className="w-full md:w-1/2 h-[35vh] md:h-[65vh] max-h-[650px] relative overflow-hidden rounded-3xl shadow-2xl shrink-0">
+          <motion.div
+            initial={{ scale: 1.08 }}
             whileInView={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="absolute inset-0 bg-cover bg-center origin-center" 
-            style={{ backgroundImage: `url(${ladyJusticeImg})` }}
+            transition={{ duration: 1.4, ease: "easeOut" }}
+            className="absolute inset-0 bg-cover bg-[center_top] origin-[center_top]"
+            style={{ backgroundImage: `url(${bgImage})` }}
           >
-            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
-            
-            <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-10 md:p-16 z-10">
-              <motion.h2 
-                initial={{ opacity: 0, y: 30 }}
+            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black/90 via-black/50 to-black/10"></div>
+
+            <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 z-10">
+              <span className="uppercase tracking-[0.25em] text-[10px] md:text-xs text-[var(--primary-color)]/80 font-semibold mb-3">
+                {tagline}
+              </span>
+              <motion.h2
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-                className="text-4xl md:text-6xl font-bold mb-6 text-white" 
-                style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.1 }}
+                transition={{ duration: 0.7 }}
+                className="text-3xl md:text-[2.75rem] font-bold mb-2 text-white"
+                style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.08 }}
               >
-                The Prudentia <br/>
-                <span className="text-[var(--primary-color)] drop-shadow-[0_0_20px_var(--primary-glow)]">Advantage.</span>
+                {heading1}
+                <br />
+                <span className="text-[var(--primary-color)] drop-shadow-[0_0_18px_var(--primary-glow)]">{heading2}</span>
               </motion.h2>
+              <div className="h-px w-14 bg-[var(--primary-color)]/60 my-4"></div>
               <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.4 }}
+                transition={{ duration: 0.7, delay: 0.35 }}
               >
-                <Link to="/campus/facilities" className="inline-block px-8 py-4 bg-[var(--primary-color)] text-black font-black uppercase tracking-widest text-sm rounded-full shadow-[0_0_20px_var(--primary-glow)] hover:scale-105 hover:shadow-[0_0_30px_var(--primary-glow)] transition-all">
-                  Explore All Facilities
+                <Link
+                  to={btn_link}
+                  className="inline-block px-6 py-3 bg-[var(--primary-color)] text-[#000000] !important font-bold uppercase tracking-widest text-xs rounded-full shadow-[0_0_16px_var(--primary-glow)] hover:scale-105 hover:shadow-[0_0_24px_var(--primary-glow)] transition-all"
+                  style={{ color: '#000000' }}
+                >
+                  {btn_text}
                 </Link>
               </motion.div>
             </div>
@@ -110,28 +188,28 @@ const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
         </div>
 
         {/* Right Side: Grid of Advantages */}
-        <div className="w-full md:w-1/2 h-full flex items-center justify-center px-4 md:px-12 z-10">
+        <div className="w-full md:w-1/2 flex items-center justify-center z-10">
           {windowWidth <= 768 ? (
-            <div className="w-full mb-10">
-              <Carousel 
+            <div className="w-full flex justify-center">
+              <Carousel
                 items={advantages.map(adv => ({
                   id: adv.id,
                   customRender: () => <AdvantageCard item={adv} />
                 }))}
-                baseWidth={windowWidth - 40}
-                autoplay={true}
-                loop={true}
+                baseWidth={windowWidth - 80}
+                autoplay={false}
+                loop={false}
               />
             </div>
           ) : (
-            <motion.div 
+            <motion.div
               variants={containerVars}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-xl"
+              viewport={{ once: true, amount: 0.2 }}
+              className="grid grid-cols-2 gap-4 md:gap-6 w-full"
             >
-              {advantages.map((adv, idx) => (
+              {advantages.map((adv) => (
                 <motion.div key={adv.id} variants={itemVars} className="h-full">
                   <AdvantageCard item={adv} />
                 </motion.div>

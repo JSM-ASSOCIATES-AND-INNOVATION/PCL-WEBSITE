@@ -3,6 +3,20 @@
   height: 100%;
   overflow: hidden;
   cursor: grab;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
 }
 
 .circular-gallery:active {
@@ -10,6 +24,6 @@
 }
 
 .circular-gallery:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--primary-color, #fff);
   outline-offset: 4px;
 }

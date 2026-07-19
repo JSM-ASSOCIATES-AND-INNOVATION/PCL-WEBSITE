@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { sendSystemEmail } from '../../../LIB/EmailService';
-import { supabase } from '../../../LIB/supabase/supabaseClient';
+import { sendSystemEmail } from '../../../lib/EmailService';
+import { supabase } from '../../../lib/supabase/supabaseClient';
 import { theme } from "../../../theme";
 import { createClient } from '@supabase/supabase-js';
 import AdminStudentCVModal from './AdminStudentCVModal';
@@ -17,7 +17,7 @@ const provisionClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
 
 const CACHE_KEY = 'admin_user_directory';
 
-export default function UserManagement() {
+export default function UserManagement({ isHubView = false }) {
     const [activeTab, setActiveTab] = useState("students"); // 'students', 'faculty', 'disciplinary'
     const [showProvisionModal, setShowProvisionModal] = useState(false);
     const [isProvisioning, setIsProvisioning] = useState(false);
@@ -228,29 +228,25 @@ export default function UserManagement() {
                 } catch (emailErr) {
                     console.error("EmailJS Error:", emailErr);
                     setProvisionLogs(prev => [...prev, `[${generatedId}] WARNING: ${emailErr.message}`]);
+                    log(`[${generatedId}] WARNING: Identity created, but EmailJS dispatch failed. Manual distribution required. PW: ${generatedPassword}`);
                 }
-
             } catch (err) {
                 console.error(err);
-                setProvisionLogs(prev => [...prev, `ERROR processing ${email}: ${err.message}`]);
+                setProvisionLogs(prev => [...prev, `[ERROR] Pipeline aborted for ${email}: ${err.message}`]);
             }
         }
-
+        
+        log("--- Mass provisioning pipeline completed successfully ---");
+        
         setIsProvisioning(false);
         setProvisionSuccess(true);
-        fetchDirectory(); // Refresh background silently
+        fetchDirectory();
     };
 
-    const closeProvisionWizard = () => {
-        setShowProvisionModal(false);
-        setTimeout(() => setProvisionSuccess(false), 300);
-    };
+    // handleResetPassword is defined above
 
-    // --- SORTING & FILTERING ---
     const getSortedFilteredList = () => {
         let list = usersData[activeTab] || [];
-
-        // Search
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             list = list.filter(u => 
@@ -259,8 +255,6 @@ export default function UserManagement() {
                 u.email?.toLowerCase().includes(query)
             );
         }
-
-        // Sort
         list.sort((a, b) => {
             switch (sortBy) {
                 case 'name_asc': return (a.name || '').localeCompare(b.name || '');
@@ -271,57 +265,53 @@ export default function UserManagement() {
                 default: return 0;
             }
         });
-
         return list;
     };
 
     const currentList = getSortedFilteredList();
 
-    // --- QUESTIONNAIRE OVERRIDE ---
-    const handleSaveQuestionnaire = async () => {
-        try {
-            const { error } = await supabase.from('profiles').update({ questionnaire_data: qFormData }).eq('id', selectedQuestionnaireUser.db_id);
-            if (error) throw error;
-
-            const updatedUsers = { ...usersData };
-            const index = updatedUsers.students.findIndex(s => s.db_id === selectedQuestionnaireUser.db_id);
-            if (index !== -1) updatedUsers.students[index].questionnaire_data = qFormData;
-            setUsersData(updatedUsers);
-            setSelectedQuestionnaireUser(null);
-        } catch (error) {
-            window.erpDialog.alert("Failed to save data: " + error.message);
-        }
-    };
-
-
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated">
+        <div className={`w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated ${isHubView ? 'bg-transparent text-themeText font-sans' : ''}`}>
 
             {/* 1. MASTER HEADER */}
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText flex flex-col md:flex-row justify-between items-start lg:items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themeElevated rounded-full lg: -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 lg:w-64 lg:h-64 bg-purple-500/10 rounded-full lg: translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
-
-                <div className="relative z-10 w-full lg:w-auto flex-1">
-                    <div className="flex items-center gap-4 lg:gap-5 mb-3 lg:mb-2">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel lg:rounded-themePanel bg-themeElevated border-theme border-themeBorderStrong flex items-center justify-center shrink-0">
-                            <i className="fa-solid fa-users-gear text-themeAccent text-2xl lg:text-3xl"></i>
+            {!isHubView && (
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+                        <div className="flex items-center gap-4 lg:gap-5">
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-users-gear text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            </div>
+                            <div>
+                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>User Access Management</h1>
+                                <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Provision accounts, manage roles, and enforce disciplinary actions.</p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText mb-1`}>Identity & Access</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Manage accounts, access, and provision users.</p>
+                        
+                        <div className="flex gap-3 w-full lg:w-auto">
+                            <button
+                                onClick={() => setShowProvisionModal(true)}
+                                className="flex-1 lg:flex-none px-6 py-3 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/50"
+                            >
+                                <i className="fa-solid fa-user-plus text-base"></i> Rapid Provisioning
+                            </button>
                         </div>
                     </div>
                 </div>
-
-                <button
-                    onClick={openProvisionWizard}
-                    className="relative z-10 w-full md:w-auto shrink-0 bg-themeAccent hover:bg-themeAccentMuted text-themeText px-5 lg:px-6 py-3.5 lg:py-4 rounded-themePanel lg:rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all flex justify-center items-center gap-2 active:scale-[0.98] shadow-xl group overflow-hidden"
-                >
-                    <div className="absolute inset-0 w-full h-full -translate-x-full group-hover:"></div>
-                    <i className="fa-solid fa-user-plus text-sm lg:text-base"></i> Provision Users
-                </button>
-            </div>
+            )}
+            
+            {/* FAB FOR HUB VIEW */}
+            {isHubView && (
+                <div className="flex justify-end mb-4">
+                    <button
+                        onClick={() => setShowProvisionModal(true)}
+                        className="bg-themeAccent hover:bg-themeAccentMuted text-white px-6 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex justify-center items-center gap-2 border border-themeAccent active:scale-[0.98]"
+                    >
+                        <i className="fa-solid fa-user-plus text-base"></i> Rapid Provisioning
+                    </button>
+                </div>
+            )}
 
             {/* 2. CONTROLS & DIRECTORY */}
             <div className="flex flex-col gap-4 lg:gap-6 animate-fade-in">

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
+import { supabase } from "../../../lib/supabase/supabaseClient";
 
 export default function Leave() {
     const { userSession } = useERP();
@@ -114,6 +114,19 @@ export default function Leave() {
 
             if (dbError) throw dbError;
 
+            // Notify Admin
+            const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+            await supabase.from('notices').insert([{
+                notice_id: noticeId,
+                title: 'New Leave Request',
+                category: 'System Alert',
+                target_audience: 'admin',
+                priority: 'normal',
+                content: `A new leave request (${leaveType}) has been submitted for ${diffDays} days.`,
+                author_name: userSession?.name || 'System',
+                author_id: studentId
+            }]);
+
             setStatusMessage({ type: "success", text: "Leave application routed to administration." });
             fetchLeaveHistory();
 
@@ -147,7 +160,7 @@ export default function Leave() {
 
             {/* 1. Header & Overview Banner */}
             <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText flex flex-col lg:flex-row justify-between items-center gap-6">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-themeElevated rounded-full translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
 
                 <div className="relative z-10 text-center lg:text-left flex-1">

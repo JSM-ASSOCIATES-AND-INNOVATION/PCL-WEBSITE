@@ -5,71 +5,39 @@ import { useERP } from "../../context/ErpContext";
 
 const STUDENT_NAV_GROUPS = [
     {
-        category: "Main",
+        category: "Central Hubs",
         links: [
             { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-house" },
-            { id: "notices", label: "Notice Board", icon: "fa-solid fa-thumbtack" },
-            { id: "timetable", label: "My Timetable", icon: "fa-solid fa-calendar-days" }
-        ]
-    },
-    {
-        category: "Academics",
-        links: [
-            { id: "attendance", label: "Attendance", icon: "fa-solid fa-user-check" },
-            { id: "coursevault", label: "Course Vault", icon: "fa-solid fa-book-open" },
-            { id: "assignments", label: "Assignments", icon: "fa-solid fa-pen-nib" },
-            { id: "examinations", label: "Examinations", icon: "fa-solid fa-file-contract" }
-        ]
-    },
-    {
-        category: "Beyond Academics",
-        links: [
-            { id: "mootcourt", label: "Moot Court", icon: "fa-solid fa-scale-balanced" },
-            { id: "internships", label: "Internships & NOC", icon: "fa-solid fa-briefcase" },
-            { id: "achievements", label: "Achievements", icon: "fa-solid fa-trophy" },
-            { id: "cvbuilder", label: "CV Builder", icon: "fa-solid fa-file-pdf" }
-        ]
-    },
-    {
-        category: "Support & Services",
-        links: [
-            { id: "mentorship", label: "Mentorship", icon: "fa-solid fa-people-arrows" },
-            { id: "leave", label: "Leave Requests", icon: "fa-solid fa-plane-departure" },
-            { id: "fees", label: "Fee Ledger", icon: "fa-solid fa-indian-rupee-sign" },
-            { id: "helpdesk", label: "IT Helpdesk", icon: "fa-solid fa-headset" }
+            { id: "academic_center", label: "Academic Center", icon: "fa-solid fa-graduation-cap" },
+            { id: "career_center", label: "Career Center", icon: "fa-solid fa-briefcase" },
+            { id: "support_center", label: "Support Center", icon: "fa-solid fa-headset" }
         ]
     }
 ];
 
 const FACULTY_NAV_GROUPS = [
     {
-        category: "Overview",
+        category: "Core Hub",
         links: [
             { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-house" },
+            { id: "materials", label: "My Courses", icon: "fa-brands fa-google-drive" },
+            { id: "timetable", label: "My Schedule", icon: "fa-solid fa-calendar-days" },
+            { id: "attendance", label: "Attendance Tracker", icon: "fa-solid fa-clipboard-user" },
+            { id: "roster", label: "Class Roster", icon: "fa-solid fa-users-viewfinder" },
             { id: "notices", label: "Notice Board", icon: "fa-solid fa-thumbtack" },
         ]
     },
     {
-        category: "Teaching & Grading",
+        category: "Advising & Discipline",
         links: [
-            { id: "timetable", label: "My Schedule", icon: "fa-solid fa-calendar-days" },
-            { id: "roster", label: "Class Roster", icon: "fa-solid fa-users" },
-            { id: "materials", label: "Course Cloud", icon: "fa-brands fa-google-drive" },
-            { id: "assignments", label: "Assignment Engine", icon: "fa-solid fa-file-signature" },
-            { id: "marks", label: "Marks Ledger", icon: "fa-solid fa-lock" },
-        ]
-    },
-    {
-        category: "Advising & Approvals",
-        links: [
-            { id: "mentorship", label: "Mentorship", icon: "fa-solid fa-people-arrows" },
-            { id: "approvals", label: "Student Approvals", icon: "fa-solid fa-clipboard-check" },
+            { id: "mentorship", label: "Mentorship Hub", icon: "fa-solid fa-people-arrows" },
+            { id: "clinics", label: "Clinics & Societies", icon: "fa-solid fa-gavel" }
         ]
     },
     {
         category: "Administration",
         links: [
-            { id: "facultyleave", label: "Time Off", icon: "fa-solid fa-mug-hot" },
+            { id: "facultyleave", label: "Time Off & Leaves", icon: "fa-solid fa-mug-hot" },
             { id: "helpdesk", label: "IT Helpdesk", icon: "fa-solid fa-headset" }
         ]
     }
@@ -77,35 +45,26 @@ const FACULTY_NAV_GROUPS = [
 
 const ADMIN_NAV_GROUPS = [
     {
-        category: "Command Center",
+        category: "Master Control",
         links: [
             { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-server" },
-            { id: "users", label: "Users", icon: "fa-solid fa-users-gear" },
-            { id: "notices", label: "Notices", icon: "fa-solid fa-satellite-dish" },
+            { id: "operations", label: "Operations HQ", icon: "fa-solid fa-gears" },
+            { id: "academic", label: "Academic Hub", icon: "fa-solid fa-graduation-cap" },
+            { id: "clinics", label: "Clinics Hub", icon: "fa-solid fa-scale-balanced" },
+            { id: "website", label: "Website Hub", icon: "fa-solid fa-globe" }
         ]
     },
     {
-        category: "Academics",
+        category: "Core Integrations",
         links: [
-            { id: "classes", label: "Classes", icon: "fa-solid fa-chalkboard-user" },
-            { id: "schedule", label: "Schedule", icon: "fa-solid fa-calendar-days" },
-            { id: "assignments", label: "Assignments", icon: "fa-solid fa-file-signature" },
+            { id: "finance", label: "Finance Ledger", icon: "fa-solid fa-indian-rupee-sign" }
         ]
     },
     {
-        category: "Programs",
+        category: "System",
         links: [
-            { id: "mootcourt", label: "Moot Court", icon: "fa-solid fa-scale-balanced" },
-            { id: "placements", label: "Placements", icon: "fa-solid fa-briefcase" },
-            { id: "legalaid", label: "Legal Aid", icon: "fa-solid fa-hand-holding-hand" }
-        ]
-    },
-    {
-        category: "Administration",
-        links: [
-            { id: "fees", label: "Fees", icon: "fa-solid fa-indian-rupee-sign" },
-            { id: "leaves", label: "Leaves", icon: "fa-solid fa-mug-hot" },
-            { id: "settings", label: "Settings", icon: "fa-solid fa-gear" },
+            { id: "sql", label: "SQL Studio", icon: "fa-solid fa-database" },
+            { id: "credentials", label: "Security", icon: "fa-solid fa-fingerprint" }
         ]
     }
 ];
@@ -120,31 +79,28 @@ export default function MobileNav({ userSession, activeTab, setActiveTab, onLogo
     let accentColor = "text-themeAccent";
     
     if (role === 'admin') {
-        navGroups = ADMIN_NAV_GROUPS.map(group => ({
-            ...group,
-            links: group.links.filter(l => !['dashboard', 'users', 'notices'].includes(l.id))
-        })).filter(g => g.links.length > 0);
-
+        navGroups = ADMIN_NAV_GROUPS;
         bottomNavLinks = [
-            { id: "dashboard", icon: "fa-solid fa-server", label: "Home" },
-            { id: "users", icon: "fa-solid fa-users-gear", label: "Users" },
-            { id: "notices", icon: "fa-solid fa-satellite-dish", label: "Notices" },
+            { id: "dashboard", label: "Home", icon: "fa-solid fa-server" },
+            { id: "operations", label: "Operations", icon: "fa-solid fa-gears" },
+            { id: "academic", label: "Academic", icon: "fa-solid fa-graduation-cap" },
+            { id: "website", label: "Website", icon: "fa-solid fa-globe" },
         ];
     } else if (role === 'faculty') {
         navGroups = FACULTY_NAV_GROUPS;
         accentColor = "text-blue-500";
         bottomNavLinks = [
             { id: "dashboard", label: "Home", icon: "fa-solid fa-house" },
-            { id: "roster", label: "Roster", icon: "fa-solid fa-users" },
-            { id: "assignments", label: "Tasks", icon: "fa-solid fa-file-signature" },
+            { id: "materials", label: "Courses", icon: "fa-brands fa-google-drive" },
+            { id: "mentorship", label: "Mentorship", icon: "fa-solid fa-people-arrows" },
             { id: "timetable", label: "Schedule", icon: "fa-solid fa-calendar-days" },
         ];
     } else {
         bottomNavLinks = [
             { id: "dashboard", label: "Home", icon: "fa-solid fa-house" },
-            { id: "coursevault", label: "Vault", icon: "fa-solid fa-book-open" },
-            { id: "assignments", label: "Tasks", icon: "fa-solid fa-clipboard-list" },
-            { id: "timetable", label: "Schedule", icon: "fa-solid fa-calendar-days" },
+            { id: "academic_center", label: "Academics", icon: "fa-solid fa-graduation-cap" },
+            { id: "career_center", label: "Career", icon: "fa-solid fa-briefcase" },
+            { id: "support_center", label: "Support", icon: "fa-solid fa-headset" },
         ];
     }
 
@@ -155,40 +111,44 @@ export default function MobileNav({ userSession, activeTab, setActiveTab, onLogo
 
     return (
         <>
-            {/* BOTTOM NAVIGATION BAR - Standard Full Width Glass Dock */}
-            <nav className="flex lg:hidden fixed bottom-0 left-0 w-full bg-themeElevated/90 backdrop-blur-2xl border-t border-themeBorderStrong z-40 pb-[env(safe-area-inset-bottom)] shadow-[0_-10px_40px_rgba(0,0,0,0.15)]">
-                <div className="flex w-full justify-around items-center h-[72px] px-2">
-                    {bottomNavLinks.map(link => {
-                        const isActive = activeTab === link.id && !mobileMenuOpen;
-                        return (
-                            <button 
-                                key={link.id}
-                                onClick={() => handleTabSwitch(link.id)}
-                                className={`flex flex-col items-center justify-center flex-1 h-full relative transition-all duration-300`}
-                            >
-                                <div className={`w-8 h-8 flex items-center justify-center rounded-xl mb-0.5 transition-all duration-300 ${isActive ? `${role === 'admin' ? 'text-indigo-500 bg-indigo-500/10' : (role === 'faculty' ? 'text-blue-500 bg-blue-500/10' : 'text-amber-500 bg-amber-500/10')}` : 'text-themeTextSec opacity-70 hover:opacity-100 hover:bg-themePanel'}`}>
-                                    <i className={`${link.icon} text-lg`}></i>
-                                </div>
-                                <span className={`text-[9px] font-bold tracking-tight transition-colors ${isActive ? (role === 'admin' ? 'text-indigo-500' : (role === 'faculty' ? 'text-blue-500' : 'text-amber-500')) : 'text-themeTextSec opacity-70'}`}>
-                                    {link.label}
-                                </span>
-                            </button>
-                        )
-                    })}
-                    
-                    {/* Mobile Menu Toggle Button */}
-                    <button 
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className={`flex flex-col items-center justify-center flex-1 h-full relative transition-all duration-300`}
-                    >
-                        <div className={`w-8 h-8 flex items-center justify-center rounded-xl mb-0.5 transition-all duration-300 ${mobileMenuOpen ? `${role === 'admin' ? 'text-indigo-500 bg-indigo-500/10' : (role === 'faculty' ? 'text-blue-500 bg-blue-500/10' : 'text-amber-500 bg-amber-500/10')}` : 'text-themeTextSec opacity-70 hover:opacity-100 hover:bg-themePanel'}`}>
-                            <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
-                        </div>
-                        <span className={`text-[9px] font-bold tracking-tight transition-colors ${mobileMenuOpen ? (role === 'admin' ? 'text-indigo-500' : (role === 'faculty' ? 'text-blue-500' : 'text-amber-500')) : 'text-themeTextSec opacity-70'}`}>
-                            Menu
-                        </span>
-                    </button>
-                </div>
+            {/* BOTTOM NAVIGATION BAR */}
+            <nav className="flex lg:hidden fixed bottom-0 left-0 w-full bg-themeApp/95 backdrop-blur-md border-t border-themeBorder z-40 px-2 py-2 pb-safe items-center justify-around shadow-[0_-5px_20px_rgba(0,0,0,0.3)]">
+                {bottomNavLinks.map(link => {
+                    const isActive = activeTab === link.id && !mobileMenuOpen;
+                    return (
+                        <button 
+                            key={link.id}
+                            onClick={() => handleTabSwitch(link.id)}
+                            className={`flex flex-col items-center justify-center w-16 h-14 relative transition-all duration-300 ${isActive ? '-translate-y-1' : ''}`}
+                        >
+                            <div className={`w-9 h-9 flex items-center justify-center rounded-themePanel mb-1 transition-all duration-300 ${isActive ? `bg-themeElevated ${accentColor} border border-themeBorderStrong shadow-themeElevated` : 'text-themeTextSec opacity-70'}`}>
+                                <i className={`${link.icon} text-lg`}></i>
+                            </div>
+                            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${isActive ? accentColor : 'text-themeTextSec opacity-70'}`}>
+                                {link.label}
+                            </span>
+                            {isActive && (
+                                <div className={`absolute -bottom-1 w-1.5 h-1.5 rounded-full ${role === 'faculty' ? 'bg-blue-500' : 'bg-themeAccent'}`}></div>
+                            )}
+                        </button>
+                    )
+                })}
+                
+                {/* Mobile Menu Toggle Button */}
+                <button 
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className={`flex flex-col items-center justify-center w-16 h-14 relative transition-all duration-300 ${mobileMenuOpen ? '-translate-y-1' : ''}`}
+                >
+                    <div className={`w-9 h-9 flex items-center justify-center rounded-themePanel mb-1 transition-all duration-300 ${mobileMenuOpen ? `bg-themeElevated ${accentColor} border border-themeBorderStrong shadow-themeElevated` : 'text-themeTextSec opacity-70'}`}>
+                        <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
+                    </div>
+                    <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${mobileMenuOpen ? accentColor : 'text-themeTextSec opacity-70'}`}>
+                        Menu
+                    </span>
+                    {mobileMenuOpen && (
+                        <div className={`absolute -bottom-1 w-1.5 h-1.5 rounded-full ${role === 'faculty' ? 'bg-blue-500' : 'bg-themeAccent'}`}></div>
+                    )}
+                </button>
             </nav>
 
             {/* BOTTOM SHEET DRAWER MENU */}

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Hero from './HERO/HERO';
-import Philosophy from './PHILOSOPHY/PHILOSOPHY';
-import Academics from './ACADEMICS/ACADEMICS';
-import Advantages from './ADVANTAGES/ADVANTAGES';
+import Hero from './HERO/Hero';
+import Philosophy from './PHILOSOPHY/Philosophy';
+import Academics from './ACADEMICS/Academics';
+import Advantages from './ADVANTAGES/Advantages';
 import EventsPreview from './EVENTS/EventsPreview';
 import HomeContact from './CONTACT/HomeContact';
 

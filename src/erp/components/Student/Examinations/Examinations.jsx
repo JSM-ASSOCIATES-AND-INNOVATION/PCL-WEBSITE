@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
-import { supabase } from "../../../LIB/supabase/supabaseClient";
-import { generateCalendarICS } from "../../../LIB/calendarGenerator";
+import { supabase } from "../../../lib/supabase/supabaseClient";
+import { generateCalendarICS } from "../../../lib/calendarGenerator";
 
 // --- CACHE HELPERS ---
 const CK = { exams: 'exam_upcoming', marks: 'exam_marks', grades: 'exam_grades', analytics: 'exam_analytics' };
@@ -175,7 +175,7 @@ export default function Examinations() {
 
                     {/* Hall Ticket Banner */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-themeElevated p-6 lg:p-8 rounded-themePanel border-theme border-themeBorder text-themeText gap-6 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themePanel/30 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+                        <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
 
                         <div className="flex items-center gap-4 lg:gap-5 relative z-10">
                             <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel border-theme border-themeBorderStrong bg-themePanel flex items-center justify-center shrink-0">
@@ -327,7 +327,7 @@ export default function Examinations() {
                         <>
                             {/* Analytics Banner */}
                             <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText">
-                                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-themePanel/20 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
 
                                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 lg:gap-8 relative z-10">
                                     <div>

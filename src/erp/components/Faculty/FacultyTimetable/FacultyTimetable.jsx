@@ -1,359 +1,423 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { theme } from "../../../theme";
+import React, { useState, useEffect } from "react";
 import { useERP } from "../../../context/ErpContext";
+import { supabase } from "../../../lib/supabase/supabaseClient";
+import { theme } from "../../../theme";
+import WeeklyChart from "../../shared/WeeklyChart";
+import SubjectFlipCard from "../../shared/SubjectFlipCard";
 
-const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const START_HOUR = 8; // 8 AM
-const END_HOUR = 18; // 6 PM
-const HOUR_HEIGHT = 90; // px per hour
+const SUBJECT_COLORS = {
+    blue: { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', solid: 'bg-blue-500' },
+    emerald: { bg: 'bg-emerald-500/10', text: 'text-emerald-500', border: 'border-emerald-500/20', solid: 'bg-emerald-500' },
+    purple: { bg: 'bg-purple-500/10', text: 'text-purple-500', border: 'border-purple-500/20', solid: 'bg-purple-500' },
+    orange: { bg: 'bg-orange-500/10', text: 'text-orange-500', border: 'border-orange-500/20', solid: 'bg-orange-500' },
+    rose: { bg: 'bg-rose-500/10', text: 'text-rose-500', border: 'border-rose-500/20', solid: 'bg-rose-500' },
+    amber: { bg: 'bg-amber-500/10', text: 'text-amber-500', border: 'border-amber-500/20', solid: 'bg-amber-500' },
+    gray: { bg: 'bg-themeElevated', text: 'text-themeTextSec', border: 'border-themeBorder', solid: 'bg-themeBorderStrong' }
+};
 
-export default function FacultyTimetable({ setActiveTab }) {
-    const { getFacultySlots } = useERP();
-
-    const myClasses = getFacultySlots(); // Data from global context, always available
-
-    const [activeDay, setActiveDay] = useState("Monday");
+export default function FacultyTimetable() {
+    const { userSession } = useERP();
+    const [activeTab, setActiveTab] = useState('timeline');
+    const [selectedLecture, setSelectedLecture] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [viewMode, setViewMode] = useState("week"); // 'week' | 'day'
+    const [requestType, setRequestType] = useState('Extra Class');
+
+    const [schedule, setSchedule] = useState(() => {
+        const cached = sessionStorage.getItem(`fac_schedule_${userSession?.id}`);
+        return cached ? JSON.parse(cached) : [];
+    });
+    const [requests, setRequests] = useState(() => {
+        const cached = sessionStorage.getItem(`fac_scheduleReqs_${userSession?.id}`);
+        return cached ? JSON.parse(cached) : [];
+    });
+    const [mySubjects, setMySubjects] = useState(() => {
+        const cached = sessionStorage.getItem(`fac_scheduleSubs_${userSession?.id}`);
+        return cached ? JSON.parse(cached) : [];
+    });
+
+    // Form State for Request
+    const [reqSubjectId, setReqSubjectId] = useState('');
+    const [reqScheduleId, setReqScheduleId] = useState('');
+    const [reqDate, setReqDate] = useState('');
+    const [reqNewDay, setReqNewDay] = useState('Monday');
+    const [reqStartTime, setReqStartTime] = useState('');
+    const [reqEndTime, setReqEndTime] = useState('');
+    const [reqReason, setReqReason] = useState('');
+
+    const fetchData = async () => {
+        if (!userSession?.id) return;
+        try {
+            // 1. Fetch Schedule
+            const { data: schedData, error: schedErr } = await supabase
+                .from('class_schedule')
+                .select(`
+                    id, batch, day_of_week, start_time, end_time,
+                    subjects!inner(id, name, theme_color, faculty_id),
+                    room:academic_classrooms(name)
+                `)
+                .eq('subjects.faculty_id', userSession.id);
+
+            if (schedErr) throw schedErr;
+
+            const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 0: 'Sunday' };
+            const nowTime = new Date();
+            const currentMins = nowTime.getHours() * 60 + nowTime.getMinutes();
+            
+            const formattedSched = (schedData || []).map(s => {
+                const sTime = s.start_time.slice(0, 5);
+                const eTime = s.end_time.slice(0, 5);
+                
+                const sMins = parseInt(sTime.split(':')[0]) * 60 + parseInt(sTime.split(':')[1]);
+                const eMins = parseInt(eTime.split(':')[0]) * 60 + parseInt(eTime.split(':')[1]);
+                
+                let status = 'upcoming';
+                if (currentMins >= eMins) status = 'past';
+                else if (currentMins >= sMins && currentMins < eMins) status = 'current';
+
+                return {
+                    id: s.id,
+                    day: daysMap[s.day_of_week],
+                    time: sTime,
+                    endTime: eTime,
+                    subject: s.subjects?.name,
+                    subjectId: s.subjects?.id,
+                    color: s.subjects?.theme_color,
+                    room: s.room?.name,
+                    semester: s.batch,
+                    status
+                };
+            });
+            formattedSched.sort((a, b) => parseInt(a.time.replace(':', '')) - parseInt(b.time.replace(':', '')));
+            setSchedule(formattedSched);
+            sessionStorage.setItem(`fac_schedule_${userSession.id}`, JSON.stringify(formattedSched));
+
+            // 2. Fetch Requests
+            const { data: reqData } = await supabase
+                .from('timetable_requests')
+                .select(`*, subject:subjects(name)`)
+                .eq('faculty_id', userSession.id)
+                .order('created_at', { ascending: false });
+            if (reqData) {
+                setRequests(reqData);
+                sessionStorage.setItem(`fac_scheduleReqs_${userSession.id}`, JSON.stringify(reqData));
+            }
+
+            // 3. Fetch Subjects
+            const { data: subData } = await supabase.from('subjects').select('*').eq('faculty_id', userSession.id);
+            if (subData) {
+                setMySubjects(subData);
+                sessionStorage.setItem(`fac_scheduleSubs_${userSession.id}`, JSON.stringify(subData));
+                if (subData.length > 0 && !reqSubjectId) setReqSubjectId(subData[0].id);
+            }
+
+        } catch (err) {
+            console.error("Failed to fetch faculty timetable data:", err);
+        }
+    };
 
     useEffect(() => {
-        const today = new Date().toLocaleDateString("en-US", { weekday: 'long' });
-        if (days.includes(today)) setActiveDay(today);
+        fetchData();
+    }, [userSession?.id]);
 
-        const handleResize = () => {
-            if (window.innerWidth < 1024) {
-                setViewMode("day");
-            } else {
-                setViewMode("week");
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-
-        const timer = setInterval(() => setCurrentTime(new Date()), 60000); // Update every minute
-        return () => {
-            clearInterval(timer);
-            window.removeEventListener("resize", handleResize);
-        }
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+        return () => clearInterval(timer);
     }, []);
 
-    // --- TIME & LOGIC HELPERS ---
+    const submitRequest = async (e) => {
+        e.preventDefault();
+        try {
+            let finalReason = reqReason;
+            if (requestType === 'Permanent Shift') {
+                finalReason = `Shift to ${reqNewDay}. ` + reqReason;
+            }
 
-    const parseDbTime = (t) => {
-        if (!t) return 0;
-        const [h, m] = t.split(':');
-        return parseInt(h, 10) * 60 + parseInt(m, 10);
-    };
+            const { error } = await supabase.from('timetable_requests').insert([{
+                faculty_id: userSession.id,
+                subject_id: reqSubjectId,
+                schedule_id: reqScheduleId || null,
+                request_type: requestType,
+                requested_date: reqDate || null,
+                requested_start_time: reqStartTime || null,
+                requested_end_time: reqEndTime || null,
+                reason: finalReason,
+                status: 'Pending'
+            }]);
 
-    const formatTime = (timeString) => {
-        if (!timeString) return "";
-        const [hourStr, minuteStr] = timeString.split(':');
-        const hour = parseInt(hourStr, 10);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const formattedHour = hour % 12 || 12;
-        return `${formattedHour}:${minuteStr} ${ampm}`;
-    };
-
-    const isClassLive = (startTime, endTime, day) => {
-        const today = new Date().toLocaleDateString("en-US", { weekday: 'long' });
-        if (day !== today) return false;
-        const currentTotalMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
-        return currentTotalMinutes >= parseDbTime(startTime) && currentTotalMinutes <= parseDbTime(endTime);
-    };
-
-    // Calculate Conflict Detection & Timeline Positions
-    const processedClasses = useMemo(() => {
-        const classes = JSON.parse(JSON.stringify(myClasses)); // deep copy
-        const daysMap = {};
-        classes.forEach(c => {
-            if (!daysMap[c.day_of_week]) daysMap[c.day_of_week] = [];
-            daysMap[c.day_of_week].push(c);
-        });
-
-        const processed = [];
-
-        Object.keys(daysMap).forEach(day => {
-            let dayClasses = daysMap[day];
-            dayClasses.sort((a, b) => parseDbTime(a.start_time) - parseDbTime(b.start_time));
+            if (error) throw error;
             
-            let clusters = [];
-            dayClasses.forEach(cls => {
-                const start = parseDbTime(cls.start_time);
-                const end = parseDbTime(cls.end_time);
-                cls._start = start;
-                cls._end = end;
-                
-                let addedToCluster = false;
-                for (let cluster of clusters) {
-                    if (start < cluster.maxEnd) {
-                        cluster.classes.push(cls);
-                        cluster.maxEnd = Math.max(cluster.maxEnd, end);
-                        addedToCluster = true;
-                        break;
-                    }
-                }
-                if (!addedToCluster) {
-                    clusters.push({ classes: [cls], maxEnd: end });
-                }
-            });
-
-            clusters.forEach(cluster => {
-                let columns = [];
-                cluster.classes.forEach(cls => {
-                    let placed = false;
-                    for (let i = 0; i < columns.length; i++) {
-                        let col = columns[i];
-                        let lastInCol = col[col.length - 1];
-                        if (cls._start >= lastInCol._end) {
-                            col.push(cls);
-                            cls._colIndex = i;
-                            placed = true;
-                            break;
-                        }
-                    }
-                    if (!placed) {
-                        columns.push([cls]);
-                        cls._colIndex = columns.length - 1;
-                    }
-                });
-                cluster.classes.forEach(cls => {
-                    cls._colCount = columns.length;
-                    cls.hasConflict = columns.length > 1;
-                });
-            });
-            
-            processed.push(...dayClasses);
-        });
-        
-        return processed;
-    }, [myClasses]);
-
-    // UI Color Mapper
-    const getCategoryColor = (cat, hasConflict) => {
-        if (hasConflict) return "bg-red-500/20 border-red-500/50 text-red-500";
-        switch (cat?.toLowerCase()) {
-            case "core": return "text-blue-400 border-blue-500/30 bg-blue-500/10";
-            case "practical": return "text-emerald-400 border-emerald-500/30 bg-emerald-500/10";
-            case "elective": return "text-purple-400 border-purple-500/30 bg-purple-500/10";
-            default: return "text-themeTextSec border-themeBorderStrong bg-themePanel";
+            setReqReason('');
+            fetchData();
+            window.erpDialog?.alert("Request submitted successfully to Admin!");
+        } catch (err) {
+            console.error("Failed to submit request:", err);
+            window.erpDialog?.alert("Error submitting request.");
         }
     };
 
-    const getClassStyle = (cls) => {
-        const top = ((cls._start - START_HOUR * 60) / 60) * HOUR_HEIGHT;
-        const height = ((cls._end - cls._start) / 60) * HOUR_HEIGHT;
-        const width = 100 / cls._colCount;
-        const left = cls._colIndex * width;
+    const renderTimeline = () => {
+        const actualDayNum = new Date().getDay();
+        const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 0: 'Sunday' };
+        let currentDayName = daysMap[actualDayNum];
+        if (currentDayName === 'Sunday') currentDayName = 'Monday';
 
-        return {
-            top: `${Math.max(0, top)}px`,
-            height: `${height}px`,
-            width: `calc(${width}% - 4px)`,
-            left: `calc(${left}% + 2px)`,
-            position: 'absolute'
-        };
-    };
+        const todayClasses = schedule.filter(c => c.day === currentDayName);
 
-    const hoursList = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i);
 
-    return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated">
-
-            {/* 1. HEADER */}
-            <div className={`${theme.layout.panel} p-6 lg:p-8 rounded-themePanel flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-theme border-themeBorder relative overflow-hidden`}>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-themeElevated rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none print:hidden"></div>
-                
-                <div className="relative z-10 flex flex-col gap-2">
-                    <h1 className={`${theme.text.heading} text-2xl lg:text-3xl text-themeText tracking-tight`}>My Teaching Schedule</h1>
-                    <div className="flex items-center gap-3">
-                        <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Academic Year 2026 • Current View:</p>
-                        <div className="flex bg-themeElevated rounded-lg p-1 border-theme border-themeBorderStrong">
-                            <button onClick={() => setViewMode('day')} className={`px-3 py-1 text-[10px] uppercase font-bold rounded-md transition-all ${viewMode === 'day' ? 'bg-blue-500 text-white' : 'text-themeTextSec hover:text-themeText'}`}>Day</button>
-                            <button onClick={() => setViewMode('week')} className={`px-3 py-1 text-[10px] uppercase font-bold rounded-md transition-all ${viewMode === 'week' ? 'bg-blue-500 text-white' : 'text-themeTextSec hover:text-themeText'}`}>Week</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex gap-3 z-10 relative">
-                    <button
-                        onClick={() => window.print()}
-                        className={`print:hidden w-full sm:w-auto bg-themeElevated hover:bg-neutral-800 text-themeText border-theme border-themeBorderStrong flex items-center justify-center gap-2 px-6 py-3.5 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-95`}
-                    >
-                        <i className="fa-solid fa-file-export text-blue-500"></i> Export PDF
-                    </button>
-                </div>
+        if (todayClasses.length === 0) return (
+            <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50 mt-4">
+                <i className="fa-regular fa-calendar text-4xl mb-4 text-themeTextSec"></i>
+                <p className="text-sm font-bold text-themeTextSec">No classes scheduled for today.</p>
             </div>
+        );
 
-            {/* 2. MOBILE-OPTIMIZED DAY SELECTOR */}
-            {viewMode === 'day' && (
-                <div className="w-full overflow-x-auto no-scrollbar pb-2 snap-x snap-mandatory print:hidden sticky top-20 lg:static z-30">
-                    <div className={`flex gap-2 lg:gap-3 p-1.5 ${theme.layout.panelElevated} rounded-themePanel min-w-max border-theme border-themeBorder`}>
-                        {days.map((day) => (
-                            <button
-                                key={day}
-                                onClick={() => setActiveDay(day)}
-                                className={`px-4 lg:px-6 py-3 lg:py-3.5 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 snap-center shrink-0 ${activeDay === day
-                                    ? "bg-themeElevated text-blue-400 border-theme border-themeBorderStrong scale-[1.02]"
-                                    : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
-                                    }`}
-                            >
-                                {day}
-                            </button>
-                        ))}
+        return (
+            <div className="flex flex-col relative py-4 animate-fade-in">
+                <div className="absolute left-[72px] right-0 h-px bg-themeAccent z-10 flex items-center top-[30%] opacity-50">
+                    <div className="absolute -left-16 text-[10px] font-black tracking-widest text-themeAccent bg-themeApp pr-2">
+                        {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-themeAccent shadow-[0_0_8px_rgba(var(--color-themeAccent),0.8)] -ml-1"></div>
                 </div>
-            )}
 
-            {/* 3. ADVANCED TIMETABLE ENGINE GRID (DESKTOP ONLY) */}
-            <div className={`hidden lg:block ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder overflow-x-auto bg-themeApp`}>
-                <div className="min-w-[800px] w-full flex flex-col p-4 lg:p-6">
-                    {/* Header Row */}
-                    <div className="flex border-b-theme border-themeBorderStrong pb-4 mb-4">
-                        <div className="w-16 lg:w-20 shrink-0"></div> {/* Time Column Spacer */}
-                        {(viewMode === 'week' ? days : [activeDay]).map(day => (
-                            <div key={day} className="flex-1 text-center">
-                                <h3 className={`text-xs lg:text-sm font-black uppercase tracking-widest ${activeDay === day && viewMode === 'week' ? 'text-blue-400' : 'text-themeTextSec'}`}>{day}</h3>
+                {todayClasses.map((lec) => {
+                    const c = SUBJECT_COLORS[lec.color] || SUBJECT_COLORS.gray;
+                    const isPast = lec.status === 'past';
+                    const isCurrent = lec.status === 'current';
+                    
+                    return (
+                        <div key={lec.id} className={`flex gap-6 relative group ${isPast ? 'opacity-40 grayscale-[50%]' : ''}`}>
+                            <div className="w-16 flex flex-col items-end shrink-0 pt-4">
+                                <span className="text-xs font-black text-themeText">{lec.time}</span>
+                                <span className="text-[9px] font-bold text-themeTextSec">{lec.endTime}</span>
                             </div>
-                        ))}
-                    </div>
-
-                    {/* Timeline Body */}
-                    <div className="relative flex">
-                        {/* Time Column */}
-                        <div className="w-16 lg:w-20 shrink-0 flex flex-col relative z-20">
-                            {hoursList.map(hour => (
-                                <div key={hour} style={{ height: `${HOUR_HEIGHT}px` }} className="relative">
-                                    <span className="absolute top-0 -translate-y-1/2 right-4 text-[10px] lg:text-xs font-bold text-themeTextSec opacity-70">
-                                        {hour > 12 ? `${hour - 12} PM` : hour === 12 ? '12 PM' : `${hour} AM`}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Grid Lines & Classes */}
-                        <div className="flex-1 relative flex">
-                            {/* Horizontal Grid Lines */}
-                            <div className="absolute inset-0 z-0 flex flex-col pointer-events-none">
-                                {hoursList.map(hour => (
-                                    <div key={`grid-${hour}`} style={{ height: `${HOUR_HEIGHT}px` }} className="border-t-theme border-themeBorder border-dashed opacity-50 w-full"></div>
-                                ))}
+                            
+                            <div className="relative w-px bg-themeBorder flex-col flex items-center">
+                                <div className={`w-3 h-3 rounded-full border-[3px] border-themeApp z-10 mt-4 transition-colors ${isCurrent ? c.solid + ' animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.5)]' : 'bg-themeBorderStrong group-hover:' + c.solid}`}></div>
                             </div>
 
-                            {/* Current Time Indicator Line */}
-                            {currentTime.getHours() >= START_HOUR && currentTime.getHours() <= END_HOUR && (
+                            <div className="flex-1 pb-8 pt-2">
                                 <div 
-                                    className="absolute left-0 right-0 z-30 pointer-events-none flex items-center"
-                                    style={{ top: `${((currentTime.getHours() * 60 + currentTime.getMinutes() - START_HOUR * 60) / 60) * HOUR_HEIGHT}px` }}
+                                    onClick={() => setSelectedLecture(lec)}
+                                    className={`w-full rounded-2xl p-5 border transition-all cursor-pointer flex justify-between items-start ${isCurrent ? `${c.bg} ${c.border} shadow-lg scale-[1.02]` : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong shadow-sm hover:shadow-md hover:scale-[1.01]'}`}
                                 >
-                                    <div className="w-2 h-2 rounded-full bg-blue-500 -translate-x-1"></div>
-                                    <div className="flex-1 border-t-2 border-blue-500 opacity-80"></div>
-                                </div>
-                            )}
-
-                            {/* Day Columns */}
-                            {(viewMode === 'week' ? days : [activeDay]).map((day, idx) => {
-                                const dayClasses = processedClasses.filter(c => c.day_of_week === day);
-                                return (
-                                    <div key={`col-${day}`} className={`flex-1 relative z-10 ${idx !== 0 ? 'border-l-theme border-themeBorder/50' : ''}`}>
-                                        {dayClasses.map(cls => {
-                                            const isLive = isClassLive(cls.start_time, cls.end_time, cls.day_of_week);
-                                            const conflictClasses = cls.hasConflict ? "ring-2 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] z-20" : "";
-                                            
-                                            return (
-                                                <div 
-                                                    key={cls.id} 
-                                                    style={getClassStyle(cls)}
-                                                    className={`rounded-lg p-2 lg:p-3 overflow-hidden border-theme backdrop-blur-md transition-all hover:scale-[1.02] hover:z-30 group flex flex-col ${getCategoryColor(cls.category, cls.hasConflict)} ${conflictClasses} ${isLive ? 'ring-2 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]' : ''}`}
-                                                    title={`${cls.subject_name} | ${formatTime(cls.start_time)} - ${formatTime(cls.end_time)}${cls.hasConflict ? '\n⚠️ CONFLICT DETECTED' : ''}`}
-                                                >
-                                                    {/* Simulated Drag and Drop Handle for Admin Control */}
-                                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <i className="fa-solid fa-grip-vertical text-themeTextSec/60 hover:text-themeText cursor-grab active:cursor-grabbing"></i>
-                                                    </div>
-
-                                                    <div className="flex flex-col h-full gap-1 pr-4">
-                                                        <h4 className={`text-[10px] lg:text-xs font-black leading-tight ${cls.hasConflict ? 'text-red-100' : 'text-themeText'} line-clamp-2`}>
-                                                            {cls.subject_name}
-                                                        </h4>
-                                                        <span className={`text-[8px] lg:text-[9px] font-bold uppercase tracking-widest ${cls.hasConflict ? 'text-red-300' : 'text-themeTextSec'} mt-0.5`}>
-                                                            {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
-                                                        </span>
-                                                        <p className={`text-[8px] lg:text-[9px] font-bold ${theme.text.muted} truncate mt-1`}>
-                                                            Batch: {cls.batch_id}
-                                                        </p>
-                                                        <div className="mt-auto flex justify-between items-end opacity-80 pt-1">
-                                                            <span className="text-[9px] truncate" title={cls.room_name}><i className="fa-solid fa-location-dot mr-1"></i>{cls.room_name}</span>
-                                                            <button 
-                                                                onClick={(e) => { e.stopPropagation(); setActiveTab('roster'); }}
-                                                                className={`print:hidden ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase transition-colors ${cls.hasConflict ? 'bg-red-500/20 hover:bg-red-500/40 text-red-200' : 'bg-black/20 hover:bg-black/40'}`}
-                                                            >
-                                                                Roster <i className="fa-solid fa-arrow-right ml-0.5"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* 4. MOBILE LIST VIEW */}
-            <div className="flex lg:hidden w-full flex-col gap-4">
-                {processedClasses.filter(c => c.day_of_week === activeDay).length === 0 ? (
-                    <div className="p-8 text-center bg-themePanel rounded-themePanel border-theme border-themeBorder border-dashed mt-2">
-                        <i className="fa-regular fa-calendar-xmark text-4xl text-themeTextSec opacity-50 mb-3"></i>
-                        <h4 className="text-themeText font-bold">No Classes Scheduled</h4>
-                        <p className="text-xs text-themeTextSec mt-1">You have a free day today!</p>
-                    </div>
-                ) : (
-                    processedClasses.filter(c => c.day_of_week === activeDay).map(cls => {
-                        const isLive = isClassLive(cls.start_time, cls.end_time, cls.day_of_week);
-                        const conflictClasses = cls.hasConflict ? "ring-1 ring-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "";
-                        return (
-                            <div key={`mobile-${cls.id}`} className={`p-5 rounded-themePanel border-theme flex flex-col gap-3 relative overflow-hidden ${getCategoryColor(cls.category, cls.hasConflict)} ${conflictClasses} ${isLive ? 'ring-2 ring-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.2)]' : ''}`}>
-                                {isLive && (
-                                    <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/20 blur-xl rounded-full pointer-events-none"></div>
-                                )}
-                                <div className="flex justify-between items-start gap-4 z-10">
-                                    <div className="flex-1">
-                                        <h4 className={`text-[13px] font-black leading-tight mb-2 uppercase tracking-wide ${cls.hasConflict ? 'text-red-400' : 'text-themeText'}`}>{cls.subject_name}</h4>
-                                        <div className="flex flex-col gap-1.5 mt-1">
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest flex items-center ${cls.hasConflict ? 'text-red-300' : 'text-themeTextSec'}`}>
-                                                <i className="fa-regular fa-clock w-4"></i>
-                                                {formatTime(cls.start_time)} - {formatTime(cls.end_time)}
-                                            </span>
-                                            <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest flex items-center">
-                                                <i className="fa-solid fa-users w-4"></i>
-                                                Batch {cls.batch_id}
-                                            </span>
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className={`w-2 h-2 rounded-full ${c.solid}`}></div>
+                                            <h3 className={`text-lg font-black tracking-tight ${isCurrent ? c.text : 'text-themeText'}`}>{lec.subject}</h3>
+                                        </div>
+                                        <div className="flex items-center gap-4 mt-3">
+                                            <span className="text-xs font-bold text-themeTextSec flex items-center gap-1.5"><i className="fa-solid fa-graduation-cap"></i> {lec.semester}</span>
+                                            <span className="text-xs font-bold text-themeTextSec flex items-center gap-1.5"><i className="fa-solid fa-location-dot"></i> {lec.room}</span>
                                         </div>
                                     </div>
-                                    {isLive && (
-                                        <span className="bg-blue-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md animate-pulse shrink-0">
-                                            Live Now
-                                        </span>
-                                    )}
-                                </div>
-                                <div className="mt-1 pt-3 border-t border-current/10 flex justify-between items-center z-10">
-                                    <span className="text-[10px] font-medium opacity-80 uppercase tracking-widest"><i className="fa-solid fa-location-dot mr-1.5"></i> {cls.room_name || 'TBA'}</span>
-                                    <button 
-                                        onClick={(e) => { e.stopPropagation(); setActiveTab('roster'); }}
-                                        className={`px-2 py-1.5 rounded text-[8px] font-black uppercase tracking-widest transition-colors flex items-center gap-1.5 ${cls.hasConflict ? 'bg-red-500/20 hover:bg-red-500/40 text-red-200' : 'bg-black/20 hover:bg-black/40 text-current'}`}
-                                    >
-                                        Roster <i className="fa-solid fa-arrow-right"></i>
+                                    
+                                    <button className="bg-emerald-500 hover:opacity-90 text-[#0a0a0a] px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-opacity shadow-lg">
+                                        Mark Attd
                                     </button>
                                 </div>
                             </div>
-                        )
-                    })
-                )}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    const renderWeeklyGrid = () => (
+        <div className="hidden lg:flex flex-col gap-4 animate-fade-in w-full">
+            <WeeklyChart schedule={schedule} onLectureClick={(lecture) => setSelectedLecture(lecture)} role="faculty" />
+        </div>
+    );
+
+    const renderRequests = () => (
+        <div className="flex flex-col gap-6 animate-fade-in w-full">
+            <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm">
+                <h3 className="text-xs font-black uppercase tracking-widest text-themeTextSec mb-4">Request Form</h3>
+                <form onSubmit={submitRequest} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Request Type</label>
+                        <select value={requestType} onChange={e => setRequestType(e.target.value)} className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none">
+                            <option value="Extra Class">Extra Class</option>
+                            <option value="One-Time Reschedule">One-Time Reschedule</option>
+                            <option value="Permanent Shift">Permanent Shift</option>
+                            <option value="Substitution">Substitution</option>
+                        </select>
+                    </div>
+                    {(requestType === 'One-Time Reschedule' || requestType === 'Permanent Shift') && (
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Original Class (To Shift)</label>
+                            <select value={reqScheduleId} onChange={e => setReqScheduleId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none">
+                                <option value="">Select a class...</option>
+                                {schedule.map(s => <option key={s.id} value={s.id}>{s.subject} - {s.day} {s.time}</option>)}
+                            </select>
+                        </div>
+                    )}
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Subject</label>
+                        <select value={reqSubjectId} onChange={e => setReqSubjectId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none">
+                            {mySubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                    </div>
+                    {requestType === 'Permanent Shift' ? (
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">New Day of Week</label>
+                            <select value={reqNewDay} onChange={e => setReqNewDay(e.target.value)} required className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none">
+                                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                        </div>
+                    ) : (
+                        <div>
+                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Requested Date</label>
+                            <input type="date" value={reqDate} onChange={e => setReqDate(e.target.value)} required className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
+                        </div>
+                    )}
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">New Start Time</label>
+                        <input type="time" value={reqStartTime} onChange={e => setReqStartTime(e.target.value)} required className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
+                    </div>
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">New End Time</label>
+                        <input type="time" value={reqEndTime} onChange={e => setReqEndTime(e.target.value)} required className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
+                    </div>
+                    <div className="lg:col-span-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Reason</label>
+                        <input type="text" value={reqReason} onChange={e => setReqReason(e.target.value)} required placeholder="Brief reason for request..." className="w-full bg-themeElevated border border-themeBorderStrong focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                    </div>
+                    <div className="lg:col-span-3 flex justify-end">
+                        <button type="submit" className="bg-themeAccent hover:opacity-90 text-[#0a0a0a] px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-opacity shadow-lg">Submit Request</button>
+                    </div>
+                </form>
             </div>
 
+            <div className="flex flex-col gap-4">
+                <h3 className="text-xs font-black uppercase tracking-widest text-themeTextSec mt-2">Request History</h3>
+                {requests.length === 0 ? (
+                    <p className="text-xs font-bold text-themeTextSec">No requests found.</p>
+                ) : requests.map(req => (
+                    <div key={req.id} className="bg-themePanel border border-themeBorder rounded-2xl p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <span className="px-2 py-1 bg-themeElevated border border-themeBorderStrong rounded-md text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.request_type}</span>
+                                <span className={`text-[10px] font-black uppercase tracking-widest ${
+                                    req.status === 'Approved' ? 'text-emerald-500' : 
+                                    req.status === 'Rejected' ? 'text-rose-500' : 'text-amber-500'
+                                }`}>{req.status}</span>
+                            </div>
+                            <h4 className="text-sm font-black text-themeText">{req.subject?.name}</h4>
+                            <p className="text-xs font-bold text-themeTextSec mt-1">
+                                {new Date(req.requested_date).toLocaleDateString()} ({req.requested_start_time?.slice(0,5)} - {req.requested_end_time?.slice(0,5)})
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const LectureSideSheet = () => {
+        if (!selectedLecture) return null;
+        const c = SUBJECT_COLORS[selectedLecture.color] || SUBJECT_COLORS.gray;
+
+        return (
+            <div className="fixed inset-0 z-50 flex justify-end">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedLecture(null)}></div>
+                <div className="relative w-full max-w-md bg-themeApp h-full border-l border-themeBorder shadow-2xl flex flex-col animate-[slideInRight_0.3s_ease-out]">
+                    <div className={`${c.bg} p-6 border-b ${c.border} relative overflow-hidden`}>
+                        <div className={`absolute top-0 right-0 w-48 h-48 ${c.solid} opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none`}></div>
+                        <div className="flex justify-between items-start mb-6 relative z-10">
+                            <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-themeApp/80 backdrop-blur-md ${c.text} shadow-sm border ${c.border}`}>{selectedLecture.day}, {selectedLecture.time} - {selectedLecture.endTime}</span>
+                            <button onClick={() => setSelectedLecture(null)} className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-themeText flex items-center justify-center transition-colors">
+                                <i className="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <h2 className={`text-2xl font-black tracking-tight mb-2 ${c.text} relative z-10 drop-shadow-sm`}>{selectedLecture.subject}</h2>
+                        <div className="flex items-center gap-4 text-xs font-bold text-themeTextSec relative z-10">
+                            <span className="flex items-center gap-1.5"><i className="fa-solid fa-graduation-cap"></i> {selectedLecture.semester}</span>
+                            <span className="flex items-center gap-1.5"><i className="fa-solid fa-location-dot"></i> {selectedLecture.room}</span>
+                        </div>
+                    </div>
+                    <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 custom-scrollbar">
+                        <button className="w-full bg-emerald-500 hover:opacity-90 text-[#0a0a0a] py-4 rounded-xl text-sm font-black uppercase tracking-widest transition-opacity shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                            <i className="fa-solid fa-clipboard-check text-lg"></i> Launch Attendance Interface
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 animate-fade-in selection:bg-themeElevated">
+            <div className={`rounded-themePanel p-6 lg:p-8 relative overflow-hidden bg-themeAccent text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-themeElevated`}>
+                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+
+                        <div className="relative z-10 w-full lg:w-auto flex-1">
+                            <div className="flex items-center gap-4 mb-3 lg:mb-2">
+                                <div className="w-14 h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-themePanel flex items-center justify-center shrink-0">
+                                    <i className="fa-solid fa-calendar-days text-white text-2xl lg:text-3xl drop-shadow-sm"></i>
+                                </div>
+                                <div>
+                                    <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm`}>Teaching Workspace</h1>
+                                    <p className={`text-white/80 text-xs lg:text-sm font-medium`}>Manage syllabus, attendance, and timetable requests.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="relative z-10 w-full lg:w-auto shrink-0 mt-4 md:mt-0">
+                            <div className="flex bg-white/10 backdrop-blur-sm p-1 rounded-xl border border-white/20 overflow-x-auto w-full md:w-auto no-scrollbar">
+                                {['Timeline', 'Week', 'Requests'].map(tab => (
+                                    <button 
+                                        key={tab}
+                                        onClick={() => setActiveTab(tab.toLowerCase())}
+                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all shrink-0 ${
+                                            activeTab === tab.toLowerCase() 
+                                            ? 'bg-white text-themeAccent shadow-sm' 
+                                            : 'text-white/80 hover:text-white hover:bg-white/10'
+                                        }`}
+                                    >
+                                        {tab}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+            <div className="flex flex-col xl:flex-row gap-8 items-start">
+                <div className="flex-1 w-full min-w-0 overflow-x-auto pb-4">
+                    {activeTab === 'timeline' && renderTimeline()}
+                    {activeTab === 'week' && (
+                        <>
+                            {renderWeeklyGrid()}
+                            <div className="lg:hidden p-8 border border-themeBorder border-dashed rounded-2xl text-center flex flex-col items-center justify-center bg-themePanel mt-4">
+                                <i className="fa-solid fa-desktop text-3xl text-themeTextSec mb-4"></i>
+                                <h3 className="text-sm font-black text-themeText mb-1">Desktop Recommended</h3>
+                                <p className="text-xs font-bold text-themeTextSec">The weekly timetable chart requires a larger screen. Please use a tablet or desktop, or switch to the 'Timeline' view.</p>
+                            </div>
+                        </>
+                    )}
+                    {activeTab === 'requests' && renderRequests()}
+                </div>
+
+                <div className="w-full xl:w-80 shrink-0 flex flex-col gap-6 sticky top-32">
+                    <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm relative overflow-hidden group">
+                        <div className="absolute -right-12 -top-12 w-32 h-32 bg-themeAccent/10 rounded-full blur-2xl transition-all"></div>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Today's Pulse</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1">
+                                <span className="text-3xl font-black text-themeText">{schedule.length}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Classes</span>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-3xl font-black text-amber-500">{requests.filter(r => r.status === 'Pending').length}</span>
+                                <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Pending Reqs</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <LectureSideSheet />
         </div>
     );
 }
