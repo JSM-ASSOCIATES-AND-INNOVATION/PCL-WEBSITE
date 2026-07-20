@@ -9,6 +9,7 @@ import ScheduleBuilder from "./tabs/ScheduleBuilder";
 import ApprovalCenter from "./tabs/ApprovalCenter";
 import BarCompliance from "./BarCompliance";
 import AutoGenerator from "./AutoGenerator";
+import ScheduleManager from "./tabs/ScheduleManager";
 
 export default function AdminTimetableBuilder({ isHubView = false }) {
     const { userSession } = useERP();
@@ -88,6 +89,11 @@ export default function AdminTimetableBuilder({ isHubView = false }) {
                             <span className="block text-sm font-black text-themeText mt-2">Subject Builder</span>
                             <span className="text-[10px] font-bold text-themeTextSec">Create subjects and assign theme colors and faculties.</span>
                         </div>
+                        <div onClick={() => setActiveTab('schedule-manager')} className="p-6 border border-themeBorder bg-themeElevated hover:border-themeAccent transition-all cursor-pointer rounded-xl flex flex-col gap-2">
+                            <i className="fa-solid fa-clock text-2xl text-cyan-500"></i>
+                            <span className="block text-sm font-black text-themeText mt-2">Schedule Manager</span>
+                            <span className="text-[10px] font-bold text-themeTextSec">Configure global timings and weekly off days.</span>
+                        </div>
                         <div onClick={() => setActiveTab('schedule-builder')} className="p-6 border border-themeBorder bg-themeElevated hover:border-themeAccent transition-all cursor-pointer rounded-xl flex flex-col gap-2">
                             <i className="fa-solid fa-layer-group text-2xl text-rose-500"></i>
                             <span className="block text-sm font-black text-themeText mt-2">Timetable Builder</span>
@@ -143,6 +149,7 @@ export default function AdminTimetableBuilder({ isHubView = false }) {
                     {[
                         { id: 'dashboard', label: 'Dashboard', icon: 'fa-chart-simple' },
                         { id: 'semesters', label: 'Semester Manager', icon: 'fa-toggle-on' },
+                        { id: 'schedule-manager', label: 'Schedule Manager', icon: 'fa-clock' },
                         { id: 'subjects', label: 'Subject Builder', icon: 'fa-palette' },
                         { id: 'schedule-builder', label: 'Timetable Builder', icon: 'fa-layer-group' },
                         { id: 'approvals', label: 'Approval Center', icon: 'fa-inbox' },
@@ -167,6 +174,7 @@ export default function AdminTimetableBuilder({ isHubView = false }) {
             <div className={`${isHubView ? 'w-full mt-2' : 'max-w-[1400px] mx-auto p-6 mt-4'}`}>
                 {activeTab === 'dashboard' && renderDashboard()}
                 {activeTab === 'semesters' && <SemesterManager />}
+                {activeTab === 'schedule-manager' && <ScheduleManager />}
                 {activeTab === 'subjects' && <SubjectBuilder />}
                 {activeTab === 'schedule-builder' && <ScheduleBuilder />}
                 {activeTab === 'approvals' && <ApprovalCenter />}
