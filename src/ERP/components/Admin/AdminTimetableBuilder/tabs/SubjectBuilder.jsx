@@ -66,7 +66,7 @@ export default function SubjectBuilder() {
         e.preventDefault();
         try {
             const { error } = await supabase.from('subjects').insert([{
-                code: code.toUpperCase(),
+                code: code,
                 name,
                 credits,
                 theme_color: themeColor,
@@ -105,7 +105,7 @@ export default function SubjectBuilder() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Subject Code</label>
-                            <input type="text" value={code} onChange={e => setCode(e.target.value)} required placeholder="e.g. LAW401" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none uppercase" />
+                            <input type="text" value={code} onChange={e => setCode(e.target.value)} required placeholder="e.g. LAW401" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div className="lg:col-span-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Subject Name</label>
