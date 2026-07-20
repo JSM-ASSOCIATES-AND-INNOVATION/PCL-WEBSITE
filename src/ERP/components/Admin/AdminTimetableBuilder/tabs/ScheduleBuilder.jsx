@@ -1,6 +1,6 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../../../lib/supabase/supabaseClient';
+import { supabase } from '../../../../lib/supabase/supabaseClient';
 import WeeklyChart from '../../../shared/WeeklyChart';
 
 export default function ScheduleBuilder() {
