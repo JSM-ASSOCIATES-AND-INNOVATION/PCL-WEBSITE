@@ -168,8 +168,8 @@ const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
           variants={containerVariants}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 w-full sm:w-auto px-4 relative bottom-4 md:bottom-8"
         >
-          {isAdmissionsOpen && (
-            <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
+          <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
+            {isAdmissionsOpen ? (
               <Link 
                 to={btn1Link} 
                 className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 bg-[var(--primary-color)] text-[#000000] !important font-extrabold uppercase tracking-[0.15em] text-[11px] rounded-[18px] shadow-[0_10px_30px_rgba(255,191,0,0.25)] hover:shadow-[0_15px_40px_rgba(255,191,0,0.35)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
@@ -178,8 +178,15 @@ const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
                 {btn1Text} <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform duration-500" />
               </Link>
-            </motion.div>
-          )}
+            ) : (
+              <Link 
+                to="/contact" 
+                className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 bg-white/5 text-white/50 border border-white/10 hover:bg-white/10 font-extrabold uppercase tracking-[0.15em] text-[11px] rounded-[18px] transition-all duration-500 overflow-hidden"
+              >
+                Admissions Closed <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform duration-500" />
+              </Link>
+            )}
+          </motion.div>
 
           <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
             <Link 

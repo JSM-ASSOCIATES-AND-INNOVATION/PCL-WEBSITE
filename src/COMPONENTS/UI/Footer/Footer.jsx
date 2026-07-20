@@ -16,7 +16,12 @@ export default function Footer() {
           {/* Brand & Description */}
           <div className="col-span-1 md:col-span-4">
             <Link to="/" className="flex items-center gap-4 mb-6 group">
-              <img src={logo} alt="Prudentia College of Law Logo" className="h-16 w-auto group-hover:scale-105 transition-transform" />
+              <img 
+                src={logo} 
+                alt="Prudentia College of Law Logo" 
+                className="h-16 w-auto group-hover:scale-105 transition-transform" 
+                style={{ filter: 'brightness(0) saturate(100%) invert(67%) sepia(91%) saturate(2132%) hue-rotate(359deg) brightness(102%) contrast(106%)' }}
+              />
               <div className="flex flex-col">
                 <span className="font-bold tracking-[0.2em] text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>
                   PRUDENTIA
@@ -86,8 +91,6 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-6">
             <span className="text-white/40">v6.0</span>
-            <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
           </div>
         </div>
       </div>

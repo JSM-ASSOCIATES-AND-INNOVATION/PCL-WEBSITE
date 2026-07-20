@@ -5,7 +5,7 @@ import AdminKPIGrid from "./AdminKPIGrid";
 import AdminOverview from "./AdminOverview";
 
 import AdminRightSidebar from "./AdminRightSidebar";
-import AdminFAB from "./AdminFAB";
+// AdminFAB removed to prevent overlap with IntelligentBot
 
 export default function AdminDashboard() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Floating Action Button */}
-            <AdminFAB />
+            {/* FAB Removed */}
 
         </div>
     );

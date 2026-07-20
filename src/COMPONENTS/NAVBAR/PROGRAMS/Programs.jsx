@@ -298,17 +298,25 @@ export default function Programs() {
                         calendarEvents.map((item, idx) => (
                           <div key={idx} className="flex items-center gap-8 group">
                             <div className="w-4 h-4 rounded-full bg-[var(--primary-color)] ml-[26px] ring-4 ring-[var(--bg-color)] z-10 transition-transform group-hover:scale-150 shadow-[0_0_15px_var(--primary-glow)]"></div>
-                            <div className={`${styles.glassCard} p-6 flex-1 text-left`}>
-                              <h4 className="text-[var(--primary-color)] font-bold text-lg">{item.title}</h4>
-                              <p className="text-[var(--text-color)] font-medium mt-1 mb-2">
-                                {new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                              </p>
-                              {item.description && (
-                                <p className="text-[var(--text-muted)] text-sm">{item.description}</p>
+                            <div className={`${styles.glassCard} p-6 flex-1 text-left flex flex-col md:flex-row gap-6 items-start md:items-center`}>
+                              <div className="flex-1">
+                                <h4 className="text-[var(--primary-color)] font-bold text-lg">{item.title}</h4>
+                                <p className="text-[var(--text-color)] font-medium mt-1 mb-2">
+                                  {new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                </p>
+                                {item.description && (
+                                  <p className="text-[var(--text-muted)] text-sm">{item.description}</p>
+                                )}
+                                <span className="inline-block mt-3 text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border border-[var(--primary-color)]/30 text-[var(--primary-color)]">
+                                  {item.event_type}
+                                </span>
+                              </div>
+                              {item.image_url && (
+                                <div className="w-full md:w-48 h-32 shrink-0 rounded-xl overflow-hidden border border-[var(--card-border)] shadow-lg group-hover:shadow-[0_0_20px_var(--primary-glow)] transition-all duration-500 relative">
+                                  <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+                                </div>
                               )}
-                              <span className="inline-block mt-3 text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border border-[var(--primary-color)]/30 text-[var(--primary-color)]">
-                                {item.event_type}
-                              </span>
                             </div>
                           </div>
                         ))

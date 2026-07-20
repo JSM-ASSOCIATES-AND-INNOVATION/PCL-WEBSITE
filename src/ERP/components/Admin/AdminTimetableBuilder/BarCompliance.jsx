@@ -11,32 +11,32 @@ export default function BarCompliance() {
     useEffect(() => {
         async function fetchCompliance() {
             try {
-                // Fetch timetable
-                const { data: timetable, error: ttError } = await supabase.from('class_schedule').select('*');
+                // Fetch timetable WITH faculty names
+                const { data: timetable, error: ttError } = await supabase
+                    .from('class_schedule')
+                    .select('faculty_id, start_time, end_time, faculty:profiles(full_name)');
+                
                 if (ttError) throw ttError;
                 
                 // Calculate hours per faculty
                 const facultyHours = {};
                 
                 timetable.forEach(slot => {
-                    const facultyId = slot.faculty_id || slot.facultyId;
+                    const facultyId = slot.faculty_id;
                     if (!facultyId) return;
                     
-                    let startStr = slot.start_time;
-                    let endStr = slot.end_time || slot.endTime; 
+                    let startStr = slot.start_time; // '09:00:00'
+                    let endStr = slot.end_time;     // '10:00:00'
                     
-                    let durationHours = 1.5; // default
+                    let durationHours = 0;
                     if (startStr && endStr) {
+                         // Parse HH:MM:SS (24-hour format from Postgres)
                          const parseTime = (timeStr) => {
                              if (!timeStr) return 0;
-                             const parts = timeStr.split(' ');
-                             if (parts.length !== 2) return 0;
-                             const [time, modifier] = parts;
-                             let [hours, minutes] = time.split(':');
-                             hours = parseInt(hours, 10);
-                             if (modifier === 'PM' && hours < 12) hours += 12;
-                             if (modifier === 'AM' && hours === 12) hours = 0;
-                             return hours + parseInt(minutes || 0, 10) / 60;
+                             const parts = timeStr.split(':');
+                             const hours = parseInt(parts[0], 10) || 0;
+                             const minutes = parseInt(parts[1], 10) || 0;
+                             return hours + (minutes / 60);
                          };
                          const sTime = parseTime(startStr);
                          const eTime = parseTime(endStr);
@@ -46,7 +46,7 @@ export default function BarCompliance() {
                     if (!facultyHours[facultyId]) {
                         facultyHours[facultyId] = { 
                             id: facultyId, 
-                            name: slot.faculty_name || slot.facultyName || 'Unknown Faculty', 
+                            name: slot.faculty?.full_name || 'Unknown Faculty', 
                             totalHours: 0 
                         };
                     }
@@ -60,9 +60,12 @@ export default function BarCompliance() {
                     };
                 });
                 
+                // Sort by least hours first to easily spot non-compliant
+                results.sort((a, b) => a.totalHours - b.totalHours);
+                
                 setComplianceData(results);
             } catch (err) {
-                console.error(err);
+                console.error("Compliance Engine Error:", err);
             } finally {
                 setIsLoading(false);
             }

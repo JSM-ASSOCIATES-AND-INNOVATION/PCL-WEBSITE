@@ -14,7 +14,7 @@ export default function LinksSection() {
             src={logo} 
             alt="Prudentia College of Law Logo" 
             className="h-14 lg:h-16 w-auto group-hover:scale-105 transition-transform"
-            style={{ filter: "invert(72%) sepia(87%) saturate(1476%) hue-rotate(346deg) brightness(101%) contrast(106%)" }}
+            style={{ filter: "brightness(0) invert(1)" }}
           />
           <div className="flex flex-col">
             <span className="font-bold tracking-[0.2em] text-xl lg:text-2xl text-white" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -42,14 +42,12 @@ export default function LinksSection() {
         </ul>
       </div>
 
-      {/* Resources & Legal */}
+      {/* Resources */}
       <div className="flex flex-col">
         <h4 className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-bold mb-6">Resources</h4>
         <ul className="flex flex-col gap-4">
           <li><Link to="/apply" className="text-white/80 hover:text-[var(--primary-color)] transition-colors text-sm font-medium">Admissions</Link></li>
           <li><Link to="/events" className="text-white/80 hover:text-[var(--primary-color)] transition-colors text-sm font-medium">Events</Link></li>
-          <li><Link to="/privacy" className="text-white/80 hover:text-[var(--primary-color)] transition-colors text-sm font-medium">Privacy Policy</Link></li>
-          <li><Link to="/terms" className="text-white/80 hover:text-[var(--primary-color)] transition-colors text-sm font-medium">Terms of Service</Link></li>
         </ul>
       </div>
 

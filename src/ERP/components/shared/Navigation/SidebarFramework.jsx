@@ -357,9 +357,13 @@ export default function SidebarFramework({
                     
                     {!isCompact && (
                         <div onClick={() => handleTabSwitch('credentials')} className="flex items-center gap-3 p-3 rounded-xl bg-themeApp border border-themeBorder mt-1 cursor-pointer hover:border-themeBorderStrong transition-colors">
-                            <div className="w-8 h-8 rounded-lg bg-themeElevated border border-themeBorderStrong flex items-center justify-center font-black text-xs text-themeText relative shrink-0">
-                                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themeApp"></div>
-                                {initials}
+                            <div className="w-8 h-8 rounded-lg bg-themeElevated border border-themeBorderStrong flex items-center justify-center font-black text-xs text-themeText relative shrink-0 overflow-hidden">
+                                {userSession?.profile_picture_url ? (
+                                    <img src={userSession.profile_picture_url} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    initials
+                                )}
+                                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themeApp z-10"></div>
                             </div>
                             <div className="flex flex-col min-w-0 flex-1">
                                 <span className="text-xs font-bold text-themeText truncate leading-tight">{userSession?.name || 'User'}</span>
@@ -436,9 +440,13 @@ export default function SidebarFramework({
             {mobileMenuOpen && (
                 <div className="lg:hidden fixed inset-0 z-40 bg-themeApp overflow-y-auto pb-24 animate-fade-in backdrop-blur-xl">
                     <div className="p-6 pt-10 flex items-center gap-4 border-b border-themeBorder bg-themePanel/80 sticky top-0 backdrop-blur-lg z-10">
-                        <div className="w-14 h-14 rounded-2xl bg-themeApp border border-themeBorderStrong flex items-center justify-center font-black text-xl text-themeText relative shadow-sm">
-                            <div className="absolute top-1 right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-themeApp"></div>
-                            {initials}
+                        <div className="w-14 h-14 rounded-2xl bg-themeApp border border-themeBorderStrong flex items-center justify-center font-black text-xl text-themeText relative shadow-sm overflow-hidden">
+                            {userSession?.profile_picture_url ? (
+                                <img src={userSession.profile_picture_url} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                initials
+                            )}
+                            <div className="absolute top-1 right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-themeApp z-10"></div>
                         </div>
                         <div>
                             <p className="text-xl font-black text-themeText tracking-tight">{userSession?.name || "User"}</p>

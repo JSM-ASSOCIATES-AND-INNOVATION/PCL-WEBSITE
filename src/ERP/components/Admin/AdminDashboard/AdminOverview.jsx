@@ -23,8 +23,6 @@ export default function AdminOverview() {
         { label: "Unique Visitors", value: "0", sub: "Loading...", color: "text-themeAccent" }
     ]);
 
-    const [topClicks, setTopClicks] = useState([]);
-
     const [tasks, setTasks] = useState({
         leaves: 0,
         admissions: 0,
@@ -80,8 +78,6 @@ export default function AdminOverview() {
                         { label: "Web Traffic", value: String(d.insights.total_traffic || 0), sub: "Total Page Views", color: "text-indigo-500" },
                         { label: "Unique Visitors", value: String(d.insights.unique_visitors || 0), sub: "Sessions YTD", color: "text-purple-500" }
                     ]);
-
-                    setTopClicks(d.insights.top_clicks || []);
                     
                     setTasks({
                         leaves: d.tasks.leaves || 0,
@@ -250,26 +246,6 @@ export default function AdminOverview() {
 
                     </div>
                 </div>
-
-                {/* Top Interactions */}
-                {topClicks.length > 0 && (
-                    <div className={`bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-5 flex-1 flex flex-col shadow-sm`}>
-                        <h2 className={`${theme.text.heading} text-sm text-themeText tracking-tight mb-4 flex justify-between`}>
-                            <span>Top Website Interactions</span>
-                            <i className="fa-solid fa-mouse-pointer text-themeTextSec text-xs"></i>
-                        </h2>
-                        <div className="flex flex-col gap-2 flex-1 overflow-y-auto custom-scrollbar pr-1">
-                            {topClicks.map((click, idx) => (
-                                <div key={idx} className="w-full flex items-center justify-between p-2.5 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder">
-                                    <span className="text-xs font-bold text-themeText truncate max-w-[70%]">{click.text}</span>
-                                    <span className="text-[10px] font-black bg-themePanel px-2 py-1 border-[length:var(--border-width)] border-themeBorder rounded text-themeAccent">
-                                        {click.count} clicks
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
 
             </div>
         </div>

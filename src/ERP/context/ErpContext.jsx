@@ -3,6 +3,25 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase/supabaseClient';
+import CryptoJS from 'crypto-js';
+
+const SECRET_KEY = import.meta.env.VITE_ERP_ENCRYPTION_KEY || 'JSM_PCL_ENTERPRISE_AES_256_SECURE_KEY_v1';
+
+const encryptSession = (data) => {
+    return CryptoJS.AES.encrypt(JSON.stringify(data), SECRET_KEY).toString();
+};
+
+const decryptSession = (ciphertext) => {
+    if (!ciphertext) return null;
+    try {
+        if (ciphertext.startsWith('{')) return null; // Old unencrypted format
+        const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
+        const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
+        return decryptedString ? JSON.parse(decryptedString) : null;
+    } catch (e) {
+        return null;
+    }
+};
 
 const ErpContext = createContext();
 export const useERP = () => useContext(ErpContext);
@@ -14,12 +33,13 @@ export const ErpProvider = ({ children }) => {
     // --- 1. INSTANT BOOT PROTOCOL (ZERO-LATENCY CACHE) ---
     const [userSession, setUserSession] = useState(() => {
         const cachedSession = localStorage.getItem('jsmerp_master_session');
-        return cachedSession ? JSON.parse(cachedSession) : null;
+        return decryptSession(cachedSession);
     });
 
     // If we found a cached session, do NOT show the initial app loading screen!
     const [isAppLoading, setIsAppLoading] = useState(() => {
-        return !localStorage.getItem('jsmerp_master_session');
+        const cachedSession = localStorage.getItem('jsmerp_master_session');
+        return !decryptSession(cachedSession);
     });
 
     const [notices, setNotices] = useState([]);
@@ -121,11 +141,12 @@ export const ErpProvider = ({ children }) => {
                 role: normalizedRole,
                 academic_batch: profile.academic_batch,
                 questionnaire_completed: profile.questionnaire_completed || false,
+                profile_picture_url: profile.profile_picture_url || null,
             };
 
-            // Update UI and write to permanent cache
+            // Update UI and write to permanent cache securely
             setUserSession(sessionData);
-            localStorage.setItem('jsmerp_master_session', JSON.stringify(sessionData));
+            localStorage.setItem('jsmerp_master_session', encryptSession(sessionData));
 
         } catch (err) {
             console.error("Profile load failed:", err.message);
@@ -348,15 +369,30 @@ export const ErpProvider = ({ children }) => {
     // Helper getters
     const getTimetableForBatch = (batchId) => globalTimetable[batchId] || {};
     const getFacultySlots = () => facultyTimetable;
+    const refreshProfile = async () => {
+        if (!userSession?.db_id || !userSession?.email) return;
+        await loadProfile(userSession.db_id, userSession.email);
+    };
 
-    const value = {
-        userSession, isAppLoading, login, logout,
-        isSidebarCollapsed, toggleSidebar,
-        layoutPreference, changeLayout,
-        activeTheme, changeTheme,
-        navLayout, changeNavLayout,
-        sidebarMode, changeSidebarMode,
-        notices, addNotice: async (notice) => {
+    return (
+        <ErpContext.Provider value={{
+            userSession,
+            isAppLoading,
+            toggleSidebar,
+            isSidebarCollapsed,
+            activeTheme,
+            changeTheme,
+            layoutPreference,
+            changeLayout,
+            navLayout,
+            changeNavLayout,
+            sidebarMode,
+            changeSidebarMode,
+            login,
+            logout,
+            refreshProfile,
+            notices,
+            addNotice: async (notice) => {
             if (!userSession) return;
             try {
                 const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
@@ -526,10 +562,7 @@ export const ErpProvider = ({ children }) => {
         publishAssignment: async () => { }, submitGrade: async () => { }, submitMarksToCOE: async () => { },
         processStudentRequest: async () => { }, processFacultyLeave: async () => { },
         submitFacultyLeave: async () => { }, updateMeetingNotes: async () => { }
-    };
-
-    return (
-        <ErpContext.Provider value={value}>
+        }}>
             {children}
         </ErpContext.Provider>
     );

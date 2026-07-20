@@ -1,6 +1,6 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../../../../LIB/supabase/supabaseClient';
+import { supabase } from '../../../../../lib/supabase/supabaseClient';
 import WeeklyChart from '../../../shared/WeeklyChart';
 
 export default function ScheduleBuilder() {
@@ -11,12 +11,15 @@ export default function ScheduleBuilder() {
     const [faculties, setFaculties] = useState([]);
     
     const [loading, setLoading] = useState(true);
+    
+    // Modal states
     const [isCreating, setIsCreating] = useState(false);
+    const [selectedClass, setSelectedClass] = useState(null); // For edit/delete modal
 
     // Filter State
     const [selectedBatch, setSelectedBatch] = useState('BBA LL.B. (Hons.)'); // Example fallback
     
-    // Form State
+    // Form State (Create)
     const [subjectId, setSubjectId] = useState('');
     const [roomId, setRoomId] = useState('');
     const [facultyId, setFacultyId] = useState('');
@@ -30,12 +33,12 @@ export default function ScheduleBuilder() {
             // 1. Fetch Classrooms
             const { data: roomData } = await supabase.from('academic_classrooms').select('id, name').eq('status', 'Active');
             setRooms(roomData || []);
-            if (roomData?.length > 0) setRoomId(roomData[0].id);
+            if (roomData?.length > 0 && !roomId) setRoomId(roomData[0].id);
 
             // 2. Fetch Subjects (for the dropdown)
             const { data: subData } = await supabase.from('subjects').select('id, name, theme_color, faculty_id, faculty:profiles(full_name)');
             setSubjects(subData || []);
-            if (subData?.length > 0) setSubjectId(subData[0].id);
+            if (subData?.length > 0 && !subjectId) setSubjectId(subData[0].id);
 
             // 2.5 Fetch Faculties
             const { data: facData } = await supabase.from('profiles').select('id, full_name').eq('role', 'faculty');
@@ -62,18 +65,18 @@ export default function ScheduleBuilder() {
                 
                 if (error) throw error;
                 
-                // Transform to match WeeklyChart expected format
-                const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday' };
+                const daysMap = { 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday', 7: 'Sunday' };
                 
                 const formatted = (schedData || []).map(s => ({
                     id: s.id,
-                    day: daysMap[s.day_of_week],
-                    time: s.start_time.slice(0, 5), // '09:00:00' -> '09:00'
+                    day: daysMap[s.day_of_week] || 'Monday',
+                    time: s.start_time.slice(0, 5),
                     endTime: s.end_time.slice(0, 5),
                     subject: s.subject?.name,
                     color: s.subject?.theme_color,
                     room: s.room?.name,
                     faculty: s.faculty?.full_name || s.subject?.faculty?.full_name,
+                    raw: s
                 }));
                 
                 setSchedule(formatted);
@@ -100,8 +103,63 @@ export default function ScheduleBuilder() {
         }
     }, [subjectId, subjects]);
 
+    // Check for double booking
+    const checkConflicts = async (faculty, room, d, sTime, eTime) => {
+        try {
+            // Check if faculty is busy
+            if (faculty) {
+                const { data: facConflict } = await supabase
+                    .from('class_schedule')
+                    .select('id, batch')
+                    .eq('faculty_id', faculty)
+                    .eq('day_of_week', d)
+                    .lt('start_time', eTime)
+                    .gt('end_time', sTime);
+                    
+                if (facConflict && facConflict.length > 0) {
+                    return `Faculty is already booked for another batch (${facConflict[0].batch}) at this time.`;
+                }
+            }
+
+            // Check if room is busy
+            if (room) {
+                const { data: roomConflict } = await supabase
+                    .from('class_schedule')
+                    .select('id, batch')
+                    .eq('room_id', room)
+                    .eq('day_of_week', d)
+                    .lt('start_time', eTime)
+                    .gt('end_time', sTime);
+                    
+                if (roomConflict && roomConflict.length > 0) {
+                    return `Room is already booked for another batch (${roomConflict[0].batch}) at this time.`;
+                }
+            }
+
+            return null; // no conflict
+        } catch (err) {
+            console.error("Conflict check error:", err);
+            return null;
+        }
+    };
+
     const handleCreate = async (e) => {
         e.preventDefault();
+
+        // 1. Validate times
+        if (startTime >= endTime) {
+            window.erpDialog?.alert("Start time must be before end time.");
+            return;
+        }
+
+        // 2. Check conflicts
+        const conflictMsg = await checkConflicts(facultyId, roomId, parseInt(day), startTime + ':00', endTime + ':00');
+        if (conflictMsg) {
+            window.erpDialog?.alert(`Conflict Detected: ${conflictMsg}`);
+            return;
+        }
+
+        // 3. Insert
         try {
             const { error } = await supabase.from('class_schedule').insert([{
                 batch: selectedBatch,
@@ -109,8 +167,8 @@ export default function ScheduleBuilder() {
                 room_id: roomId,
                 faculty_id: facultyId || null,
                 day_of_week: parseInt(day),
-                start_time: startTime,
-                end_time: endTime,
+                start_time: startTime + ':00',
+                end_time: endTime + ':00',
                 status: 'Scheduled'
             }]);
 
@@ -118,14 +176,31 @@ export default function ScheduleBuilder() {
 
             setIsCreating(false);
             fetchData();
+            window.erpDialog?.alert("Class scheduled successfully!");
         } catch (err) {
             console.error("Failed to add class:", err);
             window.erpDialog?.alert("Error adding class. Check console.");
         }
     };
 
+    const handleDeleteClass = async () => {
+        if (!selectedClass) return;
+        if (!window.confirm(`Delete ${selectedClass.subject} class from the schedule?`)) return;
+        
+        try {
+            const { error } = await supabase.from('class_schedule').delete().eq('id', selectedClass.id);
+            if (error) throw error;
+            
+            setSelectedClass(null);
+            fetchData();
+        } catch (err) {
+            console.error("Failed to delete class:", err);
+            window.erpDialog?.alert("Error deleting class.");
+        }
+    };
+
     return (
-        <div className="flex flex-col gap-6 animate-fade-in">
+        <div className="flex flex-col gap-6 animate-fade-in pb-12 relative">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-xl font-black text-themeText">Timetable Builder</h2>
@@ -138,7 +213,7 @@ export default function ScheduleBuilder() {
                         <select 
                             value={selectedBatch} 
                             onChange={e => setSelectedBatch(e.target.value)} 
-                            className="bg-themeElevated border border-themeBorderStrong rounded-xl pl-10 pr-4 py-2 text-sm font-bold text-themeText outline-none appearance-none"
+                            className="bg-themeElevated border border-themeBorderStrong rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-themeText outline-none appearance-none shadow-sm cursor-pointer hover:border-themeAccent transition-colors"
                         >
                             {semesters.map(s => (
                                 <option key={s.id} value={`${s.programme} - ${s.name}`}>{s.programme} - {s.name}</option>
@@ -146,78 +221,128 @@ export default function ScheduleBuilder() {
                         </select>
                     </div>
 
-                    <button onClick={() => setIsCreating(!isCreating)} className="bg-themeAccent text-[#0a0a0a] px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity whitespace-nowrap">
-                        {isCreating ? <><i className="fa-solid fa-xmark mr-2"></i> Cancel</> : <><i className="fa-solid fa-plus mr-2"></i> Add Class</>}
+                    <button onClick={() => setIsCreating(true)} className="bg-themeAccent text-[#0a0a0a] px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity whitespace-nowrap shadow-lg shadow-themeAccent/20">
+                        <i className="fa-solid fa-plus mr-2"></i> Add Class
                     </button>
                 </div>
             </div>
-
-            {isCreating && (
-                <form onSubmit={handleCreate} className="bg-themeElevated border border-themeBorderStrong rounded-2xl p-6 flex flex-col gap-4 shadow-lg animate-fade-in">
-                    <h3 className="text-sm font-black text-themeText">Schedule New Class for {selectedBatch}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        <div className="lg:col-span-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Subject</label>
-                            <select value={subjectId} onChange={e => setSubjectId(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
-                                {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Day</label>
-                            <select value={day} onChange={e => setDay(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
-                                <option value="1">Monday</option>
-                                <option value="2">Tuesday</option>
-                                <option value="3">Wednesday</option>
-                                <option value="4">Thursday</option>
-                                <option value="5">Friday</option>
-                                <option value="6">Saturday</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Start Time</label>
-                            <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
-                        </div>
-                        <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">End Time</label>
-                            <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
-                        </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mt-2">
-                        <div className="lg:col-span-2">
-                            <div className="flex justify-between items-center mb-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec block">Faculty</label>
-                                {subjects.find(s => s.id === subjectId)?.faculty_id && (
-                                    <span className="text-[8px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">Auto-Assigned</span>
-                                )}
-                            </div>
-                            <select value={facultyId} onChange={e => setFacultyId(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
-                                <option value="">-- Select Faculty --</option>
-                                {faculties.map(f => <option key={f.id} value={f.id}>{f.full_name}</option>)}
-                            </select>
-                        </div>
-                        <div className="lg:col-span-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Classroom</label>
-                            <select value={roomId} onChange={e => setRoomId(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
-                                {rooms.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                            </select>
-                        </div>
-                        <div className="lg:col-span-2 flex justify-end items-end">
-                            <button type="submit" className="bg-themeAccent text-[#0a0a0a] px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg w-full">
-                                Add to Grid
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            )}
 
             {loading ? (
                 <div className="h-64 flex items-center justify-center">
                     <div className="w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full animate-spin"></div>
                 </div>
             ) : (
-                <WeeklyChart schedule={schedule} role="admin" />
+                <WeeklyChart schedule={schedule} role="admin" onLectureClick={(cls) => setSelectedClass(cls)} />
             )}
+
+            {/* CREATE MODAL */}
+            {isCreating && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-themePanel w-full max-w-lg rounded-themePanel overflow-hidden border-theme border-themeBorder shadow-2xl flex flex-col">
+                        <div className="px-6 py-5 border-b border-themeBorder bg-themeElevated/50 flex justify-between items-center">
+                            <div>
+                                <h3 className="text-lg font-black text-themeText">Schedule New Class</h3>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-themeTextSec mt-0.5">{selectedBatch}</p>
+                            </div>
+                            <button onClick={() => setIsCreating(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-themePanel border border-themeBorder hover:bg-themeBorderStrong text-themeText transition-colors">
+                                <i className="fa-solid fa-xmark text-sm"></i>
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleCreate} className="p-6 flex flex-col gap-5">
+                            <div>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Subject</label>
+                                <select value={subjectId} onChange={e => setSubjectId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                    {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                </select>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Faculty</label>
+                                    <select value={facultyId} onChange={e => setFacultyId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                        <option value="">-- Select Faculty --</option>
+                                        {faculties.map(f => <option key={f.id} value={f.id}>{f.full_name}</option>)}
+                                    </select>
+                                    {subjects.find(s => s.id === subjectId)?.faculty_id && (
+                                        <p className="text-[10px] font-bold text-emerald-500 mt-1"><i className="fa-solid fa-magic mr-1"></i> Auto-assigned based on subject</p>
+                                    )}
+                                </div>
+
+                                <div className="col-span-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Classroom</label>
+                                    <select value={roomId} onChange={e => setRoomId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                        {rooms.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-4 border-t border-themeBorder pt-5">
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Day</label>
+                                    <select value={day} onChange={e => setDay(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                        <option value="1">Monday</option>
+                                        <option value="2">Tuesday</option>
+                                        <option value="3">Wednesday</option>
+                                        <option value="4">Thursday</option>
+                                        <option value="5">Friday</option>
+                                        <option value="6">Saturday</option>
+                                        <option value="7">Sunday</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Start Time</label>
+                                    <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark transition-colors" />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">End Time</label>
+                                    <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark transition-colors" />
+                                </div>
+                            </div>
+                            
+                            <button type="submit" className="bg-themeAccent text-[#0a0a0a] px-8 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg w-full mt-2">
+                                Schedule Class
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* MANAGE/DELETE MODAL */}
+            {selectedClass && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-themePanel w-full max-w-sm rounded-themePanel overflow-hidden border-theme border-themeBorder shadow-2xl flex flex-col relative">
+                        <button onClick={() => setSelectedClass(null)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-themeElevated hover:bg-themeBorder text-themeText transition-colors z-10">
+                            <i className="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                        
+                        <div className="p-6 pt-10 flex flex-col items-center text-center gap-2">
+                            <div className="w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center text-2xl mb-2">
+                                <i className="fa-regular fa-calendar-minus"></i>
+                            </div>
+                            <h3 className="text-xl font-black text-themeText">{selectedClass.subject}</h3>
+                            <p className="text-sm font-bold text-themeTextSec">{selectedClass.day}, {selectedClass.time} - {selectedClass.endTime}</p>
+                            
+                            <div className="flex flex-col gap-1 mt-4 w-full bg-themeElevated border border-themeBorder rounded-xl p-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Faculty</span>
+                                    <span className="text-xs font-bold text-themeText">{selectedClass.faculty}</span>
+                                </div>
+                                <div className="w-full h-px bg-themeBorder my-1"></div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Room</span>
+                                    <span className="text-xs font-bold text-themeText">{selectedClass.room}</span>
+                                </div>
+                            </div>
+                            
+                            <button onClick={handleDeleteClass} className="w-full bg-rose-500 text-white px-4 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-600 transition-colors shadow-lg mt-6">
+                                Delete Class
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }

@@ -14,8 +14,12 @@ export default function AdminAcademicCalendar({ isHubView }) {
         date: '',
         description: '',
         event_type: 'Academic', // Academic, Holiday, Exam, Event
-        is_active: true
+        is_active: true,
+        image_url: ''
     });
+    
+    const [imageFile, setImageFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         fetchEvents();
@@ -47,9 +51,37 @@ export default function AdminAcademicCalendar({ isHubView }) {
         }));
     };
 
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setImageFile(e.target.files[0]);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            setUploading(true);
+            let finalImageUrl = formData.image_url;
+
+            // Handle Image Upload
+            if (imageFile) {
+                const fileExt = imageFile.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                const filePath = `events/${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('calendar_images')
+                    .upload(filePath, imageFile);
+
+                if (uploadError) throw uploadError;
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('calendar_images')
+                    .getPublicUrl(filePath);
+
+                finalImageUrl = publicUrl;
+            }
+
             if (formData.id) {
                 // Update
                 const { error } = await supabase
@@ -59,7 +91,8 @@ export default function AdminAcademicCalendar({ isHubView }) {
                         date: formData.date,
                         description: formData.description,
                         event_type: formData.event_type,
-                        is_active: formData.is_active
+                        is_active: formData.is_active,
+                        image_url: finalImageUrl
                     })
                     .eq('id', formData.id);
                 if (error) throw error;
@@ -73,18 +106,22 @@ export default function AdminAcademicCalendar({ isHubView }) {
                         date: formData.date,
                         description: formData.description,
                         event_type: formData.event_type,
-                        is_active: formData.is_active
+                        is_active: formData.is_active,
+                        image_url: finalImageUrl
                     }]);
                 if (error) throw error;
                 alert("Event added successfully!");
             }
             
-            setFormData({ id: null, title: '', date: '', description: '', event_type: 'Academic', is_active: true });
+            setFormData({ id: null, title: '', date: '', description: '', event_type: 'Academic', is_active: true, image_url: '' });
+            setImageFile(null);
             setIsEditing(false);
             fetchEvents();
         } catch (error) {
             console.error("Error saving event:", error);
-            alert("Error saving event. Make sure the Supabase table exists.");
+            alert("Error saving event. Make sure the Supabase table and storage bucket exist.");
+        } finally {
+            setUploading(false);
         }
     };
 
@@ -95,8 +132,10 @@ export default function AdminAcademicCalendar({ isHubView }) {
             date: event.date,
             description: event.description,
             event_type: event.event_type,
-            is_active: event.is_active
+            is_active: event.is_active,
+            image_url: event.image_url || ''
         });
+        setImageFile(null);
         setIsEditing(true);
     };
 
@@ -191,6 +230,22 @@ export default function AdminAcademicCalendar({ isHubView }) {
                             />
                         </div>
 
+                        <div>
+                            <label className="block text-xs font-bold text-themeText/70 uppercase tracking-wider mb-2">Event Image (Optional)</label>
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="w-full bg-themeBg border border-themeBorder rounded-lg px-4 py-2 text-themeText focus:outline-none text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-themeAccent/10 file:text-themeAccent hover:file:bg-themeAccent/20 transition-all"
+                            />
+                            {formData.image_url && !imageFile && (
+                                <div className="mt-2 text-xs text-themeText/60 flex items-center gap-2">
+                                    <img src={formData.image_url} alt="Current event" className="w-10 h-10 object-cover rounded-md border border-themeBorder" />
+                                    <span>Current image will be kept unless changed.</span>
+                                </div>
+                            )}
+                        </div>
+
                         <div className="flex items-center gap-2 mt-2">
                             <input 
                                 type="checkbox" 
@@ -206,16 +261,18 @@ export default function AdminAcademicCalendar({ isHubView }) {
                         <div className="flex gap-3 mt-4">
                             <button 
                                 type="submit" 
-                                className="flex-1 bg-themeAccent hover:bg-themeAccentHover text-themeBg font-bold py-3 rounded-lg transition-colors"
+                                disabled={uploading}
+                                className="flex-1 bg-themeAccent hover:bg-themeAccentHover text-themeBg font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
                             >
-                                {isEditing ? 'Update Event' : 'Add Event'}
+                                {uploading ? 'Saving...' : (isEditing ? 'Update Event' : 'Add Event')}
                             </button>
                             {isEditing && (
                                 <button 
                                     type="button" 
                                     onClick={() => {
                                         setIsEditing(false);
-                                        setFormData({ id: null, title: '', date: '', description: '', event_type: 'Academic', is_active: true });
+                                        setFormData({ id: null, title: '', date: '', description: '', event_type: 'Academic', is_active: true, image_url: '' });
+                                        setImageFile(null);
                                     }}
                                     className="px-4 py-3 bg-themeBg border border-themeBorder text-themeText hover:bg-themeBorder/50 rounded-lg transition-colors"
                                 >
@@ -259,19 +316,26 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                         </div>
                                         <p className="text-themeText/70 text-sm mt-1">{event.description}</p>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button 
-                                            onClick={() => handleEdit(event)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors"
-                                        >
-                                            <i className="fa-solid fa-pen text-xs"></i>
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(event.id)}
-                                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
-                                        >
-                                            <i className="fa-solid fa-trash text-xs"></i>
-                                        </button>
+                                    <div className="flex gap-4 items-center">
+                                        {event.image_url && (
+                                            <div className="hidden sm:block">
+                                                <img src={event.image_url} alt={event.title} className="w-16 h-16 object-cover rounded-lg border border-themeBorder shadow-sm" />
+                                            </div>
+                                        )}
+                                        <div className="flex flex-col gap-2">
+                                            <button 
+                                                onClick={() => handleEdit(event)}
+                                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors"
+                                            >
+                                                <i className="fa-solid fa-pen text-xs"></i>
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(event.id)}
+                                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                                            >
+                                                <i className="fa-solid fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

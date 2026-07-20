@@ -49,27 +49,28 @@ export default function AdminKPIGrid() {
 
                 if (isMounted && Array.isArray(data) && data.length > 0) {
                     const kpi = data[0].kpi_data;
-                    
-                    const attTotal = Number(kpi.attendance.total) || 0;
-                    const attPresent = Number(kpi.attendance.present) || 0;
-                    const rate = attTotal > 0 ? ((attPresent / attTotal) * 100).toFixed(1) : 0;
+                    if (kpi) {
+                        const attTotal = Number(kpi.attendance?.total) || 0;
+                        const attPresent = Number(kpi.attendance?.present) || 0;
+                        const rate = attTotal > 0 ? ((attPresent / attTotal) * 100).toFixed(1) : 0;
 
-                    const leaves = Number(kpi.approvals.leaves) || 0;
-                    const docs = Number(kpi.approvals.docs) || 0;
-                    const grievances = Number(kpi.approvals.grievances) || 0;
-                    const totalApprovals = leaves + docs + grievances;
+                        const leaves = Number(kpi.approvals?.leaves) || 0;
+                        const docs = Number(kpi.approvals?.docs) || 0;
+                        const grievances = Number(kpi.approvals?.grievances) || 0;
+                        const totalApprovals = leaves + docs + grievances;
 
-                    setData({
-                        students: { total: kpi.students.total, byBatch: kpi.students.byBatch },
-                        faculty: { total: kpi.faculty.total, list: kpi.faculty.list },
-                        attendance: { present: attPresent, total: attTotal, rate },
-                        approvals: { total: totalApprovals, leaves, docs, grievances },
-                        fees: { collected: Number(kpi.fees.collected), pending: Number(kpi.fees.pending) }
-                    });
-                    setLoading(false);
+                        setData({
+                            students: { total: kpi.students?.total || 0, byBatch: kpi.students?.byBatch || {} },
+                            faculty: { total: kpi.faculty?.total || 0, list: kpi.faculty?.list || [] },
+                            attendance: { present: attPresent, total: attTotal, rate },
+                            approvals: { total: totalApprovals, leaves, docs, grievances },
+                            fees: { collected: Number(kpi.fees?.collected) || 0, pending: Number(kpi.fees?.pending) || 0 }
+                        });
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching KPIs:", error);
+            } finally {
                 if (isMounted) setLoading(false);
             }
         };

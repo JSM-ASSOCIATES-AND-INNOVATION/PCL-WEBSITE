@@ -7,15 +7,18 @@ import { supabase } from "../../../lib/supabase/supabaseClient";
 import { calculateRelativeSemester } from "../../../utils/academicUtils";
 import SecuritySettings from "./SecuritySettings";
 import AppearanceSettings from "./AppearanceSettings";
+import ProfileEditModal from "./ProfileEditModal";
 
 export default function Credentials() {
-    const { userSession } = useERP();
+    const { userSession, refreshProfile } = useERP();
     const [activeTab, setActiveTab] = useState("profile"); // profile, security, appearance
     const [isLoading, setIsLoading] = useState(true);
     
     // Core Data State
     const [profileData, setProfileData] = useState(null);
     const [mentorData, setMentorData] = useState(null);
+    const [pendingRequest, setPendingRequest] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     // One-Time Questionnaire State
     const [showQuestionnaire, setShowQuestionnaire] = useState(false);
@@ -48,6 +51,18 @@ export default function Credentials() {
                 const qd = pData.questionnaire_data || {};
                 if (!qd.preferredLawArea && userSession?.role === 'student') {
                     setShowQuestionnaire(true);
+                }
+
+                // Check for pending profile update request
+                const { data: requestData } = await supabase
+                    .from('profile_update_requests')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .eq('status', 'pending')
+                    .maybeSingle();
+                
+                if (requestData) {
+                    setPendingRequest(requestData);
                 }
 
                 // 2. Fetch Mentor (Only for students)
@@ -173,7 +188,10 @@ export default function Credentials() {
                 
                 {activeTab === "profile" && (
                     <div className="flex gap-2">
-                        <button className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2">
+                        <button 
+                            onClick={() => setShowEditModal(true)}
+                            className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2"
+                        >
                             <i className="fa-solid fa-pen-to-square"></i> Edit
                         </button>
                         <button className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2">
@@ -204,14 +222,26 @@ export default function Credentials() {
             {activeTab === "profile" && (
                 <div className="flex flex-col gap-6 lg:gap-8 animate-fade-in">
                     
+                    {pendingRequest && (
+                        <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                                <i className="fa-solid fa-hourglass-half text-amber-500"></i>
+                            </div>
+                            <div>
+                                <h4 className="text-amber-500 font-black text-sm uppercase tracking-widest mb-1">Profile Update Pending</h4>
+                                <p className="text-xs text-themeText font-bold">Your recent profile update request is pending admin approval. You cannot submit another request until this one is reviewed.</p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* 1. MASTER PROFILE BANNER */}
                     <div className={`rounded-2xl p-6 lg:p-10 relative overflow-hidden bg-themeElevated border border-themeBorder shadow-sm transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-6 lg:gap-8`}>
                         
                         {/* Photo & Status */}
                         <div className="relative group shrink-0 flex flex-col items-center">
                             <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-xl bg-themePanel text-themeAccent border-[4px] border-themeBorderStrong flex items-center justify-center overflow-hidden relative shadow-sm">
-                                {profileData.avatar_url ? (
-                                    <img src={profileData.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                {profileData.profile_picture_url ? (
+                                    <img src={profileData.profile_picture_url} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="text-3xl lg:text-4xl font-black">
                                         {getInitials(profileData.full_name)}
@@ -431,8 +461,8 @@ export default function Credentials() {
                             {/* ID Card Body */}
                             <div className="p-6 flex flex-col items-center bg-white">
                                 <div className="w-24 h-24 bg-neutral-200 border-2 border-neutral-300 rounded overflow-hidden mb-4 flex items-center justify-center">
-                                    {profileData.avatar_url ? (
-                                        <img src={profileData.avatar_url} alt="ID" className="w-full h-full object-cover" />
+                                    {profileData.profile_picture_url ? (
+                                        <img src={profileData.profile_picture_url} alt="ID" className="w-full h-full object-cover" />
                                     ) : (
                                         <i className="fa-solid fa-user text-4xl text-neutral-400"></i>
                                     )}
@@ -464,6 +494,34 @@ export default function Credentials() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Modals */}
+            {showEditModal && (
+                <ProfileEditModal 
+                    profileData={profileData}
+                    userRole={userSession?.role || 'student'}
+                    onClose={() => setShowEditModal(false)}
+                    onSubmit={async (data, isDirectUpdate) => {
+                        if (isDirectUpdate) {
+                            // Update local profile data immediately
+                            setProfileData(prev => ({
+                                ...prev,
+                                phone: data.phone,
+                                blood_group: data.blood_group,
+                                dob: data.dob,
+                                profile_picture_url: data.profile_picture_url,
+                                questionnaire_data: data.questionnaire_data
+                            }));
+                            // Refresh global session so navbar/sidebar update
+                            if (refreshProfile) await refreshProfile();
+                        } else {
+                            setPendingRequest(data);
+                        }
+                        setShowEditModal(false);
+                    }}
+                    hasPendingRequest={!!pendingRequest}
+                />
             )}
         </div>
     );

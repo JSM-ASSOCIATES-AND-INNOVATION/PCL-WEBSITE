@@ -6,26 +6,58 @@ import { supabase } from '../../../lib/supabase/supabaseClient';
 
 export default function AdminRightSidebar() {
     const navigate = useNavigate();
-    const [dbStats, setDbStats] = useState({ size: 'Loading...', users: '...' });
+    const [dbStats, setDbStats] = useState({ 
+        size: 'Loading...', 
+        users: '...',
+        storage_used: '...',
+        storage_avail: '...',
+        visitors: '...',
+        active: '...',
+        pending: '...'
+    });
 
     useEffect(() => {
         let isMounted = true;
         const fetchDbStats = async () => {
             try {
-                const { data, error } = await supabase.rpc('admin_exec_sql', {
+                // Fetch Supabase DB & Auth Stats
+                const { data: dbData, error: dbError } = await supabase.rpc('admin_exec_sql', {
                     query_text: "SELECT pg_size_pretty(pg_database_size(current_database())) as db_size, (SELECT count(*) FROM auth.users) as auth_users"
                 });
                 
-                if (error) throw error;
-                if (isMounted && Array.isArray(data) && data.length > 0) {
+                // Fetch Storage Stats
+                const { data: storageData, error: storageError } = await supabase.rpc('admin_exec_sql', {
+                    query_text: "SELECT COALESCE(sum((metadata->>'size')::bigint), 0) as storage_used_bytes FROM storage.objects"
+                });
+
+                // Fetch Website Analytics
+                const { data: webData, error: webError } = await supabase.rpc('admin_exec_sql', {
+                    query_text: "SELECT (SELECT count(*) FROM website_page_views WHERE created_at >= CURRENT_DATE) as visitors_today, (SELECT count(DISTINCT session_id) FROM website_page_views WHERE created_at >= NOW() - INTERVAL '5 minutes') as active_users, (SELECT count(*) FROM blogs WHERE status = 'Draft') as pending_changes"
+                });
+
+                if (isMounted) {
+                    let s_used = "Unknown";
+                    let s_avail = "Unknown";
+                    if (!storageError && storageData && storageData.length > 0) {
+                        const bytes = parseInt(storageData[0].storage_used_bytes) || 0;
+                        const mb = (bytes / (1024 * 1024)).toFixed(2);
+                        const avail = (1024 - parseFloat(mb)).toFixed(2);
+                        s_used = `${mb} MB`;
+                        s_avail = `${avail} MB`;
+                    }
+
                     setDbStats({
-                        size: data[0].db_size || 'Unknown',
-                        users: data[0].auth_users || '0'
+                        size: dbData?.[0]?.db_size || 'Unknown',
+                        users: dbData?.[0]?.auth_users || '0',
+                        storage_used: s_used,
+                        storage_avail: s_avail,
+                        visitors: webData?.[0]?.visitors_today || '0',
+                        active: webData?.[0]?.active_users || '0',
+                        pending: webData?.[0]?.pending_changes || '0'
                     });
                 }
             } catch (err) {
                 console.error("Error fetching live DB stats:", err);
-                if (isMounted) setDbStats({ size: 'Offline', users: 'Offline' });
             }
         };
         fetchDbStats();
@@ -77,18 +109,21 @@ export default function AdminRightSidebar() {
                 <div className="flex flex-col gap-0 divide-y divide-themeBorder">
                     <div className="flex justify-between items-center py-2.5">
                         <span className="text-[10px] font-bold text-themeTextSec">Visitors Today</span>
-                        <span className="text-xs font-black text-themeText">482</span>
+                        <span className="text-xs font-black text-themeText">{dbStats.visitors}</span>
                     </div>
                     <div className="flex justify-between items-center py-2.5">
                         <span className="text-[10px] font-bold text-themeTextSec">Active Users</span>
-                        <span className="text-xs font-black text-emerald-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span> 18</span>
+                        <span className="text-xs font-black text-emerald-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span> {dbStats.active}</span>
                     </div>
                     <div className="flex justify-between items-center py-2.5 border-b border-themeBorder">
                         <span className="text-[10px] font-bold text-themeTextSec">Pending Changes</span>
-                        <span className="text-xs font-black text-rose-500">2</span>
+                        <span className="text-xs font-black text-rose-500">{dbStats.pending}</span>
                     </div>
                 </div>
-                <button className="w-full mt-4 py-1.5 text-[9px] font-black text-themeTextSec hover:text-themeText border-[length:var(--border-width)] border-themeBorder rounded-lg transition-colors uppercase tracking-widest active:scale-[0.98]">
+                <button 
+                    onClick={() => navigate('/admin/siteeditor')}
+                    className="w-full mt-4 py-1.5 text-[9px] font-black text-themeTextSec hover:text-themeText border-[length:var(--border-width)] border-themeBorder rounded-lg transition-colors uppercase tracking-widest active:scale-[0.98]"
+                >
                     Open CMS
                 </button>
             </div>
@@ -106,16 +141,16 @@ export default function AdminRightSidebar() {
                         <span className="text-[10px] font-black">{dbStats.size}</span>
                     </div>
                     <div className="flex flex-col gap-0.5">
-                        <span className="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest">Storage</span>
-                        <span className="text-[10px] font-black">Live</span>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                        <span className="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest">API</span>
-                        <span className="text-[10px] font-black text-emerald-400">Healthy</span>
-                    </div>
-                    <div className="flex flex-col gap-0.5">
                         <span className="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest">Auth Users</span>
                         <span className="text-[10px] font-black">{dbStats.users}</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                        <span className="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest">Storage Used</span>
+                        <span className="text-[10px] font-black">{dbStats.storage_used}</span>
+                    </div>
+                    <div className="flex flex-col gap-0.5">
+                        <span className="text-[8px] font-bold text-emerald-500/70 uppercase tracking-widest">Storage Avail</span>
+                        <span className="text-[10px] font-black text-emerald-400">{dbStats.storage_avail}</span>
                     </div>
                 </div>
                 

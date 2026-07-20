@@ -10,6 +10,18 @@ export default function SQLStudio() {
     const [isExecuting, setIsExecuting] = useState(false);
     const [executionTime, setExecutionTime] = useState(0);
 
+    const textareaRef = React.useRef(null);
+    const lineNumbersRef = React.useRef(null);
+
+    const lineCount = query.split('\n').length;
+    const lines = Array.from({ length: Math.max(5, lineCount) }, (_, i) => i + 1);
+
+    const handleScroll = (e) => {
+        if (lineNumbersRef.current) {
+            lineNumbersRef.current.scrollTop = e.target.scrollTop;
+        }
+    };
+
     const handleExecute = async () => {
         if (!query.trim()) return;
         setIsExecuting(true);
@@ -39,7 +51,11 @@ export default function SQLStudio() {
             
         } catch (err) {
             console.error("SQL Execution Error:", err);
-            setError(err.message || "An error occurred while executing the query.");
+            if (err.message?.includes('Could not find the function') || err.code === 'PGRST202') {
+                setError('RPC_MISSING');
+            } else {
+                setError(err.message || "An error occurred while executing the query.");
+            }
         } finally {
             const endTime = performance.now();
             setExecutionTime((endTime - startTime).toFixed(2));
@@ -115,22 +131,26 @@ export default function SQLStudio() {
                         </div>
 
                         {/* Textarea */}
-                        <div className="flex-1 relative">
-                            {/* Line numbers dummy (visual only) */}
-                            <div className="absolute left-0 top-0 bottom-0 w-10 bg-[#0d0d0d] border-r-[length:var(--border-width)] border-neutral-800/50 flex flex-col items-center py-4 text-[11px] font-mono text-neutral-600 select-none pointer-events-none">
-                                <span>1</span>
-                                <span>2</span>
-                                <span>3</span>
-                                <span>4</span>
-                                <span>5</span>
+                        <div className="flex-1 relative flex overflow-hidden">
+                            {/* Dynamic Line Numbers */}
+                            <div 
+                                ref={lineNumbersRef}
+                                className="w-10 bg-[#0d0d0d] border-r-[length:var(--border-width)] border-neutral-800/50 flex flex-col items-center py-4 text-[11px] font-mono text-neutral-600 select-none overflow-hidden shrink-0"
+                            >
+                                {lines.map(num => (
+                                    <span key={num} className="leading-relaxed h-[21px] flex items-center justify-center">{num}</span>
+                                ))}
                             </div>
                             <textarea 
+                                ref={textareaRef}
                                 value={query}
                                 onChange={e => setQuery(e.target.value)}
                                 onKeyDown={handleKeyDown}
+                                onScroll={handleScroll}
                                 spellCheck={false}
-                                className="w-full h-full bg-transparent text-[#d4d4d4] font-mono text-sm p-4 pl-14 focus:outline-none resize-none leading-relaxed selection:bg-emerald-500/30"
+                                className="flex-1 h-full bg-transparent text-[#d4d4d4] font-mono text-sm p-4 focus:outline-none resize-none leading-relaxed selection:bg-emerald-500/30 whitespace-pre custom-scrollbar"
                                 placeholder="SELECT * FROM profiles;"
+                                style={{ lineHeight: '21px' }}
                             ></textarea>
                         </div>
                     </div>
@@ -153,7 +173,63 @@ export default function SQLStudio() {
 
                         {/* Results Body */}
                         <div className="flex-1 overflow-auto p-4 custom-scrollbar relative">
-                            {error ? (
+                            {error === 'RPC_MISSING' ? (
+                                <div className="bg-[#1a1a1a] border-[length:var(--border-width)] border-emerald-500/30 rounded-lg p-5 flex flex-col gap-4 text-emerald-50 shadow-inner h-full overflow-y-auto custom-scrollbar">
+                                    <div className="flex items-center gap-3 font-black text-emerald-400 text-sm">
+                                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                            <i className="fa-solid fa-screwdriver-wrench"></i>
+                                        </div>
+                                        Setup Required: admin_exec_sql
+                                    </div>
+                                    <p className="text-xs text-neutral-400 leading-relaxed font-mono">
+                                        To enable SQL Studio, you must create a secure RPC function in your Supabase database. Copy the SQL script below and execute it in your Supabase SQL Editor:
+                                    </p>
+                                    <div className="bg-[#0d0d0d] rounded-md border-[length:var(--border-width)] border-neutral-800 p-4 relative group">
+                                        <button 
+                                            onClick={() => navigator.clipboard.writeText(`CREATE OR REPLACE FUNCTION admin_exec_sql(query_text text)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  result jsonb;
+BEGIN
+  BEGIN
+    EXECUTE 'SELECT jsonb_agg(t) FROM (' || query_text || ') t' INTO result;
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE query_text;
+    result := jsonb_build_array(jsonb_build_object('status', 'success', 'message', 'Query executed successfully.'));
+  END;
+  RETURN COALESCE(result, '[]'::jsonb);
+END;
+$$;`)}
+                                            className="absolute top-2 right-2 p-1.5 bg-neutral-800 text-neutral-400 rounded hover:text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            title="Copy to Clipboard"
+                                        >
+                                            <i className="fa-regular fa-copy"></i>
+                                        </button>
+                                        <pre className="text-[10px] text-emerald-300 font-mono overflow-x-auto whitespace-pre-wrap leading-relaxed">
+{`CREATE OR REPLACE FUNCTION admin_exec_sql(query_text text)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  result jsonb;
+BEGIN
+  BEGIN
+    EXECUTE 'SELECT jsonb_agg(t) FROM (' || query_text || ') t' INTO result;
+  EXCEPTION WHEN OTHERS THEN
+    EXECUTE query_text;
+    result := jsonb_build_array(jsonb_build_object('status', 'success', 'message', 'Query executed successfully.'));
+  END;
+  RETURN COALESCE(result, '[]'::jsonb);
+END;
+$$;`}
+                                        </pre>
+                                    </div>
+                                </div>
+                            ) : error ? (
                                 <div className="bg-rose-500/10 border-[length:var(--border-width)] border-rose-500/30 rounded-lg p-4 text-rose-400 font-mono text-xs whitespace-pre-wrap leading-relaxed shadow-inner">
                                     <div className="flex items-center gap-2 mb-2 font-black text-rose-500">
                                         <i className="fa-solid fa-triangle-exclamation"></i>

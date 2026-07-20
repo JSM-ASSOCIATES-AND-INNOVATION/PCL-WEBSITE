@@ -40,11 +40,12 @@ const fallbackProfiles = {
   }
 };
 
-export default function LeadershipProfile() {
-  const { id } = useParams();
+export default function LeadershipProfile({ overrideId }) {
+  const { id: paramId } = useParams();
+  const id = overrideId || paramId;
   const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
-  const { content } = useSiteContent('/about/leadership', 'leadership_profiles');
+  const { content } = useSiteContent(`/about/leadership/${id}`, 'profile');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -53,8 +54,8 @@ export default function LeadershipProfile() {
   // Merge CMS data with fallback data
   let profile = fallbackProfiles[id];
   
-  if (content && content[id]) {
-    const cmsProfile = content[id];
+  if (content) {
+    const cmsProfile = content;
     
     // Parse bio properly whether it's an array or a newline-separated string
     let parsedBio = profile.bio;

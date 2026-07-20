@@ -212,8 +212,14 @@ export default function Navbar() {
                 ERP Portal
               </a>
 
-              {isAdmissionsOpen && (
-                <Link to="/apply" className="apply-btn glowing-pill hidden sm:flex">Apply Now</Link>
+              {isAdmissionsOpen ? (
+                <Link to="/apply" className="hidden sm:flex items-center justify-center bg-[#FFBF00]/10 text-[#FFBF00] border border-[#FFBF00]/50 hover:bg-[#FFBF00] hover:text-[#0a0a0a] px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(255,191,0,0.2)] hover:shadow-[0_0_25px_rgba(255,191,0,0.5)]">
+                  Apply Now
+                </Link>
+              ) : (
+                <Link to="/contact" className="hidden sm:flex items-center justify-center bg-white/5 text-white/50 border border-white/10 hover:bg-white/10 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all">
+                  Admissions Closed
+                </Link>
               )}
 
               <div className="mobile-menu-wrapper lg:hidden">

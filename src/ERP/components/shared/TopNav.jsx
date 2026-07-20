@@ -160,9 +160,13 @@ export default function TopNav({ userSession, activeTab, setActiveTab, onLogout 
                         className="flex items-center gap-3 hover:bg-themeElevated/80 p-1.5 pr-4 rounded-full transition-all duration-300 border border-transparent hover:border-themeBorderStrong group outline-none"
                     >
                         <div className="w-10 h-10 rounded-full bg-themeElevated border border-white/10 flex items-center justify-center font-black text-[11px] text-themeText relative shadow-sm group-hover:border-themeAccent group-hover:text-themeAccent transition-colors duration-300 overflow-hidden">
-                            <div className="absolute inset-0 bg-themeAccent/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themeElevated z-10 shadow-sm"></div>
-                            <span className="relative z-10">{initials}</span>
+                            {userSession?.profile_picture_url ? (
+                                <img src={userSession.profile_picture_url} alt="Profile" className="w-full h-full object-cover relative z-10" />
+                            ) : (
+                                <span className="relative z-10">{initials}</span>
+                            )}
+                            <div className="absolute inset-0 bg-themeAccent/10 opacity-0 group-hover:opacity-100 transition-opacity z-20 pointer-events-none"></div>
+                            <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themeElevated z-30 shadow-sm"></div>
                         </div>
                         <div className="flex flex-col items-start hidden xl:flex">
                             <span className="text-sm font-bold text-themeText group-hover:text-themeAccent transition-colors duration-300 truncate max-w-[120px]">

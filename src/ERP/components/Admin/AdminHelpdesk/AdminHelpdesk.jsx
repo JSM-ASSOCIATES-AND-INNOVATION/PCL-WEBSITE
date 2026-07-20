@@ -99,7 +99,7 @@ export default function AdminHelpdesk({ isHubView = false }) {
                 </div>
             )}
 
-            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : ''}`}>
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-4'}`}>
                 {['all', 'public_inquiry', 'IT Support', 'Finance', 'Academic', 'Administration'].map(tab => (
                     <button
                         key={tab}
@@ -121,31 +121,31 @@ export default function AdminHelpdesk({ isHubView = false }) {
                         <div className="animate-spin w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full"></div>
                     </div>
                 ) : filteredTickets.length === 0 ? (
-                    <div className="w-full py-16 lg:py-20 flex flex-col items-center justify-center bg-themeApp border-theme border-dashed border-themeBorder rounded-themePanel text-center px-4">
+                    <div className="w-full py-16 lg:py-20 flex flex-col items-center justify-center bg-themeApp border border-dashed border-themeBorder rounded-themePanel text-center px-4">
                         <i className="fa-solid fa-check-double text-4xl lg:text-5xl text-neutral-700 mb-3 lg:mb-4"></i>
                         <h3 className="text-sm lg:text-base font-black text-themeText">All Caught Up</h3>
                         <p className={`text-[9px] lg:text-[10px] font-bold uppercase tracking-widest ${theme.text.muted} mt-1 lg:mt-2`}>No tickets found for this category.</p>
                     </div>
                 ) : (
                     filteredTickets.map(ticket => (
-                        <div key={ticket.id} className={`${theme.layout.panel} p-5 lg:p-6 rounded-themePanel border-theme border-themeBorder hover:border-themeBorderStrong transition-all flex flex-col gap-4`}>
+                        <div key={ticket.id} className={`${theme.layout.panel} p-5 lg:p-6 rounded-themePanel border border-themeBorder hover:border-themeBorderStrong transition-all flex flex-col gap-4`}>
                             <div className="flex justify-between items-start gap-4">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         {ticket.ticket_id && (
-                                            <span className="text-[9px] lg:text-[10px] font-bold text-themeTextSec uppercase tracking-widest bg-themePanel px-2.5 py-1 rounded-md border-theme border-themeBorder">
+                                            <span className="text-[9px] lg:text-[10px] font-bold text-themeTextSec uppercase tracking-widest bg-themePanel px-2.5 py-1 rounded-md border border-themeBorder">
                                                 {ticket.ticket_id}
                                             </span>
                                         )}
-                                        <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border-theme bg-themeElevated text-themeAccent border-themeBorderStrong">
+                                        <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border bg-themeElevated text-themeAccent border-themeBorderStrong">
                                             {ticket.category === 'public_inquiry' ? 'Public Inquiry' : ticket.category}
                                         </span>
-                                        <span className={`text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border-theme ${ticket.status === 'resolved' ? 'bg-themeElevated text-emerald-400 border-themeBorderStrong' : 'bg-themeElevated text-amber-500 border-themeBorderStrong'}`}>
+                                        <span className={`text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md border ${ticket.status === 'resolved' ? 'bg-themeElevated text-emerald-400 border-themeBorderStrong' : 'bg-themeElevated text-amber-500 border-themeBorderStrong'}`}>
                                             {ticket.status}
                                         </span>
                                     </div>
                                     <h3 className="text-base lg:text-lg font-black text-themeText mb-2">{ticket.subject}</h3>
-                                    <div className="text-xs lg:text-sm text-themeTextSec bg-themePanel p-4 rounded-lg border-theme border-themeBorder whitespace-pre-wrap font-medium">
+                                    <div className="text-xs lg:text-sm text-themeTextSec bg-themePanel p-4 rounded-lg border border-themeBorder whitespace-pre-wrap font-medium">
                                         {ticket.description}
                                     </div>
                                     <p className="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest text-themeTextSec mt-3">
@@ -154,9 +154,9 @@ export default function AdminHelpdesk({ isHubView = false }) {
                                 </div>
                             </div>
                             
-                            <div className="border-t-theme border-themeBorder pt-4 mt-2">
+                            <div className="border-t border-themeBorder pt-4 mt-2">
                                 {ticket.status === 'resolved' ? (
-                                    <div className="bg-themePanel p-4 rounded-lg border-theme border-themeBorder">
+                                    <div className="bg-themePanel p-4 rounded-lg border border-themeBorder">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 block mb-1">Admin Reply</span>
                                         <p className="text-sm font-bold text-themeText">{ticket.admin_reply}</p>
                                     </div>
@@ -166,20 +166,20 @@ export default function AdminHelpdesk({ isHubView = false }) {
                                             value={replyText[ticket.id] || ''}
                                             onChange={(e) => setReplyText(prev => ({ ...prev, [ticket.id]: e.target.value }))}
                                             placeholder="Write your reply here..."
-                                            className="flex-1 bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-sm font-bold text-themeText outline-none focus:border-themeAccent resize-none min-h-[80px]"
+                                            className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-4 py-3 text-sm font-bold text-themeText outline-none focus:border-themeAccent resize-none min-h-[80px]"
                                         />
                                         <div className="flex lg:flex-col gap-2 shrink-0">
                                             <button 
                                                 onClick={() => handleReply(ticket.id, false)}
                                                 disabled={submittingReply === ticket.id}
-                                                className="flex-1 lg:flex-none px-4 py-2 bg-themeAccent hover:bg-themeAccent/80 text-black font-black uppercase tracking-widest text-[10px] rounded-lg transition-colors border-theme border-themeBorder"
+                                                className="flex-1 lg:flex-none px-4 py-2 bg-themeAccent hover:bg-themeAccent/80 text-black font-black uppercase tracking-widest text-[10px] rounded-lg transition-colors border border-themeBorder"
                                             >
                                                 Send Reply
                                             </button>
                                             <button 
                                                 onClick={() => handleReply(ticket.id, true)}
                                                 disabled={submittingReply === ticket.id}
-                                                className="flex-1 lg:flex-none px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest text-[10px] rounded-lg transition-colors border-theme border-themeBorder"
+                                                className="flex-1 lg:flex-none px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest text-[10px] rounded-lg transition-colors border border-themeBorder"
                                             >
                                                 Resolve & Close
                                             </button>

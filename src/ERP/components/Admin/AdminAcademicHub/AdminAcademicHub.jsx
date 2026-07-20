@@ -5,6 +5,7 @@ import AdminTimetableBuilder from "../AdminTimetableBuilder/AdminTimetableBuilde
 import AdminAcademicCalendar from "../AdminAcademicCalendar/AdminAcademicCalendar";
 import AdminExaminations from "../Examinations/AdminExaminations";
 import AdminMentorship from "../AdminMentorship/AdminMentorship";
+import AdminBatchManager from "./AdminBatchManager";
 
 export default function AdminAcademicHub() {
     const [activeCategory, setActiveCategory] = useState("planning");
@@ -19,7 +20,8 @@ export default function AdminAcademicHub() {
         planning: [
             { id: "timetable", label: "Master Timetable", icon: "fa-calendar-days" },
             { id: "academic_calendar", label: "Academic Calendar", icon: "fa-calendar-alt" },
-            { id: "examinations", label: "Examinations", icon: "fa-file-shield" }
+            { id: "examinations", label: "Examinations", icon: "fa-file-shield" },
+            { id: "batch_manager", label: "Batch Manager", icon: "fa-users-rectangle" }
         ],
         success: [
             { id: "mentorship", label: "Mentorship Hub", icon: "fa-network-wired" }
@@ -93,6 +95,7 @@ export default function AdminAcademicHub() {
                 {activeTab === "timetable" && <AdminTimetableBuilder isHubView={true} />}
                 {activeTab === "academic_calendar" && <AdminAcademicCalendar isHubView={true} />}
                 {activeTab === "examinations" && <AdminExaminations isHubView={true} />}
+                {activeTab === "batch_manager" && <AdminBatchManager />}
                 {activeTab === "mentorship" && <AdminMentorship isHubView={true} />}
             </div>
         </div>

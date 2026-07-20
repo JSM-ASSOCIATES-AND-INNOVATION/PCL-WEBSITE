@@ -13,8 +13,8 @@ import Navbar from '../NAVBAR/Navbar';
 // customer base, or regulatory exposure.
 // ---------------------------------------------------------------------------
 
-const COMPANY_NAME = 'Ledgerline Software Pvt. Ltd.';
-const PRODUCT_NAME = 'Ledgerline ERP';
+const COMPANY_NAME = 'JSM INNOVATIONS Software Pvt. Ltd.';
+const PRODUCT_NAME = 'JSM INNOVATIONS ERP';
 const SUPPORT_EMAIL = 'support@ledgerline.app';
 const LEGAL_EMAIL = 'legal@ledgerline.app';
 const COMPANY_ADDRESS = '[Registered office address, city, state, PIN]';
@@ -221,7 +221,7 @@ export default function TermsAndConditions() {
               id="service"
               index={2}
               title="The service"
-              summary="Ledgerline ERP helps small businesses manage inventory, invoicing, accounting and HR in one place — provided as-is and improved over time."
+              summary="JSM INNOVATIONS ERP helps small businesses manage inventory, invoicing, accounting and HR in one place — provided as-is and improved over time."
             >
               <p>
                 {PRODUCT_NAME} is a cloud-based enterprise resource planning platform covering modules such as
@@ -295,7 +295,7 @@ export default function TermsAndConditions() {
               id="your-data"
               index={6}
               title="Your data"
-              summary="Whatever business data you put into Ledgerline — invoices, inventory, employee records — stays yours. We're processing it on your behalf, not claiming ownership."
+              summary="Whatever business data you put into JSM INNOVATIONS — invoices, inventory, employee records — stays yours. We're processing it on your behalf, not claiming ownership."
             >
               <p>
                 As between you and us, you own all data, records, and content you upload to or generate within
@@ -314,7 +314,7 @@ export default function TermsAndConditions() {
               id="acceptable-use"
               index={7}
               title="Acceptable use"
-              summary="Use Ledgerline for legitimate business purposes — no reverse engineering, reselling access, overloading the system, or illegal activity."
+              summary="Use JSM INNOVATIONS for legitimate business purposes — no reverse engineering, reselling access, overloading the system, or illegal activity."
             >
               <p>You agree not to:</p>
               <ul className="list-disc pl-6 space-y-2 text-brand-muted">
@@ -356,7 +356,7 @@ export default function TermsAndConditions() {
               id="integrations"
               index={9}
               title="Third-party integrations"
-              summary="You can connect Ledgerline to other tools — we're not responsible for how those third-party services handle your data."
+              summary="You can connect JSM INNOVATIONS to other tools — we're not responsible for how those third-party services handle your data."
             >
               <p>
                 {PRODUCT_NAME} may allow you to connect third-party services, such as payment gateways, banks,

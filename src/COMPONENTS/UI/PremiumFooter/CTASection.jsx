@@ -3,8 +3,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './PremiumFooter.module.css';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { useSite } from "../../../CONTEXT/SiteContext";
 
 export default function CTASection() {
+  const siteContext = useSite();
+  const isAdmissionsOpen = siteContext?.isAdmissionsOpen;
+
   return (
     <div className={`relative rounded-[32px] bg-gradient-to-br from-white/5 to-white/0 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden p-8 md:p-12 lg:p-16 mb-16 flex flex-col lg:flex-row items-center justify-between gap-10 text-center lg:text-left`}>
       {/* Background Effects */}
@@ -21,11 +25,17 @@ export default function CTASection() {
       </div>
       
       <div className="relative z-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto shrink-0 justify-center">
-        <Link to="/apply" className="group flex items-center justify-center gap-3 px-8 py-4 bg-[var(--primary-color)] text-black font-bold uppercase tracking-widest text-xs rounded-full hover:scale-105 hover:shadow-[0_0_30px_var(--primary-glow)] transition-all">
-          Apply Now <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-        </Link>
-        <Link to="/campus/gallery" className="group flex items-center justify-center gap-3 px-8 py-4 bg-transparent border border-white/20 text-white font-bold uppercase tracking-widest text-xs rounded-full hover:bg-white/5 hover:border-white/40 transition-all hover:scale-105">
-          Campus Tour <ArrowUpRight size={16} className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+        {isAdmissionsOpen ? (
+          <Link to="/apply" className={`${styles.magneticBtn} ${styles.primaryBtn}`}>
+            Apply Now <ArrowRight size={16} />
+          </Link>
+        ) : (
+          <Link to="/contact" className={`${styles.magneticBtn} ${styles.primaryBtn}`}>
+            Enquire Now <ArrowRight size={16} />
+          </Link>
+        )}
+        <Link to="/campus/gallery" className={`${styles.magneticBtn} ${styles.secondaryBtn}`}>
+          Campus Tour <ArrowUpRight size={16} />
         </Link>
       </div>
     </div>

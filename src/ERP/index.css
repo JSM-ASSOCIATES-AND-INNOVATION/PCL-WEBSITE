@@ -13,16 +13,32 @@
     transition: background-color 5000s ease-in-out 0s;
   }
 
+  /* Dropdown Select Fix for themes */
+  select {
+    @apply appearance-none outline-none border;
+    background-color: var(--bg-panel);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    color-scheme: dark light;
+  }
+  select:focus {
+    border-color: var(--accent);
+  }
+  select option {
+    background-color: var(--bg-panel);
+    color: var(--text-primary);
+  }
+
   :root {
     --bg-app: #080808;
     --bg-panel: #121212;
     --bg-elevated: #1C1C1C;
     --text-primary: #F5F5F0;
     --text-secondary: #A1A1AA;
-    --accent: #D4AF37;
+    --accent: #FFC107;
     --accent-muted: #C5A880;
-    --border-color: rgba(212, 175, 55, 0.1);
-    --border-strong: rgba(212, 175, 55, 0.2);
+    --border-color: rgba(255, 193, 7, 0.1);
+    --border-strong: rgba(255, 193, 7, 0.2);
     --radius-panel: 0.75rem;
     --radius-btn: 0.5rem;
     --border-width: 1px;

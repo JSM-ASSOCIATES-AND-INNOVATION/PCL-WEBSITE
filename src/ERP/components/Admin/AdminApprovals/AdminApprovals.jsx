@@ -13,6 +13,7 @@ export default function AdminApprovals() {
     const [facultyLeaves, setFacultyLeaves] = useState([]);
     const [grievances, setGrievances] = useState([]);
     const [pendingDocuments, setPendingDocuments] = useState([]);
+    const [profileUpdates, setProfileUpdates] = useState([]);
 
     useEffect(() => {
         fetchData();
@@ -24,10 +25,11 @@ export default function AdminApprovals() {
 
             const [
                 { data: leavesData },
-                { data: grievancesData }
+                { data: grievancesData },
+                { data: documentsData },
+                { data: profileUpdatesData }
             ] = await Promise.all([
                 // Fetch faculty leaves
-
                 supabase.from('faculty_leaves').select('*').order('created_at', { ascending: false }),
                 
                 // Fetch escalated grievances (assigned_to IS NULL)
@@ -40,7 +42,13 @@ export default function AdminApprovals() {
                 supabase.from('student_documents')
                     .select('*, profiles(full_name, erp_id)')
                     .eq('status', 'pending')
-                    .order('uploaded_at', { ascending: false })
+                    .order('uploaded_at', { ascending: false }),
+                    
+                // Fetch profile update requests
+                supabase.from('profile_update_requests')
+                    .select('*, profiles(full_name, erp_id)')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false })
             ]);
 
             const { data: allProfiles } = await supabase.from('profiles').select('id, full_name, role');
@@ -52,7 +60,8 @@ export default function AdminApprovals() {
 
             setFacultyLeaves(enrichedLeaves);
             setGrievances(grievancesData || []);
-            setPendingDocuments(arguments[0][2]?.data || []);
+            setPendingDocuments(documentsData || []);
+            setProfileUpdates(profileUpdatesData || []);
 
         } catch (error) {
             console.error("Error fetching admin approvals data:", error);
@@ -187,6 +196,56 @@ export default function AdminApprovals() {
         }
     };
 
+    const handleProfileUpdateAction = async (request, newStatus, remarks = "") => {
+        setIsProcessing(true);
+        try {
+            if (newStatus === 'approved') {
+                // Apply changes to profiles table
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update({
+                        phone: request.requested_changes?.phone,
+                        blood_group: request.requested_changes?.blood_group,
+                        dob: request.requested_changes?.dob,
+                        avatar_url: request.requested_changes?.avatar_url,
+                        questionnaire_data: request.requested_changes?.questionnaire_data
+                    })
+                    .eq('id', request.student_id);
+                
+                if (profileError) throw profileError;
+            }
+
+            const { error: updateError } = await supabase
+                .from('profile_update_requests')
+                .update({ status: newStatus, admin_remarks: remarks })
+                .eq('id', request.id);
+            
+            if (updateError) throw updateError;
+
+            // Notify Requester
+            const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+            await supabase.from('notices').insert([{
+                notice_id: noticeId,
+                title: `Profile Update ${newStatus}`,
+                category: 'System Alert',
+                target_audience: 'person',
+                target_id: request.student_id,
+                priority: 'normal',
+                content: `Your profile update request has been ${newStatus}. ${remarks ? 'Remarks: ' + remarks : ''}`,
+                author_name: 'Admin',
+                author_id: null
+            }]);
+
+            window.erpDialog.alert(`Profile update request marked as ${newStatus}.`);
+            fetchData();
+        } catch (error) {
+            console.error("Error updating profile request:", error);
+            window.erpDialog.alert("Failed to process profile update request.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
     const getStatusBadge = (status) => {
         switch(status?.toLowerCase()) {
             case 'approved':
@@ -239,6 +298,12 @@ export default function AdminApprovals() {
                         className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'document_verification' ? 'bg-blue-500 text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)] border border-blue-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
                     >
                         Document Verification
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('profile_updates')}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'profile_updates' ? 'bg-amber-500 text-[#0a0a0a] shadow-[0_4px_15px_rgba(245,158,11,0.3)] border border-amber-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                    >
+                        Profile Updates
                     </button>
                 </div>
             </div>
@@ -385,6 +450,50 @@ export default function AdminApprovals() {
                                                 <button onClick={() => handleDocumentAction(doc.id, 'verified')} disabled={isProcessing} className="flex-1 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Verify</button>
                                                 <button onClick={() => handleDocumentAction(doc.id, 'rejected')} disabled={isProcessing} className="flex-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Reject</button>
                                             </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'profile_updates' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {profileUpdates.length === 0 ? (
+                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
+                                    <p className="text-sm font-semibold text-themeTextSec">No pending profile update requests.</p>
+                                </div>
+                            ) : (
+                                profileUpdates.map(req => (
+                                    <div key={req.id} className={`${theme.layout.panel} rounded-themePanel border-amber-500/20 border p-5 flex flex-col gap-4 relative overflow-hidden`}>
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                                        
+                                        <div className="flex justify-between items-start pl-2">
+                                            <div>
+                                                <p className="text-sm font-black text-themeText mb-0.5">{req.profiles?.full_name}</p>
+                                                <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">{req.profiles?.erp_id}</p>
+                                            </div>
+                                            {getStatusBadge(req.status)}
+                                        </div>
+                                        
+                                        <div className="bg-themeElevated p-3 rounded-lg border-theme border-themeBorder">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 border-b border-themeBorderStrong pb-1">Requested Changes</p>
+                                            <ul className="text-xs text-themeText flex flex-col gap-1.5">
+                                                {req.requested_changes?.phone && <li><span className="text-themeTextSec">Phone:</span> {req.requested_changes.phone}</li>}
+                                                {req.requested_changes?.blood_group && <li><span className="text-themeTextSec">Blood:</span> {req.requested_changes.blood_group}</li>}
+                                                {req.requested_changes?.dob && <li><span className="text-themeTextSec">DOB:</span> {req.requested_changes.dob}</li>}
+                                                {req.requested_changes?.avatar_url && <li><span className="text-themeTextSec">Avatar:</span> <a href={req.requested_changes.avatar_url} target="_blank" rel="noreferrer" className="text-amber-500 hover:underline">View New Image</a></li>}
+                                                {req.requested_changes?.questionnaire_data?.currentAddress && <li><span className="text-themeTextSec">Address:</span> {req.requested_changes.questionnaire_data.currentAddress}</li>}
+                                                {req.requested_changes?.questionnaire_data?.emergencyName && <li><span className="text-themeTextSec">Emergency:</span> {req.requested_changes.questionnaire_data.emergencyName}</li>}
+                                            </ul>
+                                        </div>
+
+                                        <div className="flex gap-2 mt-auto">
+                                            <button onClick={() => handleProfileUpdateAction(req, 'approved', 'Approved by Administration')} disabled={isProcessing} className="flex-1 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white border border-emerald-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Approve</button>
+                                            <button onClick={() => {
+                                                const remarks = window.prompt("Reason for rejection:");
+                                                if(remarks) handleProfileUpdateAction(req, 'rejected', remarks);
+                                            }} disabled={isProcessing} className="flex-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Reject</button>
                                         </div>
                                     </div>
                                 ))

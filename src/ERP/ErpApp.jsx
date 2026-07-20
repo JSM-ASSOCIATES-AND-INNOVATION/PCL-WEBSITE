@@ -392,6 +392,17 @@ export default function App() {
               <div className="flex-1 p-3 sm:p-8 pb-28 lg:pb-8 flex flex-col">
                 {renderContent()}
               </div>
+
+              {/* ERP Footer with Privacy & Terms */}
+              <div className="w-full shrink-0 flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-themeBorder bg-themePanel/30 text-xs font-medium text-themeTextSec mt-auto z-10 relative">
+                <div className="flex gap-4 mb-2 sm:mb-0">
+                  <a href="/privacy" target="_blank" className="hover:text-themeText transition-colors">Privacy Policy</a>
+                  <a href="/terms" target="_blank" className="hover:text-themeText transition-colors">Terms of Service</a>
+                </div>
+                <div>
+                  &copy; {new Date().getFullYear()} JSM INNOVATIONS. Data Processor.
+                </div>
+              </div>
             </div>
           </main>
         </div>

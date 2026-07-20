@@ -12,7 +12,6 @@ export default function AdminOperationsHub() {
     const tabs = [
         { id: "users", label: "User Accounts", icon: "fa-users-gear" },
         { id: "leaves", label: "Leave Management", icon: "fa-calendar-day" },
-        { id: "notices", label: "Notice Board", icon: "fa-bullhorn" },
         { id: "approvals", label: "Approvals", icon: "fa-check-to-slot" }
     ];
 
@@ -57,7 +56,6 @@ export default function AdminOperationsHub() {
             <div className="animate-fade-in">
                 {activeTab === "users" && <UserManagement isHubView={true} />}
                 {activeTab === "leaves" && <AdminLeaveManagement isHubView={true} />}
-                {activeTab === "notices" && <AdminNotices isHubView={true} />}
                 {activeTab === "approvals" && <AdminApprovals isHubView={true} />}
             </div>
         </div>

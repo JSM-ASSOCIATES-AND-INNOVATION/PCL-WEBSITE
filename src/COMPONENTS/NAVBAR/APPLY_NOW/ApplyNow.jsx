@@ -66,18 +66,22 @@ export default function ApplyNow() {
 
       if (error) throw error;
       
-      // Notify Admin
-      const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
-      await supabase.from('notices').insert([{
-        notice_id: noticeId,
-        title: 'New Admission Application',
-        category: 'System Alert',
-        target_audience: 'admin',
-        priority: 'high',
-        content: `A new admission application has been submitted by ${formData.name} for ${formData.program}.`,
-        author_name: 'System',
-        author_id: null
-      }]);
+      // Optionally Notify Admin (don't fail the whole application if this fails due to RLS)
+      try {
+        const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
+        await supabase.from('notices').insert([{
+          notice_id: noticeId,
+          title: 'New Admission Application',
+          category: 'System Alert',
+          target_audience: 'admin',
+          priority: 'high',
+          content: `A new admission application has been submitted by ${formData.name} for ${formData.program}.`,
+          author_name: 'System',
+          author_id: null
+        }]);
+      } catch (noticeErr) {
+        console.warn("Could not post notice (expected if RLS blocks anon):", noticeErr);
+      }
 
       setIsSuccess(true);
       setFormData({

@@ -12,11 +12,13 @@ export default function BlogManager({ isHubView = false }) {
         title: "",
         slug: "",
         author_name: "",
+        author_erp_id: "",
         image_url: "",
         content: "",
         is_public: false
     });
     const [authorContact, setAuthorContact] = useState(null);
+    const [verifiedProfile, setVerifiedProfile] = useState(null);
 
     useEffect(() => {
         fetchBlogs();
@@ -45,7 +47,7 @@ export default function BlogManager({ isHubView = false }) {
     const handleCreateNew = () => {
         setCurrentBlog(null);
         setAuthorContact(null);
-        setFormData({ title: "", slug: "", author_name: "", image_url: "", content: "", is_public: false });
+        setFormData({ title: "", slug: "", author_name: "", author_erp_id: "", image_url: "", content: "", is_public: false });
         setIsEditing(true);
     };
 
@@ -56,11 +58,35 @@ export default function BlogManager({ isHubView = false }) {
             title: blog.title || "",
             slug: blog.slug || "",
             author_name: blog.author_name || "",
+            author_erp_id: blog.author_erp_id || "",
             image_url: blog.image_url || "",
             content: blog.content || "",
             is_public: blog.is_public || false
         });
+        setVerifiedProfile(null);
         setIsEditing(true);
+    };
+
+    const verifyErpId = async () => {
+        if (!formData.author_erp_id) {
+            setVerifiedProfile({ error: "Please enter an ERP ID first." });
+            return;
+        }
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('full_name, role')
+                .eq('erp_id', formData.author_erp_id)
+                .single();
+            
+            if (error || !data) {
+                setVerifiedProfile({ error: "No user found with this ERP ID." });
+            } else {
+                setVerifiedProfile({ success: `${data.full_name} (${data.role})` });
+            }
+        } catch (err) {
+            setVerifiedProfile({ error: "Error verifying ID." });
+        }
     };
 
     const handleSave = async (e) => {
@@ -70,6 +96,7 @@ export default function BlogManager({ isHubView = false }) {
                 title: formData.title,
                 slug: formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
                 author_name: formData.author_name,
+                author_erp_id: formData.author_erp_id || null,
                 image_url: formData.image_url,
                 content: formData.content,
                 is_public: formData.is_public,
@@ -98,19 +125,20 @@ export default function BlogManager({ isHubView = false }) {
     };
 
     const handleReject = async () => {
-        if (!window.confirm("Are you sure you want to reject and permanently delete this blog post?")) return;
+        const actionText = currentBlog?.is_public ? "delete" : "reject and permanently delete";
+        if (!window.confirm(`Are you sure you want to ${actionText} this blog post?`)) return;
 
         try {
             if (currentBlog?.id) {
                 const { error } = await supabase.from('admin_notices').delete().eq('id', currentBlog.id);
                 if (error) throw error;
-                window.erpDialog?.alert("Blog rejected and removed from database.");
+                window.erpDialog?.alert(`Blog ${currentBlog?.is_public ? 'deleted' : 'rejected'} and removed from database.`);
             }
             setIsEditing(false);
             fetchBlogs();
         } catch (error) {
             console.error("Reject failed.", error);
-            window.erpDialog?.alert("Could not reject the post.");
+            window.erpDialog?.alert(`Could not ${actionText} the post.`);
             setIsEditing(false);
         }
     };
@@ -121,16 +149,17 @@ export default function BlogManager({ isHubView = false }) {
             const { error } = await supabase.from('admin_notices').update({ is_public: true }).eq('id', currentBlog.id);
             if (error) throw error;
 
-            if (currentBlog.author_erp_id) {
+            if (currentBlog.author_erp_id || formData.author_erp_id) {
+                const authorId = formData.author_erp_id || currentBlog.author_erp_id;
                 const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
                 await supabase.from('notices').insert([{
                     notice_id: noticeId,
                     title: 'Blog Published!',
                     category: 'System Alert',
                     target_audience: 'person',
-                    target_id: currentBlog.author_erp_id,
+                    target_id: authorId,
                     priority: 'high',
-                    content: `Congratulations! Your blog post titled "${currentBlog.title}" has been approved and published on the Prudentia website.`,
+                    content: `Congratulations! Your blog post titled "${formData.title}" has been approved and published on the Prudentia website.`,
                     author_name: 'Admin',
                     author_id: null
                 }]);
@@ -145,32 +174,38 @@ export default function BlogManager({ isHubView = false }) {
     };
 
     const handleRejectERP = async () => {
-        if (!window.confirm("Are you sure you want to reject this blog and notify the author via ERP?")) return;
+        const actionVerb = currentBlog?.is_public ? "delete" : "reject";
+        if (!window.confirm(`Are you sure you want to ${actionVerb} this blog and notify the author via ERP?`)) return;
         try {
             if (!currentBlog?.id) return;
             const { error } = await supabase.from('admin_notices').delete().eq('id', currentBlog.id);
             if (error) throw error;
 
-            if (currentBlog.author_erp_id) {
+            if (currentBlog.author_erp_id || formData.author_erp_id) {
+                const authorId = formData.author_erp_id || currentBlog.author_erp_id;
+                const content = currentBlog?.is_public
+                    ? `Your published blog post titled "${formData.title}" has been removed from the Prudentia website by an administrator.`
+                    : `Thank you for your submission titled "${formData.title}". Unfortunately, it was not accepted for publication at this time.`;
+
                 const noticeId = `CIR-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000) + 1000}`;
                 await supabase.from('notices').insert([{
                     notice_id: noticeId,
-                    title: 'Blog Submission Update',
+                    title: currentBlog?.is_public ? 'Blog Removed' : 'Blog Submission Update',
                     category: 'System Alert',
                     target_audience: 'person',
-                    target_id: currentBlog.author_erp_id,
+                    target_id: authorId,
                     priority: 'normal',
-                    content: `Thank you for your submission titled "${currentBlog.title}". Unfortunately, it was not accepted for publication at this time.`,
+                    content: content,
                     author_name: 'Admin',
                     author_id: null
                 }]);
             }
-            window.erpDialog?.alert("Blog rejected and author notified via ERP.");
+            window.erpDialog?.alert(`Blog ${actionVerb}ed and author notified via ERP.`);
             setIsEditing(false);
             fetchBlogs();
         } catch (error) {
             console.error("Reject failed", error);
-            window.erpDialog?.alert("Failed to reject the blog.");
+            window.erpDialog?.alert(`Failed to ${actionVerb} the blog.`);
         }
     };
 
@@ -217,7 +252,7 @@ export default function BlogManager({ isHubView = false }) {
                                             <i className="fa-solid fa-bell text-sm"></i> ERP Approve
                                         </button>
                                         <button type="button" onClick={handleRejectERP} className="px-3 py-2 bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white border border-purple-500/20 text-[10px] font-black uppercase tracking-widest rounded-lg transition-colors flex items-center gap-2">
-                                            <i className="fa-solid fa-bell text-sm"></i> ERP Reject
+                                            <i className="fa-solid fa-bell text-sm"></i> {currentBlog?.is_public ? 'ERP Notify Delete' : 'ERP Reject'}
                                         </button>
                                         <div className="w-[1px] h-6 bg-themeBorderStrong mx-2"></div>
                                     </>
@@ -251,10 +286,21 @@ export default function BlogManager({ isHubView = false }) {
                         </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Author Name</label>
                             <input type="text" className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.author_name} onChange={e => setFormData({...formData, author_name: e.target.value})} placeholder="e.g. John Doe" />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Author ERP ID</label>
+                            <div className="flex items-center gap-2">
+                                <input type="text" className="flex-1 bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.author_erp_id || ''} onChange={e => { setFormData({...formData, author_erp_id: e.target.value}); setVerifiedProfile(null); }} placeholder="e.g. 26BAL0001" />
+                                <button type="button" onClick={verifyErpId} className="px-4 py-3 bg-themeElevated hover:bg-themeBorder border border-themeBorder rounded-lg text-themeText text-[10px] font-black uppercase tracking-widest transition-colors shrink-0">
+                                    Verify
+                                </button>
+                            </div>
+                            {verifiedProfile?.success && <span className="text-[10px] font-bold text-emerald-500"><i className="fa-solid fa-check-circle mr-1"></i> Verified: {verifiedProfile.success}</span>}
+                            {verifiedProfile?.error && <span className="text-[10px] font-bold text-rose-500"><i className="fa-solid fa-triangle-exclamation mr-1"></i> {verifiedProfile.error}</span>}
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Status</label>
@@ -277,7 +323,7 @@ export default function BlogManager({ isHubView = false }) {
                     <div className="flex justify-between mt-4">
                         {currentBlog ? (
                             <button type="button" onClick={handleReject} className="px-6 py-3 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 text-xs font-black uppercase tracking-widest rounded-lg transition-colors">
-                                Reject & Delete
+                                {currentBlog?.is_public ? 'Delete Post' : 'Reject & Delete'}
                             </button>
                         ) : <div></div>}
                         <button type="submit" className="px-6 py-3 bg-themeAccent text-[#0a0a0a] hover:opacity-90 text-xs font-black uppercase tracking-widest rounded-lg shadow-md transition-colors">

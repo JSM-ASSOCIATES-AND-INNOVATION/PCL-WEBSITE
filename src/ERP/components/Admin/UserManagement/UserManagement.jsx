@@ -8,6 +8,7 @@ import { supabase } from '../../../lib/supabase/supabaseClient';
 import { theme } from "../../../theme";
 import { createClient } from '@supabase/supabase-js';
 import AdminStudentCVModal from './AdminStudentCVModal';
+import AdminUserProfileModal from './AdminUserProfileModal';
 
 // Safe provisioning client so admin doesn't get logged out
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
@@ -28,6 +29,10 @@ export default function UserManagement({ isHubView = false }) {
 
     const [selectedQuestionnaireUser, setSelectedQuestionnaireUser] = useState(null);
     const [qFormData, setQFormData] = useState({});
+
+    // Profile Modal State
+    const [selectedProfileUser, setSelectedProfileUser] = useState(null);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     // Provisioning Form State
     const [newUserRole, setNewUserRole] = useState("student");
@@ -146,6 +151,10 @@ export default function UserManagement({ isHubView = false }) {
         setShowProvisionModal(true);
     };
 
+    const closeProvisionWizard = () => {
+        setShowProvisionModal(false);
+    };
+
     const handleProvisionSubmit = async (e) => {
         e.preventDefault();
         if (!bulkEmails.trim() || !assignment) return;
@@ -229,7 +238,7 @@ export default function UserManagement({ isHubView = false }) {
                 } catch (emailErr) {
                     console.error("EmailJS Error:", emailErr);
                     setProvisionLogs(prev => [...prev, `[${generatedId}] WARNING: ${emailErr.message}`]);
-                    log(`[${generatedId}] WARNING: Identity created, but EmailJS dispatch failed. Manual distribution required. PW: ${generatedPassword}`);
+                    setProvisionLogs(prev => [...prev, `[${generatedId}] WARNING: Identity created, but EmailJS dispatch failed. Manual distribution required. PW: ${generatedPassword}`]);
                 }
             } catch (err) {
                 console.error(err);
@@ -237,7 +246,7 @@ export default function UserManagement({ isHubView = false }) {
             }
         }
         
-        log("--- Mass provisioning pipeline completed successfully ---");
+        setProvisionLogs(prev => [...prev, "--- Mass provisioning pipeline completed successfully ---"]);
         
         setIsProvisioning(false);
         setProvisionSuccess(true);
@@ -400,12 +409,12 @@ export default function UserManagement({ isHubView = false }) {
                                             <div className={`w-3 h-3 rounded-full border-2 ${user.status === 'Active' ? 'bg-emerald-500 border-emerald-900 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-rose-500 border-rose-900 shadow-[0_0_8px_rgba(244,63,94,0.4)]'}`} title={user.status}></div>
                                         </td>
                                         <td className="p-4 lg:p-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 ${activeTab === 'students' ? 'bg-themeElevated text-themeAccent border-themeBorderStrong' : 'bg-themeElevated text-blue-400 border-themeBorderStrong'}`}>
+                                            <div className="flex items-center gap-4 cursor-pointer group/profile" onClick={() => { setSelectedProfileUser(user); setIsProfileModalOpen(true); }}>
+                                                <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 group-hover/profile:shadow-lg transition-shadow ${activeTab === 'students' ? 'bg-themeElevated text-themeAccent border-themeBorderStrong' : 'bg-themeElevated text-blue-400 border-themeBorderStrong'}`}>
                                                     {user.name.charAt(0)}
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="text-sm font-black text-themeText group-hover:text-themeAccent transition-colors truncate">{user.name}</p>
+                                                    <p className="text-sm font-black text-themeText group-hover/profile:text-themeAccent transition-colors truncate">{user.name}</p>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <span className={`text-[10px] font-bold ${theme.text.muted} uppercase tracking-widest shrink-0`}>{user.id}</span>
                                                         <span className="w-1 h-1 bg-neutral-700 rounded-full shrink-0"></span>
@@ -461,12 +470,12 @@ export default function UserManagement({ isHubView = false }) {
                         ) : currentList.map((user, i) => (
                             <div key={i} className="p-4 flex flex-col gap-4">
                                 <div className="flex items-start justify-between gap-3">
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 ${activeTab === 'students' ? 'bg-themeElevated text-themeAccent border-themeBorderStrong' : 'bg-themeElevated text-blue-400 border-themeBorderStrong'}`}>
+                                    <div className="flex items-center gap-3 min-w-0 cursor-pointer group/profile" onClick={() => { setSelectedProfileUser(user); setIsProfileModalOpen(true); }}>
+                                        <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 group-hover/profile:shadow-lg transition-shadow ${activeTab === 'students' ? 'bg-themeElevated text-themeAccent border-themeBorderStrong' : 'bg-themeElevated text-blue-400 border-themeBorderStrong'}`}>
                                             {user.name.charAt(0)}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-sm font-black text-themeText truncate">{user.name}</p>
+                                            <p className="text-sm font-black text-themeText group-hover/profile:text-themeAccent transition-colors truncate">{user.name}</p>
                                             <div className="flex items-center gap-2 mt-0.5">
                                                 <span className={`text-[10px] font-bold ${theme.text.muted} uppercase tracking-widest shrink-0`}>{user.id}</span>
                                             </div>
@@ -715,6 +724,13 @@ export default function UserManagement({ isHubView = false }) {
                     </div>
                 </div>
             )}
+            {/* User Profile Modal */}
+            <AdminUserProfileModal 
+                user={selectedProfileUser} 
+                isOpen={isProfileModalOpen} 
+                onClose={() => setIsProfileModalOpen(false)} 
+            />
+
         </div>
     );
 }

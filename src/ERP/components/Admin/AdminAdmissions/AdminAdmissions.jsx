@@ -265,20 +265,33 @@ export default function AdminAdmissions({ isHubView = false }) {
                 </div>
             )}
 
-            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-2'}`}>
-                {['all', 'pending', 'approved', 'rejected'].map(f => (
-                    <button 
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
-                            filter === f 
-                                ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
-                                : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
-                        }`}
+            <div className={`flex items-center justify-between relative z-10 flex-wrap gap-4 ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-2'}`}>
+                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar shadow-md">
+                    {['all', 'pending', 'approved', 'rejected'].map(f => (
+                        <button 
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
+                                filter === f 
+                                    ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
+                                    : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
+                            }`}
+                        >
+                            {f}
+                        </button>
+                    ))}
+                </div>
+
+                {isHubView && (
+                    <button
+                        onClick={handleToggleAdmissions}
+                        disabled={isTogglingStatus}
+                        className={`px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-md flex items-center gap-2 border ${isAdmissionsOpen ? 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 border-rose-500/20' : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 border-emerald-500/20'}`}
                     >
-                        {f}
+                        <i className={`fa-solid ${isAdmissionsOpen ? 'fa-lock' : 'fa-lock-open'}`}></i>
+                        {isTogglingStatus ? 'Processing...' : (isAdmissionsOpen ? 'Close Admissions' : 'Open Admissions')}
                     </button>
-                ))}
+                )}
             </div>
 
             {isLoading ? (
