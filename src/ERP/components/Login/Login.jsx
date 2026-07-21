@@ -189,7 +189,7 @@ export default function Login() {
                                         <button 
                                             type="button" 
                                             onClick={() => setShowForgotModal(true)}
-                                            className="text-[10px] font-bold text-themeAccent hover:text-indigo-400 transition-colors"
+                                            className="relative z-50 text-[10px] font-bold text-themeAccent hover:text-indigo-400 transition-colors cursor-pointer"
                                         >
                                             Forgot?
                                         </button>
