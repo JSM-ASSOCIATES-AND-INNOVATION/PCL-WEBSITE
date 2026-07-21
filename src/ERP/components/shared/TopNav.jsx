@@ -178,6 +178,20 @@ export default function TopNav({ userSession, activeTab, setActiveTab, onLogout 
                         </div>
                     </button>
                     
+                    <div className="w-px h-6 bg-themeBorderStrong mx-1 hidden sm:block"></div>
+                    
+                    <button 
+                        onClick={() => {
+                            onLogout();
+                            window.location.href = '/';
+                        }}
+                        title="Return to Main Website"
+                        className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-themeElevated/50 hover:bg-themeBorder text-themeTextSec hover:text-themeText text-[10px] font-black uppercase tracking-widest transition-all border border-themeBorderStrong outline-none"
+                    >
+                        <i className="fa-solid fa-earth-americas"></i>
+                        <span>Website</span>
+                    </button>
+
                     <div className="w-px h-6 bg-themeBorderStrong mx-1"></div>
                     
                     <button 

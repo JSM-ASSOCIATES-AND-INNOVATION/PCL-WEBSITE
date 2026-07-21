@@ -93,8 +93,19 @@ export default function Login() {
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02]"></div>
             </div>
 
+            {/* --- TOP NAV ACTIONS --- */}
+            <div className="absolute top-6 left-6 lg:top-8 lg:left-8 z-50">
+                <a 
+                    href="/" 
+                    className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-themeElevated/80 backdrop-blur-md border border-themeBorderStrong text-themeTextSec hover:text-themeText hover:border-themeAccent transition-all group shadow-lg"
+                >
+                    <i className="fa-solid fa-arrow-left text-sm group-hover:-translate-x-1 transition-transform"></i>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Main Website</span>
+                </a>
+            </div>
+
             {/* --- MAIN CONTAINER --- */}
-            <div className="relative z-10 w-full max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 p-6 lg:p-12 min-h-screen lg:min-h-0">
+            <div className="relative z-10 w-full max-w-[1200px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-20 p-6 lg:p-12 min-h-screen lg:min-h-0 pt-24 lg:pt-12">
                 
                 {/* LEFT: PCL BRANDING & HERO */}
                 <div className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left animate-fade-in mt-10 lg:mt-0">
