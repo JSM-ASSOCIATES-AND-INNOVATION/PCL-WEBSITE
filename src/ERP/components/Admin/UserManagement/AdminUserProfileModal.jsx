@@ -116,8 +116,8 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
     if (!isOpen || !user) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-themePanel w-full max-w-2xl rounded-themePanel lg:rounded-themePanel overflow-hidden border-theme border-themeBorder flex flex-col shadow-2xl">
+        <div className="fixed inset-0 z-[200] flex flex-col bg-themeApp animate-fade-in font-sans overflow-hidden">
+            <div className="w-full max-w-5xl mx-auto flex flex-col h-screen relative z-10 bg-themePanel shadow-2xl border-x border-themeBorder">
                 
                 {/* Header Profile Card */}
                 <div className={`p-6 lg:p-8 bg-gradient-to-r ${user.role === 'student' ? 'from-themeAccent to-themeAccent/80' : 'from-blue-600 to-blue-500'} relative overflow-hidden shrink-0`}>

@@ -37,16 +37,22 @@ export default function ForgotPasswordModal({ onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in font-sans">
-            <div className="bg-themePanel w-full max-w-md rounded-[2rem] border border-themeBorder shadow-2xl p-8 relative overflow-hidden flex flex-col">
-                
-                {/* Close Button */}
-                <button 
-                    onClick={onClose}
-                    className="absolute top-6 right-6 w-8 h-8 rounded-full bg-themeElevated hover:bg-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors outline-none z-10"
-                >
-                    <i className="fa-solid fa-times"></i>
-                </button>
+        <div className="fixed inset-0 z-[200] flex flex-col bg-themeApp animate-fade-in font-sans overflow-y-auto">
+            {/* Close Button - Moved outside the inner container to ensure it's always clickable and visible */}
+            <button 
+                type="button"
+                onClick={onClose}
+                className="fixed top-6 right-6 lg:top-10 lg:right-10 w-12 h-12 rounded-full bg-themeElevated hover:bg-themeBorder border border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:text-themeText transition-all outline-none z-[250] shadow-2xl cursor-pointer hover:scale-110"
+            >
+                <i className="fa-solid fa-times text-xl"></i>
+            </button>
+
+            {/* Subtle Background Effects */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-themeAccent opacity-[0.05] mix-blend-screen filter blur-[120px] animate-pulse-slow"></div>
+            </div>
+
+            <div className="w-full max-w-xl mx-auto p-6 lg:p-12 min-h-screen flex flex-col justify-center relative z-10">
 
                 <div className="mb-8 relative z-10">
                     <div className="w-14 h-14 rounded-2xl bg-themeElevated border border-themeBorderStrong flex items-center justify-center mb-6 shadow-inner">

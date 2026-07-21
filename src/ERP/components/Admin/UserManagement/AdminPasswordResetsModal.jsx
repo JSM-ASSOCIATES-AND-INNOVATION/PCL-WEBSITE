@@ -114,16 +114,22 @@ export default function AdminPasswordResetsModal({ onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in font-sans">
-            <div className="bg-themePanel w-full max-w-3xl rounded-[2rem] border border-themeBorder shadow-2xl p-8 relative overflow-hidden flex flex-col max-h-[90vh]">
-                
-                {/* Close Button */}
-                <button 
-                    onClick={onClose}
-                    className="absolute top-6 right-6 w-8 h-8 rounded-full bg-themeElevated hover:bg-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors outline-none z-10"
-                >
-                    <i className="fa-solid fa-times"></i>
-                </button>
+        <div className="fixed inset-0 z-[200] flex flex-col bg-themeApp animate-fade-in font-sans overflow-hidden">
+            {/* Close Button - Fixed to top right */}
+            <button 
+                type="button"
+                onClick={onClose}
+                className="absolute top-6 right-6 lg:top-10 lg:right-10 w-12 h-12 rounded-full bg-themeElevated hover:bg-themeBorder border border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:text-themeText transition-all outline-none z-[250] shadow-2xl cursor-pointer hover:scale-110"
+            >
+                <i className="fa-solid fa-times text-xl"></i>
+            </button>
+
+            {/* Subtle Background Effects */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-themeAccent opacity-[0.05] mix-blend-screen filter blur-[120px] animate-pulse-slow"></div>
+            </div>
+
+            <div className="w-full max-w-5xl mx-auto p-6 lg:p-12 flex flex-col h-screen relative z-10">
 
                 <div className="mb-8">
                     <h2 className="text-2xl font-black text-themeText tracking-tight mb-2">Password Reset Requests</h2>

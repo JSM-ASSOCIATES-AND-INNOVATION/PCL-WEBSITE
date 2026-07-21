@@ -149,8 +149,8 @@ export default function AdminStudentCVModal({ studentId, onClose }) {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
-            <div className="bg-themeApp w-full max-w-4xl max-h-[90vh] rounded-3xl border-theme border-themeBorder flex flex-col shadow-2xl relative overflow-hidden animate-fade-in-up">
+        <div className="fixed inset-0 z-[200] flex flex-col bg-themeApp animate-fade-in font-sans overflow-hidden">
+            <div className="w-full max-w-6xl mx-auto flex flex-col h-screen relative z-10 bg-themePanel shadow-2xl border-x border-themeBorder">
                 
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b-theme border-themeBorder bg-themePanel">
