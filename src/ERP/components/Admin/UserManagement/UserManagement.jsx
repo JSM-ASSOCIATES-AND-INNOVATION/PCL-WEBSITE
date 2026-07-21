@@ -9,6 +9,7 @@ import { theme } from "../../../theme";
 import { createClient } from '@supabase/supabase-js';
 import AdminStudentCVModal from './AdminStudentCVModal';
 import AdminUserProfileModal from './AdminUserProfileModal';
+import AdminPasswordResetsModal from './AdminPasswordResetsModal';
 
 // Safe provisioning client so admin doesn't get logged out
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
@@ -39,6 +40,9 @@ export default function UserManagement({ isHubView = false }) {
     const [bulkEmails, setBulkEmails] = useState("");
     const [assignment, setAssignment] = useState("");
     const [provisionLogs, setProvisionLogs] = useState([]);
+    
+    // Feature state
+    const [showPasswordResetsModal, setShowPasswordResetsModal] = useState(false);
 
     // Actual Data
     const [usersData, setUsersData] = useState(() => {
@@ -300,6 +304,12 @@ export default function UserManagement({ isHubView = false }) {
                         </div>
                         
                         <div className="flex gap-3 w-full lg:w-auto">
+                            <button
+                                onClick={() => setShowPasswordResetsModal(true)}
+                                className="flex-1 lg:flex-none px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/30 backdrop-blur-md"
+                            >
+                                <i className="fa-solid fa-unlock-keyhole text-base"></i> Password Resets
+                            </button>
                             <button
                                 onClick={() => setShowProvisionModal(true)}
                                 className="flex-1 lg:flex-none px-6 py-3 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/50"
@@ -731,6 +741,9 @@ export default function UserManagement({ isHubView = false }) {
                 onClose={() => setIsProfileModalOpen(false)} 
             />
 
+            {showPasswordResetsModal && (
+                <AdminPasswordResetsModal onClose={() => setShowPasswordResetsModal(false)} />
+            )}
         </div>
     );
 }
