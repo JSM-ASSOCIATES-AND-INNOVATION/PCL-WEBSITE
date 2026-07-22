@@ -1407,3 +1407,42 @@
   border: 1px solid var(--primary-glow);
   box-shadow: 0 20px 40px var(--glass-shadow), 0 0 20px var(--primary-glow);
 }
+
+/* ==============================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   "Smooth like butter" on old phones
+   ============================================== */
+@media (max-width: 768px) {
+  /* Disable heavy GPU operations on mobile */
+  .blur-3xl, 
+  .blur-2xl, 
+  .backdrop-blur-md, 
+  .backdrop-blur-xl, 
+  .backdrop-blur-sm,
+  .mix-blend-overlay {
+    backdrop-filter: none !important;
+    filter: none !important;
+    mix-blend-mode: normal !important;
+  }
+
+  /* Reduce opacity of decorative orbs instead of blurring them */
+  .blur-3xl, .blur-2xl {
+    opacity: 0.1 !important;
+  }
+
+  /* Hardware accelerate common animations */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .animate-fade-in, 
+  .animate-slide-up, 
+  .transition-all, 
+  .transition-colors {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
