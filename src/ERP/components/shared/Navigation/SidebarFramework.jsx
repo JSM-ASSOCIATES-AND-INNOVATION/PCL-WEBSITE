@@ -286,6 +286,15 @@ export default function SidebarFramework({
                     </div>
                 </div>
 
+                {/* Collapse Toggle Button (Absolute Positioned on Edge) */}
+                <button 
+                    onClick={toggleSidebar} 
+                    className="absolute -right-3 top-7 w-6 h-6 rounded-full bg-themeElevated border border-themeBorderStrong shadow-md flex items-center justify-center text-themeTextSec hover:text-themeText hover:scale-110 transition-all z-50"
+                    title={isCompact ? "Expand Sidebar" : "Collapse Sidebar"}
+                >
+                    <i className={`fa-solid ${isCompact ? 'fa-chevron-right' : 'fa-chevron-left'} text-[9px]`}></i>
+                </button>
+
                 {/* 2. SEARCH ZONE */}
                 {!isCompact && (
                     <div className="px-4 pt-4 pb-2 shrink-0 animate-fade-in">

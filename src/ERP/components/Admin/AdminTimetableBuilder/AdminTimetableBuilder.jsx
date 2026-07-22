@@ -30,8 +30,8 @@ export default function AdminTimetableBuilder({ isHubView = false }) {
                 const progs = new Set(sems?.map(s => s.programme));
                 const activeSems = sems?.filter(s => s.is_active_globally).length || 0;
 
-                // Safely try fetching from reschedule_requests and class_schedule (ignoring errors if tables are empty/missing)
-                const { count: approvalsCount, error: err1 } = await supabase.from('reschedule_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending');
+                // Safely try fetching from timetable_requests and class_schedule (ignoring errors if tables are empty/missing)
+                const { count: approvalsCount, error: err1 } = await supabase.from('timetable_requests').select('*', { count: 'exact', head: true }).eq('status', 'Pending');
                 const { count: ttCount, error: err2 } = await supabase.from('class_schedule').select('*', { count: 'exact', head: true });
 
                 setStats({

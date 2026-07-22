@@ -6,6 +6,8 @@ import pclLogo from "../../../ASSETS/LOGOS/pcl_logo.svg";
 import { STUDENT_NAV_GROUPS, STUDENT_NAV_EXPANDED } from "../Student/sidebar/Sidebar";
 import { FACULTY_NAV_GROUPS, FACULTY_NAV_EXPANDED } from "../Faculty/FacultySidebar/FacultySidebar";
 import { ADMIN_NAV_GROUPS, ADMIN_NAV_EXPANDED } from "../Admin/AdminSidebar/AdminSidebar";
+import GlobalSearch from "./GlobalSearch";
+import { RoleActionButton } from "./LiveHeaderComponents";
 
 // Helper to flatten 3-level configs to 2-level configs for the Mega Menu
 const flattenConfig = (config) => {
@@ -24,7 +26,7 @@ const flattenConfig = (config) => {
 };
 
 export default function TopNav({ userSession, activeTab, setActiveTab, onLogout }) {
-    const { notices, sidebarMode } = useERP();
+    const { notices, sidebarMode, changeNavLayout } = useERP();
     const [isScrolled, setIsScrolled] = useState(false);
     
     useEffect(() => {
@@ -55,6 +57,7 @@ export default function TopNav({ userSession, activeTab, setActiveTab, onLogout 
         : role.substring(0, 2).toUpperCase();
         
     const displayName = userSession?.name || (role === 'admin' ? "System Admin" : role === 'faculty' ? "Professor" : "Student");
+    // Removed duplicate useERP call
 
     return (
         <div className={`hidden lg:flex fixed top-0 left-0 w-full z-[100] pointer-events-none transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? 'pt-2' : 'pt-4'}`}>
@@ -155,6 +158,28 @@ export default function TopNav({ userSession, activeTab, setActiveTab, onLogout 
 
                 {/* Right: Profile & Actions */}
                 <div className="flex items-center gap-3 shrink-0">
+                    
+                    {/* Global Search Inject */}
+                    <div className="hidden 2xl:block w-64">
+                        <GlobalSearch />
+                    </div>
+
+                    <RoleActionButton role={userSession?.role} setActiveTab={setActiveTab} />
+                    
+                    {/* Layout Switcher */}
+                    <button onClick={() => changeNavLayout('classic')} className="w-10 h-10 rounded-full bg-themeElevated hover:bg-themeBorder border border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:text-themeText transition-all relative group outline-none shadow-sm" title="Switch to Classic Sidebar">
+                        <i className="fa-solid fa-bars text-sm group-hover:scale-110 transition-transform"></i>
+                    </button>
+
+                    <button onClick={() => setActiveTab('notices')} className="w-10 h-10 rounded-full bg-themeElevated hover:bg-themeBorder border border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:text-themeText transition-all relative group outline-none shadow-sm">
+                        <i className="fa-regular fa-bell text-sm group-hover:scale-110 transition-transform"></i>
+                        {notices?.length > 0 && (
+                            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b] animate-pulse border border-themePanel"></span>
+                        )}
+                    </button>
+
+                    <div className="w-px h-6 bg-themeBorderStrong mx-1 hidden sm:block"></div>
+
                     <button 
                         onClick={() => setActiveTab('credentials')}
                         className="flex items-center gap-3 hover:bg-themeElevated/80 p-1.5 pr-4 rounded-full transition-all duration-300 border border-transparent hover:border-themeBorderStrong group outline-none"

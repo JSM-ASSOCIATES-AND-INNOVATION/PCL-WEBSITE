@@ -16,13 +16,19 @@ const SUBJECT_COLORS = {
     amber: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30', solid: 'bg-amber-500', shadow: 'shadow-amber-500/20' },
 };
 
-export default function WeeklyChart({ schedule = [], onLectureClick, role = 'student' }) {
+export default function WeeklyChart({ schedule = [], onLectureClick, role = 'student', isDrawMode = false, onSlotClick }) {
     
     // Check which days have classes to dynamically hide fully empty weekends if we want
     // But for admin, it's better to show all working days. 
     // We'll show Monday-Saturday by default. Hide Sunday unless it has classes.
     const hasSundayClass = schedule.some(c => c.day === 'Sunday');
     const displayDays = hasSundayClass ? DAYS : DAYS.slice(0, 6);
+
+    // Generate times for the background grid slots (start of each hour)
+    const hours = [];
+    for (let i = START_HOUR; i < END_HOUR; i++) {
+        hours.push(`${String(i).padStart(2, '0')}:00`);
+    }
 
     // Generate time labels
     const timeLabels = [];
@@ -111,15 +117,23 @@ export default function WeeklyChart({ schedule = [], onLectureClick, role = 'stu
                                             return (
                                                 <div 
                                                     key={cls.id}
-                                                    onClick={() => onLectureClick && onLectureClick(cls)}
-                                                    className={`absolute inset-x-[3px] p-2 rounded-xl border backdrop-blur-sm transition-all cursor-pointer hover:-translate-y-1 z-10 group overflow-hidden ${c.bg} ${c.border} ${c.shadow}`}
-                                                    style={style}
+                                                    onClick={() => !cls.isDraft && onLectureClick && onLectureClick(cls)}
+                                                    className={`absolute inset-x-[3px] p-2 rounded-xl border backdrop-blur-sm transition-all cursor-pointer hover:-translate-y-1 z-10 group overflow-hidden ${c.bg} ${cls.isDraft ? 'border-dashed border-2 opacity-80' : c.border} ${c.shadow}`}
+                                                    style={{
+                                                        ...style,
+                                                        ...(cls.isDraft ? {
+                                                            backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)'
+                                                        } : {})
+                                                    }}
                                                 >
                                                     <div className={`absolute left-0 top-0 bottom-0 w-1 ${c.solid} opacity-80 group-hover:opacity-100 transition-opacity`}></div>
                                                     
                                                     <div className="pl-2 h-full flex flex-col justify-between">
                                                         <div>
-                                                            <h4 className={`text-[11px] font-black leading-tight ${c.text} drop-shadow-sm`}>{cls.subject}</h4>
+                                                            <h4 className={`text-[11px] font-black leading-tight ${c.text} drop-shadow-sm flex items-center gap-1`}>
+                                                                {cls.subject}
+                                                                {cls.isDraft && <i className="fa-solid fa-pen-ruler text-[8px] opacity-70" title="Draft"></i>}
+                                                            </h4>
                                                             <p className="text-[9px] font-bold text-themeText mt-1 truncate opacity-90">{cls.time} - {cls.endTime}</p>
                                                         </div>
                                                         
@@ -138,6 +152,20 @@ export default function WeeklyChart({ schedule = [], onLectureClick, role = 'stu
                                                 </div>
                                             );
                                         })}
+                                        
+                                        {/* Draw Mode Invisible Grid Slots */}
+                                        {isDrawMode && hours.map((timeStr, idx) => (
+                                            <div
+                                                key={`slot-${day}-${timeStr}`}
+                                                onClick={() => onSlotClick && onSlotClick(day, timeStr)}
+                                                className="absolute w-full cursor-cell hover:bg-themeAccent/10 border border-transparent hover:border-themeAccent/50 transition-colors z-0"
+                                                style={{
+                                                    top: `${idx * HOUR_HEIGHT + GRID_OFFSET_Y}px`,
+                                                    height: `${HOUR_HEIGHT}px`,
+                                                }}
+                                                title={`Draw class at ${timeStr}`}
+                                            ></div>
+                                        ))}
                                     </div>
                                 );
                             })}

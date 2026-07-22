@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { theme } from '../../../theme';
 import { supabase } from '../../../lib/supabase/supabaseClient';
 
-export default function AdminKPIGrid() {
+export default function AdminKPIGrid({ setActiveTab }) {
     const [loading, setLoading] = useState(true);
     const [flippedCard, setFlippedCard] = useState(null);
     const [data, setData] = useState({
@@ -111,7 +111,7 @@ export default function AdminKPIGrid() {
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-user-graduate"></i>
                             </div>
-                            <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-1.5 py-0.5 rounded">Expand</span>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('users'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight">{data.students.total}</p>
@@ -146,7 +146,7 @@ export default function AdminKPIGrid() {
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-chalkboard-user"></i>
                             </div>
-                            <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-1.5 py-0.5 rounded">Expand</span>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('faculty'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight">{data.faculty.total}</p>
@@ -161,7 +161,7 @@ export default function AdminKPIGrid() {
                                 <p className="text-[10px] font-medium text-themeTextSec italic text-center mt-2">No data</p>
                             ) : (
                                 data.faculty.list.map(fac => (
-                                    <div key={fac.id} onClick={(e) => { e.stopPropagation(); console.log("Routing to profile:", fac.id); }} className="flex items-center gap-2 bg-themePanel p-1.5 rounded border border-themeBorder hover:border-themeAccent transition-colors cursor-pointer">
+                                    <div key={fac.id} onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('faculty'); }} className="flex items-center gap-2 bg-themePanel p-1.5 rounded border border-themeBorder hover:border-themeAccent transition-colors cursor-pointer">
                                         <div className="w-4 h-4 rounded-full bg-themeAccent/10 text-themeAccent flex items-center justify-center shrink-0">
                                             <i className="fa-solid fa-user text-[8px]"></i>
                                         </div>
@@ -219,6 +219,7 @@ export default function AdminKPIGrid() {
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-stamp"></i>
                             </div>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('adminapprovals'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight">{data.approvals.total}</p>
@@ -251,6 +252,7 @@ export default function AdminKPIGrid() {
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-indian-rupee-sign"></i>
                             </div>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('finance'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight truncate">{formatCurrency(data.fees.collected)}</p>

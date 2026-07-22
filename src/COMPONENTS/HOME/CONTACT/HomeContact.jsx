@@ -43,8 +43,6 @@ const HomeContact = forwardRef((props, ref) => {
     <section className="slide w-full relative flex flex-col overflow-hidden bg-[var(--bg-color)]" ref={ref} {...props}>
       {/* Refined Ambient Backgrounds */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.015] z-0" style={{ backgroundImage: 'radial-gradient(var(--text-color) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-      <div className="absolute top-0 right-0 w-[50vw] h-[50vw] bg-[radial-gradient(ellipse_at_top_right,_var(--primary-glow)_0%,_transparent_60%)] pointer-events-none opacity-20 z-0"></div>
-
       <div className="container relative z-10 w-full max-w-7xl mx-auto px-4 md:px-12 flex flex-col h-[100svh] md:h-full justify-between py-4 md:py-8">
         
         {/* --- TOP SECTION: ADMISSIONS & METRICS --- */}

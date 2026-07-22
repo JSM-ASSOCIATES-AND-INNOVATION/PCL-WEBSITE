@@ -12,20 +12,18 @@ export default function ScheduleBuilder() {
     
     const [loading, setLoading] = useState(true);
     
-    // Modal states
-    const [isCreating, setIsCreating] = useState(false);
+    // Modal & Draw states
     const [selectedClass, setSelectedClass] = useState(null); // For edit/delete modal
+    const [isDrawMode, setIsDrawMode] = useState(false);
+    const [pendingDraws, setPendingDraws] = useState([]);
 
     // Filter State
     const [selectedBatch, setSelectedBatch] = useState('BBA LL.B. (Hons.)'); // Example fallback
-    
-    // Form State (Create)
+
+    // Brush State
     const [subjectId, setSubjectId] = useState('');
     const [roomId, setRoomId] = useState('');
     const [facultyId, setFacultyId] = useState('');
-    const [day, setDay] = useState(1);
-    const [startTime, setStartTime] = useState('09:00');
-    const [endTime, setEndTime] = useState('10:00');
 
     const fetchData = async () => {
         setLoading(true);
@@ -106,6 +104,7 @@ export default function ScheduleBuilder() {
     // Check for double booking
     const checkConflicts = async (faculty, room, d, sTime, eTime) => {
         try {
+            // Check against Database
             // Check if faculty is busy
             if (faculty) {
                 const { data: facConflict } = await supabase
@@ -136,6 +135,15 @@ export default function ScheduleBuilder() {
                 }
             }
 
+            // Check against Pending Local Drafts
+            for (let draft of pendingDraws) {
+                if (draft.raw.day_of_week === d && draft.raw.start_time < eTime && draft.raw.end_time > sTime) {
+                    if (faculty && draft.raw.faculty_id === faculty) return `Faculty is already booked in your unsaved drafts.`;
+                    if (room && draft.raw.room_id === room) return `Room is already booked in your unsaved drafts.`;
+                    if (selectedBatch === draft.raw.batch) return `Batch is already booked in your unsaved drafts.`;
+                }
+            }
+
             return null; // no conflict
         } catch (err) {
             console.error("Conflict check error:", err);
@@ -143,45 +151,76 @@ export default function ScheduleBuilder() {
         }
     };
 
-    const handleCreate = async (e) => {
-        e.preventDefault();
-
-        // 1. Validate times
-        if (startTime >= endTime) {
-            window.erpDialog?.alert("Start time must be before end time.");
+    const handleSlotClick = async (dayString, timeStr) => {
+        if (!isDrawMode) return;
+        if (!subjectId || !roomId) {
+            alert("Please select a Subject and Room in the Draw Toolbar first.");
             return;
         }
 
-        // 2. Check conflicts
-        const conflictMsg = await checkConflicts(facultyId, roomId, parseInt(day), startTime + ':00', endTime + ':00');
+        const daysMap = { 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 7 };
+        const d = daysMap[dayString];
+        
+        // Calculate end time (default + 1 hour)
+        const [h, m] = timeStr.split(':');
+        const endHour = parseInt(h, 10) + 1;
+        const endTimeStr = `${String(endHour).padStart(2, '0')}:${m}`;
+
+        const conflictMsg = await checkConflicts(facultyId, roomId, d, timeStr + ':00', endTimeStr + ':00');
         if (conflictMsg) {
-            window.erpDialog?.alert(`Conflict Detected: ${conflictMsg}`);
+            alert(`Conflict Detected: ${conflictMsg}`);
             return;
         }
 
-        // 3. Insert
-        try {
-            const { error } = await supabase.from('class_schedule').insert([{
+        const selectedSub = subjects.find(s => s.id === subjectId);
+        const selectedRoom = rooms.find(r => r.id === roomId);
+        const selectedFac = faculties.find(f => f.id === facultyId);
+
+        const draftObj = {
+            id: `draft-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            day: dayString,
+            time: timeStr,
+            endTime: endTimeStr,
+            subject: selectedSub?.name,
+            color: selectedSub?.theme_color,
+            room: selectedRoom?.name,
+            faculty: selectedFac?.full_name || selectedSub?.faculty?.full_name,
+            isDraft: true,
+            raw: {
                 batch: selectedBatch,
                 subject_id: subjectId,
                 room_id: roomId,
                 faculty_id: facultyId || null,
-                day_of_week: parseInt(day),
-                start_time: startTime + ':00',
-                end_time: endTime + ':00',
+                day_of_week: d,
+                start_time: timeStr + ':00',
+                end_time: endTimeStr + ':00',
                 status: 'Scheduled'
-            }]);
+            }
+        };
 
+        setPendingDraws(prev => [...prev, draftObj]);
+    };
+
+    const handleSaveDraws = async () => {
+        if (pendingDraws.length === 0) return;
+        try {
+            setLoading(true);
+            const inserts = pendingDraws.map(d => d.raw);
+            const { error } = await supabase.from('class_schedule').insert(inserts);
+            
             if (error) throw error;
-
-            setIsCreating(false);
+            
+            setPendingDraws([]);
             fetchData();
-            window.erpDialog?.alert("Class scheduled successfully!");
+            window.erpDialog?.alert(`Successfully saved ${inserts.length} classes!`);
         } catch (err) {
-            console.error("Failed to add class:", err);
-            window.erpDialog?.alert("Error adding class. Check console.");
+            console.error("Failed to save drafts:", err);
+            window.erpDialog?.alert("Error saving drawn classes.");
+            setLoading(false);
         }
     };
+
+    // Removed handleCreate as draw mode handles creation
 
     const handleDeleteClass = async () => {
         if (!selectedClass) return;
@@ -220,19 +259,59 @@ export default function ScheduleBuilder() {
                             ))}
                         </select>
                     </div>
-
-                    <button onClick={() => setIsCreating(true)} className="bg-themeAccent text-[#0a0a0a] px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity whitespace-nowrap shadow-lg shadow-themeAccent/20">
-                        <i className="fa-solid fa-plus mr-2"></i> Add Class
+                    
+                    <button 
+                        onClick={() => setIsDrawMode(!isDrawMode)} 
+                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${isDrawMode ? 'bg-amber-500 text-white border-amber-500 shadow-amber-500/20' : 'bg-themeElevated border-themeBorderStrong text-themeText hover:border-themeAccent'}`}
+                    >
+                        <i className="fa-solid fa-paintbrush mr-2"></i> Draw Mode
                     </button>
                 </div>
             </div>
+            
+            {/* Draw Mode Brush Toolbar */}
+            {isDrawMode && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col md:flex-row items-center gap-4 animate-fade-in -mt-2">
+                    <div className="flex items-center gap-2 shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-sm">
+                            <i className="fa-solid fa-palette text-sm"></i>
+                        </div>
+                        <div>
+                            <p className="text-xs font-black text-amber-500 uppercase tracking-wider leading-tight">Active Brush</p>
+                            <p className="text-[10px] font-bold text-themeTextSec">Click grid to paint a 1-hour slot.</p>
+                        </div>
+                    </div>
+                    <div className="flex flex-wrap md:flex-nowrap gap-3 flex-1">
+                        <select className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
+                            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                        <select className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={roomId} onChange={e => setRoomId(e.target.value)}>
+                            {rooms.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
+                        </select>
+                        <select className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={facultyId} onChange={e => setFacultyId(e.target.value)}>
+                            <option value="">No Faculty</option>
+                            {faculties.map(f => <option key={f.id} value={f.id}>{f.full_name}</option>)}
+                        </select>
+                    </div>
+                    {pendingDraws.length > 0 && (
+                        <div className="flex items-center gap-2 ml-auto shrink-0 border-l border-amber-500/30 pl-4">
+                            <button onClick={() => setPendingDraws([])} className="px-3 py-2 rounded-lg text-[10px] font-black uppercase text-amber-500 hover:bg-amber-500/10 transition-colors">
+                                Clear
+                            </button>
+                            <button onClick={handleSaveDraws} className="px-4 py-2 rounded-lg text-xs font-black uppercase bg-amber-500 text-white hover:bg-amber-600 transition-colors shadow-lg shadow-amber-500/20">
+                                Save {pendingDraws.length} {pendingDraws.length === 1 ? 'Class' : 'Classes'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {loading ? (
                 <div className="h-64 flex items-center justify-center">
                     <div className="w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full animate-spin"></div>
                 </div>
             ) : (
-                <WeeklyChart schedule={schedule} role="admin" onLectureClick={(cls) => setSelectedClass(cls)} />
+                <WeeklyChart schedule={[...schedule, ...pendingDraws]} role="admin" onLectureClick={(cls) => setSelectedClass(cls)} isDrawMode={isDrawMode} onSlotClick={handleSlotClick} />
             )}
 
             {/* CREATE MODAL */}

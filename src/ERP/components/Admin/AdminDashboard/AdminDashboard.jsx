@@ -7,7 +7,7 @@ import AdminOverview from "./AdminOverview";
 import AdminRightSidebar from "./AdminRightSidebar";
 // AdminFAB removed to prevent overlap with IntelligentBot
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ setActiveTab }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
@@ -30,7 +30,7 @@ export default function AdminDashboard() {
                     <AdminHeroBanner />
                     
                     {/* Row 2: 6 KPI Cards */}
-                    <AdminKPIGrid />
+                    <AdminKPIGrid setActiveTab={setActiveTab} />
 
                     {/* Row 3: Graph, Insights, Tasks */}
                     <AdminOverview />
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
                                 <i className="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-                        <AdminRightSidebar />
+                        <AdminRightSidebar setActiveTab={setActiveTab} />
                     </div>
                 </>
 

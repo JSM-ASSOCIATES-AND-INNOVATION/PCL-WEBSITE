@@ -1,39 +1,45 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { theme } from '../../../theme';
 import { useERP } from '../../../context/ErpContext';
 import { supabase } from '../../../lib/supabase/supabaseClient';
 
 export default function AdminFees() {
     const { userSession } = useERP();
-    const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'invoice', 'ledger'
+    const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'batch'
     const [loading, setLoading] = useState(false);
 
     // --- OVERVIEW STATE ---
     const [overviewData, setOverviewData] = useState({ totalExpected: 0, totalCollected: 0, pendingCount: 0 });
     const [fetchingOverview, setFetchingOverview] = useState(true);
 
-    // --- INVOICE GEN STATE ---
+    // --- BATCH MANAGER STATE ---
     const [batches, setBatches] = useState([]);
     const [selectedBatch, setSelectedBatch] = useState('');
-    const [title, setTitle] = useState('');
-    const [amount, setAmount] = useState('');
-    const [dueDate, setDueDate] = useState('');
-    const [type, setType] = useState('Tuition');
-    const [fetchingBatches, setFetchingBatches] = useState(true);
-
-    // --- STUDENT LEDGER STATE ---
-    const [searchQuery, setSearchQuery] = useState('');
-    const [studentResults, setStudentResults] = useState([]);
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const [studentLedger, setStudentLedger] = useState([]);
-    const [isSearching, setIsSearching] = useState(false);
+    const [students, setStudents] = useState([]);
+    const [selectedStudentIds, setSelectedStudentIds] = useState([]);
+    const [debugError, setDebugError] = useState(null);
+    
+    // Assign Fee Form
+    const [assignTitle, setAssignTitle] = useState('');
+    const [assignAmount, setAssignAmount] = useState('');
+    const [assignDueDate, setAssignDueDate] = useState('');
+    const [assignType, setAssignType] = useState('Tuition');
 
     useEffect(() => {
         if (activeTab === 'overview') fetchOverview();
-        if (activeTab === 'invoice') fetchBatches();
+        if (activeTab === 'batch') {
+            fetchBatches();
+            if (selectedBatch) fetchBatchStudents(selectedBatch);
+        }
     }, [activeTab]);
+
+    useEffect(() => {
+        if (selectedBatch && activeTab === 'batch') {
+            fetchBatchStudents(selectedBatch);
+        }
+    }, [selectedBatch]);
 
     // ================== TAB 1: OVERVIEW ==================
     const fetchOverview = async () => {
@@ -61,9 +67,8 @@ export default function AdminFees() {
         }
     };
 
-    // ================== TAB 2: INVOICE GEN ==================
+    // ================== TAB 2: BATCH MANAGER ==================
     const fetchBatches = async () => {
-        if (batches.length > 0) return;
         try {
             const { data, error } = await supabase.from('profiles').select('academic_batch').eq('role', 'student');
             if (error) throw error;
@@ -71,111 +76,168 @@ export default function AdminFees() {
             setBatches(distinctBatches);
         } catch (err) {
             console.error(err);
-        } finally {
-            setFetchingBatches(false);
         }
     };
 
-    const handleGenerateInvoices = async (e) => {
-        e.preventDefault();
-        if (!selectedBatch || !title || !amount || !dueDate || !type) return window.erpDialog.alert('Please fill all fields.');
+    const fetchBatchStudents = async (batchName) => {
         setLoading(true);
+        setSelectedStudentIds([]);
         try {
-            const { data: students, error: studentError } = await supabase.from('profiles').select('id').eq('role', 'student').eq('academic_batch', selectedBatch);
-            if (studentError) throw studentError;
-            if (!students || students.length === 0) return window.erpDialog.alert(`No students found for batch ${selectedBatch}.`);
-            
-            const invoices = students.map(student => ({
-                student_id: student.id,
-                title,
-                amount: Number(amount),
-                due_date: dueDate,
-                type: type,
-                status: 'pending'
-            }));
-            
-            const { error: insertError } = await supabase.from('fee_invoices').insert(invoices);
-            if (insertError) throw insertError;
-            
-            window.erpDialog.alert(`Successfully generated fees for ${students.length} students.`);
-            setTitle(''); setAmount(''); setDueDate('');
-        } catch (error) {
-            console.error(error);
-            window.erpDialog.alert('Failed to generate fee invoices.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // ================== TAB 3: STUDENT LEDGERS ==================
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        if (!searchQuery) return;
-        setIsSearching(true);
-        setSelectedStudent(null);
-        try {
+            // Fetch students and their fee invoices
             const { data, error } = await supabase
                 .from('profiles')
-                .select('id, full_name, erp_id, academic_batch')
+                .select(`
+                    id, full_name, erp_id, academic_batch,
+                    fee_invoices ( id, title, amount, status, due_date )
+                `)
                 .eq('role', 'student')
-                .or(`full_name.ilike.%${searchQuery}%,erp_id.ilike.%${searchQuery}%`)
-                .limit(10);
+                .eq('academic_batch', batchName)
+                .order('full_name', { ascending: true });
+            
             if (error) throw error;
-            setStudentResults(data || []);
+            setStudents(data || []);
         } catch (err) {
             console.error(err);
-        } finally {
-            setIsSearching(false);
-        }
-    };
-
-    const loadStudentLedger = async (student) => {
-        setSelectedStudent(student);
-        setLoading(true);
-        try {
-            const { data, error } = await supabase
-                .from('fee_invoices')
-                .select('*')
-                .eq('student_id', student.id)
-                .order('due_date', { ascending: false });
-            if (error) throw error;
-            setStudentLedger(data || []);
-        } catch (e) {
-            console.error(e);
+            setDebugError(err.message || JSON.stringify(err));
+            // window.erpDialog?.alert("Failed to fetch students for this batch.");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRecordPayment = async (invoiceId, invoiceAmount, invoiceTitle) => {
-        const confirm = window.confirm(`Are you sure you want to mark "${invoiceTitle}" as Paid manually?`);
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            setSelectedStudentIds(students.map(s => s.id));
+        } else {
+            setSelectedStudentIds([]);
+        }
+    };
+
+    const handleSelectStudent = (id) => {
+        setSelectedStudentIds(prev => 
+            prev.includes(id) ? prev.filter(sId => sId !== id) : [...prev, id]
+        );
+    };
+
+    const handleAssignFees = async (e) => {
+        e.preventDefault();
+        if (selectedStudentIds.length === 0) return window.erpDialog?.alert("Please select at least one student.");
+        if (!assignTitle || !assignAmount || !assignDueDate) return window.erpDialog?.alert("Please fill out all fee details.");
+
+        const confirm = window.confirm(`Generate invoices of ₹${assignAmount} for ${selectedStudentIds.length} selected students?`);
         if (!confirm) return;
+
+        setLoading(true);
+        try {
+            const invoices = selectedStudentIds.map(id => ({
+                student_id: id,
+                title: assignTitle,
+                amount: Number(assignAmount),
+                due_date: assignDueDate,
+                type: assignType,
+                status: 'pending'
+            }));
+
+            const { error } = await supabase.from('fee_invoices').insert(invoices);
+            if (error) throw error;
+
+            window.erpDialog?.alert(`Successfully assigned fees to ${selectedStudentIds.length} students!`);
+            setAssignTitle(''); setAssignAmount(''); setAssignDueDate('');
+            setSelectedStudentIds([]);
+            fetchBatchStudents(selectedBatch);
+        } catch (err) {
+            console.error(err);
+            window.erpDialog?.alert("Failed to assign fees.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleMarkPaid = async (studentId, invoice) => {
+        const confirm = window.confirm(`Mark "${invoice.title}" as PAID for this student?`);
+        if (!confirm) return;
+        
         setLoading(true);
         try {
             // Mark Paid
-            const { error: invError } = await supabase.from('fee_invoices').update({ status: 'paid' }).eq('id', invoiceId);
+            const { error: invError } = await supabase.from('fee_invoices').update({ status: 'paid' }).eq('id', invoice.id);
             if (invError) throw invError;
             
             // Insert Txn
             const transactionId = `MAN${Math.floor(Math.random() * 100000000)}`;
             const { error: txnError } = await supabase.from('fee_transactions').insert({
                 id: transactionId,
-                student_id: selectedStudent.id,
-                amount: invoiceAmount,
+                student_id: studentId,
+                amount: invoice.amount,
                 status: 'successful',
                 method: 'Manual Cash/Cheque',
-                purpose: invoiceTitle
+                purpose: invoice.title
             });
             if (txnError) throw txnError;
 
-            window.erpDialog.alert("Payment Recorded Successfully.");
-            loadStudentLedger(selectedStudent); // Refresh
+            fetchBatchStudents(selectedBatch);
         } catch (e) {
             console.error(e);
-            window.erpDialog.alert("Failed to record payment.");
+            window.erpDialog?.alert("Failed to record payment.");
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleBulkMarkPaid = async () => {
+        if (selectedStudentIds.length === 0) return window.erpDialog?.alert("Please select students with pending invoices.");
+        
+        // Find all pending invoices for selected students
+        const pendingInvoices = [];
+        selectedStudentIds.forEach(studentId => {
+            const student = students.find(s => s.id === studentId);
+            if (student && student.fee_invoices) {
+                student.fee_invoices.filter(i => i.status === 'pending').forEach(inv => {
+                    pendingInvoices.push({ studentId, invoice: inv });
+                });
+            }
+        });
+
+        if (pendingInvoices.length === 0) return window.erpDialog?.alert("Selected students have no pending invoices to mark as paid.");
+
+        const confirm = window.confirm(`You are about to mark ${pendingInvoices.length} pending invoices as PAID. Proceed?`);
+        if (!confirm) return;
+
+        setLoading(true);
+        try {
+            for (const item of pendingInvoices) {
+                // Update Invoice
+                await supabase.from('fee_invoices').update({ status: 'paid' }).eq('id', item.invoice.id);
+                // Insert Txn
+                const transactionId = `B-MAN${Math.floor(Math.random() * 100000000)}`;
+                await supabase.from('fee_transactions').insert({
+                    id: transactionId,
+                    student_id: item.studentId,
+                    amount: item.invoice.amount,
+                    status: 'successful',
+                    method: 'Bulk Manual',
+                    purpose: item.invoice.title
+                });
+            }
+            window.erpDialog?.alert(`Successfully processed ${pendingInvoices.length} payments!`);
+            setSelectedStudentIds([]);
+            fetchBatchStudents(selectedBatch);
+        } catch (e) {
+            console.error(e);
+            window.erpDialog?.alert("An error occurred during bulk payment processing.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Helper to determine student status
+    const getStudentStatus = (student) => {
+        if (!student.fee_invoices || student.fee_invoices.length === 0) return { label: 'No Invoices', color: 'text-neutral-500 bg-neutral-500/10 border-neutral-500/20' };
+        
+        const pending = student.fee_invoices.filter(i => i.status === 'pending');
+        if (pending.length > 0) return { label: 'Unpaid Dues', color: 'text-rose-500 bg-rose-500/10 border-rose-500/20', count: pending.length, pendingInvoices: pending };
+        
+        return { label: 'Fully Paid', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' };
     };
 
     return (
@@ -198,17 +260,17 @@ export default function AdminFees() {
 
                 {/* Tabs */}
                 <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
-                    {['overview', 'invoice', 'ledger'].map(tab => (
+                    {['overview', 'batch'].map(tab => (
                         <button 
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
+                            className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
                                 activeTab === tab 
                                     ? 'bg-white text-themeAccent shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-white scale-100' 
                                     : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
                             }`}
                         >
-                            {tab === 'overview' ? 'Overview' : tab === 'invoice' ? 'Generate Invoices' : 'Student Ledgers'}
+                            {tab === 'overview' ? 'Overview' : 'Batch Manager'}
                         </button>
                     ))}
                 </div>
@@ -220,172 +282,186 @@ export default function AdminFees() {
                 {activeTab === 'overview' && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {fetchingOverview ? (
-                            <div className="col-span-full py-12 text-center text-themeTextSec"><i className="fa-solid fa-circle-notch fa-spin text-3xl text-emerald-500"></i></div>
+                            <div className="col-span-full py-12 text-center text-themeTextSec"><i className="fa-solid fa-circle-notch fa-spin text-3xl text-themeAccent"></i></div>
                         ) : (
                             <>
-                                <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 relative overflow-hidden`}>
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                                <div className={`${theme.layout.panel} rounded-[2rem] border border-themeBorder p-8 relative overflow-hidden shadow-lg`}>
+                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
                                     <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2">Total Expected Revenue</p>
-                                    <h2 className="text-3xl font-black text-white font-mono">₹{overviewData.totalExpected.toLocaleString()}</h2>
+                                    <h2 className="text-4xl font-black text-themeText font-mono tracking-tighter">₹{overviewData.totalExpected.toLocaleString()}</h2>
                                 </div>
-                                <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 relative overflow-hidden`}>
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                                <div className={`${theme.layout.panel} rounded-[2rem] border border-themeBorder p-8 relative overflow-hidden shadow-lg`}>
+                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
                                     <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2">Total Collected</p>
-                                    <h2 className="text-3xl font-black text-emerald-400 font-mono">₹{overviewData.totalCollected.toLocaleString()}</h2>
+                                    <h2 className="text-4xl font-black text-emerald-500 font-mono tracking-tighter">₹{overviewData.totalCollected.toLocaleString()}</h2>
                                 </div>
-                                <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 relative overflow-hidden`}>
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
+                                <div className={`${theme.layout.panel} rounded-[2rem] border border-themeBorder p-8 relative overflow-hidden shadow-lg`}>
+                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500"></div>
                                     <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2">Pending Invoices</p>
-                                    <h2 className="text-3xl font-black text-rose-400 font-mono">{overviewData.pendingCount}</h2>
-                                    <p className="text-xs font-bold text-themeTextSec mt-2">Deficit: <span className="text-white">₹{(overviewData.totalExpected - overviewData.totalCollected).toLocaleString()}</span></p>
+                                    <h2 className="text-4xl font-black text-rose-500 font-mono tracking-tighter">{overviewData.pendingCount}</h2>
+                                    <p className="text-xs font-bold text-themeTextSec mt-3">Deficit: <span className="text-themeText font-black">₹{(overviewData.totalExpected - overviewData.totalCollected).toLocaleString()}</span></p>
                                 </div>
                             </>
                         )}
                     </div>
                 )}
 
-                {/* TAB 2: INVOICE GENERATOR */}
-                {activeTab === 'invoice' && (
-                    <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-6 lg:p-8 max-w-2xl`}>
-                        <h2 className="text-lg font-black text-themeText mb-6">Bulk Invoice Generation</h2>
-                        <form onSubmit={handleGenerateInvoices} className="flex flex-col gap-5">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Target Batch</label>
-                                    <div className="relative">
-                                        <select 
-                                            value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)} required
-                                            className="w-full bg-themeElevated border-theme border-themeBorder hover:border-themeBorderStrong text-themeText rounded-xl px-4 py-3.5 text-sm font-bold transition-colors appearance-none outline-none focus:border-emerald-500"
-                                        >
-                                            <option value="" disabled>Select Batch...</option>
-                                            {batches.map(b => <option key={b} value={b}>{b}</option>)}
-                                        </select>
-                                        <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-themeTextSec text-xs pointer-events-none"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Fee Type</label>
-                                    <div className="relative">
-                                        <select 
-                                            value={type} onChange={e => setType(e.target.value)} required
-                                            className="w-full bg-themeElevated border-theme border-themeBorder hover:border-themeBorderStrong text-themeText rounded-xl px-4 py-3.5 text-sm font-bold transition-colors appearance-none outline-none focus:border-emerald-500"
-                                        >
-                                            {['Tuition', 'Hostel', 'Library', 'Examination', 'Fine', 'Other'].map(t => <option key={t} value={t}>{t}</option>)}
-                                        </select>
-                                        <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-themeTextSec text-xs pointer-events-none"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Invoice Title</label>
-                                <input 
-                                    type="text" value={title} onChange={e => setTitle(e.target.value)} required placeholder="e.g. Fall Semester Tuition 2026"
-                                    className="w-full bg-themeElevated border-theme border-themeBorder hover:border-themeBorderStrong focus:border-emerald-500 text-themeText rounded-xl px-4 py-3.5 text-sm font-medium transition-colors outline-none placeholder:text-themeTextSec"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Amount (₹)</label>
-                                    <input 
-                                        type="number" value={amount} onChange={e => setAmount(e.target.value)} required placeholder="0.00" min="1"
-                                        className="w-full bg-themeElevated border-theme border-themeBorder hover:border-themeBorderStrong focus:border-emerald-500 text-themeText rounded-xl px-4 py-3.5 text-sm font-mono transition-colors outline-none placeholder:text-themeTextSec"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Due Date</label>
-                                    <input 
-                                        type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} required
-                                        className="w-full bg-themeElevated border-theme border-themeBorder hover:border-themeBorderStrong focus:border-emerald-500 text-themeText rounded-xl px-4 py-3.5 text-sm font-bold transition-colors outline-none"
-                                    />
+                {/* TAB 2: BATCH MANAGER */}
+                {activeTab === 'batch' && (
+                    <div className="flex flex-col gap-6">
+                        {/* Top Control Bar */}
+                        <div className="bg-themePanel border border-themeBorder rounded-[2rem] p-6 shadow-lg flex flex-col md:flex-row gap-6 items-end justify-between">
+                            <div className="w-full md:w-1/3">
+                                <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Select Academic Batch</label>
+                                <div className="relative">
+                                    <select 
+                                        value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)}
+                                        className="w-full bg-themeElevated border border-themeBorder hover:border-themeBorderStrong text-themeText rounded-xl px-4 py-3.5 text-sm font-bold transition-colors appearance-none outline-none focus:border-themeAccent"
+                                    >
+                                        <option value="" disabled>Select Batch to Manage...</option>
+                                        {batches.map(b => <option key={b} value={b}>{b}</option>)}
+                                    </select>
+                                    <i className="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-themeTextSec text-xs pointer-events-none"></i>
                                 </div>
                             </div>
 
-                            <button 
-                                type="submit" disabled={loading}
-                                className="mt-4 w-full bg-emerald-500 hover:bg-emerald-400 text-[#0a0a0a] py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-2"
-                            >
-                                {loading ? <><i className="fa-solid fa-circle-notch fa-spin"></i> Generating...</> : <><i className="fa-solid fa-paper-plane"></i> Generate Bulk Invoices</>}
-                            </button>
-                        </form>
-                    </div>
-                )}
-
-                {/* TAB 3: STUDENT LEDGER SEARCH */}
-                {activeTab === 'ledger' && (
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        {/* Search Panel */}
-                        <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-6 w-full lg:w-1/3 h-fit`}>
-                            <h2 className="text-sm font-black text-themeText mb-4 uppercase tracking-widest">Lookup Student</h2>
-                            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
-                                <input 
-                                    type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Name or ERP ID"
-                                    className="flex-1 bg-themeElevated border-theme border-themeBorder text-themeText rounded-lg px-4 py-2 text-sm outline-none focus:border-emerald-500"
-                                />
-                                <button type="submit" disabled={isSearching} className="bg-emerald-500 text-[#0a0a0a] px-4 py-2 rounded-lg font-black"><i className={`fa-solid ${isSearching ? 'fa-spinner fa-spin' : 'fa-search'}`}></i></button>
-                            </form>
-                            
-                            <div className="flex flex-col gap-2">
-                                {studentResults.map(s => (
-                                    <button key={s.id} onClick={() => loadStudentLedger(s)} className={`text-left p-3 rounded-lg border-theme transition-colors flex flex-col ${selectedStudent?.id === s.id ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-themeElevated border-themeBorder hover:border-themeBorderStrong text-themeText'}`}>
-                                        <span className="font-black text-sm">{s.full_name}</span>
-                                        <span className="text-[10px] font-bold opacity-70 uppercase font-mono">{s.erp_id} &bull; {s.academic_batch}</span>
+                            {selectedBatch && (
+                                <div className="flex gap-4">
+                                    <button 
+                                        onClick={handleBulkMarkPaid}
+                                        disabled={selectedStudentIds.length === 0 || loading}
+                                        className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white px-6 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm flex items-center gap-2"
+                                    >
+                                        <i className="fa-solid fa-check-double"></i> Mark Selected Paid
                                     </button>
-                                ))}
-                                {studentResults.length === 0 && !isSearching && searchQuery && <p className="text-xs text-themeTextSec text-center">No students found.</p>}
-                            </div>
+                                </div>
+                            )}
                         </div>
 
-                        {/* Ledger View Panel */}
-                        {selectedStudent ? (
-                            <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-6 flex-1 relative min-h-[400px]`}>
-                                <div className="border-b-theme border-themeBorder pb-4 mb-6 flex justify-between items-center">
-                                    <div>
-                                        <h2 className="text-xl font-black text-white">{selectedStudent.full_name}'s Ledger</h2>
-                                        <p className="text-xs text-themeTextSec font-mono uppercase mt-1">{selectedStudent.erp_id} | {selectedStudent.academic_batch}</p>
-                                    </div>
-                                    <i className="fa-solid fa-file-invoice-dollar text-3xl text-themeTextSec opacity-30"></i>
+                        {/* Assign Fees Panel (Only visible if students are selected) */}
+                        {selectedBatch && selectedStudentIds.length > 0 && (
+                            <div className="bg-themeElevated border border-themeBorder rounded-[2rem] p-6 shadow-lg animate-fade-in flex flex-col xl:flex-row gap-6 xl:items-end">
+                                <div className="flex-1">
+                                    <h3 className="text-sm font-black text-themeText uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <i className="fa-solid fa-file-invoice text-themeAccent"></i> Assign New Fee to {selectedStudentIds.length} Students
+                                    </h3>
+                                    <form id="assign-fee-form" onSubmit={handleAssignFees} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div>
+                                            <input type="text" value={assignTitle} onChange={e => setAssignTitle(e.target.value)} required placeholder="Invoice Title (e.g. Exam Fee)" className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-themeAccent text-themeText" />
+                                        </div>
+                                        <div>
+                                            <input type="number" value={assignAmount} onChange={e => setAssignAmount(e.target.value)} required placeholder="Amount (₹)" min="1" className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-themeAccent text-themeText" />
+                                        </div>
+                                        <div>
+                                            <input type="date" value={assignDueDate} onChange={e => setAssignDueDate(e.target.value)} required className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-themeAccent text-themeText" />
+                                        </div>
+                                        <div>
+                                            <select value={assignType} onChange={e => setAssignType(e.target.value)} className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-themeAccent text-themeText appearance-none">
+                                                {['Tuition', 'Hostel', 'Library', 'Examination', 'Fine', 'Other'].map(t => <option key={t} value={t}>{t}</option>)}
+                                            </select>
+                                        </div>
+                                    </form>
                                 </div>
+                                <button form="assign-fee-form" type="submit" disabled={loading} className="shrink-0 bg-themeAccent hover:bg-themeAccent/90 text-white px-8 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(255,191,0,0.2)] active:scale-95 disabled:opacity-50">
+                                    Generate Invoices
+                                </button>
+                            </div>
+                        )}
 
+                        {/* Spreadsheet Grid */}
+                        {selectedBatch && (
+                            <div className="bg-themePanel border border-themeBorder rounded-[2rem] shadow-xl overflow-hidden flex flex-col min-h-[400px]">
                                 {loading ? (
-                                    <div className="py-20 text-center"><i className="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-500"></i></div>
-                                ) : studentLedger.length === 0 ? (
-                                    <div className="py-16 text-center text-themeTextSec border-2 border-dashed border-themeBorder rounded-xl">
-                                        <p className="text-sm font-bold">No invoices found for this student.</p>
+                                    <div className="flex-1 flex items-center justify-center py-20">
+                                        <i className="fa-solid fa-circle-notch fa-spin text-3xl text-themeAccent"></i>
+                                    </div>
+                                ) : (students.length === 0 || debugError) ? (
+                                    <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
+                                        <i className="fa-solid fa-users-slash text-4xl text-themeTextSec/50 mb-4"></i>
+                                        <h3 className="text-sm font-black text-themeText tracking-widest uppercase mb-2">
+                                            {debugError ? "Database Error" : "No Students Found"}
+                                        </h3>
+                                        <p className="text-xs font-bold text-themeTextSec max-w-md">
+                                            {debugError ? debugError : `There are no students enrolled in ${selectedBatch}.`}
+                                        </p>
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col gap-3">
-                                        {studentLedger.map(inv => (
-                                            <div key={inv.id} className="bg-themeElevated border-theme border-themeBorder rounded-lg p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:border-themeBorderStrong transition-colors">
-                                                <div>
-                                                    <p className="text-white font-bold">{inv.title}</p>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec bg-themePanel px-2 py-0.5 rounded border border-themeBorder">{inv.type}</span>
-                                                        <span className="text-[10px] text-themeTextSec font-mono">Due: {new Date(inv.due_date).toLocaleDateString()}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-4 shrink-0">
-                                                    <span className="text-lg font-black font-mono text-white">₹{Number(inv.amount).toLocaleString()}</span>
-                                                    {inv.status === 'paid' ? (
-                                                        <span className="text-xs font-black uppercase text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/20"><i className="fa-solid fa-check mr-1"></i> Paid</span>
-                                                    ) : (
-                                                        <button 
-                                                            onClick={() => handleRecordPayment(inv.id, inv.amount, inv.title)}
-                                                            className="text-xs font-black uppercase text-emerald-500 hover:text-[#0a0a0a] border border-emerald-500 hover:bg-emerald-500 px-3 py-1.5 rounded transition-colors shadow-[0_0_10px_rgba(16,185,129,0.1)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                                                        >
-                                                            Record Payment
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="bg-themeElevated/50 border-b border-themeBorder">
+                                                    <th className="p-4 w-12 text-center">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={selectedStudentIds.length === students.length && students.length > 0}
+                                                            onChange={handleSelectAll}
+                                                            className="w-4 h-4 rounded border-themeBorder text-themeAccent focus:ring-themeAccent bg-themeElevated cursor-pointer"
+                                                        />
+                                                    </th>
+                                                    <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Student Details</th>
+                                                    <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Status</th>
+                                                    <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Pending Amount</th>
+                                                    <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {students.map(student => {
+                                                    const status = getStudentStatus(student);
+                                                    const isSelected = selectedStudentIds.includes(student.id);
+                                                    const totalPending = status.pendingInvoices ? status.pendingInvoices.reduce((sum, inv) => sum + Number(inv.amount), 0) : 0;
+                                                    
+                                                    return (
+                                                        <tr key={student.id} className={`border-b border-themeBorder/50 transition-colors ${isSelected ? 'bg-themeAccent/5' : 'hover:bg-themeElevated/30'}`}>
+                                                            <td className="p-4 text-center">
+                                                                <input 
+                                                                    type="checkbox"
+                                                                    checked={isSelected}
+                                                                    onChange={() => handleSelectStudent(student.id)}
+                                                                    className="w-4 h-4 rounded border-themeBorder text-themeAccent focus:ring-themeAccent bg-themeElevated cursor-pointer"
+                                                                />
+                                                            </td>
+                                                            <td className="p-4">
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-black text-themeText text-sm">{student.full_name}</span>
+                                                                    <span className="text-[10px] font-bold text-themeTextSec font-mono">{student.erp_id}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="p-4">
+                                                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md border text-[10px] font-black uppercase tracking-widest ${status.color}`}>
+                                                                    {status.count ? <><i className="fa-solid fa-circle-exclamation"></i> {status.label} ({status.count})</> : status.label}
+                                                                </span>
+                                                            </td>
+                                                            <td className="p-4">
+                                                                {totalPending > 0 ? (
+                                                                    <span className="font-mono font-black text-rose-500">₹{totalPending.toLocaleString()}</span>
+                                                                ) : (
+                                                                    <span className="font-mono font-bold text-themeTextSec">₹0</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="p-4 text-right">
+                                                                {status.pendingInvoices && status.pendingInvoices.length > 0 ? (
+                                                                    <div className="flex flex-col gap-2 items-end">
+                                                                        {status.pendingInvoices.map(inv => (
+                                                                            <button 
+                                                                                key={inv.id}
+                                                                                onClick={() => handleMarkPaid(student.id, inv)}
+                                                                                className="text-[10px] font-black uppercase tracking-widest text-emerald-500 hover:text-white border border-emerald-500/30 hover:bg-emerald-500 px-3 py-1.5 rounded transition-all flex items-center gap-2"
+                                                                            >
+                                                                                Mark Paid: {inv.title} (₹{inv.amount})
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <span className="text-[10px] font-black uppercase text-themeTextSec/50 tracking-widest">-</span>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 )}
-                            </div>
-                        ) : (
-                            <div className="hidden lg:flex flex-1 border-2 border-dashed border-themeBorder rounded-themePanel items-center justify-center opacity-50">
-                                <p className="text-sm font-bold text-themeTextSec">Search and select a student to view their ledger.</p>
                             </div>
                         )}
                     </div>

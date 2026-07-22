@@ -351,17 +351,7 @@
   mix-blend-mode: screen;
 }
 .hero-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-  opacity: 0.2;
-  z-index: 0;
-  pointer-events: none;
-  filter: blur(40px);
+  display: none;
 }
 .grid-bg {
   position: absolute;

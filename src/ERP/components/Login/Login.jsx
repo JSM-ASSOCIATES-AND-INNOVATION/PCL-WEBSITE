@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useERP } from '../../context/ErpContext';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import pclLogo from '../../../ASSETS/LOGOS/pcl_logo.svg';
 
 export default function Login() {
     const { login } = useERP();
@@ -110,12 +111,9 @@ export default function Login() {
                 {/* LEFT: PCL BRANDING & HERO */}
                 <div className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left animate-fade-in mt-10 lg:mt-0">
                     <div className="flex flex-col lg:flex-row items-center lg:items-start gap-5 lg:gap-6 mb-8 group cursor-default">
-                        <div className="relative flex items-center justify-center group-hover:scale-105 group-hover:-translate-y-1 transition-transform duration-500 overflow-hidden px-4">
-                            <div 
-                                className="bg-center bg-contain bg-no-repeat brand-crest relative z-10 filter drop-shadow-lg" 
-                                style={{ width: '90px', height: '105px', backgroundColor: 'var(--theme-accent)' }}
-                            ></div>
-                        </div>
+                            <div className="relative z-10 filter drop-shadow-lg transition-all duration-300 w-[90px] h-[105px] flex items-center justify-center">
+                                <img src={pclLogo} alt="PCL Logo" className="w-full h-full object-contain" />
+                            </div>
                         <div className="flex flex-col justify-center">
                             <span className="text-4xl lg:text-6xl font-black tracking-tight text-themeText mb-1 transition-colors duration-500" style={{ fontFamily: "'Playfair Display', serif" }}>
                                 Prudentia

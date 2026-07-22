@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { supabase } from '../../../LIB/supabase/supabaseClient';
-import PremiumCard from '../../UI/PremiumCard/PremiumCard';
+import FacultyCard from './FacultyCard';
 
 export default function Faculty() {
   const [query, setQuery] = useState('');
@@ -78,9 +78,6 @@ export default function Faculty() {
 
   return (
     <div className="min-h-screen w-full relative bg-[var(--bg-color)] text-[var(--text-color)] overflow-x-hidden pb-32">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[var(--bg-color)] via-[var(--bg-color)] to-[var(--bg-color)] z-0" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[600px] bg-[var(--primary-glow)] blur-[150px] rounded-full pointer-events-none z-0" />
-
       <div className="relative z-20 pt-32 md:pt-40 px-6 md:px-12 max-w-7xl mx-auto">
         <div className="text-center mb-24">
           <motion.h1
@@ -130,22 +127,10 @@ export default function Faculty() {
               const fProfile = faculty.faculty_profiles;
               
               return (
-                <PremiumCard
-                  key={faculty.id}
-                  id={faculty.id}
-                  title={faculty.full_name}
-                  subtitle={fProfile?.designation || faculty.department || 'Faculty Member'}
-                  description={fProfile?.specialisation || `${faculty.full_name} is a distinguished member of the ${faculty.department || 'faculty'} at Prudentia College of Law.`}
-                  image={fProfile?.image_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png'}
-                  verified={true}
-                  status="online"
-                  variant="default"
-                  stats={[
-                    { label: 'Degrees', value: fProfile?.degrees ? fProfile.degrees.split(',').length : 1 },
-                    { label: 'Department', value: faculty.department ? faculty.department.substring(0, 10) + (faculty.department.length > 10 ? '...' : '') : 'Law' }
-                  ]}
-                  onProfile={() => navigate(`/about/faculty/${faculty.id}`)}
-                  onMessage={() => alert(`Messaging ${faculty.full_name} is not available right now.`)}
+                <FacultyCard 
+                  key={faculty.id} 
+                  faculty={faculty} 
+                  onClick={() => navigate(`/about/faculty/${faculty.id}`)} 
                 />
               );
             })}

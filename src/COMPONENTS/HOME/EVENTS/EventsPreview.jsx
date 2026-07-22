@@ -87,7 +87,7 @@ const EventsPreview = forwardRef((props, ref) => {
       ref={ref}
       {...props}
     >
-      <div className="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_left,_var(--primary-glow)_0%,_transparent_70%)] pointer-events-none opacity-20 z-0"></div>
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02] z-0" style={{ backgroundImage: 'radial-gradient(var(--text-color) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <div className="container relative z-10 w-full max-w-7xl mx-auto px-6">
         <motion.div

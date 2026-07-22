@@ -309,10 +309,89 @@ export default function App() {
               <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10 scroll-smooth flex flex-col" id="jsm-main-scroll-container">
                 {/* Spacer for TopNav if present */}
                 {navLayout === 'topnav' && <div className="h-[72px] lg:h-[84px] shrink-0 w-full pointer-events-none transition-all duration-500"></div>}
-
-                <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-8 flex flex-col relative z-10">
-                  {renderContent()}
+                
+                <header className={`mx-3 lg:mx-8 ${navLayout === 'topnav' ? 'mt-1 lg:mt-2' : 'mt-2 lg:mt-4'} mb-2 lg:mb-4 h-16 lg:h-20 flex items-center justify-between px-4 lg:px-6 bg-themePanel/60 backdrop-blur-2xl border border-themeBorder shadow-lg rounded-2xl lg:rounded-3xl text-themeText sticky ${navLayout === 'topnav' ? 'top-[72px] lg:top-[80px]' : 'top-2 lg:top-4'} z-[90] min-w-0 gap-2 shrink-0 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/5 before:to-transparent before:rounded-2xl lg:before:rounded-3xl before:pointer-events-none transition-all duration-500`}>
+                  {/* Left: Branding & Page Title */}
+                  <div className="flex items-center gap-3 lg:gap-4 shrink-0 min-w-0 relative z-10">
+                  <div className="flex lg:hidden w-10 h-10 rounded-xl bg-themeElevated border border-white/10 items-center justify-center shadow-md shrink-0 relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-themeAccent/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div 
+                          className={`w-4 h-4 bg-current ${roleColors.text} relative z-10`}
+                          style={{
+                              WebkitMaskImage: `url(${pclLogo})`,
+                              WebkitMaskSize: 'contain',
+                              WebkitMaskRepeat: 'no-repeat',
+                              WebkitMaskPosition: 'center'
+                          }}
+                      />
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-2 lg:gap-3">
+                        <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 rounded-full bg-themeAccent shadow-[0_0_8px_currentColor] animate-pulse shrink-0"></div>
+                        <h2 className={`${theme.text.heading} text-lg lg:text-2xl text-themeText capitalize tracking-tight leading-none truncate drop-shadow-sm`}>
+                          {getPageTitle(activeTab)}
+                        </h2>
+                    </div>
+                    <p className={`${theme.text.overline} ${theme.text.muted} mt-1 hidden sm:block truncate opacity-60 tracking-[0.2em]`}>
+                      Prudentia College of Law • Workspace
+                    </p>
+                  </div>
                 </div>
+
+                {/* Center: Global Search */}
+                <div className="hidden xl:flex flex-1 justify-center max-w-md mx-4 min-w-0 relative z-10">
+                  <GlobalSearch />
+                </div>
+
+                {/* Right: Quick Actions, Notifications, Profile */}
+                <div className="flex items-center gap-2 lg:gap-4 shrink-0 relative z-10">
+                  <div className="hidden lg:block">
+                    <RoleActionButton role={userSession.role} setActiveTab={setActiveTab} />
+                  </div>
+
+                  <button onClick={() => setActiveTab('notices')} className={`w-10 h-10 rounded-xl bg-themeElevated/50 hover:bg-themeElevated border border-white/5 hover:border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:${roleColors.text} transition-all duration-300 relative group shadow-sm`}>
+                    <i className={`fa-regular fa-bell text-lg group-hover:scale-110 transition-transform`}></i>
+                    {notices?.length > 0 && (
+                      <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b] animate-pulse border-2 border-themePanel"></span>
+                    )}
+                  </button>
+
+                  <div className={`w-px h-6 bg-themeBorderStrong/50 mx-1 hidden ${navLayout === 'topnav' ? 'sm:hidden' : 'sm:block'}`}></div>
+
+                  {/* Profile Avatar Button */}
+                  <button 
+                    onClick={() => setActiveTab('credentials')}
+                    className={`flex items-center gap-3 hover:bg-themeElevated/80 p-1 lg:pr-4 rounded-full transition-all duration-300 border border-transparent hover:border-themeBorderStrong group outline-none ${navLayout === 'topnav' ? 'lg:hidden' : ''}`}
+                  >
+                    <div className={`w-9 h-9 lg:w-10 lg:h-10 rounded-full bg-themeElevated border border-white/10 flex items-center justify-center font-black text-[10px] lg:text-xs text-themeText relative overflow-hidden group-hover:border-themeAccent group-hover:text-themeAccent transition-colors shadow-sm shrink-0`}>
+                      <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-themeElevated z-10 shadow-sm"></div>
+                      <div className="absolute inset-0 bg-themeAccent/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                      <span className="relative z-10">
+                      {(() => {
+                        const name = userSession?.name || '';
+                        const cleanName = name.replace(/[^a-zA-Z\s]/g, '').trim();
+                        const parts = cleanName.split(/\s+/).filter(Boolean);
+                        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                        if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+                        return userSession?.role?.substring(0, 2).toUpperCase() || 'US';
+                      })()}
+                      </span>
+                    </div>
+                    <div className="hidden lg:flex flex-col items-start min-w-0">
+                      <span className="text-xs font-bold text-themeText group-hover:text-themeAccent transition-colors leading-tight truncate max-w-[120px]">
+                        {userSession?.name || (userSession?.role === 'admin' ? 'System Admin' : userSession?.role === 'faculty' ? 'Professor' : 'Student')}
+                      </span>
+                      <span className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mt-0.5 opacity-80">
+                        Settings
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </header>
+
+              <div className="flex-1 p-3 sm:p-8 pb-28 lg:pb-8 flex flex-col">
+                {renderContent()}
+              </div>
 
               {/* ERP Footer with Privacy & Terms */}
               <div className="w-full shrink-0 flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-themeBorder bg-themePanel/30 text-xs font-medium text-themeTextSec mt-auto z-10 relative">

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { theme } from '../../../theme';
 import { supabase } from '../../../lib/supabase/supabaseClient';
 
-export default function AdminRightSidebar() {
+export default function AdminRightSidebar({ setActiveTab }) {
     const navigate = useNavigate();
     const [dbStats, setDbStats] = useState({ 
         size: 'Loading...', 
@@ -66,12 +66,12 @@ export default function AdminRightSidebar() {
 
 
     const quickActions = [
-        { label: 'Add Student', icon: 'fa-user-graduate', color: 'text-indigo-500' },
-        { label: 'Add Faculty', icon: 'fa-chalkboard-user', color: 'text-blue-500' },
-        { label: 'New Notice', icon: 'fa-bullhorn', color: 'text-amber-500' },
-        { label: 'Publish Blog', icon: 'fa-newspaper', color: 'text-emerald-500' },
-        { label: 'Add Event', icon: 'fa-calendar-plus', color: 'text-rose-500' },
-        { label: 'Upload Circular', icon: 'fa-file-pdf', color: 'text-red-500' },
+        { label: 'Add Student', icon: 'fa-user-graduate', color: 'text-indigo-500', tab: 'users' },
+        { label: 'Add Faculty', icon: 'fa-chalkboard-user', color: 'text-blue-500', tab: 'faculty' },
+        { label: 'New Notice', icon: 'fa-bullhorn', color: 'text-amber-500', tab: 'notices' },
+        { label: 'Publish Blog', icon: 'fa-newspaper', color: 'text-emerald-500', tab: 'siteeditor' },
+        { label: 'Add Event', icon: 'fa-calendar-plus', color: 'text-rose-500', tab: 'events' },
+        { label: 'Upload Circular', icon: 'fa-file-pdf', color: 'text-red-500', tab: 'notices' },
     ];
 
     return (
@@ -87,7 +87,11 @@ export default function AdminRightSidebar() {
                     {quickActions.map((action, i) => (
                         <button 
                             key={i} 
-                            onClick={() => console.log(`Triggering action: ${action.label}`)}
+                            onClick={() => {
+                                if (setActiveTab && action.tab) {
+                                    setActiveTab(action.tab);
+                                }
+                            }}
                             className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder hover:border-themeAccent transition-all group"
                         >
                             <i className={`fa-solid ${action.icon} text-lg text-themeTextSec group-hover:${action.color} group-hover:scale-110 transition-transform`}></i>
@@ -121,7 +125,7 @@ export default function AdminRightSidebar() {
                     </div>
                 </div>
                 <button 
-                    onClick={() => navigate('/admin/siteeditor')}
+                    onClick={() => setActiveTab && setActiveTab('siteeditor')}
                     className="w-full mt-4 py-1.5 text-[9px] font-black text-themeTextSec hover:text-themeText border-[length:var(--border-width)] border-themeBorder rounded-lg transition-colors uppercase tracking-widest active:scale-[0.98]"
                 >
                     Open CMS
@@ -155,8 +159,8 @@ export default function AdminRightSidebar() {
                 </div>
                 
                 <button 
-                    onClick={() => navigate('/admin/sql')}
-                    className="w-full mt-4 py-1.5 text-[9px] font-black text-emerald-400 hover:text-emerald-300 border-[length:var(--border-width)] border-emerald-500/30 rounded-lg transition-colors uppercase tracking-widest active:scale-[0.98] relative z-10"
+                    onClick={() => setActiveTab && setActiveTab('sql')}
+                    className="w-full mt-4 py-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-black rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
                 >
                     Console <i className="fa-solid fa-arrow-up-right-from-square ml-1"></i>
                 </button>

@@ -4,6 +4,7 @@ import { supabase } from "../../../lib/supabase/supabaseClient";
 import { useERP } from "../../../context/ErpContext";
 import { sendSystemEmail } from '../../../lib/EmailService';
 import { createClient } from '@supabase/supabase-js';
+import AdminFacultyEditorModal from './AdminFacultyEditorModal';
 
 // Safe provisioning client so admin doesn't get logged out
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
@@ -20,6 +21,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
     const [isProvisioning, setIsProvisioning] = useState(false);
     const [provisionSuccess, setProvisionSuccess] = useState(false);
     const [provisionLogs, setProvisionLogs] = useState([]);
+    const [editFacultyId, setEditFacultyId] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -54,7 +56,8 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                     faculty_profiles (
                         designation,
                         specialisation,
-                        is_public
+                        is_public,
+                        image_url
                     )
                 `)
                 .eq('role', 'faculty');
@@ -267,21 +270,34 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                         <div key={fac.id} className="bg-themePanel border border-themeBorder rounded-2xl flex flex-col group hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all overflow-hidden">
                             <div className="p-5 border-b border-themeBorder bg-themeElevated/30 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-themeAccent/20 text-themeAccent border border-themeAccent/30 rounded-xl flex items-center justify-center font-black text-lg shadow-inner">
-                                        {fac.full_name?.charAt(0)}
-                                    </div>
+                                    {fac.faculty_profiles?.image_url && fac.faculty_profiles.image_url !== 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' ? (
+                                        <img src={fac.faculty_profiles.image_url} alt={fac.full_name} className="w-12 h-12 rounded-xl object-cover shadow-inner border border-themeBorder shrink-0" />
+                                    ) : (
+                                        <div className="w-12 h-12 bg-themeAccent/20 text-themeAccent border border-themeAccent/30 rounded-xl flex items-center justify-center font-black text-lg shadow-inner shrink-0">
+                                            {fac.full_name?.charAt(0) || '?'}
+                                        </div>
+                                    )}
                                     <div className="min-w-0">
                                         <p className="font-black uppercase tracking-wide truncate text-themeText">{fac.full_name}</p>
                                         <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest truncate">{fac.erp_id}</p>
                                     </div>
                                 </div>
-                                <button 
-                                    onClick={() => toggleVisibility(fac.id, fac.faculty_profiles?.is_public)}
-                                    className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center border border-themeBorder ${fac.faculty_profiles?.is_public ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-neutral-600/30'}`}
-                                    title={fac.faculty_profiles?.is_public ? 'Publicly Visible' : 'Hidden from Public'}
-                                >
-                                    <div className={`w-4 h-4 rounded-full transition-transform ${fac.faculty_profiles?.is_public ? 'bg-emerald-500 translate-x-4' : 'bg-neutral-500 translate-x-0'}`}></div>
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button 
+                                        onClick={() => setEditFacultyId(fac.id)}
+                                        className="w-8 h-8 rounded-full bg-themeAccent/10 hover:bg-themeAccent text-themeAccent hover:text-white flex items-center justify-center transition-colors"
+                                        title="Edit Faculty Profile"
+                                    >
+                                        <i className="fa-solid fa-pen text-xs"></i>
+                                    </button>
+                                    <button 
+                                        onClick={() => toggleVisibility(fac.id, fac.faculty_profiles?.is_public)}
+                                        className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center border border-themeBorder ${fac.faculty_profiles?.is_public ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-neutral-600/30'}`}
+                                        title={fac.faculty_profiles?.is_public ? 'Publicly Visible' : 'Hidden from Public'}
+                                    >
+                                        <div className={`w-4 h-4 rounded-full transition-transform ${fac.faculty_profiles?.is_public ? 'bg-emerald-500 translate-x-4' : 'bg-neutral-500 translate-x-0'}`}></div>
+                                    </button>
+                                </div>
                             </div>
                             <div className="p-5 flex flex-col gap-3 flex-1">
                                 <div>
@@ -425,6 +441,17 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                         </div>
                     </div>
                 </div>
+            )}
+            {/* 4. EDIT FACULTY MODAL */}
+            {editFacultyId && (
+                <AdminFacultyEditorModal 
+                    facultyId={editFacultyId}
+                    onClose={() => setEditFacultyId(null)}
+                    onSave={() => {
+                        setEditFacultyId(null);
+                        fetchDirectory();
+                    }}
+                />
             )}
         </div>
     );

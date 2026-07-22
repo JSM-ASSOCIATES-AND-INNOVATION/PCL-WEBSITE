@@ -84,11 +84,8 @@ export default function About() {
   ];
 
   return (
-    <div className="min-h-screen w-full relative flex flex-col items-center bg-[var(--bg-color)] overflow-x-hidden font-sans text-[var(--text-color)] pb-32 transition-colors duration-300">
-      {/* Deep Cinematic Background */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[var(--bg-elevated)] via-[var(--bg-color)] to-[var(--bg-color)] z-0 opacity-80 pointer-events-none transition-colors duration-300" />
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[600px] bg-[var(--primary-glow)] blur-[150px] rounded-full pointer-events-none z-0 transition-colors duration-300" />
-
+    <div className="min-h-screen w-full relative bg-[var(--bg-color)] text-[var(--text-color)] overflow-x-hidden pb-32">
+      
       {/* Content Container */}
       <div className="relative z-20 w-full max-w-7xl px-6 md:px-12 flex flex-col items-center pt-32 md:pt-48 pb-12">
 

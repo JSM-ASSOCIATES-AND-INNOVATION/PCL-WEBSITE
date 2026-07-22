@@ -1,4 +1,3 @@
-/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,54 +5,67 @@ import { supabase } from '../../../LIB/supabase/supabaseClient';
 
 const ALL_TABS = [
   { id: 'education', label: 'Education' },
-  { id: 'research', label: 'Research' },
+  { id: 'research', label: 'Research & Pubs' },
   { id: 'projects', label: 'Projects' },
   { id: 'patents', label: 'Patents' },
   { id: 'awards', label: 'Awards' }
 ];
+
+const SkeletonLoader = () => (
+  <div className="min-h-screen w-full bg-[var(--bg-color)] flex flex-col lg:flex-row px-6 md:px-12 py-32 gap-16 max-w-7xl mx-auto">
+    {/* Left Skeleton */}
+    <div className="w-full lg:w-5/12 shrink-0 space-y-6">
+      <div className="w-full aspect-[3/4] bg-white/[0.03] animate-pulse rounded-[2rem]"></div>
+      <div className="flex gap-4">
+        <div className="h-12 flex-1 bg-white/[0.03] animate-pulse rounded-xl"></div>
+        <div className="h-12 flex-1 bg-white/[0.03] animate-pulse rounded-xl"></div>
+      </div>
+    </div>
+    {/* Right Skeleton */}
+    <div className="w-full lg:w-7/12 flex flex-col justify-center space-y-6 lg:pt-12">
+      <div className="h-20 w-3/4 bg-white/[0.03] animate-pulse rounded-xl"></div>
+      <div className="h-8 w-1/3 bg-[#FFBF00]/20 animate-pulse rounded-lg"></div>
+      <div className="w-32 h-[1px] bg-[#FFBF00]/20 my-8"></div>
+      <div className="space-y-4 w-full">
+        <div className="h-4 w-full bg-white/[0.03] animate-pulse rounded"></div>
+        <div className="h-4 w-5/6 bg-white/[0.03] animate-pulse rounded"></div>
+        <div className="h-4 w-4/5 bg-white/[0.03] animate-pulse rounded"></div>
+        <div className="h-4 w-2/3 bg-white/[0.03] animate-pulse rounded"></div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function FacultyProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [faculty, setFaculty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('');
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     async function fetchFaculty() {
         try {
             setLoading(true);
             const { data, error } = await supabase
                 .from('profiles')
                 .select(`
-                    id,
-                    full_name,
-                    avatar_url,
+                    id, full_name, department, email,
                     faculty_profiles (
-                        designation,
-                        specialisation,
-                        bio,
-                        office,
-                        email,
-                        phone,
-                        linkedin,
-                        scholar,
-                        education,
-                        research,
-                        projects,
-                        patents,
-                        awards,
-                        is_public
+                        designation, specialisation, bio, office_address, phone,
+                        linkedin_url, scholar_url, education, research, projects, patents, awards, is_public, image_url
                     )
                 `)
                 .eq('id', id)
                 .single();
                 
             if (data && data.faculty_profiles && data.faculty_profiles.is_public) {
-                // Flatten the data for easier rendering
                 setFaculty({
                     name: data.full_name || 'Unknown',
-                    image: data.avatar_url || 'https://via.placeholder.com/600x800?text=No+Photo',
-                    department: 'Faculty of Law', // Defaulting since we don't fetch department relations right now
+                    department: data.department || 'Faculty of Law',
+                    email: data.email || '',
+                    image: data.faculty_profiles.image_url || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                     ...data.faculty_profiles
                 });
             } else {
@@ -72,12 +84,11 @@ export default function FacultyProfile() {
     if (!faculty) return [];
     return ALL_TABS.filter((tab) => {
         const val = faculty[tab.id];
-        if (Array.isArray(val)) return val.length > 0;
-        return val != null; // For safety
+        // Ensure string length > 0 if it's stored as text
+        return typeof val === 'string' && val.trim().length > 0;
     });
   }, [faculty]);
 
-  const [activeTab, setActiveTab] = useState('');
   useEffect(() => {
       if (availableTabs.length > 0 && !activeTab) {
           setActiveTab(availableTabs[0].id);
@@ -86,22 +97,16 @@ export default function FacultyProfile() {
 
   const currentTab = availableTabs.some((t) => t.id === activeTab) ? activeTab : availableTabs[0]?.id;
 
-  if (loading) {
-      return (
-          <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#050505] text-white px-6 text-center">
-              <i className="fa-solid fa-circle-notch fa-spin text-[#FFBF00] text-4xl"></i>
-          </div>
-      );
-  }
+  if (loading) return <SkeletonLoader />;
 
   if (!faculty) {
     return (
-      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#050505] text-white px-6 text-center">
-        <h2 className="text-4xl mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Faculty Not Found</h2>
-        <p className="text-gray-400 mb-8 font-sans">We couldn't find a profile for this faculty member, or their profile is private.</p>
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[var(--bg-color)] text-[var(--text-color)] px-6 text-center">
+        <h2 className="text-4xl mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Profile Not Found</h2>
+        <p className="text-[var(--text-muted)] mb-8 font-sans">This faculty member's profile is unavailable or private.</p>
         <button
           onClick={() => navigate('/about/faculty')}
-          className="text-[#FFBF00] font-bold uppercase tracking-widest text-sm hover:text-white transition-colors focus:outline-none"
+          className="bg-[var(--primary-color)] text-black px-8 py-3 rounded-full font-bold uppercase tracking-widest text-xs hover:scale-105 transition-transform"
         >
           Return to Directory
         </button>
@@ -109,219 +114,203 @@ export default function FacultyProfile() {
     );
   }
 
-  // Split name for styling the last word
+  // Name splitting
   const nameParts = faculty.name.split(' ');
-  const lastName = nameParts.pop();
+  const lastName = nameParts.length > 1 ? nameParts.pop() : '';
   const firstNames = nameParts.join(' ');
 
+  // Parse list items from raw text (assuming newline separation)
+  const renderList = (text) => {
+      if (!text) return null;
+      const items = text.split('\n').filter(i => i.trim().length > 0);
+      return (
+          <ul className="space-y-6 relative border-l border-[var(--card-border)] ml-2 pl-6 py-2">
+              {items.map((item, idx) => (
+                  <motion.li 
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      key={idx} 
+                      className="relative text-sm md:text-base text-[var(--text-color)]/90 leading-relaxed group"
+                  >
+                      {/* Timeline dot */}
+                      <div className="absolute w-2 h-2 bg-[var(--primary-color)] rounded-full -left-[29px] top-2 shadow-[0_0_10px_var(--primary-glow)] transition-transform group-hover:scale-150"></div>
+                      <span dangerouslySetInnerHTML={{ __html: item }} />
+                  </motion.li>
+              ))}
+          </ul>
+      );
+  };
+
   return (
-    <div className="min-h-screen w-full relative bg-[#050505] text-white overflow-x-hidden pb-32">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#050505] to-[#000000] z-0" />
+    <div className="min-h-screen w-full relative bg-[var(--bg-color)] text-[var(--text-color)] overflow-x-hidden font-sans">
+      
+      {/* Decorative Blur (Tasteful, not cheap) */}
+      <div className="fixed top-0 right-0 w-[40vw] h-[40vw] bg-[var(--primary-color)] rounded-full blur-[200px] opacity-[0.03] pointer-events-none z-0" />
 
-      <div className="relative z-20 pt-32 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
-
-        <Link
-          to="/about/faculty"
-          className="inline-flex items-center text-gray-500 hover:text-[#FFBF00] transition-colors mb-16 uppercase tracking-widest text-xs font-bold focus:outline-none"
-        >
-          <span className="mr-3 text-lg leading-none">←</span> BACK TO DIRECTORY
-        </Link>
-
-        {/* Cinematic Profile Header */}
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 mb-32 items-center lg:items-start">
+      <div className="relative z-20 pt-28 pb-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 xl:gap-24 items-start">
+        
+        {/* LEFT COLUMN: STICKY HERO */}
+        <div className="w-full lg:w-5/12 shrink-0 lg:sticky lg:top-32 flex flex-col gap-6">
           <motion.div 
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full sm:w-2/3 lg:w-5/12"
+            className="w-full aspect-[3/4] relative rounded-[2rem] overflow-hidden border border-[var(--card-border)] shadow-2xl group bg-black"
           >
-            <div className="rounded-[32px] overflow-hidden border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.8)] relative aspect-[3/4] bg-white/[0.02]">
-              <img src={faculty.image} alt={faculty.name} className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+            <img 
+              src={faculty.image} 
+              alt={faculty.name} 
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" 
+            />
+            {/* Inner Vignette */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+            
+            {/* Quick Badges overlaid on image bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col gap-2">
+                <p className="text-[#FFBF00] font-bold tracking-widest uppercase text-xs">{faculty.designation}</p>
+                <h3 className="text-white text-3xl font-bold font-serif leading-none">{faculty.name}</h3>
             </div>
           </motion.div>
 
-          <div className="w-full lg:w-7/12 flex flex-col justify-center lg:pt-12">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 uppercase leading-[1.05]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              {firstNames} <br/>
-              <span className="text-[#FFBF00] italic">{lastName}</span>
-            </motion.h1>
-
-            <motion.div 
-              initial={{ opacity: 0, scaleX: 0 }} 
-              animate={{ opacity: 1, scaleX: 1 }} 
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-[1px] w-32 bg-[#FFBF00]/50 mb-10 origin-left"
-            />
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mb-12">
-              <h2 className="text-2xl text-white font-semibold mb-2" style={{ fontFamily: "'Outfit', sans-serif" }}>{faculty.designation}</h2>
-              <p className="text-[#FFBF00] font-bold tracking-widest uppercase text-sm">{faculty.department}</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-gray-400 text-sm"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
-            >
-              {faculty.specialisation && (
-                <div className="flex flex-col gap-1">
-                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Specialisation</span>
-                    <span className="text-white font-medium text-base">{faculty.specialisation}</span>
-                </div>
-              )}
-              {faculty.office && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Office Address</span>
-                    <span className="text-white font-medium text-base">{faculty.office}</span>
-                  </div>
-              )}
-              {faculty.email && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Email</span>
-                    <a href={`mailto:${faculty.email}`} className="text-white hover:text-[#FFBF00] transition-colors font-medium text-base">
-                      {faculty.email}
-                    </a>
-                  </div>
-              )}
-              {faculty.phone && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Contact No</span>
-                    <a href={`tel:${faculty.phone.replace(/\s/g, '')}`} className="text-white hover:text-[#FFBF00] transition-colors font-medium text-base">
-                      {faculty.phone}
-                    </a>
-                  </div>
-              )}
-            </motion.div>
-
-            {(faculty.linkedin || faculty.scholar) && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex gap-8 mt-12 pt-8 border-t border-white/10">
-                {faculty.linkedin && (
-                  <a href={faculty.linkedin} target="_blank" rel="noopener noreferrer" className="text-white uppercase tracking-widest text-xs font-bold hover:text-[#FFBF00] transition-colors flex items-center gap-2">
-                    LinkedIn <span className="text-[#FFBF00]">↗</span>
-                  </a>
-                )}
-                {faculty.scholar && (
-                  <a href={faculty.scholar} target="_blank" rel="noopener noreferrer" className="text-white uppercase tracking-widest text-xs font-bold hover:text-[#FFBF00] transition-colors flex items-center gap-2">
-                    Google Scholar <span className="text-[#FFBF00]">↗</span>
-                  </a>
-                )}
-              </motion.div>
+          {/* Social / Contact Actions */}
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+            className="flex flex-wrap gap-3"
+          >
+            {faculty.email && (
+                <a href={`mailto:${faculty.email}`} className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:-translate-y-1 hover:shadow-lg">
+                    <i className="fa-solid fa-envelope text-[#FFBF00]"></i> Email
+                </a>
             )}
-          </div>
+            {faculty.linkedin_url && (
+                <a href={faculty.linkedin_url} target="_blank" rel="noreferrer" className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:-translate-y-1 hover:shadow-lg">
+                    <i className="fa-brands fa-linkedin text-[#FFBF00]"></i> LinkedIn
+                </a>
+            )}
+            {faculty.scholar_url && (
+                <a href={faculty.scholar_url} target="_blank" rel="noreferrer" className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:-translate-y-1 hover:shadow-lg">
+                    <i className="fa-solid fa-graduation-cap text-[#FFBF00]"></i> Scholar
+                </a>
+            )}
+          </motion.div>
         </div>
 
-        {/* Details Tabs */}
-        {availableTabs.length > 0 && (
-          <div className="mt-24 w-full">
-            <div className="flex flex-nowrap overflow-x-auto border-b border-white/10 mb-16 hide-scrollbar gap-8 md:gap-16">
-              {availableTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`pb-6 text-sm md:text-base font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap focus:outline-none ${
-                    currentTab === tab.id ? 'text-[#FFBF00]' : 'text-gray-600 hover:text-gray-300'
-                  }`}
-                >
-                  {tab.label}
-                  {currentTab === tab.id && (
-                    <motion.div layoutId="activeProfileTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FFBF00]" />
-                  )}
-                </button>
-              ))}
-            </div>
+        {/* RIGHT COLUMN: SCROLLING DETAILS */}
+        <div className="w-full lg:w-7/12 flex flex-col lg:min-h-[80vh]">
+          
+          <Link
+            to="/about/faculty"
+            className="inline-flex items-center text-[var(--text-muted)] hover:text-[#FFBF00] transition-colors mb-12 uppercase tracking-widest text-xs font-bold focus:outline-none w-max"
+          >
+            <i className="fa-solid fa-arrow-left mr-3 text-sm"></i> Directory
+          </Link>
 
-            <div className="min-h-[300px]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentTab}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="px-2 max-w-4xl"
-                  style={{ fontFamily: "'Outfit', sans-serif" }}
-                >
-                  {currentTab === 'education' && faculty.education && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                      {faculty.education.map((edu, idx) => (
-                        <div key={idx} className="relative pl-6 border-l border-white/10">
-                          <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full bg-[#FFBF00]" />
-                          <h4 className="text-white font-bold text-xl md:text-2xl mb-2 leading-snug">{edu.degree}</h4>
-                          <p className="text-gray-400 text-base">{edu.institution}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+            className="text-5xl md:text-6xl lg:text-[5rem] font-bold text-[var(--text-color)] mb-6 uppercase leading-[1.05]"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {firstNames} <span className="text-[#FFBF00] italic">{lastName}</span>
+          </motion.h1>
 
-                  {currentTab === 'research' && faculty.research && (
-                    <div className="space-y-8">
-                      <h3 className="text-sm text-gray-500 font-bold uppercase tracking-widest mb-6">Areas of Specialisation</h3>
-                      <div className="flex flex-wrap gap-4">
-                        {faculty.research.map((res, idx) => (
-                          <div key={idx} className="px-6 py-3 rounded-full border border-white/10 bg-white/[0.02] text-white text-base hover:border-[#FFBF00]/50 hover:bg-[#FFBF00]/5 transition-all">
-                            {res.area || res}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+          <motion.div 
+            initial={{ opacity: 0, scaleX: 0 }} 
+            animate={{ opacity: 1, scaleX: 1 }} 
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="h-[2px] w-24 bg-[#FFBF00] mb-12 origin-left"
+          />
 
-                  {currentTab === 'projects' && faculty.projects && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      {faculty.projects.map((proj, idx) => (
-                        <div key={idx} className="bg-white/[0.02] border border-white/5 p-8 rounded-[24px] hover:border-[#FFBF00]/30 transition-colors">
-                          <h4 className="text-white font-bold text-xl mb-4 leading-snug">{proj.title}</h4>
-                          <p className="inline-block px-3 py-1 rounded bg-[#FFBF00]/10 text-[#FFBF00] text-xs uppercase tracking-widest font-bold">
-                            {proj.role}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+          {/* Bio Section */}
+          {faculty.bio ? (
+            <motion.p 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+              className="text-lg md:text-xl text-[var(--text-color)]/80 leading-relaxed mb-12 font-light"
+            >
+              <span className="text-4xl text-[#FFBF00] font-serif float-left mr-3 leading-none mt-1">
+                {faculty.bio.charAt(0)}
+              </span>
+              {faculty.bio.slice(1)}
+            </motion.p>
+          ) : (
+            <div className="mb-12"></div> // spacer
+          )}
 
-                  {currentTab === 'patents' && faculty.patents && (
-                    <div className="space-y-6">
-                      {faculty.patents.map((pat, idx) => (
-                        <div key={idx} className="flex items-start gap-4">
-                          <span className="text-[#FFBF00] text-xl mt-1">✦</span>
-                          <p className="text-gray-300 text-lg md:text-xl leading-relaxed">{pat.title || pat}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+          {/* Info Grid */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16 p-8 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-md"
+          >
+            {faculty.specialisation && (
+              <div>
+                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Expertise</span>
+                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.specialisation}</span>
+              </div>
+            )}
+            {faculty.department && (
+              <div>
+                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Department</span>
+                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.department}</span>
+              </div>
+            )}
+            {faculty.office_address && (
+                <div>
+                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Office Location</span>
+                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.office_address}</span>
+                </div>
+            )}
+            {faculty.phone && (
+                <div>
+                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Direct Line</span>
+                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.phone}</span>
+                </div>
+            )}
+          </motion.div>
 
-                  {currentTab === 'awards' && faculty.awards && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      {faculty.awards.map((award, idx) => (
-                        <div key={idx} className="flex items-center gap-6 bg-white/[0.02] border border-white/5 p-6 rounded-[24px]">
-                          <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#FFBF00]/10 text-[#FFBF00]">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M12 15l-3.46 1.82.66-3.86L6.37 10.2l3.87-.56L12 6l1.76 3.64 3.87.56-2.83 2.76.66 3.86z"/>
-                            </svg>
-                          </div>
-                          <div>
-                            <h4 className="text-white font-bold text-lg mb-1">{award.title}</h4>
-                            <p className="text-gray-500 font-medium">{award.year}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-        )}
+          {/* Interactive Tabs */}
+          {availableTabs.length > 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex-1 flex flex-col">
+              
+              <div className="flex flex-nowrap overflow-x-auto hide-scrollbar gap-2 mb-10 pb-2">
+                {availableTabs.map((tab) => {
+                  const isActive = currentTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap focus:outline-none flex-shrink-0 ${
+                        isActive 
+                          ? 'bg-[#FFBF00] text-black shadow-[0_0_20px_rgba(255,191,0,0.3)]' 
+                          : 'bg-[var(--card-bg)] text-[var(--text-muted)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 hover:text-[var(--text-color)]'
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
 
+              <div className="flex-1">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentTab}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full"
+                  >
+                    {renderList(faculty[currentTab])}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+            </motion.div>
+          )}
+
+        </div>
       </div>
     </div>
   );
