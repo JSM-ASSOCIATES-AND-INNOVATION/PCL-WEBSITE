@@ -1,70 +1,51 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React from "react";
 import SidebarFramework from "../../shared/Navigation/SidebarFramework";
-import { useERP } from "../../../context/ErpContext";
 
-export const FACULTY_NAV_GROUPS = [
+export const FACULTY_NAV_MEGA = [
     {
-        category: "Central Hubs",
+        category: "Faculty Hub",
         links: [
             { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-house" },
             { id: "notices", label: "Notice Board", icon: "fa-solid fa-thumbtack" },
-            { id: "materials", label: "My Courses", icon: "fa-brands fa-google-drive" },
-            { id: "timetable", label: "My Schedule", icon: "fa-solid fa-calendar-days" },
-            { id: "mentorship", label: "Mentorship", icon: "fa-solid fa-people-arrows" },
-            { id: "clinics", label: "Clinics & Societies", icon: "fa-solid fa-gavel" },
-            { id: "facultyleave", label: "Time Off", icon: "fa-solid fa-mug-hot" },
-            { id: "helpdesk", label: "IT Helpdesk", icon: "fa-solid fa-headset" }
+            { 
+                id: "teaching_group", label: "Teaching & Academics", icon: "fa-solid fa-graduation-cap", 
+                children: [
+                    { id: "materials", label: "My Courses", icon: "fa-brands fa-google-drive" },
+                    { id: "timetable", label: "My Schedule", icon: "fa-solid fa-calendar-days" },
+                    { id: "attendance", label: "Attendance", icon: "fa-solid fa-clipboard-user" },
+                    { id: "roster", label: "Class Roster", icon: "fa-solid fa-users-viewfinder" },
+                ] 
+            },
+            {
+                id: "advising_group", label: "Advising & Clinics", icon: "fa-solid fa-gavel",
+                children: [
+                    { id: "mentorship", label: "Mentorship", icon: "fa-solid fa-people-arrows" },
+                    { id: "clinics", label: "Clinics & Societies", icon: "fa-solid fa-scale-balanced" },
+                ]
+            },
+            {
+                id: "admin_group", label: "Administration", icon: "fa-solid fa-building-columns",
+                children: [
+                    { id: "facultyleave", label: "Time Off", icon: "fa-solid fa-mug-hot" },
+                    { id: "helpdesk", label: "IT Helpdesk", icon: "fa-solid fa-laptop-medical" }
+                ]
+            }
         ]
     }
 ];
 
 const BOTTOM_NAV_LINKS = [
     { id: "dashboard", label: "Home", icon: "fa-solid fa-house" },
-    { id: "materials", label: "Courses", icon: "fa-brands fa-google-drive" },
-    { id: "mentorship", label: "Mentorship", icon: "fa-solid fa-people-arrows" },
-    { id: "timetable", label: "Schedule", icon: "fa-solid fa-calendar-days" },
-];
-
-export const FACULTY_NAV_EXPANDED = [
-    {
-        category: "Overview",
-        links: [
-            { id: "dashboard", label: "Dashboard", icon: "fa-solid fa-house" },
-            { id: "notices", label: "Notice Board", icon: "fa-solid fa-thumbtack" }
-        ]
-    },
-    {
-        category: "Teaching & Academics",
-        links: [
-            { id: "materials", label: "My Courses", icon: "fa-brands fa-google-drive" },
-            { id: "timetable", label: "My Schedule", icon: "fa-solid fa-calendar-days" },
-        ]
-    },
-    {
-        category: "Advising & Support",
-        links: [
-            { id: "mentorship", label: "Mentorship Hub", icon: "fa-solid fa-people-arrows" },
-            { id: "clinics", label: "Clinics & Societies", icon: "fa-solid fa-gavel" }
-        ]
-    },
-    {
-        category: "Administration",
-        links: [
-            { id: "facultyleave", label: "Time Off & Leaves", icon: "fa-solid fa-mug-hot" },
-            { id: "helpdesk", label: "IT Helpdesk", icon: "fa-solid fa-headset" }
-        ]
-    }
+    { id: "faculty_academic_center", label: "Academics", icon: "fa-solid fa-graduation-cap" },
+    { id: "faculty_advising_center", label: "Advising", icon: "fa-solid fa-people-arrows" },
+    { id: "faculty_admin_center", label: "Admin", icon: "fa-solid fa-building-columns" }
 ];
 
 export default function FacultySidebar({ userSession, activeTab, setActiveTab, onLogout }) {
-    const { sidebarMode } = useERP();
-
-    const currentConfig = sidebarMode === 'expanded' ? FACULTY_NAV_EXPANDED : FACULTY_NAV_GROUPS;
-
     return (
         <SidebarFramework 
-            config={currentConfig}
+            config={FACULTY_NAV_MEGA}
             bottomLinks={BOTTOM_NAV_LINKS}
             userSession={userSession}
             activeTab={activeTab}

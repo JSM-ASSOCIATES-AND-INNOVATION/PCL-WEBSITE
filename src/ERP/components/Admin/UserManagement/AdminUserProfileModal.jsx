@@ -117,25 +117,25 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
 
     return (
         <div className="fixed inset-0 z-[200] flex flex-col bg-themeApp animate-fade-in font-sans overflow-hidden">
-            <div className="w-full max-w-5xl mx-auto flex flex-col h-screen relative z-10 bg-themePanel shadow-2xl border-x border-themeBorder">
+            <div className="w-full max-w-5xl mx-auto flex flex-col h-screen relative z-10 bg-themePanel/85 backdrop-blur-2xl shadow-premium shadow-2xl border-x border-white/5">
                 
                 {/* Header Profile Card */}
                 <div className={`p-6 lg:p-8 bg-gradient-to-r ${user.role === 'student' ? 'from-themeAccent to-themeAccent/80' : 'from-blue-600 to-blue-500'} relative overflow-hidden shrink-0`}>
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     
                     <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors z-20">
                         <i className="fa-solid fa-xmark text-sm"></i>
                     </button>
 
                     <div className="flex items-center gap-5 relative z-10">
-                        <div className="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
+                        <div className="w-20 h-20 rounded-2xl bg-themePanel/85 backdrop-blur-2xl shadow-premium flex items-center justify-center shadow-lg shrink-0 overflow-hidden">
                             <span className={`text-3xl font-black ${user.role === 'student' ? 'text-themeAccent' : 'text-blue-600'}`}>
                                 {user.name.charAt(0)}
                             </span>
                         </div>
                         <div className="text-white min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                                <span className="px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-black uppercase tracking-widest backdrop-blur-md border border-white/20">
+                                <span className="px-2 py-0.5 bg-white/20 rounded-md text-[10px] font-black uppercase tracking-widest backdrop-blur-md border border-black/10 dark:border-white/20">
                                     {user.role}
                                 </span>
                                 <div className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest backdrop-blur-md flex items-center gap-1 border ${user.status === 'Active' ? 'bg-emerald-500/30 border-emerald-500/50' : 'bg-rose-500/30 border-rose-500/50'}`}>
@@ -143,7 +143,7 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
                                     {user.status}
                                 </div>
                             </div>
-                            <h2 className="text-2xl font-black truncate drop-shadow-md">{user.name}</h2>
+                            <h2 className="text-2xl font-black truncate drop-shadow-sm dark:drop-shadow-md">{user.name}</h2>
                             <p className="text-white/90 text-xs lg:text-sm font-medium mt-1 truncate">
                                 {user.id} &bull; {user.email}
                             </p>
@@ -159,7 +159,7 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
                         <h4 className={`text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-4 flex items-center gap-2`}>
                             <i className="fa-solid fa-address-card"></i> Core Assignment
                         </h4>
-                        <div className="bg-themePanel border-theme border-themeBorder rounded-xl p-4 grid grid-cols-2 gap-4">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl p-4 grid grid-cols-2 gap-4">
                             <div>
                                 <span className={`text-[9px] font-bold uppercase tracking-widest ${theme.text.muted} block mb-1`}>
                                     {user.role === 'student' ? 'Academic Batch' : 'Department'}
@@ -187,7 +187,7 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
                                 
                                 {user.role === "student" ? (
                                     <div className="grid grid-cols-1 gap-4">
-                                        <div className="bg-themePanel border-theme border-themeBorder rounded-xl p-5 flex items-center justify-between">
+                                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl p-5 flex items-center justify-between">
                                             <div>
                                                 <span className={`text-[10px] font-black uppercase tracking-widest ${theme.text.muted} block mb-1`}>Semester Attendance</span>
                                                 <span className="text-3xl font-black text-themeText">{stats.attendancePercentage}%</span>
@@ -200,15 +200,15 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                        <div className="bg-themePanel border-theme border-themeBorder rounded-xl p-5 text-center">
+                                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl p-5 text-center">
                                             <span className={`text-[9px] font-black uppercase tracking-widest ${theme.text.muted} block mb-1`}>Assigned Workload</span>
                                             <span className="text-2xl font-black text-themeText">{stats.workload} Classes</span>
                                         </div>
-                                        <div className="bg-themePanel border-theme border-themeBorder rounded-xl p-5 text-center">
+                                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl p-5 text-center">
                                             <span className={`text-[9px] font-black uppercase tracking-widest ${theme.text.muted} block mb-1`}>Classes Finished</span>
                                             <span className="text-2xl font-black text-blue-500">{stats.finishedClasses}</span>
                                         </div>
-                                        <div className="bg-themePanel border-theme border-themeBorder rounded-xl p-5 text-center col-span-2 lg:col-span-1">
+                                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl p-5 text-center col-span-2 lg:col-span-1">
                                             <span className={`text-[9px] font-black uppercase tracking-widest ${theme.text.muted} block mb-1`}>Student Avg Att.</span>
                                             <span className={`text-2xl font-black ${stats.studentAvgAttendance >= 75 ? 'text-emerald-500' : 'text-amber-500'}`}>
                                                 {stats.studentAvgAttendance}%
@@ -224,7 +224,7 @@ export default function AdminUserProfileModal({ user, isOpen, onClose }) {
                                     <i className="fa-solid fa-calendar-day"></i> Leave Record
                                 </h4>
                                 <div className="grid grid-cols-3 gap-4">
-                                    <div className="bg-themePanel border-theme border-themeBorder rounded-xl p-4 flex flex-col gap-1 items-center justify-center text-center">
+                                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl p-4 flex flex-col gap-1 items-center justify-center text-center">
                                         <span className="text-xl font-black text-themeText">{stats.totalLeaves}</span>
                                         <span className={`text-[9px] font-bold uppercase tracking-widest ${theme.text.muted}`}>Total Applied</span>
                                     </div>

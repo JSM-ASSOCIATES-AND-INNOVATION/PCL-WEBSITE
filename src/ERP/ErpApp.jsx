@@ -1,6 +1,7 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
 import React, { useState, useEffect } from 'react';
+import OTPVerification from './components/Login/OTPVerification';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { theme } from './theme';
 import { useERP } from './context/ErpContext';
@@ -20,6 +21,7 @@ import AdminSidebar from './components/Admin/AdminSidebar/AdminSidebar';
 // ==========================================
 // 2. SHARED PORTAL MODULES
 // ==========================================
+import Profile from './components/Student/Profile/Profile';
 import Notices from './components/Student/Notices/Notices';
 import Helpdesk from './components/Student/Helpdesk/Helpdesk';
 import Credentials from './components/Student/Credentials/Credentials';
@@ -56,6 +58,14 @@ import CVBuilder from './components/Student/CVBuilder/CVBuilder';
 // 4. FACULTY PORTAL MODULES
 // ==========================================
 import FacultyDashboard from './components/Faculty/FacultyDashboard/FacultyDashboard';
+import FacultyAssignments from './components/Faculty/FacultyAssignments/FacultyAssignments';
+import FacultyMarks from './components/Faculty/FacultyMarks/FacultyMarks';
+import Approvals from './components/Faculty/Approvals/Approvals';
+
+import FacultyAcademicHub from './components/Faculty/FacultyAcademicHub/FacultyAcademicHub';
+import FacultyAdvisingHub from './components/Faculty/FacultyAdvisingHub/FacultyAdvisingHub';
+import FacultyAdminHub from './components/Faculty/FacultyAdminHub/FacultyAdminHub';
+
 import ClassRoster from './components/Faculty/ClassRoster/ClassRoster';
 import FacultyTimetable from './components/Faculty/FacultyTimetable/FacultyTimetable';
 import FacultyCourses from './components/Faculty/FacultyCourses/FacultyCourses';
@@ -96,13 +106,49 @@ import IntelligentBot from './components/shared/IntelligentBot';
 
 export default function App() {
   const { userSession, isAppLoading, logout, notices, layoutPreference, navLayout } = useERP();
+  
+  const [needsOtp, setNeedsOtp] = useState(() => {
+    const sessionStr = sessionStorage.getItem('jsmerp_session');
+    if (!sessionStr) return false;
+    
+    const lastOtp = localStorage.getItem('erp_otp_verified');
+    const OTP_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 days
+    return !lastOtp || (Date.now() - parseInt(lastOtp)) > OTP_EXPIRY;
+  });
+  const [hasSkippedQuestionnaire, setHasSkippedQuestionnaire] = useState(() => sessionStorage.getItem('skipped_questionnaire') === 'true');
+
+  useEffect(() => {
+    if (userSession) {
+        const lastOtp = localStorage.getItem('erp_otp_verified');
+        const OTP_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 days
+        // Enable OTP check properly
+        if (!lastOtp || (Date.now() - parseInt(lastOtp)) > OTP_EXPIRY) {
+            setNeedsOtp(true);
+        } else {
+            setNeedsOtp(false);
+        }
+    }
+  }, [userSession]);
+
+
+
   const navigate = useNavigate();
+
+
+
   const location = useLocation();
 
   // Derive active tab from URL
   const pathParts = location.pathname.split('/').filter(Boolean);
   const activeRole = pathParts[0] || (userSession ? userSession.role : '');
   const activeTab = pathParts[1] || 'dashboard';
+
+  useEffect(() => {
+    const container = document.getElementById('jsm-main-scroll-container');
+    if (container) {
+      container.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   const setActiveTab = (tab) => {
     if (userSession) {
@@ -121,7 +167,6 @@ export default function App() {
       attendance: "Attendance Tracker",
       coursevault: "Course Vault",
       timetable: userSession?.role === 'faculty' ? "My Teaching Schedule" : "Academic Schedule & Hub",
-      materials: userSession?.role === 'faculty' ? "My Courses" : "Course Vault",
       assignments: userSession?.role === 'faculty' ? "Assignment Engine" : "Assignment Portal",
       examinations: "Examinations Hub",
       bidding: "Elective Bidding",
@@ -134,7 +179,8 @@ export default function App() {
 
       roster: "Class Roster & Attendance",
       marks: "Official Marks Ledger",
-      materials: "Course Cloud Hub",
+      courses: userSession?.role === 'faculty' ? "My Courses" : "Course Vault",
+      materials: userSession?.role === 'faculty' ? "My Courses" : "Course Vault",
       mentorship: "Mentorship & Advising",
       approvals: "Student Approvals",
       facultyleave: "Time Off & Leaves",
@@ -183,6 +229,10 @@ export default function App() {
     );
   }
 
+  if (userSession && needsOtp) {
+      return <OTPVerification email={userSession.email || 'user@prudentiacollege.edu'} onVerify={() => setNeedsOtp(false)} onLogout={logout} />;
+  }
+
   if (!userSession) {
     return (
       <Routes>
@@ -221,6 +271,7 @@ export default function App() {
         case 'cvbuilder': return <CVBuilder />;
         
         case 'credentials': return <Credentials />;
+        case 'profile': return <Profile />;
         default: return <ModuleUnderConstruction tabName={activeTab} role="Student" />;
       }
     }
@@ -230,15 +281,30 @@ export default function App() {
       switch (activeTab) {
         case 'dashboard': return <FacultyDashboard setActiveTab={setActiveTab} />;
         case 'notices': return <Notices />;
+        
+        // Mobile Hubs
+        case 'faculty_academic_center': return <FacultyAcademicHub />;
+        case 'faculty_advising_center': return <FacultyAdvisingHub />;
+        case 'faculty_admin_center': return <FacultyAdminHub />;
+
+        // Standalone Desktop/Direct Routes
         case 'timetable': return <FacultyTimetable setActiveTab={setActiveTab} />;
         case 'attendance': return <FacultyAttendance />;
         case 'roster': return <ClassRoster />;
+        case 'courses':
         case 'materials': return <FacultyCourses setActiveTab={setActiveTab} />;
+        case 'assignments': return <FacultyAssignments />;
+        case 'marks': return <FacultyMarks />;
+        
         case 'mentorship': return <FacultyMentorship />;
         case 'clinics': return <FacultyClinicsHub />;
+        
         case 'facultyleave': return <FacultyLeave />;
+        case 'approvals': return <Approvals />;
+        
         case 'helpdesk': return <Helpdesk />;
         case 'credentials': return <Credentials />;
+        case 'profile': return <Profile />;
         default: return <ModuleUnderConstruction tabName={activeTab} role="Faculty" />;
       }
     }
@@ -269,6 +335,7 @@ export default function App() {
         case 'siteeditor': return <AdminSiteEditor />;
         case 'events': return <EventsBoard />;
         case 'credentials': return <Credentials />;
+        case 'profile': return <Profile />;
         default: return <ModuleUnderConstruction tabName={activeTab} role="Admin" />;
       }
     }
@@ -286,7 +353,7 @@ export default function App() {
     return (
       <SessionTimeoutGuard>
         <DialogContainer />
-        <div className={`flex ${navLayout === 'classic' ? 'flex-row' : 'flex-col'} h-screen w-full bg-themeApp text-themeText font-sans overflow-hidden selection:bg-themeAccent/20`}>
+        <div className={`flex ${navLayout === 'classic' ? 'flex-row' : 'flex-col'} h-screen w-full bg-themeApp text-themeText premium-bg font-sans overflow-hidden selection:bg-themeAccent/20`}>
           
           {/* CLASSIC SIDEBAR RENDER (Desktop Only) */}
           {navLayout === 'classic' && (
@@ -303,14 +370,14 @@ export default function App() {
           )}
 
           {/* MOBILE NAV (Bottom Bar & Drawer Menu) - Always active on mobile */}
-          <MobileNav userSession={userSession} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} />
+          {navLayout === "topnav" && <MobileNav userSession={userSession} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={logout} />}
 
             <main className="flex-1 flex flex-col h-screen overflow-hidden bg-themeApp relative min-w-0">
               <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar relative z-10 scroll-smooth flex flex-col" id="jsm-main-scroll-container">
                 {/* Spacer for TopNav if present */}
-                {navLayout === 'topnav' && <div className="h-[72px] lg:h-[84px] shrink-0 w-full pointer-events-none transition-all duration-500"></div>}
+                {navLayout === 'topnav' && <div className="hidden lg:block h-[72px] lg:h-[84px] shrink-0 w-full pointer-events-none transition-all duration-500"></div>}
 
-                <div className="flex-1 p-4 lg:p-6 pb-24 lg:pb-8 flex flex-col relative z-10">
+                <div className="flex-1 p-4 pt-[calc(1rem+env(safe-area-inset-top))] lg:p-6 lg:pt-6 flex flex-col relative z-10">
                   {renderContent()}
                 </div>
 
@@ -350,8 +417,8 @@ export default function App() {
       </Routes>
 
       {/* Mandatory Onboarding Lockout for Students */}
-      {userSession?.role === 'student' && userSession.questionnaire_completed === false && (
-        <QuestionnaireModal onComplete={handleQuestionnaireComplete} />
+      {userSession?.role === 'student' && userSession.questionnaire_completed === false && !hasSkippedQuestionnaire && (
+        <QuestionnaireModal onComplete={handleQuestionnaireComplete} onSkip={() => { setHasSkippedQuestionnaire(true); sessionStorage.setItem("skipped_questionnaire", "true"); }} />
       )}
       
       {userSession && !isAppLoading && <IntelligentBot />}
@@ -361,7 +428,8 @@ export default function App() {
 
 function ModuleUnderConstruction({ tabName, role }) {
   return (
-    <div className={`${theme.layout.panel} rounded-themePanel p-8 animate-fade-in`}>
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in">
+      <div className={`${theme.layout.panel} rounded-themePanel p-8`}>
       <div className="flex items-center gap-4 mb-6">
         <div className={`${theme.ui.logoBox} text-rose-500 text-xl border-[#333333] bg-themePanel`}>
           <i className="fa-solid fa-layer-group"></i>
@@ -382,6 +450,7 @@ function ModuleUnderConstruction({ tabName, role }) {
           The <span className="font-black text-themeText">{tabName}</span> component is currently being developed for the {role} portal. Please select another module from the sidebar.
         </p>
       </div>
+    </div>
     </div>
   );
 }

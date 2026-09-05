@@ -16,14 +16,14 @@ export default function Footer() {
           {/* Brand & Description */}
           <div className="col-span-1 md:col-span-4">
             <Link to="/" className="flex items-center gap-4 mb-6 group">
-              <img 
+              <img decoding="async" loading="lazy" 
                 src={logo} 
                 alt="Prudentia College of Law Logo" 
                 className="h-16 w-auto group-hover:scale-105 transition-transform" 
                 style={{ filter: 'brightness(0) saturate(100%) invert(67%) sepia(91%) saturate(2132%) hue-rotate(359deg) brightness(102%) contrast(106%)' }}
               />
               <div className="flex flex-col">
-                <span className="font-bold tracking-[0.2em] text-2xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <span className="font-bold tracking-[0.2em] text-2xl">
                   PRUDENTIA
                 </span>
                 <span className="text-[10px] tracking-[0.3em] uppercase text-[var(--primary-color)] font-bold mt-1">

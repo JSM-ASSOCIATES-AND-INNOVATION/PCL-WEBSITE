@@ -1,6 +1,6 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { forwardRef } from 'react';
-import { Briefcase, Gavel, Shield, Landmark } from 'lucide-react';
+import { Briefcase, Gavel, Shield, Landmark, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Carousel from '../ACADEMICS/Carousel';
@@ -125,12 +125,12 @@ const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
             </div>
             <h4
               className="text-[17px] md:text-lg font-bold text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors leading-snug"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+             
             >
               {item.title}
             </h4>
           </div>
-          <p className="text-[13px] md:text-[14px] text-[var(--text-muted)] leading-relaxed" style={clampStyle}>
+          <p className="text-[13px] md:text-[14px] text-[var(--text-muted)] leading-relaxed text-justify" style={clampStyle}>
             {item.desc}
           </p>
         </div>
@@ -139,7 +139,7 @@ const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
   );
 
   return (
-    <section className="slide w-full relative flex flex-col items-center justify-center pt-[90px] pb-4 md:pt-[100px] md:pb-6" ref={ref} {...props}>
+    <section className="slide w-full relative flex flex-col items-center justify-center pt-[100px] md:pt-[120px] pb-4 md:pb-6" ref={ref} {...props}>
       <div className="container w-full max-w-[1300px] mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-12 px-4 md:px-0">
 
         {/* Left Side: Visual */}
@@ -163,7 +163,7 @@ const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.7 }}
                 className="text-3xl md:text-[2.75rem] font-bold mb-2 text-white"
-                style={{ fontFamily: "'Playfair Display', serif", lineHeight: 1.08 }}
+               
               >
                 {heading1}
                 <br />
@@ -178,10 +178,11 @@ const Advantages = forwardRef(({ windowWidth, ...props }, ref) => {
               >
                 <Link
                   to={btn_link}
-                  className="inline-block px-6 py-3 bg-[var(--primary-color)] text-[#000000] !important font-bold uppercase tracking-widest text-xs rounded-full shadow-[0_0_16px_var(--primary-glow)] hover:scale-105 hover:shadow-[0_0_24px_var(--primary-glow)] transition-all"
-                  style={{ color: '#000000' }}
+                  className="tlh-btn !py-4 px-10 w-fit"
                 >
-                  {btn_text}
+                  <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center">
+                    {btn_text} <ArrowRight size={16} className="ml-2" />
+                  </span>
                 </Link>
               </motion.div>
             </div>

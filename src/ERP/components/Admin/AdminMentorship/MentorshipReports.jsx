@@ -87,7 +87,7 @@ export default function MentorshipReports() {
 
     return (
         <div className="flex flex-col gap-6 animate-fade-in relative pb-10">
-            <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-6 shadow-sm">
                 <h3 className={`${theme.text.heading} text-sm tracking-tight text-themeText mb-6 flex items-center justify-between`}>
                     <span>Export Reports</span>
                     <i className="fa-solid fa-file-csv text-themeTextSec"></i>
@@ -95,7 +95,7 @@ export default function MentorshipReports() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     
-                    <div className="bg-themeElevated p-6 rounded-2xl border border-themeBorder hover:border-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Faculty Workload Report")}>
+                    <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-6 rounded-2xl border border-white/5 hover:border-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Faculty Workload Report")}>
                         {loadingReport === "Faculty Workload Report" && (
                             <div className="absolute inset-0 bg-themePanel/80 backdrop-blur-sm flex items-center justify-center z-10">
                                 <i className="fa-solid fa-circle-notch fa-spin text-indigo-500 text-2xl"></i>
@@ -106,13 +106,13 @@ export default function MentorshipReports() {
                         </div>
                         <h4 className="text-sm font-black text-themeText mb-2">Mentor Workload</h4>
                         <p className="text-[10px] font-bold text-themeTextSec flex-1 leading-relaxed">Complete breakdown of how many mentees are assigned to each faculty member.</p>
-                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-themeBorderStrong pt-4">
+                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-black/5 dark:border-white/10 pt-4">
                             <span className="text-[9px] font-black uppercase tracking-widest text-indigo-500">Download CSV</span>
                             <i className="fa-solid fa-download text-indigo-500 group-hover:translate-y-0.5 transition-transform"></i>
                         </div>
                     </div>
 
-                    <div className="bg-themeElevated p-6 rounded-2xl border border-themeBorder hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Student Allocation Report")}>
+                    <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-6 rounded-2xl border border-white/5 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Student Allocation Report")}>
                         {loadingReport === "Student Allocation Report" && (
                             <div className="absolute inset-0 bg-themePanel/80 backdrop-blur-sm flex items-center justify-center z-10">
                                 <i className="fa-solid fa-circle-notch fa-spin text-emerald-500 text-2xl"></i>
@@ -123,13 +123,13 @@ export default function MentorshipReports() {
                         </div>
                         <h4 className="text-sm font-black text-themeText mb-2">Student Allocations</h4>
                         <p className="text-[10px] font-bold text-themeTextSec flex-1 leading-relaxed">Master list of all students and their currently assigned mentors.</p>
-                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-themeBorderStrong pt-4">
+                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-black/5 dark:border-white/10 pt-4">
                             <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Download CSV</span>
                             <i className="fa-solid fa-download text-emerald-500 group-hover:translate-y-0.5 transition-transform"></i>
                         </div>
                     </div>
 
-                    <div className="bg-themeElevated p-6 rounded-2xl border border-themeBorder hover:border-rose-500 hover:shadow-[0_0_20px_rgba(244,63,94,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Unassigned Students Report")}>
+                    <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-6 rounded-2xl border border-white/5 hover:border-rose-500 hover:shadow-[0_0_20px_rgba(244,63,94,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Unassigned Students Report")}>
                         {loadingReport === "Unassigned Students Report" && (
                             <div className="absolute inset-0 bg-themePanel/80 backdrop-blur-sm flex items-center justify-center z-10">
                                 <i className="fa-solid fa-circle-notch fa-spin text-rose-500 text-2xl"></i>
@@ -140,13 +140,13 @@ export default function MentorshipReports() {
                         </div>
                         <h4 className="text-sm font-black text-themeText mb-2">Unassigned Students</h4>
                         <p className="text-[10px] font-bold text-themeTextSec flex-1 leading-relaxed">List of all active students who currently have no faculty mentor assigned.</p>
-                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-themeBorderStrong pt-4">
+                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-black/5 dark:border-white/10 pt-4">
                             <span className="text-[9px] font-black uppercase tracking-widest text-rose-500">Download CSV</span>
                             <i className="fa-solid fa-download text-rose-500 group-hover:translate-y-0.5 transition-transform"></i>
                         </div>
                     </div>
 
-                    <div className="bg-themeElevated p-6 rounded-2xl border border-themeBorder hover:border-amber-500 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Programme Wise Distribution")}>
+                    <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-6 rounded-2xl border border-white/5 hover:border-amber-500 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all group flex flex-col h-full cursor-pointer relative overflow-hidden" onClick={() => handleDownload("Programme Wise Distribution")}>
                         {loadingReport === "Programme Wise Distribution" && (
                             <div className="absolute inset-0 bg-themePanel/80 backdrop-blur-sm flex items-center justify-center z-10">
                                 <i className="fa-solid fa-circle-notch fa-spin text-amber-500 text-2xl"></i>
@@ -157,7 +157,7 @@ export default function MentorshipReports() {
                         </div>
                         <h4 className="text-sm font-black text-themeText mb-2">Programme Distribution</h4>
                         <p className="text-[10px] font-bold text-themeTextSec flex-1 leading-relaxed">Mentorship distribution segmented by BA.LLB, BBA.LLB, and LLM.</p>
-                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-themeBorderStrong pt-4">
+                        <div className="mt-5 flex items-center justify-between border-t-[length:var(--border-width)] border-black/5 dark:border-white/10 pt-4">
                             <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">Download CSV</span>
                             <i className="fa-solid fa-download text-amber-500 group-hover:translate-y-0.5 transition-transform"></i>
                         </div>

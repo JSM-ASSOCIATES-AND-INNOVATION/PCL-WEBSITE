@@ -77,25 +77,25 @@ export default function MentorshipDashboard({ setActiveTab }) {
             
             {/* Quick Actions */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <button onClick={() => setActiveTab('allocations')} className="bg-themePanel border border-themeBorder rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all group active:scale-95">
+                <button onClick={() => setActiveTab('allocations')} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-indigo-500 hover:shadow-[0_0_20px_rgba(99,102,241,0.2)] transition-all group active:scale-95">
                     <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300 shadow-inner">
                         <i className="fa-solid fa-users-rays text-lg group-hover:scale-110 transition-transform"></i>
                     </div>
                     <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeText text-center mt-1">Assign Mentors</span>
                 </button>
-                <button onClick={() => setActiveTab('transfers')} className="bg-themePanel border border-themeBorder rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-amber-500 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all group active:scale-95">
+                <button onClick={() => setActiveTab('transfers')} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-amber-500 hover:shadow-[0_0_20px_rgba(245,158,11,0.2)] transition-all group active:scale-95">
                     <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-inner">
                         <i className="fa-solid fa-shuffle text-lg group-hover:scale-110 transition-transform"></i>
                     </div>
                     <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeText text-center mt-1">Reshuffle</span>
                 </button>
-                <button onClick={() => setActiveTab('transfers')} className="bg-themePanel border border-themeBorder rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all group active:scale-95">
+                <button onClick={() => setActiveTab('transfers')} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-emerald-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all group active:scale-95">
                     <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-inner">
                         <i className="fa-solid fa-right-left text-lg group-hover:scale-110 transition-transform"></i>
                     </div>
                     <span className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeText text-center mt-1">Transfer Mentees</span>
                 </button>
-                <button onClick={() => setActiveTab('allocations')} className="bg-themePanel border border-themeBorder rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] transition-all group active:scale-95">
+                <button onClick={() => setActiveTab('allocations')} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-4 lg:p-6 flex flex-col items-center justify-center gap-3 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.2)] transition-all group active:scale-95">
                     <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 shadow-inner">
                         <i className="fa-solid fa-file-csv text-lg group-hover:scale-110 transition-transform"></i>
                     </div>
@@ -107,7 +107,7 @@ export default function MentorshipDashboard({ setActiveTab }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Primary Stats */}
-                <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-6 shadow-sm">
                     <h3 className={`${theme.text.heading} text-sm tracking-tight text-themeText mb-6 flex items-center justify-between`}>
                         <span>Overall Progress</span>
                         <i className="fa-solid fa-chart-simple text-themeTextSec"></i>
@@ -128,7 +128,7 @@ export default function MentorshipDashboard({ setActiveTab }) {
                                 </div>
                             </div>
                             
-                            <div className="w-full h-2.5 bg-themeElevated rounded-full overflow-hidden border border-themeBorderStrong shadow-inner">
+                            <div className="w-full h-2.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated rounded-full overflow-hidden border border-black/5 dark:border-white/10 shadow-inner">
                                 <div 
                                     className="h-full bg-indigo-500 transition-all duration-1000 ease-out rounded-full" 
                                     style={{ width: `${stats.totalStudents > 0 ? (stats.assignedStudents / stats.totalStudents) * 100 : 0}%` }}
@@ -136,11 +136,11 @@ export default function MentorshipDashboard({ setActiveTab }) {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 mt-2">
-                                <div className="bg-themeElevated p-4 rounded-lg border border-themeBorder">
+                                <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-lg border border-white/5">
                                     <span className="text-2xl font-black text-themeText block mb-1">{stats.totalStudents}</span>
                                     <span className="text-[9px] font-bold uppercase tracking-widest text-themeTextSec">Total Students</span>
                                 </div>
-                                <div className="bg-themeElevated p-4 rounded-lg border border-themeBorder">
+                                <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-lg border border-white/5">
                                     <span className="text-2xl font-black text-themeText block mb-1">{stats.totalFaculty}</span>
                                     <span className="text-[9px] font-bold uppercase tracking-widest text-themeTextSec">Active Mentors</span>
                                 </div>
@@ -150,7 +150,7 @@ export default function MentorshipDashboard({ setActiveTab }) {
                 </div>
 
                 {/* Workload Stats */}
-                <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm flex flex-col">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-6 shadow-sm flex flex-col">
                     <h3 className={`${theme.text.heading} text-sm tracking-tight text-themeText mb-6 flex items-center justify-between`}>
                         <span>Mentor Workload</span>
                         <i className="fa-solid fa-scale-balanced text-themeTextSec"></i>
@@ -160,7 +160,7 @@ export default function MentorshipDashboard({ setActiveTab }) {
                         <div className="w-full flex-1 flex justify-center items-center"><i className="fa-solid fa-circle-notch fa-spin text-2xl text-themeAccent"></i></div>
                     ) : (
                         <div className="flex-1 flex flex-col justify-center gap-5">
-                            <div className="flex items-center justify-between p-4 rounded-lg bg-themeElevated border-l-2 border-indigo-500">
+                            <div className="flex items-center justify-between p-4 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-l-2 border-indigo-500">
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold text-themeText">Average Load</span>
                                     <span className="text-[9px] font-bold uppercase tracking-widest text-themeTextSec mt-0.5">Mentees per Faculty</span>
@@ -168,7 +168,7 @@ export default function MentorshipDashboard({ setActiveTab }) {
                                 <span className="text-xl font-black text-indigo-500">{stats.avgMentees}</span>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 rounded-lg bg-themeElevated border border-themeBorder">
+                            <div className="flex items-center justify-between p-4 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5">
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold text-themeText">Largest Load</span>
                                     <span className="text-[9px] font-bold uppercase tracking-widest text-themeTextSec mt-0.5">Maximum Assigned</span>
@@ -176,7 +176,7 @@ export default function MentorshipDashboard({ setActiveTab }) {
                                 <span className="text-xl font-black text-themeText">{stats.maxLoad}</span>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 rounded-lg bg-themeElevated border border-themeBorder">
+                            <div className="flex items-center justify-between p-4 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5">
                                 <div className="flex flex-col">
                                     <span className="text-xs font-bold text-themeText">Smallest Load</span>
                                     <span className="text-[9px] font-bold uppercase tracking-widest text-themeTextSec mt-0.5">Minimum Assigned</span>

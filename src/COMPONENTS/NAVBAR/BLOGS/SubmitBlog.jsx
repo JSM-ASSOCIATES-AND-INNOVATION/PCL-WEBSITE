@@ -104,10 +104,10 @@ export default function SubmitBlog() {
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-[var(--primary-color)] mb-6 relative z-10">
                     <CheckCircle size={80} />
                 </motion.div>
-                <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center text-[var(--text-color)] relative z-10" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center text-[var(--text-color)] relative z-10">
                     Submission Received
                 </h2>
-                <p className="text-[var(--text-muted)] text-lg mb-8 text-center max-w-md relative z-10" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                <p className="text-[var(--text-muted)] text-lg mb-8 text-center max-w-md relative z-10">
                     Thank you for submitting your blog! It is currently under review by our editorial team and will be synced to the system shortly.
                 </p>
                 <Link to="/blogs" className="text-[var(--primary-color)] font-bold uppercase tracking-widest text-sm hover:underline transition-all relative z-10">
@@ -135,7 +135,7 @@ export default function SubmitBlog() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-[var(--text-color)] mb-6 uppercase leading-tight"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
+                       
                     >
                         Submit a <span className="text-[var(--primary-color)] italic">Blog</span>
                     </motion.h1>
@@ -144,7 +144,7 @@ export default function SubmitBlog() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
                         className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto"
-                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                       
                     >
                         Share your insights, legal analysis, and experiences with the Prudentia community.
                     </motion.p>
@@ -197,7 +197,7 @@ export default function SubmitBlog() {
                                 onChange={handleChange}
                                 className="w-full bg-[var(--bg-color)] border border-[var(--card-border)] rounded-xl px-6 py-4 text-[var(--text-color)] focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all"
                                 placeholder="E.g. John Doe"
-                                style={{ fontFamily: "'Outfit', sans-serif" }}
+                               
                             />
                         </div>
 
@@ -253,7 +253,7 @@ export default function SubmitBlog() {
                                     onChange={handleChange}
                                     className="w-full bg-[var(--bg-color)] border border-[var(--card-border)] rounded-xl px-6 py-4 text-[var(--text-color)] focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all"
                                     placeholder="E.g. Legal Scholar, Independent Researcher"
-                                    style={{ fontFamily: "'Outfit', sans-serif" }}
+                                   
                                 />
                             </div>
                         )}
@@ -268,33 +268,24 @@ export default function SubmitBlog() {
                                 onChange={handleChange}
                                 className="w-full bg-[var(--bg-color)] border border-[var(--card-border)] rounded-xl px-6 py-4 text-[var(--text-color)] focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all"
                                 placeholder="Enter a catchy title..."
-                                style={{ fontFamily: "'Outfit', sans-serif" }}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Header Image URL (Optional)</label>
-                            <input 
-                                type="url"
-                                name="imageUrl"
-                                value={formData.imageUrl}
-                                onChange={handleChange}
-                                className="w-full bg-[var(--bg-color)] border border-[var(--card-border)] rounded-xl px-6 py-4 text-[var(--text-color)] focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all font-mono text-sm"
-                                placeholder="https://example.com/image.jpg"
+                               
                             />
                         </div>
 
                         <div>
                             <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Blog Content *</label>
+                            <div className="bg-[var(--card-bg)] border border-[var(--primary-color)]/20 p-4 rounded-xl mb-4 text-xs font-light text-white/70 leading-relaxed shadow-[0_0_15px_rgba(30,254,161,0.05)]">
+                                <strong className="text-[var(--primary-color)]">Note:</strong> There are no file or image uploads. Please paste your entire article here. Ensure you format your headings, paragraphs, and footnotes clearly using standard text/markdown conventions before submitting.
+                            </div>
                             <textarea 
                                 name="content"
                                 required
-                                rows="12"
+                                rows="18"
                                 value={formData.content}
                                 onChange={handleChange}
-                                className="w-full bg-[var(--bg-color)] border border-[var(--card-border)] rounded-xl px-6 py-4 text-[var(--text-color)] focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all resize-y"
-                                placeholder="Write your blog post here..."
-                                style={{ fontFamily: "'Outfit', sans-serif" }}
+                                className="w-full bg-[var(--bg-color)] border border-[var(--card-border)] rounded-xl px-6 py-4 text-[var(--text-color)] focus:outline-none focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] transition-all resize-y leading-relaxed"
+                                placeholder="Paste your fully formatted blog post here, including all footnotes..."
+                               
                             />
                         </div>
 
@@ -307,15 +298,15 @@ export default function SubmitBlog() {
                         <button 
                             type="submit" 
                             disabled={isSubmitting}
-                            className={`${styles.magneticBtn} w-full mt-8 flex justify-center items-center py-5`}
+                            className="tlh-btn w-full mt-8 flex justify-center !py-4"
                         >
                             {isSubmitting ? (
-                                <div className="w-6 h-6 border-2 border-[var(--bg-color)] border-t-transparent rounded-full animate-spin"></div>
+                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                             ) : (
-                                <>
+                                <span className="text-xs font-bold uppercase tracking-widest flex items-center">
                                     <Upload size={18} className="mr-2" />
                                     Submit for Review
-                                </>
+                                </span>
                             )}
                         </button>
                     </div>

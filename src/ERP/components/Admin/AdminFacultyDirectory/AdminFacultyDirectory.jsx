@@ -165,7 +165,8 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
             // 6. Send Email
             setProvisionLogs(prev => [...prev, `[EMAIL] Dispatching secure welcome letter and credentials via EmailJS...`]);
             try {
-                await sendSystemEmail('ONBOARDING', formData.email, {
+                await sendSystemEmail('ONBOARDING', {
+                    to_email: formData.email,
                     erp_id: generatedId,
                     password: generatedPassword,
                     login_url: window.location.origin
@@ -203,17 +204,17 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
         <div className={`w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 min-h-screen relative selection:bg-themeElevated ${isHubView ? 'bg-transparent text-themeText font-sans' : 'p-6 lg:p-8'}`}>
             {/* 1. HEADER BANNER */}
             {!isHubView && (
-                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80 mb-6`}>
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80 mb-6`}>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 mix-blend-overlay pointer-events-none"></div>
 
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-4 lg:gap-5">
-                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                                <i className="fa-solid fa-address-book text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-address-book text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                             </div>
                             <div>
-                                <h1 className={`text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md font-black`}>Public Faculty Directory</h1>
+                                <h1 className={`text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md font-black`}>Public Faculty Directory</h1>
                                 <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Manage faculty profiles & provision accounts for the public website.</p>
                             </div>
                         </div>
@@ -226,7 +227,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                 setProvisionSuccess(false);
                                 setShowModal(true);
                             }}
-                            className="w-full lg:w-auto bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex justify-center items-center gap-2 border border-white/20 backdrop-blur-md active:scale-[0.98]"
+                            className="w-full lg:w-auto bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex justify-center items-center gap-2 border border-black/10 dark:border-white/20 backdrop-blur-md active:scale-[0.98]"
                         >
                             <i className="fa-solid fa-user-plus text-base"></i> Add New Faculty
                         </button>
@@ -259,7 +260,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                     <p className="font-black uppercase tracking-widest text-themeTextSec">Loading Directory...</p>
                 </div>
             ) : faculties.length === 0 ? (
-                <div className="bg-themePanel border border-themeBorder rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[300px]">
                     <i className="fa-solid fa-chalkboard-user text-5xl text-themeTextSec/30 mb-4"></i>
                     <h3 className="font-black uppercase text-xl mb-2 text-themeText">No Faculty Found</h3>
                     <p className="text-themeTextSec font-medium text-sm">Add a faculty member to populate the public website.</p>
@@ -267,11 +268,11 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {faculties.map((fac) => (
-                        <div key={fac.id} className="bg-themePanel border border-themeBorder rounded-2xl flex flex-col group hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all overflow-hidden">
-                            <div className="p-5 border-b border-themeBorder bg-themeElevated/30 flex items-center justify-between">
+                        <div key={fac.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl flex flex-col group hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all overflow-hidden">
+                            <div className="p-5 border-b border-white/5 bg-themeElevated/30 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     {fac.faculty_profiles?.image_url && fac.faculty_profiles.image_url !== 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' ? (
-                                        <img src={fac.faculty_profiles.image_url} alt={fac.full_name} className="w-12 h-12 rounded-xl object-cover shadow-inner border border-themeBorder shrink-0" />
+                                        <img src={fac.faculty_profiles.image_url} alt={fac.full_name} className="w-12 h-12 rounded-xl object-cover shadow-inner border border-white/5 shrink-0" />
                                     ) : (
                                         <div className="w-12 h-12 bg-themeAccent/20 text-themeAccent border border-themeAccent/30 rounded-xl flex items-center justify-center font-black text-lg shadow-inner shrink-0">
                                             {fac.full_name?.charAt(0) || '?'}
@@ -292,7 +293,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                     </button>
                                     <button 
                                         onClick={() => toggleVisibility(fac.id, fac.faculty_profiles?.is_public)}
-                                        className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center border border-themeBorder ${fac.faculty_profiles?.is_public ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-neutral-600/30'}`}
+                                        className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center border border-white/5 ${fac.faculty_profiles?.is_public ? 'bg-emerald-500/20 border-emerald-500/30' : 'bg-neutral-600/30'}`}
                                         title={fac.faculty_profiles?.is_public ? 'Publicly Visible' : 'Hidden from Public'}
                                     >
                                         <div className={`w-4 h-4 rounded-full transition-transform ${fac.faculty_profiles?.is_public ? 'bg-emerald-500 translate-x-4' : 'bg-neutral-500 translate-x-0'}`}></div>
@@ -302,7 +303,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                             <div className="p-5 flex flex-col gap-3 flex-1">
                                 <div>
                                     <p className="text-[10px] uppercase font-black tracking-widest text-themeTextSec mb-1 ml-1">Department</p>
-                                    <p className="text-sm font-bold bg-themeElevated border border-themeBorder rounded-lg p-2.5 truncate text-themeText">{fac.department || 'N/A'}</p>
+                                    <p className="text-sm font-bold bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg p-2.5 truncate text-themeText">{fac.department || 'N/A'}</p>
                                 </div>
                                 
                                 <div>
@@ -312,7 +313,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                 
                                 <div>
                                     <p className="text-[10px] uppercase font-black tracking-widest text-themeTextSec mb-1 ml-1">Specialisation</p>
-                                    <p className="text-sm font-bold bg-themeElevated border border-themeBorder rounded-lg p-2.5 truncate text-themeText/80">{fac.faculty_profiles?.specialisation || 'N/A'}</p>
+                                    <p className="text-sm font-bold bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg p-2.5 truncate text-themeText/80">{fac.faculty_profiles?.specialisation || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
@@ -323,13 +324,13 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
             {/* 3. PROVISIONING MODAL */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themePanel w-full max-w-3xl border border-themeBorder rounded-2xl flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
-                        <div className="bg-themeElevated p-5 lg:p-6 text-themeText relative shrink-0 border-b border-themeBorder flex justify-between items-center">
+                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium w-full max-w-3xl border border-white/5 rounded-2xl flex flex-col max-h-[90vh] shadow-2xl overflow-hidden">
+                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-5 lg:p-6 text-themeText relative shrink-0 border-b border-white/5 flex justify-between items-center">
                             <div>
                                 <h3 className="text-xl font-black uppercase tracking-tight">Add New Faculty</h3>
                                 <p className="text-xs font-bold uppercase tracking-widest text-themeTextSec">Provisions account & updates website.</p>
                             </div>
-                            <button onClick={() => setShowModal(false)} className="w-10 h-10 bg-themeApp hover:bg-neutral-800 rounded-full border border-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors">
+                            <button onClick={() => setShowModal(false)} className="w-10 h-10 bg-themeApp hover:bg-neutral-800 rounded-full border border-white/5 flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors">
                                 <i className="fa-solid fa-xmark text-lg"></i>
                             </button>
                         </div>
@@ -342,10 +343,10 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                     </div>
                                     <h2 className="text-2xl font-black uppercase tracking-widest mb-2 text-themeText">Faculty Added!</h2>
                                     <p className="font-bold text-themeTextSec uppercase text-xs mb-8">Website synchronized successfully.</p>
-                                    <div className="bg-[#0a0a0a] text-emerald-400 p-5 rounded-xl text-left font-mono text-xs border border-themeBorder max-h-48 overflow-y-auto mx-auto max-w-lg mb-8 shadow-inner">
+                                    <div className="bg-[#0a0a0a] text-emerald-400 p-5 rounded-xl text-left font-mono text-xs border border-white/5 max-h-48 overflow-y-auto mx-auto max-w-lg mb-8 shadow-inner">
                                         {provisionLogs.map((log, i) => <div key={i} className="mb-1">&gt; {log}</div>)}
                                     </div>
-                                    <button onClick={() => setShowModal(false)} className="bg-themePanel border border-themeBorder hover:bg-themeElevated text-themeText px-8 py-3 rounded-xl font-black uppercase text-sm transition-colors shadow-sm">
+                                    <button onClick={() => setShowModal(false)} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeText px-8 py-3 rounded-xl font-black uppercase text-sm transition-colors shadow-sm">
                                         Close Window
                                     </button>
                                 </div>
@@ -355,15 +356,15 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Full Name</label>
-                                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Email Address</label>
-                                            <input type="email" name="email" value={formData.email} onChange={handleInputChange} required className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="email" name="email" value={formData.email} onChange={handleInputChange} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Department</label>
-                                            <select name="department" value={formData.department} onChange={handleInputChange} required className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText appearance-none transition-all cursor-pointer">
+                                            <select name="department" value={formData.department} onChange={handleInputChange} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText appearance-none transition-all cursor-pointer">
                                                 <option value="">Select Department...</option>
                                                 <option value="Department of Legal Studies">Department of Legal Studies</option>
                                                 <option value="Department of Management">Department of Management</option>
@@ -372,43 +373,43 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Designation</label>
-                                            <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="e.g. Professor of Law" className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} required placeholder="e.g. Professor of Law" className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                     </div>
 
                                     <div>
                                         <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Specialisation Area</label>
-                                        <input type="text" name="specialisation" value={formData.specialisation} onChange={handleInputChange} placeholder="e.g. Constitutional Law, Human Rights" className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                        <input type="text" name="specialisation" value={formData.specialisation} onChange={handleInputChange} placeholder="e.g. Constitutional Law, Human Rights" className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                     </div>
 
                                     <div>
                                         <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Degrees (Comma Separated)</label>
-                                        <input type="text" name="degrees" value={formData.degrees} onChange={handleInputChange} placeholder="e.g. B.A., LL.B., LL.M." className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                        <input type="text" name="degrees" value={formData.degrees} onChange={handleInputChange} placeholder="e.g. B.A., LL.B., LL.M." className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Office Location</label>
-                                            <input type="text" name="office" value={formData.office} onChange={handleInputChange} placeholder="e.g. Block A, Room 101" className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="text" name="office" value={formData.office} onChange={handleInputChange} placeholder="e.g. Block A, Room 101" className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Contact Phone</label>
-                                            <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="e.g. +91 98765 43210" className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="e.g. +91 98765 43210" className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">LinkedIn URL</label>
-                                            <input type="url" name="linkedin" value={formData.linkedin} onChange={handleInputChange} placeholder="https://linkedin.com/in/..." className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="url" name="linkedin" value={formData.linkedin} onChange={handleInputChange} placeholder="https://linkedin.com/in/..." className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-themeTextSec">Google Scholar URL</label>
-                                            <input type="url" name="scholar" value={formData.scholar} onChange={handleInputChange} placeholder="https://scholar.google.com/..." className="w-full bg-themeElevated border border-themeBorder rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
+                                            <input type="url" name="scholar" value={formData.scholar} onChange={handleInputChange} placeholder="https://scholar.google.com/..." className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-3.5 font-bold focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none text-themeText placeholder:text-themeTextSec/50 transition-all" />
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-4 p-5 bg-themeElevated border border-themeBorder rounded-xl mt-2">
+                                    <div className="flex items-center gap-4 p-5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl mt-2">
                                         <div className="relative flex items-center">
                                             <input 
                                                 type="checkbox" 
@@ -418,7 +419,7 @@ export default function AdminFacultyDirectory({ isHubView = false }) {
                                                 onChange={handleInputChange} 
                                                 className="peer sr-only" 
                                             />
-                                            <div className="w-11 h-6 bg-neutral-600 rounded-full peer peer-checked:bg-themeAccent peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all cursor-pointer"></div>
+                                            <div className="w-11 h-6 bg-neutral-600 rounded-full peer peer-checked:bg-themeAccent peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-themePanel/85 backdrop-blur-2xl shadow-premium after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all cursor-pointer"></div>
                                         </div>
                                         <label htmlFor="is_public" className="text-xs font-black uppercase tracking-widest cursor-pointer text-themeText select-none">
                                             Visible on Public Website

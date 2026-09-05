@@ -84,7 +84,7 @@ export default function AdminBatchManager() {
 
     return (
         <div className="flex flex-col gap-6 animate-fade-in relative">
-            <div className="flex justify-between items-center bg-themePanel p-6 rounded-2xl border border-themeBorder shadow-sm">
+            <div className="flex justify-between items-center bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 rounded-2xl border border-white/5 shadow-sm">
                 <div>
                     <h2 className="text-xl font-black text-themeText">Batch Manager</h2>
                     <p className="text-xs font-bold text-themeTextSec mt-1">Manage academic cohorts and WhatsApp broadcast groups.</p>
@@ -95,28 +95,28 @@ export default function AdminBatchManager() {
             </div>
 
             {isCreating && (
-                <form onSubmit={handleCreate} className="bg-themeElevated border border-themeBorderStrong rounded-2xl p-6 flex flex-col gap-4 animate-fade-in shadow-lg">
+                <form onSubmit={handleCreate} className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-2xl p-6 flex flex-col gap-4 animate-fade-in shadow-lg">
                     <h3 className="text-sm font-black text-themeText mb-2">Create New Academic Batch</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Batch Target Name (Exact match for DB)</label>
-                            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. 2026-2031" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. 2026-2031" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Program</label>
-                            <input type="text" value={program} onChange={e => setProgram(e.target.value)} required placeholder="e.g. BBA LLB (Hons.)" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="text" value={program} onChange={e => setProgram(e.target.value)} required placeholder="e.g. BBA LLB (Hons.)" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">WhatsApp Group ID</label>
-                            <input type="text" value={whatsappGroupId} onChange={e => setWhatsappGroupId(e.target.value)} placeholder="e.g. +919876543210 (Optional)" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="text" value={whatsappGroupId} onChange={e => setWhatsappGroupId(e.target.value)} placeholder="e.g. +919876543210 (Optional)" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Start Year</label>
-                            <input type="number" value={startYear} onChange={e => setStartYear(e.target.value)} required placeholder="2026" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="number" value={startYear} onChange={e => setStartYear(e.target.value)} required placeholder="2026" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Graduation Year</label>
-                            <input type="number" value={gradYear} onChange={e => setGradYear(e.target.value)} required placeholder="2031" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="number" value={gradYear} onChange={e => setGradYear(e.target.value)} required placeholder="2031" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                     </div>
                     
@@ -136,12 +136,12 @@ export default function AdminBatchManager() {
                         <i className="fa-solid fa-circle-notch fa-spin text-3xl text-themeAccent"></i>
                     </div>
                 ) : batches.length === 0 ? (
-                    <div className="col-span-full py-12 text-center bg-themePanel rounded-xl border border-themeBorder">
+                    <div className="col-span-full py-12 text-center bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-xl border border-white/5">
                         <p className="text-sm font-bold text-themeTextSec">No batches found. Create one to begin.</p>
                     </div>
                 ) : (
                     batches.map((batch) => (
-                        <div key={batch.id} className="bg-themePanel border border-themeBorder rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden group hover:border-themeBorderStrong transition-colors shadow-sm">
+                        <div key={batch.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-6 flex flex-col gap-4 relative overflow-hidden group hover:border-black/5 dark:border-white/10 transition-colors shadow-sm">
                             <div className="absolute top-0 left-0 w-1 h-full bg-themeAccent"></div>
                             
                             <div className="flex justify-between items-start">
@@ -155,11 +155,11 @@ export default function AdminBatchManager() {
                             </div>
 
                             <div className="flex items-center gap-2 mt-2">
-                                <span className="bg-themeElevated border border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">Start: {batch.start_year}</span>
-                                <span className="bg-themeElevated border border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">Grad: {batch.graduation_year}</span>
+                                <span className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">Start: {batch.start_year}</span>
+                                <span className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">Grad: {batch.graduation_year}</span>
                             </div>
 
-                            <div className="mt-auto border-t border-themeBorder pt-4">
+                            <div className="mt-auto border-t border-white/5 pt-4">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec mb-1"><i className="fa-brands fa-whatsapp text-emerald-500 mr-1"></i> WhatsApp Integration</p>
                                 <p className="text-xs font-mono text-themeText">{batch.whatsapp_group_id || <span className="text-themeTextSec/50 italic">Not Linked</span>}</p>
                             </div>

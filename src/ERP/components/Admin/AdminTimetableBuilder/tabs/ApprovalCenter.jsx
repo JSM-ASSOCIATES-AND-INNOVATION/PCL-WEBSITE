@@ -58,16 +58,16 @@ export default function ApprovalCenter() {
                     <div className="w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full animate-spin"></div>
                 </div>
             ) : requests.length === 0 ? (
-                <div className="h-40 flex items-center justify-center border border-themeBorder border-dashed rounded-2xl">
+                <div className="h-40 flex items-center justify-center border border-white/5 border-dashed rounded-2xl">
                     <p className="text-sm font-bold text-themeTextSec">No pending requests at this time.</p>
                 </div>
             ) : (
                 <div className="flex flex-col gap-4">
                     {requests.map(req => (
-                        <div key={req.id} className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center">
+                        <div key={req.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center">
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <span className="px-2 py-1 bg-themeElevated border border-themeBorderStrong rounded-md text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.request_type}</span>
+                                    <span className="px-2 py-1 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-md text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.request_type}</span>
                                     <span className="text-[10px] font-black text-themeTextSec"><i className="fa-regular fa-clock"></i> {new Date(req.created_at).toLocaleDateString()}</span>
                                     <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
                                         req.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
@@ -87,11 +87,11 @@ export default function ApprovalCenter() {
                                     </span>
                                 </p>
                                 
-                                <p className="text-xs font-bold text-themeText mt-3 bg-themeElevated p-3 rounded-lg border border-themeBorderStrong">"{req.reason}"</p>
+                                <p className="text-xs font-bold text-themeText mt-3 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-3 rounded-lg border border-black/5 dark:border-white/10">"{req.reason}"</p>
                             </div>
 
                             {req.status === 'Pending' && (
-                                <div className="w-full lg:w-72 shrink-0 bg-themeElevated border border-themeBorderStrong rounded-xl p-4 flex flex-col gap-4">
+                                <div className="w-full lg:w-72 shrink-0 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-xl p-4 flex flex-col gap-4">
                                     <div>
                                         <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">Action Required</p>
                                         <span className="text-xs font-bold text-themeTextSec">Please review and respond to this faculty request.</span>

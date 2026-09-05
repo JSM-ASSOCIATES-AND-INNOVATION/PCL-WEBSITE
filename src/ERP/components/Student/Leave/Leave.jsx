@@ -27,8 +27,8 @@ export default function Leave() {
     const [toDate, setToDate] = useState("");
     const [reason, setReason] = useState("");
 
-    const fileInputRef = useRef(null);
-    const [documentFile, setDocumentFile] = useState(null);
+    
+    const [documentUrl, setDocumentUrl] = useState('');
 
     // --- DATA SYNC ENGINE ---
     const fetchLeaveHistory = async () => {
@@ -80,17 +80,12 @@ export default function Leave() {
 
             let filePath = null;
 
-            // Handle secure document upload if attached
-            if (documentFile) {
-                const fileExt = documentFile.name.split('.').pop();
-                filePath = `${studentId}/leave_proof_${Date.now()}.${fileExt}`;
-                const { error: uploadError } = await supabase.storage
-                    .from('administrative_vault')
-                    .upload(filePath, documentFile);
-
-                if (uploadError) {
-                    console.warn("Upload failed, proceeding for demo.", uploadError);
+            // Store Google Drive link directly
+            if (documentUrl) {
+                if (!documentUrl.includes('drive.google.com')) {
+                    throw new Error("Please enter a valid Google Drive link.");
                 }
+                filePath = documentUrl;
             }
 
             // Generate Request ID
@@ -134,7 +129,7 @@ export default function Leave() {
             setTimeout(() => {
                 setShowRequestModal(false);
                 setStatusMessage({ type: "", text: "" });
-                setFromDate(""); setToDate(""); setReason(""); setDocumentFile(null);
+                setFromDate(""); setToDate(""); setReason(""); setDocumentUrl('');
             }, 2000);
 
         } catch (error) {
@@ -147,46 +142,39 @@ export default function Leave() {
 
     // --- SECURE DOWNLOAD ENGINE ---
     const downloadProof = async (filePath) => {
-        try {
-            const { data, error } = await supabase.storage.from('administrative_vault').createSignedUrl(filePath, 60);
-            if (error) throw error;
-            window.open(data.signedUrl, '_blank');
-        } catch (err) {
-            window.erpDialog.alert("Unable to access the secure document.");
+        if (filePath && filePath.startsWith('http')) {
+            window.open(filePath, '_blank');
+        } else {
+            // Legacy fallback if old files exist
+            try {
+                const { data, error } = await supabase.storage.from('administrative_vault').createSignedUrl(filePath, 60);
+                if (error) throw error;
+                window.open(data.signedUrl, '_blank');
+            } catch (err) {
+                window.erpDialog?.alert("Unable to access the secure document.");
+            }
         }
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated">
+        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated">
 
-            {/* 1. Header & Overview Banner */}
-            <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText flex flex-col lg:flex-row justify-between items-center gap-6">
-                <div className="absolute right-0 top-0 w-64 h-64 lg:w-96 lg:h-96 bg-gradient-to-br from-themeAccent/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-themeElevated rounded-full translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
-
-                <div className="relative z-10 text-center lg:text-left flex-1">
-                    <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-4 mb-2">
-                        <div className={`w-14 h-14 lg:w-16 lg:h-16 rounded-themePanel border-theme border-themeBorderStrong bg-themeElevated flex items-center justify-center text-rose-500 text-2xl lg:text-3xl shrink-0`}>
-                            <i className="fa-solid fa-calendar-minus"></i>
-                        </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-themeText`}>Leave Applications</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium mt-1`}>Apply for academic leave. Approved leaves protect your attendance record.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <button
-                    onClick={() => setShowRequestModal(true)}
-                    className="relative z-10 w-full lg:w-auto shrink-0 bg-amber-500 hover:bg-amber-400 text-[#050505] px-6 py-4 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-95 flex justify-center items-center gap-2 group overflow-hidden"
-                >
-                    <div className="absolute inset-0 w-full h-full -translate-x-full group-hover:"></div>
-                    <i className="fa-solid fa-paper-plane"></i> New Request
-                </button>
-            </div>
+            <PageHeader 
+                icon="fa-solid fa-calendar-minus"
+                title="Leave Applications"
+                subtitle="Apply for academic leave. Approved leaves protect your attendance record."
+                rightContent={
+                    <button
+                        onClick={() => setShowRequestModal(true)}
+                        className="w-full lg:w-auto bg-amber-500 hover:bg-amber-400 text-[#050505] px-6 py-4 rounded-[2rem] text-xs font-black uppercase tracking-widest transition-all active:scale-95 flex justify-center items-center gap-2"
+                    >
+                        <i className="fa-solid fa-paper-plane"></i> New Request
+                    </button>
+                }
+            />
 
             {/* 2. Important Notice */}
-            <div className="bg-themeElevated border-theme border-themeBorderStrong p-4 lg:p-5 rounded-themePanel flex items-start gap-3 lg:gap-4">
+            <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border border-black/5 dark:border-white/10 p-4 lg:p-5 rounded-[2rem] flex items-start gap-3 lg:gap-4">
                 <i className="fa-solid fa-circle-exclamation text-themeAccent text-base lg:text-lg mt-0.5"></i>
                 <p className="text-[10px] lg:text-xs font-medium text-themeAccent/80 leading-relaxed">
                     <span className="font-black text-themeAccent uppercase tracking-widest block mb-1">Policy Requirement</span>
@@ -199,40 +187,40 @@ export default function Leave() {
                 <h2 className={`${theme.text.heading} text-lg lg:text-xl text-themeText tracking-tight ml-2`}><i className="fa-solid fa-clock-rotate-left text-themeTextSec opacity-70 mr-2"></i> Request History</h2>
 
                 {leaveRequests.length === 0 ? (
-                    <div className="w-full py-16 lg:py-20 flex flex-col items-center justify-center bg-themeApp border-theme border-dashed border-themeBorder rounded-themePanel text-center px-4">
+                    <div className="w-full py-16 lg:py-20 flex flex-col items-center justify-center bg-transparent border-theme border-dashed border-black/10 dark:border-white/20 rounded-[2rem] text-center px-4">
                         <i className="fa-solid fa-folder-open text-4xl lg:text-5xl text-neutral-700 mb-3 lg:mb-4"></i>
                         <h3 className="text-sm lg:text-base font-black text-themeText">No Leave Records</h3>
                         <p className="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest text-themeTextSec opacity-70 mt-1 lg:mt-2">You have a clean attendance record.</p>
                     </div>
                 ) : (
                     leaveRequests.map((leave) => (
-                        <div key={leave.id} className={`${theme.layout.panel} p-5 lg:p-6 rounded-themePanel lg:rounded-themePanel hover:border-themeBorderStrong transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-5 lg:gap-6 group border-theme border-themeBorder`}>
+                        <div key={leave.id} className={`${theme.layout.panel} p-5 lg:p-6 rounded-[2rem] lg:rounded-[2rem] hover:border-black/5 dark:border-white/10 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-5 lg:gap-6 group border border-black/10 dark:border-white/20`}>
 
                             <div className="flex-1 w-full">
                                 <div className="flex items-center gap-3 mb-2 lg:mb-3">
-                                    <span className={`text-[9px] lg:text-[10px] font-bold ${theme.text.muted} uppercase tracking-widest bg-themePanel px-2.5 py-1 rounded-md border-theme border-themeBorder `}>
+                                    <span className={`text-[9px] lg:text-[10px] font-bold ${theme.text.muted} uppercase tracking-widest bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-2.5 py-1 rounded-md border border-black/10 dark:border-white/20 `}>
                                         {leave.request_id}
                                     </span>
                                 </div>
                                 <h3 className="text-base lg:text-lg font-black text-themeText group-hover:text-themeAccent transition-colors mb-2 leading-tight">{leave.leave_type}</h3>
 
                                 <div className={`flex flex-wrap items-center gap-2 lg:gap-4 text-[10px] lg:text-xs font-semibold ${theme.text.secondary} mb-3`}>
-                                    <span className="flex items-center gap-1.5 bg-themePanel px-3 py-1.5 rounded-lg border-theme border-themeBorder w-full sm:w-auto"><i className="fa-regular fa-calendar text-themeTextSec opacity-70"></i> {new Date(leave.from_date).toLocaleDateString('en-GB')} &rarr; {new Date(leave.to_date).toLocaleDateString('en-GB')}</span>
-                                    <span className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-themePanel border-theme border-themeBorder rounded-lg text-themeText font-bold w-full sm:w-auto">{leave.days} Days</span>
+                                    <span className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-3 py-1.5 rounded-lg border border-black/10 dark:border-white/20 w-full sm:w-auto"><i className="fa-regular fa-calendar text-themeTextSec opacity-70"></i> {new Date(leave.from_date).toLocaleDateString('en-GB')} &rarr; {new Date(leave.to_date).toLocaleDateString('en-GB')}</span>
+                                    <span className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-lg text-themeText font-bold w-full sm:w-auto">{leave.days} Days</span>
                                 </div>
 
                                 {leave.admin_remarks && (
-                                    <div className="bg-themeElevated p-3 rounded-themePanel border-theme border-themeBorderStrong mt-2 w-full">
+                                    <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-3 rounded-[2rem] border border-black/5 dark:border-white/10 mt-2 w-full">
                                         <p className="text-[9px] lg:text-[10px] font-bold text-rose-200"><span className="text-rose-500 uppercase tracking-widest font-black mr-2">Admin Remarks:</span> {leave.admin_remarks}</p>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex flex-col items-start lg:items-end gap-3 shrink-0 border-t-theme lg:border-t-0 lg:border-l-theme border-themeBorder pt-4 lg:pt-0 lg:pl-6 w-full lg:w-auto">
+                            <div className="flex flex-col items-start lg:items-end gap-3 shrink-0 border-t-theme lg:border-t-0 lg:border-l-theme border-black/10 dark:border-white/20 pt-4 lg:pt-0 lg:pl-6 w-full lg:w-auto">
                                 <div className="flex w-full justify-between lg:flex-col lg:justify-start lg:items-end gap-3">
-                                    <span className={`text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg flex items-center gap-2 border-theme ${leave.status === 'approved' ? 'bg-themeElevated text-emerald-400 border-themeBorderStrong' :
-                                        leave.status === 'rejected' ? 'bg-themeElevated text-rose-400 border-themeBorderStrong' :
-                                            'bg-themeElevated text-themeAccent border-themeBorderStrong '
+                                    <span className={`text-[9px] lg:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg flex items-center gap-2 border-theme ${leave.status === 'approved' ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-emerald-400 border-black/5 dark:border-white/10' :
+                                        leave.status === 'rejected' ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-rose-400 border-black/5 dark:border-white/10' :
+                                            'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeAccent border-black/5 dark:border-white/10 '
                                         }`}>
                                         {leave.status === 'approved' && <i className="fa-solid fa-check"></i>}
                                         {leave.status === 'rejected' && <i className="fa-solid fa-xmark"></i>}
@@ -244,7 +232,7 @@ export default function Leave() {
                                     </p>
                                 </div>
                                 {leave.document_path && (
-                                    <button onClick={() => downloadProof(leave.document_path)} className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 flex items-center justify-center gap-1.5 transition-colors bg-themeElevated hover:bg-themeElevated px-3 py-2 lg:py-1.5 rounded-lg border-theme border-themeBorderStrong w-full lg:w-auto">
+                                    <button onClick={() => downloadProof(leave.document_path)} className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 flex items-center justify-center gap-1.5 transition-colors bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 hover:bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-3 py-2 lg:py-1.5 rounded-lg border border-black/5 dark:border-white/10 w-full lg:w-auto">
                                         <i className="fa-solid fa-paperclip"></i> View Proof
                                     </button>
                                 )}
@@ -257,16 +245,16 @@ export default function Leave() {
             {/* 4. NEW LEAVE MODAL */}
             {showRequestModal && (
                 <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themeApp w-full max-w-lg rounded-t-[2rem] sm:rounded-themePanel overflow-hidden border-theme border-themeBorder max-h-[90vh] flex flex-col shadow-2xl">
+                    <div className="bg-transparent w-full max-w-lg rounded-t-[2rem] sm:rounded-[2rem] overflow-hidden border border-black/10 dark:border-white/20 max-h-[90vh] flex flex-col shadow-2xl">
 
-                        <div className="bg-themePanel p-5 lg:p-6 text-themeText relative border-b-theme border-themeBorder shrink-0">
-                            <div className="absolute top-0 right-0 w-48 h-48 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-5 lg:p-6 text-themeText relative border-b-theme border-black/10 dark:border-white/20 shrink-0">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
                             <div className="relative z-10 flex justify-between items-start">
                                 <div>
                                     <h3 className="text-lg lg:text-xl font-black tracking-tight mb-1 text-themeText">Apply for Leave</h3>
                                     <p className={`text-[10px] lg:text-xs ${theme.text.secondary} font-medium`}>This request will be routed to your assigned mentor or HOD.</p>
                                 </div>
-                                <button onClick={() => setShowRequestModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-themePanel text-themeTextSec hover:text-themeText hover:bg-neutral-800 border-theme border-themeBorderStrong transition-colors shrink-0">
+                                <button onClick={() => setShowRequestModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeTextSec hover:text-themeText hover:bg-neutral-800 border border-black/5 dark:border-white/10 transition-colors shrink-0">
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
@@ -276,7 +264,7 @@ export default function Leave() {
                             <form onSubmit={handleRequestSubmit} className="p-5 lg:p-6 flex flex-col gap-5 lg:gap-6">
 
                                 {statusMessage.text && (
-                                    <div className={`p-4 rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border-theme animate-fade-in ${statusMessage.type === "success" ? "bg-themeElevated border-themeBorderStrong text-emerald-400" : "bg-themeElevated border-themeBorderStrong text-rose-400"
+                                    <div className={`p-4 rounded-[2rem] text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border-theme animate-fade-in ${statusMessage.type === "success" ? "bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border-black/5 dark:border-white/10 text-emerald-400" : "bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border-black/5 dark:border-white/10 text-rose-400"
                                         }`}>
                                         <i className={`fa-solid ${statusMessage.type === "success" ? "fa-check-circle" : "fa-triangle-exclamation"}`}></i>
                                         {statusMessage.text}
@@ -286,7 +274,7 @@ export default function Leave() {
                                 <div>
                                     <label className={`block text-[9px] lg:text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-2 ml-1`}>Leave Category</label>
                                     <div className="relative">
-                                        <select value={leaveType} onChange={(e) => setLeaveType(e.target.value)} className="w-full bg-themePanel border-theme border-themeBorder rounded-themePanel px-4 py-3.5 lg:py-4 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all appearance-none cursor-pointer">
+                                        <select value={leaveType} onChange={(e) => setLeaveType(e.target.value)} className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] px-4 py-3.5 lg:py-4 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all appearance-none cursor-pointer">
                                             <option value="Medical Leave">Medical Leave</option>
                                             <option value="Official Duty">Official Duty (Moot, Sports, etc.)</option>
                                             <option value="Personal Leave">Personal / Family Leave</option>
@@ -298,11 +286,11 @@ export default function Leave() {
                                 <div className="grid grid-cols-2 gap-4 lg:gap-5">
                                     <div>
                                         <label className={`block text-[9px] lg:text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-2 ml-1`}>From Date</label>
-                                        <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-full bg-themePanel border-theme border-themeBorder rounded-themePanel px-3 lg:px-4 py-3.5 lg:py-4 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all [color-scheme:dark]" required />
+                                        <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] px-3 lg:px-4 py-3.5 lg:py-4 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all [color-scheme:dark]" required />
                                     </div>
                                     <div>
                                         <label className={`block text-[9px] lg:text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-2 ml-1`}>To Date</label>
-                                        <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-full bg-themePanel border-theme border-themeBorder rounded-themePanel px-3 lg:px-4 py-3.5 lg:py-4 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all [color-scheme:dark]" required />
+                                        <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] px-3 lg:px-4 py-3.5 lg:py-4 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all [color-scheme:dark]" required />
                                     </div>
                                 </div>
 
@@ -313,7 +301,7 @@ export default function Leave() {
                                         value={reason}
                                         onChange={(e) => setReason(e.target.value)}
                                         placeholder="Please provide specific details..."
-                                        className="w-full bg-themePanel border-theme border-themeBorder rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all resize-none placeholder:text-neutral-600"
+                                        className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] px-4 py-3 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all resize-none placeholder:text-neutral-600"
                                         required
                                     ></textarea>
                                 </div>
@@ -335,7 +323,7 @@ export default function Leave() {
                                         className="hidden"
                                         accept=".pdf,.jpg,.png"
                                     />
-                                    <div onClick={() => fileInputRef.current.click()} className="border-2 border-dashed border-themeBorderStrong hover:border-themeBorderStrong bg-themePanel transition-colors rounded-themePanel p-6 flex flex-col items-center justify-center text-center cursor-pointer group">
+                                    <div onClick={() => fileInputRef.current.click()} className="border-2 border-dashed border-black/5 dark:border-white/10 hover:border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 transition-colors rounded-[2rem] p-6 flex flex-col items-center justify-center text-center cursor-pointer group">
                                         <i className="fa-solid fa-cloud-arrow-up text-2xl lg:text-3xl text-neutral-600 group-hover:text-themeAccent mb-2 lg:mb-3 transition-colors"></i>
                                         <p className="text-[10px] lg:text-xs font-bold text-themeText">{documentFile ? documentFile.name : "Upload Medical Cert. or Proof"}</p>
                                         <p className="text-[9px] lg:text-[10px] font-medium text-themeTextSec opacity-70 mt-1">PDF, JPG or PNG (Max 5MB)</p>
@@ -345,8 +333,8 @@ export default function Leave() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !fromDate || !toDate || !reason}
-                                    className={`w-full mt-2 py-4 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center gap-2 overflow-hidden group shrink-0 ${isSubmitting || !fromDate || !toDate || !reason
-                                        ? 'bg-themeElevated text-neutral-600 cursor-not-allowed border-theme border-themeBorder'
+                                    className={`w-full mt-2 py-4 rounded-[2rem] text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center gap-2 overflow-hidden group shrink-0 ${isSubmitting || !fromDate || !toDate || !reason
+                                        ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-neutral-600 cursor-not-allowed border border-black/10 dark:border-white/20'
                                         : 'bg-amber-500 text-[#050505] hover:bg-amber-400 active:scale-[0.98]'
                                         }`}
                                 >

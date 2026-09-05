@@ -15,6 +15,7 @@ export default function ScheduleBuilder() {
     // Modal & Draw states
     const [selectedClass, setSelectedClass] = useState(null); // For edit/delete modal
     const [isDrawMode, setIsDrawMode] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const [pendingDraws, setPendingDraws] = useState([]);
 
     // Filter State
@@ -252,7 +253,7 @@ export default function ScheduleBuilder() {
                         <select 
                             value={selectedBatch} 
                             onChange={e => setSelectedBatch(e.target.value)} 
-                            className="bg-themeElevated border border-themeBorderStrong rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-themeText outline-none appearance-none shadow-sm cursor-pointer hover:border-themeAccent transition-colors"
+                            className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm font-bold text-themeText outline-none appearance-none shadow-sm cursor-pointer hover:border-themeAccent transition-colors"
                         >
                             {semesters.map(s => (
                                 <option key={s.id} value={`${s.programme} - ${s.name}`}>{s.programme} - {s.name}</option>
@@ -262,7 +263,7 @@ export default function ScheduleBuilder() {
                     
                     <button 
                         onClick={() => setIsDrawMode(!isDrawMode)} 
-                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${isDrawMode ? 'bg-amber-500 text-white border-amber-500 shadow-amber-500/20' : 'bg-themeElevated border-themeBorderStrong text-themeText hover:border-themeAccent'}`}
+                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border ${isDrawMode ? 'bg-amber-500 text-white border-amber-500 shadow-amber-500/20' : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-black/5 dark:border-white/10 text-themeText hover:border-themeAccent'}`}
                     >
                         <i className="fa-solid fa-paintbrush mr-2"></i> Draw Mode
                     </button>
@@ -282,13 +283,13 @@ export default function ScheduleBuilder() {
                         </div>
                     </div>
                     <div className="flex flex-wrap md:flex-nowrap gap-3 flex-1">
-                        <select className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
+                        <select className="flex-1 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
                             {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                         </select>
-                        <select className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={roomId} onChange={e => setRoomId(e.target.value)}>
+                        <select className="flex-1 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={roomId} onChange={e => setRoomId(e.target.value)}>
                             {rooms.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                         </select>
-                        <select className="flex-1 bg-themePanel border border-themeBorder rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={facultyId} onChange={e => setFacultyId(e.target.value)}>
+                        <select className="flex-1 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-3 py-2 text-xs font-bold text-themeText outline-none focus:border-amber-500" value={facultyId} onChange={e => setFacultyId(e.target.value)}>
                             <option value="">No Faculty</option>
                             {faculties.map(f => <option key={f.id} value={f.id}>{f.full_name}</option>)}
                         </select>
@@ -317,13 +318,13 @@ export default function ScheduleBuilder() {
             {/* CREATE MODAL */}
             {isCreating && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themePanel w-full max-w-lg rounded-themePanel overflow-hidden border-theme border-themeBorder shadow-2xl flex flex-col">
-                        <div className="px-6 py-5 border-b border-themeBorder bg-themeElevated/50 flex justify-between items-center">
+                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium w-full max-w-lg rounded-themePanel overflow-hidden border border-white/5 shadow-2xl flex flex-col">
+                        <div className="px-6 py-5 border-b border-white/5 bg-themeElevated/50 flex justify-between items-center">
                             <div>
                                 <h3 className="text-lg font-black text-themeText">Schedule New Class</h3>
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-themeTextSec mt-0.5">{selectedBatch}</p>
                             </div>
-                            <button onClick={() => setIsCreating(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-themePanel border border-themeBorder hover:bg-themeBorderStrong text-themeText transition-colors">
+                            <button onClick={() => setIsCreating(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 hover:bg-themeBorderStrong text-themeText transition-colors">
                                 <i className="fa-solid fa-xmark text-sm"></i>
                             </button>
                         </div>
@@ -331,7 +332,7 @@ export default function ScheduleBuilder() {
                         <form onSubmit={handleCreate} className="p-6 flex flex-col gap-5">
                             <div>
                                 <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Subject</label>
-                                <select value={subjectId} onChange={e => setSubjectId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                <select value={subjectId} onChange={e => setSubjectId(e.target.value)} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
                                     {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                                 </select>
                             </div>
@@ -339,7 +340,7 @@ export default function ScheduleBuilder() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Faculty</label>
-                                    <select value={facultyId} onChange={e => setFacultyId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                    <select value={facultyId} onChange={e => setFacultyId(e.target.value)} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
                                         <option value="">-- Select Faculty --</option>
                                         {faculties.map(f => <option key={f.id} value={f.id}>{f.full_name}</option>)}
                                     </select>
@@ -350,16 +351,16 @@ export default function ScheduleBuilder() {
 
                                 <div className="col-span-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Classroom</label>
-                                    <select value={roomId} onChange={e => setRoomId(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                    <select value={roomId} onChange={e => setRoomId(e.target.value)} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
                                         {rooms.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
                                     </select>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 border-t border-themeBorder pt-5">
+                            <div className="grid grid-cols-3 gap-4 border-t border-white/5 pt-5">
                                 <div>
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Day</label>
-                                    <select value={day} onChange={e => setDay(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
+                                    <select value={day} onChange={e => setDay(e.target.value)} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none transition-colors">
                                         <option value="1">Monday</option>
                                         <option value="2">Tuesday</option>
                                         <option value="3">Wednesday</option>
@@ -371,11 +372,11 @@ export default function ScheduleBuilder() {
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">Start Time</label>
-                                    <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark transition-colors" />
+                                    <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark transition-colors" />
                                 </div>
                                 <div>
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1.5 block">End Time</label>
-                                    <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark transition-colors" />
+                                    <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} required className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark transition-colors" />
                                 </div>
                             </div>
                             
@@ -390,8 +391,8 @@ export default function ScheduleBuilder() {
             {/* MANAGE/DELETE MODAL */}
             {selectedClass && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themePanel w-full max-w-sm rounded-themePanel overflow-hidden border-theme border-themeBorder shadow-2xl flex flex-col relative">
-                        <button onClick={() => setSelectedClass(null)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-themeElevated hover:bg-themeBorder text-themeText transition-colors z-10">
+                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium w-full max-w-sm rounded-themePanel overflow-hidden border border-white/5 shadow-2xl flex flex-col relative">
+                        <button onClick={() => setSelectedClass(null)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder text-themeText transition-colors z-10">
                             <i className="fa-solid fa-xmark text-sm"></i>
                         </button>
                         
@@ -402,7 +403,7 @@ export default function ScheduleBuilder() {
                             <h3 className="text-xl font-black text-themeText">{selectedClass.subject}</h3>
                             <p className="text-sm font-bold text-themeTextSec">{selectedClass.day}, {selectedClass.time} - {selectedClass.endTime}</p>
                             
-                            <div className="flex flex-col gap-1 mt-4 w-full bg-themeElevated border border-themeBorder rounded-xl p-4">
+                            <div className="flex flex-col gap-1 mt-4 w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Faculty</span>
                                     <span className="text-xs font-bold text-themeText">{selectedClass.faculty}</span>

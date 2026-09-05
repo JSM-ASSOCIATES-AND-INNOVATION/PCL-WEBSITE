@@ -30,7 +30,7 @@ export default function AdminApprovals() {
                 { data: profileUpdatesData }
             ] = await Promise.all([
                 // Fetch faculty leaves
-                supabase.from('faculty_leaves').select('*').order('created_at', { ascending: false }),
+                supabase.from('faculty_leaves').select('*').limit(500).order('created_at', { ascending: false }),
                 
                 // Fetch escalated grievances (assigned_to IS NULL)
                 supabase.from('grievances')
@@ -184,6 +184,11 @@ export default function AdminApprovals() {
     };
 
     const handleDocumentPreview = async (filePath) => {
+        if (!filePath) return;
+        if (filePath.startsWith('http')) {
+            window.open(filePath, '_blank');
+            return;
+        }
         try {
             const { data, error } = await supabase.storage.from('digital_locker_vault').createSignedUrl(filePath, 60);
             if (error) throw error;
@@ -192,7 +197,7 @@ export default function AdminApprovals() {
             }
         } catch (e) {
             console.error(e);
-            window.erpDialog.alert("Failed to load document preview.");
+            window.erpDialog?.alert("Failed to load document preview.");
         }
     };
 
@@ -265,43 +270,43 @@ export default function AdminApprovals() {
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated relative">
             
             {/* Header and Tabs */}
-            <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+            <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
                 {/* Background Decorations */}
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                 
                 <div className="flex items-center gap-4 lg:gap-5 relative z-10 mb-2">
-                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                        <i className="fa-solid fa-scale-balanced text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                        <i className="fa-solid fa-scale-balanced text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                     </div>
                     <div>
-                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Admin Approvals & Investigations</h1>
+                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md`}>Admin Approvals & Investigations</h1>
                         <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Manage faculty leaves, document verifications, and escalated grievances.</p>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-black/10 dark:border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
                     <button 
                         onClick={() => setActiveTab('faculty_leaves')}
-                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'faculty_leaves' ? 'bg-white text-themeAccent shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-white scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'faculty_leaves' ? 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeAccent shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-white scale-100' : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
                     >
                         Faculty Leaves
                     </button>
                     <button 
                         onClick={() => setActiveTab('escalated_grievances')}
-                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'escalated_grievances' ? 'bg-rose-500 text-white shadow-[0_4px_15px_rgba(225,29,72,0.3)] border border-rose-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'escalated_grievances' ? 'bg-rose-500 text-white shadow-[0_4px_15px_rgba(225,29,72,0.3)] border border-rose-500 scale-100' : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
                     >
                         Escalated Grievances
                     </button>
                     <button 
                         onClick={() => setActiveTab('document_verification')}
-                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'document_verification' ? 'bg-blue-500 text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)] border border-blue-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'document_verification' ? 'bg-blue-500 text-white shadow-[0_4px_15px_rgba(59,130,246,0.3)] border border-blue-500 scale-100' : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
                     >
                         Document Verification
                     </button>
                     <button 
                         onClick={() => setActiveTab('profile_updates')}
-                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'profile_updates' ? 'bg-amber-500 text-[#0a0a0a] shadow-[0_4px_15px_rgba(245,158,11,0.3)] border border-amber-500 scale-100' : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
+                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${activeTab === 'profile_updates' ? 'bg-amber-500 text-[#0a0a0a] shadow-[0_4px_15px_rgba(245,158,11,0.3)] border border-amber-500 scale-100' : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'}`}
                     >
                         Profile Updates
                     </button>
@@ -319,12 +324,12 @@ export default function AdminApprovals() {
                     {activeTab === 'faculty_leaves' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                             {facultyLeaves.length === 0 ? (
-                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
+                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border border-white/5 p-8 text-center opacity-60`}>
                                     <p className="text-sm font-semibold text-themeTextSec">No pending leave requests from Faculty.</p>
                                 </div>
                             ) : (
                                 facultyLeaves.map(req => (
-                                    <div key={req.id} className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-5 flex flex-col gap-4 relative overflow-hidden`}>
+                                    <div key={req.id} className={`${theme.layout.panel} rounded-themePanel border border-white/5 p-5 flex flex-col gap-4 relative overflow-hidden`}>
                                         <div className="absolute top-0 left-0 w-1 h-full bg-themeAccent"></div>
                                         <div className="flex justify-between items-start pl-2">
                                             <div>
@@ -335,11 +340,11 @@ export default function AdminApprovals() {
                                         </div>
                                         
                                         <div className="flex gap-2">
-                                            <span className="bg-themePanel border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.leave_type}</span>
-                                            <span className="bg-themePanel border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.total_days} Days</span>
+                                            <span className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.leave_type}</span>
+                                            <span className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{req.total_days} Days</span>
                                         </div>
 
-                                        <div className="bg-themeElevated p-3 rounded-lg border-theme border-themeBorder">
+                                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-3 rounded-lg border border-white/5">
                                             <p className="text-xs text-themeText italic">"{req.reason}"</p>
                                         </div>
 
@@ -352,7 +357,7 @@ export default function AdminApprovals() {
                                                 }} disabled={isProcessing} className="flex-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Reject</button>
                                             </div>
                                         ) : (
-                                            <div className="mt-auto border-t-theme border-themeBorderStrong pt-3">
+                                            <div className="mt-auto border-t-theme border-black/5 dark:border-white/10 pt-3">
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec mb-1">Admin Remarks</p>
                                                 <p className="text-xs text-themeText">{req.admin_remarks || "N/A"}</p>
                                             </div>
@@ -366,7 +371,7 @@ export default function AdminApprovals() {
                     {activeTab === 'escalated_grievances' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {grievances.length === 0 ? (
-                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
+                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border border-white/5 p-8 text-center opacity-60`}>
                                     <p className="text-sm font-semibold text-themeTextSec">No escalated grievances require admin attention.</p>
                                 </div>
                             ) : (
@@ -385,7 +390,7 @@ export default function AdminApprovals() {
                                             {getStatusBadge(g.status)}
                                         </div>
 
-                                        <div className="bg-themeElevated p-3 rounded-lg border-theme border-themeBorder">
+                                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-3 rounded-lg border border-white/5">
                                             <p className="text-xs text-themeText">"{g.description}"</p>
                                         </div>
 
@@ -404,7 +409,7 @@ export default function AdminApprovals() {
                                                 }} disabled={isProcessing} className="flex-1 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white border border-rose-500/20 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors">Dismiss</button>
                                             </div>
                                         ) : (
-                                            <div className="mt-auto border-t-theme border-themeBorderStrong pt-3">
+                                            <div className="mt-auto border-t-theme border-black/5 dark:border-white/10 pt-3">
                                                 <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec mb-1">Admin Resolution Notes</p>
                                                 <p className="text-xs text-themeText">{g.resolution_notes || "N/A"}</p>
                                             </div>
@@ -417,7 +422,7 @@ export default function AdminApprovals() {
                     {activeTab === 'document_verification' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                             {pendingDocuments.length === 0 ? (
-                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
+                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border border-white/5 p-8 text-center opacity-60`}>
                                     <p className="text-sm font-semibold text-themeTextSec">No pending documents require verification.</p>
                                 </div>
                             ) : (
@@ -434,15 +439,15 @@ export default function AdminApprovals() {
                                         </div>
 
                                         <div className="flex gap-2">
-                                            <span className="bg-themeElevated border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{doc.document_type}</span>
-                                            <span className="bg-themeElevated border-theme border-themeBorder px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{doc.file_size_kb} KB</span>
+                                            <span className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{doc.document_type}</span>
+                                            <span className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-widest text-themeTextSec">{doc.file_size_kb} KB</span>
                                         </div>
 
-                                        <div className="flex flex-wrap gap-2 mt-auto pt-3 border-t-theme border-themeBorderStrong">
+                                        <div className="flex flex-wrap gap-2 mt-auto pt-3 border-t-theme border-black/5 dark:border-white/10">
                                             <button 
                                                 onClick={() => handleDocumentPreview(doc.file_path)} 
                                                 disabled={isProcessing} 
-                                                className="w-full bg-themeElevated text-themeText hover:bg-themePanel border-theme border-themeBorder py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors mb-2"
+                                                className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-colors mb-2"
                                             >
                                                 Preview Document
                                             </button>
@@ -460,7 +465,7 @@ export default function AdminApprovals() {
                     {activeTab === 'profile_updates' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                             {profileUpdates.length === 0 ? (
-                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-8 text-center opacity-60`}>
+                                <div className={`col-span-full ${theme.layout.panel} rounded-themePanel border border-white/5 p-8 text-center opacity-60`}>
                                     <p className="text-sm font-semibold text-themeTextSec">No pending profile update requests.</p>
                                 </div>
                             ) : (
@@ -476,8 +481,8 @@ export default function AdminApprovals() {
                                             {getStatusBadge(req.status)}
                                         </div>
                                         
-                                        <div className="bg-themeElevated p-3 rounded-lg border-theme border-themeBorder">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 border-b border-themeBorderStrong pb-1">Requested Changes</p>
+                                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-3 rounded-lg border border-white/5">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 border-b border-black/5 dark:border-white/10 pb-1">Requested Changes</p>
                                             <ul className="text-xs text-themeText flex flex-col gap-1.5">
                                                 {req.requested_changes?.phone && <li><span className="text-themeTextSec">Phone:</span> {req.requested_changes.phone}</li>}
                                                 {req.requested_changes?.blood_group && <li><span className="text-themeTextSec">Blood:</span> {req.requested_changes.blood_group}</li>}

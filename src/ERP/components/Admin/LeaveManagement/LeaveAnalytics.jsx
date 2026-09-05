@@ -81,7 +81,7 @@ export default function LeaveAnalytics() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
                 {/* Department Distribution */}
-                <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-6 relative overflow-hidden">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 lg:p-6 relative overflow-hidden">
                     {isLoading && <div className="absolute inset-0 bg-themePanel/50 backdrop-blur-sm z-10 flex items-center justify-center"><i className="fa-solid fa-circle-notch fa-spin text-indigo-500 text-2xl"></i></div>}
                     <h3 className={`${theme.text.heading} text-base lg:text-lg text-themeText mb-4 lg:mb-6`}>Leave by Department (This Year)</h3>
                     <div className="flex flex-col gap-4 lg:gap-5 max-h-[300px] overflow-y-auto no-scrollbar">
@@ -92,7 +92,7 @@ export default function LeaveAnalytics() {
                                     <span className="text-[9px] lg:text-xs font-black uppercase tracking-widest text-themeTextSec">{dept.name}</span>
                                     <span className="text-[10px] lg:text-sm font-bold text-themeText">{dept.count} Days</span>
                                 </div>
-                                <div className="w-full bg-themeElevated h-2 lg:h-2.5 rounded-full overflow-hidden">
+                                <div className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated h-2 lg:h-2.5 rounded-full overflow-hidden">
                                     <div 
                                         className="bg-indigo-500 h-full rounded-full transition-all duration-1000"
                                         style={{ width: `${(dept.count / dept.max) * 100}%` }}
@@ -104,7 +104,7 @@ export default function LeaveAnalytics() {
                 </div>
 
                 {/* Leave Types Distribution */}
-                <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-6 relative overflow-hidden">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 lg:p-6 relative overflow-hidden">
                     {isLoading && <div className="absolute inset-0 bg-themePanel/50 backdrop-blur-sm z-10 flex items-center justify-center"><i className="fa-solid fa-circle-notch fa-spin text-indigo-500 text-2xl"></i></div>}
                     <h3 className={`${theme.text.heading} text-base lg:text-lg text-themeText mb-4 lg:mb-6`}>Leave Reasons Breakdown</h3>
                     <div className="flex flex-col gap-4 lg:gap-5 max-h-[300px] overflow-y-auto no-scrollbar">
@@ -119,7 +119,7 @@ export default function LeaveAnalytics() {
                                         <span className="text-[9px] lg:text-xs font-black uppercase tracking-widest text-themeTextSec">{type.name}</span>
                                         <span className="text-[9px] lg:text-xs font-bold text-themeText">{type.count} Requests</span>
                                     </div>
-                                    <div className="w-full bg-themeElevated h-1 lg:h-1.5 rounded-full overflow-hidden">
+                                    <div className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated h-1 lg:h-1.5 rounded-full overflow-hidden">
                                         <div 
                                             className={`bg-${type.color}-500 h-full rounded-full transition-all duration-1000`}
                                             style={{ width: `${(type.count / Math.max(totalRequests, 1)) * 100}%` }}
@@ -134,12 +134,12 @@ export default function LeaveAnalytics() {
             </div>
 
             {/* Peak Leave Periods */}
-            <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-6 relative overflow-hidden">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 lg:p-6 relative overflow-hidden">
                 {isLoading && <div className="absolute inset-0 bg-themePanel/50 backdrop-blur-sm z-10 flex items-center justify-center"><i className="fa-solid fa-circle-notch fa-spin text-indigo-500 text-2xl"></i></div>}
                 
                 <div className="flex justify-between items-center mb-4 lg:mb-6">
                     <h3 className={`${theme.text.heading} text-base lg:text-lg text-themeText`}>Peak Leave Periods</h3>
-                    <button className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-400">Export Report</button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-400">Export Report</button>
                 </div>
                 
                 <div className="flex items-end gap-1.5 lg:gap-2 h-32 lg:h-48 pt-4">
@@ -149,7 +149,7 @@ export default function LeaveAnalytics() {
                             <div key={month} className="flex-1 flex flex-col items-center gap-2 lg:gap-3 group">
                                 <div className="w-full relative flex items-end h-full">
                                     <div 
-                                        className={`w-full rounded-t-sm transition-all duration-500 group-hover:opacity-80 ${stat.isPeak ? 'bg-rose-500' : 'bg-themeElevated'}`}
+                                        className={`w-full rounded-t-sm transition-all duration-500 group-hover:opacity-80 ${stat.isPeak ? 'bg-rose-500' : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated'}`}
                                         style={{ height: `${stat.height}%` }}
                                     ></div>
                                 </div>

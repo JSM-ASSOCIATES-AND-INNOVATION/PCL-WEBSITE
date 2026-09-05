@@ -45,7 +45,7 @@ export default function AdminKPIGrid({ setActiveTab }) {
                 `;
 
                 const { data, error } = await supabase.rpc('admin_exec_sql', { query_text: query });
-                if (error) throw error;
+                if (error) { console.warn("Dashboard stats error (RPC missing):", error.message); if (isMounted) setLoading(false); return; }
 
                 if (isMounted && Array.isArray(data) && data.length > 0) {
                     const kpi = data[0].kpi_data;
@@ -93,7 +93,7 @@ export default function AdminKPIGrid({ setActiveTab }) {
         return (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 animate-pulse">
                 {[1, 2, 3, 4, 5].map(i => (
-                    <div key={i} className="h-[140px] bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder opacity-50 shadow-sm"></div>
+                    <div key={i} className="h-[140px] bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 opacity-50 shadow-sm"></div>
                 ))}
             </div>
         );
@@ -106,12 +106,12 @@ export default function AdminKPIGrid({ setActiveTab }) {
             <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(1)}>
                 <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 1 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
                     {/* Front */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel/85 backdrop-blur-2xl shadow-premium p-4 rounded-themePanel border border-white/5 flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-user-graduate"></i>
                             </div>
-                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('users'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('users'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeAccent border border-white/5 px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight">{data.students.total}</p>
@@ -119,14 +119,14 @@ export default function AdminKPIGrid({ setActiveTab }) {
                         </div>
                     </div>
                     {/* Back */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col">
-                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-themeBorder pb-1">Breakdown</h4>
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-themePanel border border-white/5Strong shadow-lg flex flex-col">
+                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-white/5 pb-1">Breakdown</h4>
                         <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1.5 pr-1">
                             {Object.entries(data.students.byBatch).length === 0 ? (
                                 <p className="text-[10px] font-medium text-themeTextSec italic text-center mt-2">No data</p>
                             ) : (
                                 Object.entries(data.students.byBatch).map(([batch, count]) => (
-                                    <div key={batch} className="flex justify-between items-center bg-themePanel p-1.5 px-2 rounded border border-themeBorder">
+                                    <div key={batch} className="flex justify-between items-center bg-themePanel/85 backdrop-blur-2xl shadow-premium p-1.5 px-2 rounded border border-white/5">
                                         <span className="text-[9px] font-bold text-themeText truncate pr-2">{batch}</span>
                                         <span className="text-[9px] font-black text-themeAccent bg-themeAccent/10 px-1.5 py-0.5 rounded">{count}</span>
                                     </div>
@@ -141,12 +141,12 @@ export default function AdminKPIGrid({ setActiveTab }) {
             <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(2)}>
                 <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 2 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
                     {/* Front */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel/85 backdrop-blur-2xl shadow-premium p-4 rounded-themePanel border border-white/5 flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-chalkboard-user"></i>
                             </div>
-                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('faculty'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('faculty'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeAccent border border-white/5 px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight">{data.faculty.total}</p>
@@ -154,14 +154,14 @@ export default function AdminKPIGrid({ setActiveTab }) {
                         </div>
                     </div>
                     {/* Back */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col">
-                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-themeBorder pb-1">Directory</h4>
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-themePanel border border-white/5Strong shadow-lg flex flex-col">
+                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-white/5 pb-1">Directory</h4>
                         <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1.5 pr-1">
                             {data.faculty.list.length === 0 ? (
                                 <p className="text-[10px] font-medium text-themeTextSec italic text-center mt-2">No data</p>
                             ) : (
                                 data.faculty.list.map(fac => (
-                                    <div key={fac.id} onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('faculty'); }} className="flex items-center gap-2 bg-themePanel p-1.5 rounded border border-themeBorder hover:border-themeAccent transition-colors cursor-pointer">
+                                    <div key={fac.id} onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('faculty'); }} className="flex items-center gap-2 bg-themePanel/85 backdrop-blur-2xl shadow-premium p-1.5 rounded border border-white/5 hover:border-themeAccent transition-colors cursor-pointer">
                                         <div className="w-4 h-4 rounded-full bg-themeAccent/10 text-themeAccent flex items-center justify-center shrink-0">
                                             <i className="fa-solid fa-user text-[8px]"></i>
                                         </div>
@@ -180,7 +180,7 @@ export default function AdminKPIGrid({ setActiveTab }) {
             <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(3)}>
                 <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 3 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
                     {/* Front */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel/85 backdrop-blur-2xl shadow-premium p-4 rounded-themePanel border border-white/5 flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-clipboard-user"></i>
@@ -190,7 +190,7 @@ export default function AdminKPIGrid({ setActiveTab }) {
                                     <span className="w-1.5 h-1.5 rounded-full bg-themeAccent shadow-[0_0_8px_var(--theme-accent-color)] animate-pulse"></span>
                                 </div>
                             ) : (
-                                <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec bg-themeElevated px-1.5 py-0.5 rounded border border-themeBorder truncate max-w-[60px]">Awaiting</span>
+                                <span className="hidden xl:inline-block text-[8px] font-bold text-themeTextSec bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-1.5 py-0.5 rounded border border-white/5 truncate max-w-[60px]">Awaiting</span>
                             )}
                         </div>
                         <div className="mt-auto">
@@ -201,7 +201,7 @@ export default function AdminKPIGrid({ setActiveTab }) {
                         </div>
                     </div>
                     {/* Back */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col justify-center items-center text-center">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-themePanel border border-white/5Strong shadow-lg flex flex-col justify-center items-center text-center">
                         <h4 className="text-[9px] font-black text-themeText uppercase tracking-widest mb-1">Status</h4>
                         <p className="text-[9px] text-themeTextSec px-2">
                             {data.attendance.total > 0 ? `${data.attendance.present} of ${data.attendance.total} students present today.` : 'Classes still in session. Check back later.'}
@@ -214,12 +214,12 @@ export default function AdminKPIGrid({ setActiveTab }) {
             <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(4)}>
                 <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 4 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
                     {/* Front */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel/85 backdrop-blur-2xl shadow-premium p-4 rounded-themePanel border border-white/5 flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start mb-1">
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-stamp"></i>
                             </div>
-                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('adminapprovals'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('adminapprovals'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeAccent border border-white/5 px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight">{data.approvals.total}</p>
@@ -227,14 +227,14 @@ export default function AdminKPIGrid({ setActiveTab }) {
                         </div>
                     </div>
                     {/* Back */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col">
-                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-themeBorder pb-1">Queues</h4>
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-themePanel border border-white/5Strong shadow-lg flex flex-col">
+                        <h4 className="text-[9px] font-black text-themeTextSec uppercase tracking-widest mb-2 border-b-[length:var(--border-width)] border-white/5 pb-1">Queues</h4>
                         <div className="flex flex-col gap-1.5 mt-auto pb-1">
-                            <div className="bg-themePanel p-1.5 px-2 rounded border border-themeBorder flex justify-between items-center">
+                            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-1.5 px-2 rounded border border-white/5 flex justify-between items-center">
                                 <span className="text-[8px] font-bold text-themeTextSec uppercase tracking-wider">Leaves</span>
                                 <span className={`text-[10px] font-black ${data.approvals.leaves > 0 ? 'text-amber-500' : 'text-themeText'}`}>{data.approvals.leaves}</span>
                             </div>
-                            <div className="bg-themePanel p-1.5 px-2 rounded border border-themeBorder flex justify-between items-center">
+                            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-1.5 px-2 rounded border border-white/5 flex justify-between items-center">
                                 <span className="text-[8px] font-bold text-themeTextSec uppercase tracking-wider">Tickets</span>
                                 <span className={`text-[10px] font-black ${data.approvals.grievances > 0 ? 'text-rose-500' : 'text-themeText'}`}>{data.approvals.grievances}</span>
                             </div>
@@ -247,12 +247,12 @@ export default function AdminKPIGrid({ setActiveTab }) {
             <div className="relative w-full h-[140px] group [perspective:1000px] cursor-pointer" onClick={() => toggleFlip(5)}>
                 <div className={`w-full h-full absolute transition-all duration-700 [transform-style:preserve-3d] ${flippedCard === 5 ? '[transform:rotateY(180deg)]' : 'group-hover:[transform:rotateY(180deg)]'}`}>
                     {/* Front */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] bg-themePanel/85 backdrop-blur-2xl shadow-premium p-4 rounded-themePanel border border-white/5 flex flex-col gap-2 group-hover:border-themeAccent transition-colors shadow-sm">
                         <div className="flex justify-between items-start">
                             <div className="w-8 h-8 rounded-lg bg-themeAccent/10 text-themeAccent border border-themeAccent/20 flex items-center justify-center text-sm shrink-0 shadow-[0_0_15px_var(--theme-accent-color)]/20">
                                 <i className="fa-solid fa-indian-rupee-sign"></i>
                             </div>
-                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('finance'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated hover:bg-themeAccent border-[length:var(--border-width)] border-themeBorder px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
+                            <button onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('finance'); }} className="hidden xl:inline-block text-[8px] font-bold text-themeText hover:text-white bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeAccent border border-white/5 px-2 py-1 rounded transition-colors cursor-pointer">Manage</button>
                         </div>
                         <div className="mt-auto">
                             <p className="text-2xl font-black text-themeText tracking-tight truncate">{formatCurrency(data.fees.collected)}</p>
@@ -260,7 +260,7 @@ export default function AdminKPIGrid({ setActiveTab }) {
                         </div>
                     </div>
                     {/* Back */}
-                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated p-4 rounded-themePanel border-[length:var(--border-width)] border-themeBorderStrong shadow-lg flex flex-col justify-center items-center text-center">
+                    <div className="absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-themePanel border border-white/5Strong shadow-lg flex flex-col justify-center items-center text-center">
                         <h4 className="text-[9px] font-black text-themeText uppercase tracking-widest mb-2">Ledger</h4>
                         <p className="text-[10px] font-bold text-themeTextSec">Paid: <span className="text-emerald-500">{formatCurrency(data.fees.collected)}</span></p>
                         <p className="text-[10px] font-bold text-themeTextSec">Dues: <span className="text-rose-500">{formatCurrency(data.fees.pending)}</span></p>

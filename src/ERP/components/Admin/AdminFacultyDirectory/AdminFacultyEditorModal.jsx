@@ -200,7 +200,7 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
     if (loading) {
         return createPortal(
             <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-                <div className="bg-white p-8 rounded-3xl shadow-2xl flex flex-col items-center">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-8 rounded-3xl shadow-2xl flex flex-col items-center">
                     <div className="w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p className="text-xs font-black uppercase tracking-widest text-neutral-500">Loading Profile Data...</p>
                 </div>
@@ -211,10 +211,10 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-            <div className="bg-[#fcfcfc] w-full max-w-4xl rounded-[2rem] flex flex-col max-h-[90vh] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden border border-white/20">
+            <div className="bg-[#fcfcfc] w-full max-w-4xl rounded-[2rem] flex flex-col max-h-[90vh] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.2)] overflow-hidden border border-black/10 dark:border-white/20">
                 
                 {/* HEADER */}
-                <div className="bg-white px-8 py-6 relative shrink-0 border-b border-neutral-100 flex justify-between items-center shadow-sm z-10">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium px-8 py-6 relative shrink-0 border-b border-neutral-100 flex justify-between items-center shadow-sm z-10">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-2xl bg-themeAccent/10 flex items-center justify-center">
                             <i className="fa-solid fa-user-pen text-themeAccent text-xl"></i>
@@ -234,7 +234,7 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
                     <form id="faculty-edit-form" onSubmit={handleSubmit} className="flex flex-col gap-10">
                         
                         {/* PHOTO SECTION */}
-                        <div className="bg-white p-8 rounded-[1.5rem] border border-neutral-100 shadow-sm flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-8 rounded-[1.5rem] border border-neutral-100 shadow-sm flex flex-col md:flex-row gap-8 items-start relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-themeAccent to-themeAccent/20"></div>
                             
                             <div className="flex-1 w-full flex flex-col">
@@ -245,7 +245,7 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
                                 <div className="flex gap-3 mb-6">
                                     <div className="relative overflow-hidden group">
                                         <input type="file" accept="image/*" onChange={onSelectFile} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                                        <button type="button" className="bg-themeAccent text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-md group-hover:bg-themeAccent/90 flex items-center gap-2">
+                                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} type="button" className="bg-themeAccent text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-md group-hover:bg-themeAccent/90 flex items-center gap-2">
                                             <i className="fa-solid fa-upload"></i> Upload New
                                         </button>
                                     </div>
@@ -282,7 +282,7 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
                         </div>
 
                         {/* DETAILS SECTION */}
-                        <div className="bg-white p-8 rounded-[1.5rem] border border-neutral-100 shadow-sm flex flex-col gap-6 relative overflow-hidden">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-8 rounded-[1.5rem] border border-neutral-100 shadow-sm flex flex-col gap-6 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neutral-200 to-transparent"></div>
                             
                             <h4 className="text-sm font-black text-neutral-800 uppercase tracking-widest mb-2 flex items-center gap-2">
@@ -298,44 +298,44 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
                                         onChange={handleInputChange} 
                                         rows={3}
                                         placeholder="A brief overview of the faculty member..."
-                                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-medium focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all resize-y" 
+                                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-medium focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all resize-y" 
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Full Name</label>
-                                    <input type="text" name="full_name" value={formData.full_name} onChange={handleInputChange} required className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="full_name" value={formData.full_name} onChange={handleInputChange} required className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Department</label>
-                                    <input type="text" name="department" value={formData.department} onChange={handleInputChange} required className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="department" value={formData.department} onChange={handleInputChange} required className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Designation</label>
-                                    <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="designation" value={formData.designation} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Specialisation</label>
-                                    <input type="text" name="specialisation" value={formData.specialisation} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="specialisation" value={formData.specialisation} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Degrees</label>
-                                    <input type="text" name="degrees" value={formData.degrees} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="degrees" value={formData.degrees} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Office Address</label>
-                                    <input type="text" name="office_address" value={formData.office_address} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="office_address" value={formData.office_address} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Phone Number</label>
-                                    <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">LinkedIn URL</label>
-                                    <input type="text" name="linkedin_url" value={formData.linkedin_url} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="linkedin_url" value={formData.linkedin_url} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest mb-1.5 ml-1 text-neutral-500">Google Scholar URL</label>
-                                    <input type="text" name="scholar_url" value={formData.scholar_url} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-white outline-none text-neutral-900 transition-all shadow-inner" />
+                                    <input type="text" name="scholar_url" value={formData.scholar_url} onChange={handleInputChange} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl p-4 text-sm font-bold focus:border-themeAccent focus:ring-2 focus:ring-themeAccent/20 focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium outline-none text-neutral-900 transition-all shadow-inner" />
                                 </div>
                             </div>
                         </div>
@@ -343,7 +343,7 @@ export default function AdminFacultyEditorModal({ facultyId, onClose, onSave }) 
                 </div>
 
                 {/* FOOTER */}
-                <div className="bg-white p-6 border-t border-neutral-100 flex justify-end shrink-0 gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-10">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 border-t border-neutral-100 flex justify-end shrink-0 gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-10">
                     <button onClick={onClose} disabled={saving} className="px-8 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] text-neutral-500 bg-neutral-100 hover:bg-neutral-200 hover:text-neutral-800 transition-all">
                         Cancel
                     </button>

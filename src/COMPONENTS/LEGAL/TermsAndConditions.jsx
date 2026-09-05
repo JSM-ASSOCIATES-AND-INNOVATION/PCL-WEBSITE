@@ -4,22 +4,14 @@ import Navbar from '../NAVBAR/Navbar';
 // NOTE: adjust the Navbar import path to match your project structure, or remove it
 // if this page will render standalone.
 
-// ---------------------------------------------------------------------------
-// BEFORE YOU PUBLISH THIS FILE
-// This is a starting template, not a finished contract. Replace every
-// [bracketed] placeholder with your real company details, then have it
-// reviewed by a lawyer licensed where you operate. Nothing here is legal
-// advice, and no template can account for your specific business model,
-// customer base, or regulatory exposure.
-// ---------------------------------------------------------------------------
 
-const COMPANY_NAME = 'JSM INNOVATIONS Software Pvt. Ltd.';
-const PRODUCT_NAME = 'JSM INNOVATIONS ERP';
-const SUPPORT_EMAIL = 'support@ledgerline.app';
-const LEGAL_EMAIL = 'legal@ledgerline.app';
-const COMPANY_ADDRESS = '[Registered office address, city, state, PIN]';
+const COMPANY_NAME = 'JSM Innovations';
+const PRODUCT_NAME = 'Prudentia College of Law Website & ERP';
+const SUPPORT_EMAIL = 'contact.jsminnovations@gmail.com';
+const LEGAL_EMAIL = 'contact.jsminnovations@gmail.com';
+const COMPANY_ADDRESS = '3-23, Gurramguda, Opp Badangpet Municipal Office, Balapur Mandal, R.R. Dist, Hyderabad - Telangana 501510';
 const GOVERNING_LAW = 'India';
-const JURISDICTION_CITY = '[City]';
+const JURISDICTION_CITY = 'Hyderabad, Telangana';
 const EFFECTIVE_DATE = '19 July 2026';
 const VERSION = 'v1.0';
 
@@ -85,7 +77,7 @@ function Clause({ id, index, title, summary, children }) {
         </span>
         <h2
           className="text-xl md:text-2xl font-bold text-white leading-snug"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+         
         >
           {title}
         </h2>
@@ -145,7 +137,7 @@ export default function TermsAndConditions() {
 
           <h1
             className="text-4xl md:text-5xl font-bold mb-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+           
           >
             Terms of Service
           </h1>

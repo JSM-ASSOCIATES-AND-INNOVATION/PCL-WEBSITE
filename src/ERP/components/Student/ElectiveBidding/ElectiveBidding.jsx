@@ -74,27 +74,27 @@ export default function ElectiveBidding() {
 
     return (
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in">
-            <div className="bg-themeElevated rounded-themePanel p-6 border-theme border-themeBorder flex flex-col gap-2">
+            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-6 border border-black/10 dark:border-white/20 flex flex-col gap-2">
                 <h1 className={`${theme.text.heading} text-2xl tracking-tight text-themeText mb-1`}>Elective Bidding</h1>
                 <p className={`${theme.text.secondary} text-sm font-medium`}>Bid for your preferred electives and faculty for the upcoming semester.</p>
             </div>
 
             {electives.length === 0 ? (
-                <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorder rounded">No electives available for bidding.</div>
+                <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded">No electives available for bidding.</div>
             ) : (
                 <div className="flex flex-col gap-6">
                     {electives.map(subject => {
                         const subjectAssignments = assignments.filter(a => (a.subject_id === subject.id || a.subject_name === subject.code || a.subject_id === subject.code));
                         
                         return (
-                            <div key={subject.id || subject.code} className="bg-themePanel p-6 rounded-themePanel border-theme border-themeBorder flex flex-col gap-4">
-                                <div className="flex justify-between items-center border-b-theme border-themeBorder pb-4">
+                            <div key={subject.id || subject.code} className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-6 rounded-[2rem] border border-black/10 dark:border-white/20 flex flex-col gap-4">
+                                <div className="flex justify-between items-center border-b-theme border-black/10 dark:border-white/20 pb-4">
                                     <div>
                                         <h3 className="text-xl font-bold text-themeText">{subject.name}</h3>
                                         <span className="text-xs font-bold text-themeAccent uppercase tracking-widest">{subject.code} • {subject.credits} Credits</span>
                                     </div>
                                     {subject.max_seats && (
-                                        <div className="bg-themeElevated px-4 py-2 rounded border-theme border-themeBorderStrong text-sm font-bold text-themeText">
+                                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-4 py-2 rounded border border-black/5 dark:border-white/10 text-sm font-bold text-themeText">
                                             Max Seats: {subject.max_seats}
                                         </div>
                                     )}
@@ -112,7 +112,7 @@ export default function ElectiveBidding() {
                                                     <div 
                                                         key={assign.id} 
                                                         onClick={() => handleBidChange(subject.id || subject.code, assign.faculty_id)}
-                                                        className={`p-4 rounded-themePanel border-2 cursor-pointer transition-all ${isSelected ? 'border-themeAccent bg-themeAccent/10' : 'border-themeBorderStrong bg-themeElevated hover:border-themeAccent/50'}`}
+                                                        className={`p-4 rounded-[2rem] border-2 cursor-pointer transition-all ${isSelected ? 'border-themeAccent bg-themeAccent/10' : 'border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 hover:border-themeAccent/50'}`}
                                                     >
                                                         <p className="font-bold text-themeText">{assign.faculty_name || 'Faculty ID: ' + assign.faculty_id}</p>
                                                         <p className="text-xs text-themeTextSec mt-1">Section: {assign.section_name}</p>
@@ -130,7 +130,7 @@ export default function ElectiveBidding() {
                         <button 
                             onClick={submitBids} 
                             disabled={isSubmitting}
-                            className="bg-themeAccent hover:opacity-90 text-white px-8 py-4 rounded-themePanel font-black uppercase tracking-widest transition-all"
+                            className="bg-themeAccent hover:opacity-90 text-white px-8 py-4 rounded-[2rem] font-black uppercase tracking-widest transition-all"
                         >
                             {isSubmitting ? "Submitting..." : "Submit Bids"}
                         </button>

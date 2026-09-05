@@ -109,21 +109,21 @@ export default function AdminPlacements({ isHubView = false }) {
     return (
         <div className={`w-full ${isHubView ? 'bg-transparent text-themeText font-sans' : 'max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated'}`}>
             {!isHubView && (
-                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-4 lg:gap-5 mb-2">
-                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                                <i className="fa-solid fa-briefcase text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-briefcase text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                             </div>
                             <div>
-                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Placements & Internships</h1>
+                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md`}>Placements & Internships</h1>
                                 <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Manage firm recruitment, tracks, and student placements.</p>
                             </div>
                         </div>
                         <button
                             onClick={() => setShowCreateModal(true)}
-                            className="w-full lg:w-auto px-6 py-3 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 border border-white/50"
+                            className="w-full lg:w-auto px-6 py-3 bg-themePanel/85 backdrop-blur-2xl shadow-premium hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 border border-white/50"
                         >
                             <i className="fa-solid fa-plus"></i> Create Drive
                         </button>
@@ -131,14 +131,14 @@ export default function AdminPlacements({ isHubView = false }) {
                 </div>
             )}
 
-            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-6 lg:mb-8'}`}>
-                <button onClick={() => setActiveTab('drives')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'drives' ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated backdrop-blur-md rounded-2xl border border-black/5 dark:border-white/10 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-6 lg:mb-8'}`}>
+                <button onClick={() => setActiveTab('drives')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'drives' ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-building"></i> Placement Drives
                 </button>
-                <button onClick={() => setActiveTab('applications')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'applications' ? 'bg-indigo-500 text-white shadow-[0_4px_15px_rgba(99,102,241,0.3)] border border-indigo-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
+                <button onClick={() => setActiveTab('applications')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'applications' ? 'bg-indigo-500 text-white shadow-[0_4px_15px_rgba(99,102,241,0.3)] border border-indigo-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-file-contract"></i> Applications
                 </button>
-                <button onClick={() => setActiveTab('inquiries')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'inquiries' ? 'bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)] border border-emerald-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
+                <button onClick={() => setActiveTab('inquiries')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'inquiries' ? 'bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)] border border-emerald-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-handshake"></i> Company Inquiries
                     {inquiries.filter(i => i.status === 'pending').length > 0 && (
                         <span className="ml-1 w-2 h-2 rounded-full bg-red-500"></span>
@@ -149,13 +149,13 @@ export default function AdminPlacements({ isHubView = false }) {
             {activeTab === 'drives' && (
                 <div className="flex flex-col gap-4">
                     {drives.length === 0 ? (
-                        <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorder rounded-themePanel">
+                        <div className="p-12 text-center text-themeTextSec bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel">
                             <i className="fa-solid fa-building text-4xl mb-4 opacity-50"></i>
                             <p>No active placement drives.</p>
                         </div>
                     ) : (
                         drives.map(drive => (
-                            <div key={drive.id} className="bg-themePanel p-6 rounded-themePanel border-theme border-themeBorder flex flex-col gap-4 relative overflow-hidden group">
+                            <div key={drive.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 rounded-themePanel border border-white/5 flex flex-col gap-4 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-themeAccent/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-themeAccent/10 transition-colors pointer-events-none"></div>
                                 
                                 <div className="flex justify-between items-start relative z-10">
@@ -177,17 +177,17 @@ export default function AdminPlacements({ isHubView = false }) {
                                             const { error } = await supabase.from('placement_drives').update({ status: newStatus }).eq('id', drive.id);
                                             if (!error) fetchDrives();
                                         }} 
-                                        className="px-4 py-2 bg-themeElevated hover:bg-neutral-800 border-theme border-themeBorderStrong rounded-lg text-[10px] font-black text-themeTextSec uppercase tracking-widest transition-colors"
+                                        className="px-4 py-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-neutral-800 border border-black/5 dark:border-white/10 rounded-lg text-[10px] font-black text-themeTextSec uppercase tracking-widest transition-colors"
                                     >
                                         Toggle Status
                                     </button>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 relative z-10">
-                                    <div className="bg-themeApp p-4 rounded-xl border-theme border-themeBorderStrong">
+                                    <div className="bg-themeApp p-4 rounded-xl border border-black/5 dark:border-white/10">
                                         <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2"><i className="fa-solid fa-clipboard-list mr-1"></i> Eligibility</p>
                                         <p className="text-xs text-themeText font-medium whitespace-pre-wrap">{drive.eligibility_criteria || "No specific criteria."}</p>
                                     </div>
-                                    <div className="bg-themeApp p-4 rounded-xl border-theme border-themeBorderStrong">
+                                    <div className="bg-themeApp p-4 rounded-xl border border-black/5 dark:border-white/10">
                                         <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2"><i className="fa-solid fa-sack-dollar mr-1"></i> Package Details</p>
                                         <p className="text-xs text-themeText font-medium whitespace-pre-wrap">{drive.package_details || "Not disclosed."}</p>
                                     </div>
@@ -201,7 +201,7 @@ export default function AdminPlacements({ isHubView = false }) {
             {activeTab === 'applications' && (
                 <div className="flex flex-col gap-4">
                     {applications.length === 0 ? (
-                        <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorder rounded-themePanel">
+                        <div className="p-12 text-center text-themeTextSec bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel">
                             <i className="fa-solid fa-file-invoice text-4xl mb-4 opacity-50"></i>
                             <p>No student applications received yet.</p>
                         </div>
@@ -213,13 +213,13 @@ export default function AdminPlacements({ isHubView = false }) {
                             const role = app.placement_drives?.role_title || "Unknown Role";
                             
                             return (
-                                <div key={app.id} className="bg-themePanel p-5 rounded-themePanel border-theme border-themeBorder flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                <div key={app.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-5 rounded-themePanel border border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded border-theme border-indigo-500/20">
                                                 {company}
                                             </span>
-                                            <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest px-2 py-1 bg-themeElevated rounded border-theme border-themeBorderStrong">
+                                            <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest px-2 py-1 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated rounded border border-black/5 dark:border-white/10">
                                                 {role}
                                             </span>
                                         </div>
@@ -233,7 +233,7 @@ export default function AdminPlacements({ isHubView = false }) {
                                     </div>
                                     <div className="flex flex-col gap-3 min-w-[200px]">
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border-theme text-center ${
-                                            app.status === 'Applied' ? 'bg-themeElevated text-themeText border-themeBorderStrong' :
+                                            app.status === 'Applied' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeText border-black/5 dark:border-white/10' :
                                             app.status === 'Shortlisted' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
                                             app.status === 'Interviewed' ? 'bg-amber-500/10 text-amber-400 border-amber-500/30' :
                                             app.status === 'Selected' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
@@ -244,7 +244,7 @@ export default function AdminPlacements({ isHubView = false }) {
                                         <select 
                                             value={app.status}
                                             onChange={(e) => handleUpdateApplicationStatus(app.id, e.target.value)}
-                                            className="bg-themeApp border-theme border-themeBorderStrong rounded-lg px-3 py-2 text-[10px] font-black text-themeText uppercase tracking-widest outline-none focus:border-themeAccent appearance-none cursor-pointer"
+                                            className="bg-themeApp border border-black/5 dark:border-white/10 rounded-lg px-3 py-2 text-[10px] font-black text-themeText uppercase tracking-widest outline-none focus:border-themeAccent appearance-none cursor-pointer"
                                         >
                                             <option value="Applied">Mark Applied</option>
                                             <option value="Shortlisted">Mark Shortlisted</option>
@@ -263,13 +263,13 @@ export default function AdminPlacements({ isHubView = false }) {
             {activeTab === 'inquiries' && (
                 <div className="flex flex-col gap-4">
                     {inquiries.length === 0 ? (
-                        <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorder rounded-themePanel">
+                        <div className="p-12 text-center text-themeTextSec bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel">
                             <i className="fa-solid fa-handshake text-4xl mb-4 opacity-50"></i>
                             <p>No company recruitment inquiries received yet.</p>
                         </div>
                     ) : (
                         inquiries.map(inq => (
-                            <div key={inq.id} className="bg-themePanel p-5 rounded-themePanel border-theme border-themeBorder flex flex-col md:flex-row md:items-start justify-between gap-6">
+                            <div key={inq.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-5 rounded-themePanel border border-white/5 flex flex-col md:flex-row md:items-start justify-between gap-6">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border-theme ${
@@ -287,7 +287,7 @@ export default function AdminPlacements({ isHubView = false }) {
                                         <p className="text-xs font-bold text-themeTextSec"><i className="fa-solid fa-envelope mr-2 w-4"></i>{inq.email}</p>
                                         {inq.phone && <p className="text-xs font-bold text-themeTextSec"><i className="fa-solid fa-phone mr-2 w-4"></i>{inq.phone}</p>}
                                     </div>
-                                    <div className="bg-themeApp p-4 rounded-xl border-theme border-themeBorderStrong">
+                                    <div className="bg-themeApp p-4 rounded-xl border border-black/5 dark:border-white/10">
                                         <p className="text-xs text-themeText font-medium whitespace-pre-wrap">{inq.message}</p>
                                     </div>
                                 </div>
@@ -298,7 +298,7 @@ export default function AdminPlacements({ isHubView = false }) {
                                     <select 
                                         value={inq.status}
                                         onChange={(e) => handleUpdateInquiryStatus(inq.id, e.target.value)}
-                                        className="bg-themeApp border-theme border-themeBorderStrong rounded-lg px-3 py-2 text-[10px] font-black text-themeText uppercase tracking-widest outline-none focus:border-themeAccent appearance-none cursor-pointer"
+                                        className="bg-themeApp border border-black/5 dark:border-white/10 rounded-lg px-3 py-2 text-[10px] font-black text-themeText uppercase tracking-widest outline-none focus:border-themeAccent appearance-none cursor-pointer"
                                     >
                                         <option value="pending">Mark as Pending</option>
                                         <option value="reviewed">Mark as Reviewed</option>
@@ -314,33 +314,33 @@ export default function AdminPlacements({ isHubView = false }) {
             {/* CREATE DRIVE MODAL */}
             {showCreateModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themeApp w-full max-w-lg rounded-themePanel overflow-hidden border-theme border-themeBorder flex flex-col max-h-[90vh] shadow-2xl">
-                        <div className="bg-themePanel p-6 border-b-theme border-themeBorder flex justify-between items-center">
+                    <div className="bg-themeApp w-full max-w-lg rounded-themePanel overflow-hidden border border-white/5 flex flex-col max-h-[90vh] shadow-2xl">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 border-b-theme border-white/5 flex justify-between items-center">
                             <h3 className="text-xl font-black text-themeText">Create Placement Drive</h3>
-                            <button onClick={() => setShowCreateModal(false)} className="w-8 h-8 rounded-full bg-themeElevated border-theme border-themeBorderStrong text-themeTextSec hover:text-themeText flex items-center justify-center transition-colors"><i className="fa-solid fa-xmark"></i></button>
+                            <button onClick={() => setShowCreateModal(false)} className="w-8 h-8 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 text-themeTextSec hover:text-themeText flex items-center justify-center transition-colors"><i className="fa-solid fa-xmark"></i></button>
                         </div>
                         <form onSubmit={handleCreateDrive} className="p-6 flex flex-col gap-4 overflow-y-auto no-scrollbar">
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Company Name</label>
-                                <input type="text" value={driveForm.company_name} onChange={e => setDriveForm({...driveForm, company_name: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" required />
+                                <input type="text" value={driveForm.company_name} onChange={e => setDriveForm({...driveForm, company_name: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" required />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Role Title</label>
-                                    <input type="text" value={driveForm.role_title} onChange={e => setDriveForm({...driveForm, role_title: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" required />
+                                    <input type="text" value={driveForm.role_title} onChange={e => setDriveForm({...driveForm, role_title: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" required />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Drive Date</label>
-                                    <input type="date" value={driveForm.drive_date} onChange={e => setDriveForm({...driveForm, drive_date: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" required />
+                                    <input type="date" value={driveForm.drive_date} onChange={e => setDriveForm({...driveForm, drive_date: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" required />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Eligibility Criteria</label>
-                                <textarea rows="2" value={driveForm.eligibility_criteria} onChange={e => setDriveForm({...driveForm, eligibility_criteria: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none resize-none focus:border-themeAccent transition-colors" placeholder="e.g. Min 7.0 CGPA, No active backlogs" required></textarea>
+                                <textarea rows="2" value={driveForm.eligibility_criteria} onChange={e => setDriveForm({...driveForm, eligibility_criteria: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none resize-none focus:border-themeAccent transition-colors" placeholder="e.g. Min 7.0 CGPA, No active backlogs" required></textarea>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Package Details</label>
-                                <textarea rows="2" value={driveForm.package_details} onChange={e => setDriveForm({...driveForm, package_details: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none resize-none focus:border-themeAccent transition-colors" placeholder="e.g. 12 LPA CTC, 6-month internship + PPO" required></textarea>
+                                <textarea rows="2" value={driveForm.package_details} onChange={e => setDriveForm({...driveForm, package_details: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none resize-none focus:border-themeAccent transition-colors" placeholder="e.g. 12 LPA CTC, 6-month internship + PPO" required></textarea>
                             </div>
                             <button type="submit" disabled={isSubmitting} className="w-full py-4 mt-2 bg-themeAccent hover:bg-themeAccent/90 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 shadow-lg">
                                 {isSubmitting ? "Saving..." : "Publish Drive"}

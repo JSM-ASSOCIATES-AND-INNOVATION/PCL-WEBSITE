@@ -8,6 +8,7 @@
   color: #ffffff;
   overflow: hidden;
   padding-top: 60px;
+  padding-bottom: max(30px, env(safe-area-inset-bottom));
   font-family: 'Outfit', sans-serif;
   z-index: 10;
 }

@@ -1,16 +1,15 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import StaggeredMenu from './MOBILE_MENU/MobileMenu';
 import NoticeBanner from '../UI/NoticeBanner';
+import GlobeMap from '../UI/GlobeMap';
 import { useSite } from '../../CONTEXT/SiteContext';
-import PremiumDropdown from '../UI/PremiumDropdown/PremiumDropdown';
 
-// Convert existing MENU_ITEMS into the strict DropdownMenuType format
 const MENU_ITEMS = [
   {
     label: 'Discover PCL',
-    ariaLabel: 'About Prudentia',
     link: '/about',
     menu: {
       columns: [
@@ -18,6 +17,7 @@ const MENU_ITEMS = [
           title: 'About Us',
           items: [
             { label: 'Leadership & Vision', link: '/about/leadership' },
+            { label: 'Faculty Profiles', link: '/about/faculty' },
             { label: 'Affiliations', link: '/about/affiliations' },
           ],
         },
@@ -26,7 +26,6 @@ const MENU_ITEMS = [
           items: [
             { label: 'Careers with Us', link: '/careers' },
             { label: 'Placement Cell', link: '/careers/placement' },
-            { label: 'Contact Us', link: '/contact' },
           ],
         },
       ]
@@ -34,24 +33,30 @@ const MENU_ITEMS = [
   },
   {
     label: 'Academics',
-    ariaLabel: 'View academics',
     link: '/programs',
     menu: {
       columns: [
         {
           title: 'Programs',
           items: [
-            { label: '5-Year BA. LL.B (Honors)', link: '/programs/ba-llb', badge: 'Popular' },
+            { label: '5-Year BA. LL.B (Honors)', link: '/programs/ba-llb' },
             { label: '5-Year BBA. LL.B (Honors)', link: '/programs/bba-llb' },
             { label: '3-Year LL.B (Standard)', link: '/programs/llb' },
           ],
         },
         {
+          title: 'Admissions',
+          items: [
+            { label: 'Academic Courses', link: '/programs#courses' },
+            { label: 'Admissions & Fees', link: '/programs#admissions' },
+            { label: 'Documents Required', link: '/programs#documents' },
+          ],
+        },
+        {
           title: 'Resources',
           items: [
-            { label: 'Faculty Profiles', link: '/about/faculty' },
-            { label: 'Educational Collaborations', link: '/programs#collaborations' },
             { label: 'Academic Calendar', link: '/programs#calendar' },
+            { label: 'Educational Collaborations', link: '/programs#collaborations' },
           ],
         },
       ]
@@ -59,7 +64,6 @@ const MENU_ITEMS = [
   },
   {
     label: 'Campus Life',
-    ariaLabel: 'Explore campus life',
     link: '/campus',
     menu: {
       columns: [
@@ -82,18 +86,34 @@ const MENU_ITEMS = [
   },
   {
     label: 'News & Media',
-    ariaLabel: 'Campus events and blogs',
     link: '/events',
     menu: {
       columns: [
         {
-          title: null,
+          title: 'Updates',
           items: [
-            { label: 'Campus Events', link: '/events', badge: 'New' },
+            { label: 'Campus Events', link: '/events' },
             { label: 'Blogs', link: '/blogs' },
           ],
         },
       ]
+    }
+  },
+  {
+    label: 'Contact Us',
+    link: '/contact',
+    menu: {
+      columns: [
+        {
+          title: 'Reach Out',
+          items: [
+            { label: 'General Inquiry', link: '/contact' },
+            { label: 'Admissions Office', link: '/contact' },
+            { label: 'Campus Location', link: '/contact' },
+          ],
+        },
+      ],
+      showGlobe: true
     }
   },
 ];
@@ -110,131 +130,220 @@ const MOBILE_MENU_ITEMS = MENU_ITEMS.map(({ menu, ...item }) => ({
 export default function Navbar() {
   const { isAdmissionsOpen } = useSite();
   const location = useLocation();
-  const isHome = location.pathname === '/';
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
     let ticking = false;
+
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 50);
+          const currentScrollY = window.scrollY;
+          
+          setScrolled(currentScrollY > 50);
+          
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            setHidden(false);
+            setActiveDropdown(null); // Close dropdown on scroll
+          } else {
+            setHidden(false); // Show when scrolling up
+          }
+          
+          lastScrollY = currentScrollY;
           ticking = false;
         });
         ticking = true;
       }
     };
+    
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isActive = (link) => {
-    const path = link.split('#')[0];
-    return path !== '/' && location.pathname.startsWith(path);
+  const handleMouseEnter = (label) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setActiveDropdown(label);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
   };
 
   return (
-    <header
-      style={{
-        position: 'fixed',
-        top: scrolled ? '20px' : '0',
-        left: 0,
-        right: 0,
-        zIndex: 50,
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-      <a
-        href="#main-content"
+    <>
+      {/* Dark Overlay for "Covers Moments" */}
+      <AnimatePresence>
+        {activeDropdown && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 bg-[#111111]/80 backdrop-blur-md z-[45]"
+            onMouseEnter={() => setActiveDropdown(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      <header
         style={{
-          position: 'absolute',
-          left: '-9999px',
+          position: 'fixed',
           top: 0,
-          zIndex: 100,
-          background: 'var(--bg-color)',
-          color: 'var(--text-color)',
-          padding: '10px 16px',
-          borderRadius: '6px',
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          transform: hidden ? 'translateY(-100%)' : 'translateY(0)',
+          transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
-        onFocus={(e) => { e.currentTarget.style.left = '20px'; e.currentTarget.style.top = '20px'; }}
-        onBlur={(e) => { e.currentTarget.style.left = '-9999px'; }}
+        className="combined-nav-wrapper bg-[var(--bg-color)] border-b border-[var(--card-border)] transition-colors duration-400 ease-out"
       >
-        Skip to main content
-      </a>
-
-      <div className={`combined-nav-wrapper glass-nav ${scrolled ? 'scrolled' : ''}`}>
-        <div
-          className={`notice-wrapper ${scrolled ? 'hidden' : ''}`}
-          style={{ transition: 'max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease', overflow: 'hidden', maxHeight: scrolled ? '0px' : '100px', opacity: scrolled ? 0 : 1 }}
-        >
-          <NoticeBanner />
-        </div>
-
-        <nav
-          className="navbar"
-          style={{ position: 'relative', background: 'transparent', borderBottom: 'none', height: '60px', transition: 'height 0.3s ease', color: 'var(--text-color)' }}
-        >
-          <div
-            className="container"
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', maxWidth: '1400px', margin: '0 auto', padding: '0 20px' }}
+        <div className="w-full relative z-50 flex flex-col">
+          {/* Top Info Banner - Collapses on scroll */}
+          <div 
+            style={{ transition: 'max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease', overflow: 'hidden', maxHeight: scrolled || activeDropdown ? '0px' : '100px', opacity: scrolled || activeDropdown ? 0 : 1 }}
           >
-            <Link
-              to="/"
-              className="brand-logo"
-              style={{ display: 'flex', alignItems: 'center', gap: '15px', textDecoration: 'none', color: 'inherit', transform: 'scale(1.15)', transformOrigin: 'left center', zIndex: 50 }}
-            >
-              <div className="brand-crest" style={{ transform: 'scale(1.1)' }}></div>
-              <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.1' }}>
-                <span style={{ fontWeight: 700, letterSpacing: '1.5px', fontSize: '1.15rem' }}>PRUDENTIA</span>
-                <span style={{ fontSize: '0.7rem', letterSpacing: '1.8px', opacity: 0.9 }}>COLLEGE OF LAW</span>
-              </div>
-            </Link>
-
-            <div className="hidden lg:flex" style={{ flex: 1, justifyContent: 'center', gap: '16px' }}>
-              {MENU_ITEMS.map((item, idx) => (
-                <PremiumDropdown 
-                  key={idx}
-                  label={item.label}
-                  link={item.link}
-                  menu={item.menu}
-                  isActive={isActive(item.link)}
-                />
-              ))}
-            </div>
-
-            <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <a
-                href="/erp"
-                className="erp-btn hidden md:flex"
-              >
-                ERP Portal
-              </a>
-
-              {isAdmissionsOpen ? (
-                <Link to="/apply" className="hidden sm:flex items-center justify-center bg-[#FFBF00]/10 text-[#FFBF00] border border-[#FFBF00]/50 hover:bg-[#FFBF00] hover:text-[#0a0a0a] px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(255,191,0,0.2)] hover:shadow-[0_0_25px_rgba(255,191,0,0.5)]">
-                  Apply Now
-                </Link>
-              ) : (
-                <Link to="/contact" className="hidden sm:flex items-center justify-center bg-white/5 text-white/50 border border-white/10 hover:bg-white/10 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all">
-                  Admissions Closed
-                </Link>
-              )}
-
-              <div className="mobile-menu-wrapper lg:hidden">
-                <StaggeredMenu
-                  items={MOBILE_MENU_ITEMS}
-                  socialItems={SOCIAL_ITEMS}
-                  displaySocials={true}
-                  displayItemNumbering={false}
-                  position="right"
-                />
-              </div>
-            </div>
+            <NoticeBanner />
           </div>
-        </nav>
-      </div>
-    </header>
+
+          <nav
+            className="navbar relative"
+            style={{ height: "70px" }}
+          >
+            <div className="flex justify-between items-center w-full max-w-[1400px] mx-auto px-6 h-full">
+              
+              {/* Logo */}
+              <Link
+                to="/"
+                className="flex items-center gap-3 text-[var(--text-color)] z-50 hover:opacity-80 transition-opacity"
+              >
+                <div className="brand-crest scale-110"></div>
+                <div className="flex flex-col leading-[1.1]">
+                  <span className="font-bold tracking-[1.5px] text-lg">PRUDENTIA</span>
+                  <span className="text-[0.65rem] tracking-[1.8px] opacity-90">COLLEGE OF LAW</span>
+                </div>
+              </Link>
+
+              {/* Desktop Links */}
+              <div className="hidden lg:flex items-center h-full z-50">
+                {MENU_ITEMS.map((item) => (
+                  <div 
+                    key={item.label}
+                    className="h-full flex items-center"
+                    onMouseEnter={() => handleMouseEnter(item.label)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <Link
+                      to={item.link}
+                      className={`flex items-center gap-1.5 px-4 xl:px-5 h-full text-sm font-medium tracking-wide transition-colors ${
+                        activeDropdown === item.label ? 'text-[var(--primary-color)]' : 'text-[var(--text-color)] hover:text-[var(--primary-color)]'
+                      }`}
+                    >
+                      {item.label}
+                      <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg" className={`transition-transform duration-300 ${activeDropdown === item.label ? '-rotate-180 text-[var(--primary-color)]' : 'text-[var(--text-muted)]'}`}>
+                        <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </Link>
+
+                    {/* TLH-Style Dropdown Panel */}
+                    <AnimatePresence>
+                      {activeDropdown === item.label && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                          className="absolute top-[70px] left-0 w-full bg-[var(--bg-color)] border-t border-[var(--card-border)] shadow-2xl"
+                        >
+                          <div className="max-w-[1400px] mx-auto px-6 py-12 flex gap-16 justify-between">
+                            <div className="flex gap-16">
+                              {item.menu.columns.map((col, idx) => (
+                                <div key={idx} className="flex flex-col gap-6">
+                                  <h4 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] border-b border-[var(--card-border)] pb-2">{col.title}</h4>
+                                  <div className="flex flex-col gap-4">
+                                    {col.items.map((subItem, sIdx) => (
+                                      <Link
+                                        key={sIdx}
+                                        to={subItem.link}
+                                        className="text-base font-medium text-[var(--text-color)] hover:text-[var(--primary-color)] transition-colors flex items-center gap-2 group"
+                                      >
+                                        <span>{subItem.label}</span>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-[var(--primary-color)]" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <line x1="5" y1="12" x2="19" y2="12"></line>
+                                          <polyline points="12 5 19 12 12 19"></polyline>
+                                        </svg>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            {/* Optional Globe Section */}
+                            {item.menu.showGlobe && (
+                              <div className="w-[300px] h-[300px] shrink-0 relative flex items-center justify-center bg-[#1a1818] rounded-2xl overflow-hidden border border-[var(--card-border)]">
+                                <div className="absolute top-4 left-4 z-10">
+                                  <h4 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Hyderabad</h4>
+                                  <p className="text-[var(--text-muted)] text-xs mt-1">Primary Campus</p>
+                                </div>
+                                <div className="w-full h-full scale-[1.2]">
+                                  <GlobeMap />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
+
+              {/* Right Actions */}
+              <div className="flex items-center gap-6 z-50">
+                <a
+                  href="/erp"
+                  className="hidden md:flex text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-color)] transition-colors"
+                >
+                  ERP Portal
+                </a>
+
+                <div className="hidden sm:block">
+                  {isAdmissionsOpen ? (
+                    <Link to="/apply" className="tlh-btn">
+                      <span className="text-xs font-bold uppercase tracking-widest">Apply Now</span>
+                      <svg width="9" height="13" viewBox="0 0 9 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.64453 0.972656L6.97897 6.3071L1.67567 11.6104" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                    </Link>
+                  ) : (
+                    <Link to="/contact" className="tlh-btn">
+                      <span className="text-xs font-bold uppercase tracking-widest">Contact Us</span>
+                      <svg width="9" height="13" viewBox="0 0 9 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.64453 0.972656L6.97897 6.3071L1.67567 11.6104" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                    </Link>
+                  )}
+                </div>
+
+                <div className="lg:hidden">
+                  <StaggeredMenu
+                    items={MOBILE_MENU_ITEMS}
+                    socialItems={SOCIAL_ITEMS}
+                    displaySocials={true}
+                    position="right"
+                  />
+                </div>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </header>
+    </>
   );
 }

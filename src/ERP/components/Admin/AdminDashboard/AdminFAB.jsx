@@ -18,12 +18,12 @@ export default function AdminFAB() {
             {/* Action Menu */}
             <div className={`flex flex-col gap-2 transition-all duration-300 origin-bottom right-0 ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4 pointer-events-none'}`}>
                 {actions.map((action, i) => (
-                    <button 
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} 
                         key={i} 
-                        className="flex items-center gap-3 bg-themePanel border-[length:var(--border-width)] border-themeBorder p-2 pr-4 rounded-full shadow-lg hover:border-themeAccent hover:text-themeAccent transition-all group"
+                        className="flex items-center gap-3 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 p-2 pr-4 rounded-full shadow-lg hover:border-themeAccent hover:text-themeAccent transition-all group"
                         style={{ transitionDelay: `${(actions.length - i) * 30}ms` }}
                     >
-                        <div className="w-8 h-8 rounded-full bg-themeElevated flex items-center justify-center text-themeTextSec group-hover:bg-themeAccent group-hover:text-white transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated flex items-center justify-center text-themeTextSec group-hover:bg-themeAccent group-hover:text-white transition-colors">
                             <i className={`fa-solid ${action.icon} text-xs`}></i>
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-themeText group-hover:text-themeAccent whitespace-nowrap">{action.label}</span>

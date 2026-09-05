@@ -72,11 +72,11 @@ export default function SQLStudio() {
     };
 
     return (
-        <div className="w-full max-w-[1920px] mx-auto animate-fade-in relative selection:bg-emerald-500/30">
+        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-emerald-500/30">
             <div className="flex flex-col gap-6 h-[calc(100vh-8rem)] lg:h-[calc(100vh-10rem)] pb-8">
                 
                 {/* Header */}
-                <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 flex items-center justify-between shrink-0 shadow-sm">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 flex items-center justify-between shrink-0 shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-lg bg-[#1c1c1c] border-[length:var(--border-width)] border-emerald-500/20 flex items-center justify-center shadow-inner relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-8 h-8 bg-emerald-500/20 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
@@ -90,7 +90,7 @@ export default function SQLStudio() {
                             <p className="text-xs text-themeTextSec font-mono mt-0.5">Direct Database Access Layer</p>
                         </div>
                     </div>
-                    <div className="hidden sm:flex items-center gap-6 border-[length:var(--border-width)] border-themeBorder bg-themeElevated px-4 py-2 rounded-lg">
+                    <div className="hidden sm:flex items-center gap-6 border border-white/5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-4 py-2 rounded-lg">
                         <div className="flex flex-col items-end">
                             <span className="text-[9px] font-black text-themeTextSec uppercase tracking-widest">Connection</span>
                             <span className="text-xs font-bold text-emerald-500 flex items-center gap-1.5">

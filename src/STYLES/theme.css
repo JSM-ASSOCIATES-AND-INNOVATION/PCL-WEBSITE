@@ -6,7 +6,7 @@
   
   --primary-color: #FFC107;
   --primary-hover: #FFB300;
-  --primary-glow: rgba(255, 191, 0, 0.4);
+  --primary-glow: transparent;
   --primary-light: #FFD54F;
   
   --card-bg: rgba(10, 10, 10, 0.65);
@@ -37,7 +37,7 @@
     
     --primary-color: #FFC107;
     --primary-hover: #FFB300;
-    --primary-glow: rgba(255, 191, 0, 0.15);
+    --primary-glow: transparent;
     --primary-light: #FFD54F;
     
     --card-bg: rgba(255, 255, 255, 0.85);
@@ -64,7 +64,7 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.6;
@@ -99,25 +99,7 @@ a:hover {
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   font-weight: 700;
-}
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 0;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  line-height: 1.6;
-}
-
-/* Frosted Glass Utilities */
-.glass-panel {
-  background: var(--card-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--card-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  font-family: 'Playfair Display', serif;
 }
 
 .glass-card {
@@ -136,25 +118,30 @@ body {
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.15);
 }
 
-/* Base Styles */
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--primary-hover);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  font-weight: 700;
-}
-
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+/* Theme Reactive Logo */
+[data-theme="dark"] .theme-logo,
+[data-theme="midnight-justice"] .theme-logo,
+[data-theme="emerald-chancery"] .theme-logo,
+[data-theme="crimson-advocate"] .theme-logo,
+[data-theme="imperial-crown"] .theme-logo,
+.dark-mode .theme-logo {
+  filter: invert(1) brightness(2); /* White in dark mode */
+}
+
+[data-theme="light"] .theme-logo,
+.light-mode .theme-logo {
+  filter: none; /* Black in light mode */
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme="dark"]) .theme-logo {
+    filter: none;
+  }
 }

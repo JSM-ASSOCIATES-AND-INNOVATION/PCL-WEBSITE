@@ -1,5 +1,6 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
+import { motion } from 'framer-motion';
 import React, { useState, useEffect } from "react";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
@@ -8,6 +9,7 @@ import { calculateRelativeSemester } from "../../../utils/academicUtils";
 import SecuritySettings from "./SecuritySettings";
 import AppearanceSettings from "./AppearanceSettings";
 import ProfileEditModal from "./ProfileEditModal";
+import QuestionnaireModal from "../../shared/QuestionnaireModal";
 
 export default function Credentials() {
     const { userSession, refreshProfile } = useERP();
@@ -142,10 +144,14 @@ export default function Credentials() {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center justify-center py-40 opacity-50">
-                <i className="fa-solid fa-circle-notch fa-spin text-4xl text-themeAccent mb-4"></i>
-                <span className="text-sm font-black uppercase tracking-widest text-themeText">Retrieving Official Record...</span>
-            </div>
+            <div className="flex flex-col gap-6 w-full animate-pulse opacity-70 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="h-32 bg-white/10 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/20 shadow-xl"></div>
+        <div className="h-32 bg-white/10 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/20 shadow-xl"></div>
+        <div className="h-32 bg-white/10 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/20 shadow-xl"></div>
+    </div>
+    <div className="h-64 bg-white/10 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/20 shadow-xl mt-4"></div>
+</div>
         );
     }
 
@@ -158,12 +164,12 @@ export default function Credentials() {
         <div className="w-full max-w-5xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated relative">
             
             {/* Top Action & Navigation Bar */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-themePanel px-6 py-4 rounded-xl border border-themeBorder shadow-sm gap-4">
-                <div className="flex bg-themeApp p-1.5 rounded-xl border border-themeBorder">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-themePanel border-theme border-themeBorderStrong px-6 py-4 rounded-[2rem] gap-4">
+                <div className="flex bg-transparent p-1.5 rounded-xl border border-black/10 dark:border-white/20">
                     <button
                         onClick={() => setActiveTab("profile")}
                         className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                            activeTab === "profile" ? 'bg-themeElevated text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
+                            activeTab === "profile" ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
                         }`}
                     >
                         <i className="fa-regular fa-user mr-2"></i> HR & Profile
@@ -171,7 +177,7 @@ export default function Credentials() {
                     <button
                         onClick={() => setActiveTab("security")}
                         className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                            activeTab === "security" ? 'bg-themeElevated text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
+                            activeTab === "security" ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
                         }`}
                     >
                         <i className="fa-solid fa-shield-halved mr-2"></i> Security
@@ -179,7 +185,7 @@ export default function Credentials() {
                     <button
                         onClick={() => setActiveTab("appearance")}
                         className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                            activeTab === "appearance" ? 'bg-themeElevated text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
+                            activeTab === "appearance" ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeAccent shadow-sm' : 'text-themeTextSec hover:text-themeText'
                         }`}
                     >
                         <i className="fa-solid fa-palette mr-2"></i> Appearance
@@ -190,14 +196,14 @@ export default function Credentials() {
                     <div className="flex gap-2">
                         <button 
                             onClick={() => setShowEditModal(true)}
-                            className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2"
+                            className="px-4 py-2 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-black/5 dark:border-white/10 flex items-center gap-2"
                         >
                             <i className="fa-solid fa-pen-to-square"></i> Edit
                         </button>
-                        <button className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeBorderStrong flex items-center gap-2">
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="px-4 py-2 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 hover:bg-themeBorder text-themeText text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-black/5 dark:border-white/10 flex items-center gap-2">
                             <i className="fa-solid fa-print"></i> Print
                         </button>
-                        <button className="hidden sm:flex px-4 py-2 bg-themeAccent hover:opacity-90 text-[#0a0a0a] text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeAccent flex items-center gap-2">
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="hidden sm:flex px-4 py-2 bg-themeAccent hover:opacity-90 text-[#0a0a0a] text-[10px] font-black uppercase tracking-widest rounded transition-colors border border-themeAccent flex items-center gap-2">
                             <i className="fa-solid fa-id-badge"></i> Download ID
                         </button>
                     </div>
@@ -235,11 +241,11 @@ export default function Credentials() {
                     )}
 
                     {/* 1. MASTER PROFILE BANNER */}
-                    <div className={`rounded-2xl p-6 lg:p-10 relative overflow-hidden bg-themeElevated border border-themeBorder shadow-sm transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-6 lg:gap-8`}>
+                    <div className={`rounded-2xl p-6 lg:p-10 relative overflow-hidden bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 shadow-sm transition-all duration-300 flex flex-col sm:flex-row items-center sm:items-start gap-6 lg:gap-8`}>
                         
                         {/* Photo & Status */}
                         <div className="relative group shrink-0 flex flex-col items-center">
-                            <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-xl bg-themePanel text-themeAccent border-[4px] border-themeBorderStrong flex items-center justify-center overflow-hidden relative shadow-sm">
+                            <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-xl bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeAccent border-[4px] border-black/5 dark:border-white/10 flex items-center justify-center overflow-hidden relative shadow-sm">
                                 {profileData.profile_picture_url ? (
                                     <img src={profileData.profile_picture_url} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -258,7 +264,7 @@ export default function Credentials() {
                             <h2 className="text-2xl lg:text-3xl font-black text-themeText tracking-tight mb-1">{profileData.full_name}</h2>
                             <p className="text-sm font-bold text-themeTextSec uppercase tracking-widest mb-4">{profileData.department || (userSession?.role === 'student' ? "B.B.A. LL.B. (Hons.)" : "Department")}</p>
                             
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-4 gap-x-2 mt-2 pt-4 border-t border-themeBorderStrong w-full">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-4 gap-x-2 mt-2 pt-4 border-t border-black/5 dark:border-white/10 w-full">
                                 <div>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec opacity-70 mb-0.5">{roleTitle} ID</p>
                                     <p className="text-xs font-bold text-themeText">{profileData.erp_id || "N/A"}</p>
@@ -300,7 +306,7 @@ export default function Credentials() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeText">Preferred Area of Law</label>
-                                        <select className="bg-themePanel border border-themeBorder rounded-lg px-3 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" value={qForm.preferredLawArea} onChange={e => setQForm({...qForm, preferredLawArea: e.target.value})}>
+                                        <select className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-lg px-3 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" value={qForm.preferredLawArea} onChange={e => setQForm({...qForm, preferredLawArea: e.target.value})}>
                                             <option>Litigation</option>
                                             <option>Corporate Law</option>
                                             <option>Criminal Law</option>
@@ -311,7 +317,7 @@ export default function Credentials() {
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeText">Career Goal</label>
-                                        <select className="bg-themePanel border border-themeBorder rounded-lg px-3 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" value={qForm.careerGoal} onChange={e => setQForm({...qForm, careerGoal: e.target.value})}>
+                                        <select className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-lg px-3 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" value={qForm.careerGoal} onChange={e => setQForm({...qForm, careerGoal: e.target.value})}>
                                             <option>Litigation</option>
                                             <option>Corporate</option>
                                             <option>Judiciary</option>
@@ -326,7 +332,7 @@ export default function Credentials() {
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeText block mb-2">Clubs & Activities Interest</label>
                                     <div className="flex flex-wrap gap-2">
                                         {["Moot Court Society", "ADR Cell", "Legal Aid Clinic", "Debate Society", "NSS", "Sports", "Cultural Club"].map(club => (
-                                            <label key={club} className="flex items-center gap-2 bg-themePanel px-3 py-2 rounded border border-themeBorder cursor-pointer hover:border-themeAccent/50">
+                                            <label key={club} className="flex items-center gap-2 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-3 py-2 rounded border border-black/10 dark:border-white/20 cursor-pointer hover:border-themeAccent/50">
                                                 <input type="checkbox" checked={qForm.clubs.includes(club)} onChange={() => handleCheckboxChange('clubs', club)} className="accent-themeAccent" />
                                                 <span className="text-xs font-bold text-themeTextSec">{club}</span>
                                             </label>
@@ -338,7 +344,7 @@ export default function Credentials() {
                                     <label className="text-[10px] font-black uppercase tracking-widest text-themeText block mb-2">Technical Skills</label>
                                     <div className="flex flex-wrap gap-2">
                                         {["Legal Research", "Drafting", "Public Speaking", "MS Office", "AI Tools"].map(skill => (
-                                            <label key={skill} className="flex items-center gap-2 bg-themePanel px-3 py-2 rounded border border-themeBorder cursor-pointer hover:border-themeAccent/50">
+                                            <label key={skill} className="flex items-center gap-2 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-3 py-2 rounded border border-black/10 dark:border-white/20 cursor-pointer hover:border-themeAccent/50">
                                                 <input type="checkbox" checked={qForm.skills.includes(skill)} onChange={() => handleCheckboxChange('skills', skill)} className="accent-themeAccent" />
                                                 <span className="text-xs font-bold text-themeTextSec">{skill}</span>
                                             </label>
@@ -357,8 +363,8 @@ export default function Credentials() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                         
                         {/* Personal Information */}
-                        <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-regular fa-user mr-2 text-themeTextSec"></i> Personal Information</h3>
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-xl border border-black/10 dark:border-white/20 p-6 shadow-sm">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-black/5 dark:border-white/10 pb-2"><i className="fa-regular fa-user mr-2 text-themeTextSec"></i> Personal Information</h3>
                             <div className="flex flex-col gap-4">
                                 <div className="grid grid-cols-2 gap-2">
                                     <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Date of Birth</span>
@@ -380,8 +386,8 @@ export default function Credentials() {
                         </div>
 
                         {/* Contact Information */}
-                        <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-regular fa-address-book mr-2 text-themeTextSec"></i> Contact Information</h3>
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-xl border border-black/10 dark:border-white/20 p-6 shadow-sm">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-black/5 dark:border-white/10 pb-2"><i className="fa-regular fa-address-book mr-2 text-themeTextSec"></i> Contact Information</h3>
                             <div className="flex flex-col gap-4">
                                 <div className="grid grid-cols-[1fr_2fr] gap-2">
                                     <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">College Email</span>
@@ -403,8 +409,8 @@ export default function Credentials() {
                         </div>
 
                         {/* Academic/Professional Information */}
-                        <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-solid fa-briefcase mr-2 text-themeTextSec"></i> {userSession?.role === 'student' ? 'Academic Information' : 'Professional Information'}</h3>
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-xl border border-black/10 dark:border-white/20 p-6 shadow-sm">
+                            <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-black/5 dark:border-white/10 pb-2"><i className="fa-solid fa-briefcase mr-2 text-themeTextSec"></i> {userSession?.role === 'student' ? 'Academic Information' : 'Professional Information'}</h3>
                             <div className="flex flex-col gap-4">
                                 <div className="grid grid-cols-2 gap-2">
                                     <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Department</span>
@@ -427,8 +433,8 @@ export default function Credentials() {
 
                         {/* Emergency Contact & Documents */}
                         <div className="flex flex-col gap-6 lg:gap-8">
-                            <div className="bg-themePanel rounded-xl border border-themeBorder p-6 shadow-sm">
-                                <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-themeBorderStrong pb-2"><i className="fa-solid fa-truck-medical mr-2 text-themeTextSec"></i> Emergency Contact</h3>
+                            <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-xl border border-black/10 dark:border-white/20 p-6 shadow-sm">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-4 border-b border-black/5 dark:border-white/10 pb-2"><i className="fa-solid fa-truck-medical mr-2 text-themeTextSec"></i> Emergency Contact</h3>
                                 <div className="flex flex-col gap-4">
                                     <div className="grid grid-cols-2 gap-2">
                                         <span className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest">Name</span>
@@ -450,7 +456,7 @@ export default function Credentials() {
 
                     {/* 3. DIGITAL ID CARD PREVIEW */}
                     <div className="w-full flex justify-center mt-4">
-                        <div className="w-full max-w-sm bg-themeElevated border-2 border-themeBorder rounded-2xl overflow-hidden shadow-2xl relative flex flex-col group hover:-translate-y-1 transition-transform duration-300">
+                        <div className="w-full max-w-sm bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border-2 border-black/10 dark:border-white/20 rounded-2xl overflow-hidden shadow-2xl relative flex flex-col group hover:-translate-y-1 transition-transform duration-300">
                             
                             {/* ID Card Header */}
                             <div className="bg-[#8b0000] p-4 text-center border-b-4 border-amber-500 relative overflow-hidden">
@@ -459,7 +465,7 @@ export default function Credentials() {
                             </div>
 
                             {/* ID Card Body */}
-                            <div className="p-6 flex flex-col items-center bg-white">
+                            <div className="p-6 flex flex-col items-center bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20">
                                 <div className="w-24 h-24 bg-neutral-200 border-2 border-neutral-300 rounded overflow-hidden mb-4 flex items-center justify-center">
                                     {profileData.profile_picture_url ? (
                                         <img src={profileData.profile_picture_url} alt="ID" className="w-full h-full object-cover" />

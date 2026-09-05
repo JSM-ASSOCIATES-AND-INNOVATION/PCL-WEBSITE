@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useERP } from "../../../context/ErpContext";
 import { supabase } from "../../../lib/supabase/supabaseClient";
+import PageHeader from "../../shared/PageHeader/PageHeader";
 
-export default function Achievements() {
+export default function Achievements({ isEmbedded = false }) {
     const { userSession } = useERP();
 
     // --- STATE ---
@@ -22,6 +23,8 @@ export default function Achievements() {
     const [selectedAchievement, setSelectedAchievement] = useState(null); // Opens Drawer
     const [showAddWizard, setShowAddWizard] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showQrModal, setShowQrModal] = useState(false);
+    const [selectedQrAch, setSelectedQrAch] = useState(null);
 
     // Add Form
     const [formData, setFormData] = useState({
@@ -69,7 +72,7 @@ export default function Achievements() {
         { id: "Awards", color: "text-yellow-500", bg: "bg-yellow-50", icon: "fa-medal" },
         { id: "Leadership", color: "text-slate-800", bg: "bg-slate-100", icon: "fa-users" },
         { id: "Community Service", color: "text-pink-500", bg: "bg-pink-50", icon: "fa-hand-holding-heart" },
-        { id: "Others", color: "text-themeTextSec", bg: "bg-themeElevated", icon: "fa-star" }
+        { id: "Others", color: "text-themeTextSec", bg: "bg-themePanel border-theme border-themeBorderStrong", icon: "fa-star" }
     ];
 
     const getCatTheme = (catName) => CATEGORIES.find(c => c.id === catName) || CATEGORIES[CATEGORIES.length - 1];
@@ -157,16 +160,18 @@ export default function Achievements() {
 
     return (
         // OVERRIDE THEME TO WHITE & CRIMSON (#A11D2A)
-        <div className="w-full min-h-screen bg-themePanel text-themeText font-sans selection:bg-themeAccent selection:text-white pb-32">
+        <div className="w-full min-h-screen bg-themePanel border-theme border-themeBorderStrong text-themeText font-sans selection:bg-themeAccent selection:text-white pb-32">
             
             <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 flex flex-col gap-8">
                 
+                <PageHeader 
+                    icon="fa-solid fa-trophy"
+                    title="Achievements"
+                    subtitle="Track your academic and extracurricular milestones."
+                />
+                
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-themeText">Verified Career Profile</h1>
-                        <p className="text-sm text-themeTextSec font-medium mt-1">Manage and authenticate your professional portfolio.</p>
-                    </div>
+                <div className="flex justify-end w-full">
                     <button 
                         onClick={() => setShowAddWizard(true)}
                         className="bg-themeAccent hover:brightness-110 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-md shadow-themeAccent/20 transition-all flex items-center gap-2 active:scale-95"
@@ -177,28 +182,28 @@ export default function Achievements() {
 
                 {/* Hero Statistics */}
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div className="bg-themePanel border border-themeBorder p-5 rounded-xl shadow-sm flex flex-col">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-5 rounded-xl shadow-sm flex flex-col">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-3xl font-black text-themeText">{stats.verified}</span>
                             <div className="w-8 h-8 rounded-full bg-[#E6F4EA] text-[#137333] flex items-center justify-center"><i className="fa-solid fa-trophy"></i></div>
                         </div>
                         <span className="text-xs font-bold text-themeTextSec uppercase tracking-widest">Verified by Mentors</span>
                     </div>
-                    <div className="bg-themePanel border border-themeBorder p-5 rounded-xl shadow-sm flex flex-col">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-5 rounded-xl shadow-sm flex flex-col">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-3xl font-black text-themeText">{stats.pending}</span>
                             <div className="w-8 h-8 rounded-full bg-[#FEF7E0] text-[#B06000] flex items-center justify-center"><i className="fa-solid fa-hourglass-half"></i></div>
                         </div>
                         <span className="text-xs font-bold text-themeTextSec uppercase tracking-widest">Awaiting Review</span>
                     </div>
-                    <div className="bg-themePanel border border-themeBorder p-5 rounded-xl shadow-sm flex flex-col">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-5 rounded-xl shadow-sm flex flex-col">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-3xl font-black text-themeText">{stats.certificates}</span>
                             <div className="w-8 h-8 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center"><i className="fa-solid fa-file-contract"></i></div>
                         </div>
                         <span className="text-xs font-bold text-themeTextSec uppercase tracking-widest">Certificates</span>
                     </div>
-                    <div className="bg-themePanel border border-themeBorder p-5 rounded-xl shadow-sm flex flex-col">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-5 rounded-xl shadow-sm flex flex-col">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-3xl font-black text-themeText">{stats.awards}</span>
                             <div className="w-8 h-8 rounded-full bg-yellow-50 text-yellow-500 flex items-center justify-center"><i className="fa-solid fa-star"></i></div>
@@ -220,7 +225,7 @@ export default function Achievements() {
                 </div>
 
                 {/* Filters & Controls */}
-                <div className="flex flex-col lg:flex-row gap-4 items-center justify-between bg-themeElevated p-3 rounded-xl border border-themeBorder">
+                <div className="flex flex-col lg:flex-row gap-4 items-center justify-between bg-themePanel border-theme border-themeBorderStrong p-3 rounded-xl border border-black/10 dark:border-white/20">
                     
                     {/* Search */}
                     <div className="relative w-full lg:w-96 shrink-0">
@@ -230,7 +235,7 @@ export default function Achievements() {
                             placeholder="Search achievements..." 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-11 pr-4 py-3 bg-themePanel border border-themeBorderStrong rounded-lg text-sm font-medium focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none transition-shadow"
+                            className="w-full pl-11 pr-4 py-3 bg-themePanel border-theme border-themeBorderStrong rounded-lg text-sm font-medium focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none transition-shadow"
                         />
                     </div>
 
@@ -240,7 +245,7 @@ export default function Achievements() {
                             <button 
                                 key={cat}
                                 onClick={() => setActiveCategory(cat)}
-                                className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-colors border ${activeCategory === cat ? 'bg-themeText text-white border-themeText' : 'bg-themePanel text-themeTextSec opacity-80 border-themeBorderStrong hover:border-gray-400'}`}
+                                className={`shrink-0 px-4 py-2 rounded-full text-xs font-bold transition-colors border ${activeCategory === cat ? 'bg-themeText text-white border-themeText' : 'bg-themePanel border-theme border-themeBorderStrong text-themeTextSec opacity-80 border-black/5 dark:border-white/10 hover:border-gray-400'}`}
                             >
                                 {cat}
                             </button>
@@ -251,7 +256,7 @@ export default function Achievements() {
                     <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
                         <select 
                             value={activeYear} onChange={e => setActiveYear(e.target.value)}
-                            className="bg-themePanel border border-themeBorderStrong rounded-lg px-3 py-2 text-xs font-bold text-themeTextSec opacity-90 outline-none focus:border-themeAccent"
+                            className="bg-themePanel border-theme border-themeBorderStrong rounded-lg px-3 py-2 text-xs font-bold text-themeTextSec opacity-90 outline-none focus:border-themeAccent"
                         >
                             <option>All Years</option>
                             <option>2026</option>
@@ -262,7 +267,7 @@ export default function Achievements() {
                         </select>
                         <select 
                             value={activeStatus} onChange={e => setActiveStatus(e.target.value)}
-                            className="bg-themePanel border border-themeBorderStrong rounded-lg px-3 py-2 text-xs font-bold text-themeTextSec opacity-90 outline-none focus:border-themeAccent"
+                            className="bg-themePanel border-theme border-themeBorderStrong rounded-lg px-3 py-2 text-xs font-bold text-themeTextSec opacity-90 outline-none focus:border-themeAccent"
                         >
                             <option>All Statuses</option>
                             <option>Verified</option>
@@ -270,11 +275,11 @@ export default function Achievements() {
                             <option>Rejected</option>
                         </select>
                         
-                        <div className="flex bg-themePanel border border-themeBorderStrong rounded-lg p-1">
+                        <div className="flex bg-themePanel border-theme border-themeBorderStrong rounded-lg p-1">
                             {['Cards', 'Timeline', 'Table'].map(mode => (
                                 <button 
                                     key={mode} onClick={() => setViewMode(mode)}
-                                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === mode ? 'bg-themeElevated text-themeText' : 'text-themeTextSec hover:text-themeTextSec opacity-80'}`}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${viewMode === mode ? 'bg-themePanel border-theme border-themeBorderStrong text-themeText' : 'text-themeTextSec hover:text-themeTextSec opacity-80'}`}
                                     title={mode}
                                 >
                                     <i className={`fa-solid ${mode === 'Cards' ? 'fa-border-all' : mode === 'Timeline' ? 'fa-stream' : 'fa-table'}`}></i>
@@ -288,7 +293,7 @@ export default function Achievements() {
                 {isLoading ? (
                     <div className="py-32 flex justify-center text-themeTextSec"><i className="fa-solid fa-circle-notch fa-spin text-3xl"></i></div>
                 ) : filteredAchievements.length === 0 ? (
-                    <div className="py-20 text-center bg-themeElevated rounded-xl border border-dashed border-themeBorderStrong">
+                    <div className="py-20 text-center bg-themePanel border-theme border-themeBorderStrong rounded-xl border border-dashed border-black/5 dark:border-white/10">
                         <i className="fa-solid fa-box-open text-4xl text-themeTextSec opacity-50 mb-3"></i>
                         <h3 className="text-lg font-bold text-themeText">No achievements found</h3>
                         <p className="text-sm text-themeTextSec mt-1">Adjust your filters or add a new achievement.</p>
@@ -304,7 +309,7 @@ export default function Achievements() {
                                         <div 
                                             key={item.id} 
                                             onClick={() => setSelectedAchievement(item)}
-                                            className="bg-themePanel border border-themeBorder rounded-2xl p-5 lg:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-themeAccent/30 transition-all cursor-pointer group flex flex-col"
+                                            className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-2xl p-5 lg:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:border-themeAccent/30 transition-all cursor-pointer group flex flex-col"
                                         >
                                             <div className="flex justify-between items-start mb-4">
                                                 <div className="flex flex-col gap-2">
@@ -329,13 +334,13 @@ export default function Achievements() {
                                                 <i className="fa-regular fa-building text-themeTextSec"></i> {item.issuer}
                                             </div>
 
-                                            <div className="mt-auto pt-4 border-t border-themeBorder flex items-center justify-between">
-                                                <span className="text-xs font-bold text-themeTextSec bg-themeElevated px-2 py-1 rounded">
+                                            <div className="mt-auto pt-4 border-t border-black/10 dark:border-white/20 flex items-center justify-between">
+                                                <span className="text-xs font-bold text-themeTextSec bg-themePanel border-theme border-themeBorderStrong px-2 py-1 rounded">
                                                     {item.role || 'Participant'}
                                                 </span>
                                                 <div className="flex gap-2">
-                                                    <button className="text-themeTextSec hover:text-themeAccent transition-colors"><i className="fa-solid fa-pen-to-square"></i></button>
-                                                    <button className="text-themeTextSec hover:text-themeAccent transition-colors"><i className="fa-solid fa-ellipsis"></i></button>
+                                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="text-themeTextSec hover:text-themeAccent transition-colors"><i className="fa-solid fa-pen-to-square"></i></button>
+                                                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="text-themeTextSec hover:text-themeAccent transition-colors"><i className="fa-solid fa-ellipsis"></i></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -346,14 +351,14 @@ export default function Achievements() {
 
                         {/* TIMELINE VIEW */}
                         {viewMode === 'Timeline' && (
-                            <div className="max-w-3xl mx-auto relative pl-6 border-l-2 border-themeBorder flex flex-col gap-8 py-4">
+                            <div className="max-w-3xl mx-auto relative pl-6 border-l-2 border-black/10 dark:border-white/20 flex flex-col gap-8 py-4">
                                 {filteredAchievements.map(item => {
                                     const theme = getCatTheme(item.category);
                                     return (
                                         <div key={item.id} className="relative pl-6 group cursor-pointer" onClick={() => setSelectedAchievement(item)}>
                                             <div className={`absolute -left-[35px] top-1 w-4 h-4 rounded-full border-4 border-white ${theme.bg.replace('bg-', 'bg-').replace('50', '400')} shadow-sm group-hover:scale-125 transition-transform`}></div>
                                             
-                                            <div className="bg-themePanel border border-themeBorder rounded-xl p-5 shadow-sm group-hover:border-themeAccent/30 group-hover:shadow-md transition-all">
+                                            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-xl p-5 shadow-sm group-hover:border-themeAccent/30 group-hover:shadow-md transition-all">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <span className="text-xs font-black text-themeTextSec uppercase tracking-widest">{new Date(item.date_achieved).getFullYear()}</span>
                                                     {getStatusBadge(item.status || (item.is_verified ? 'verified' : 'pending'))}
@@ -371,9 +376,9 @@ export default function Achievements() {
 
                         {/* TABLE VIEW */}
                         {viewMode === 'Table' && (
-                            <div className="bg-themePanel border border-themeBorder rounded-xl overflow-hidden shadow-sm">
+                            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-xl overflow-hidden shadow-sm">
                                 <table className="w-full text-left border-collapse">
-                                    <thead className="bg-themeElevated border-b border-themeBorder">
+                                    <thead className="bg-themePanel border-theme border-themeBorderStrong border-b border-black/10 dark:border-white/20">
                                         <tr>
                                             <th className="px-5 py-4 text-xs font-black text-themeTextSec uppercase tracking-widest">Achievement</th>
                                             <th className="px-5 py-4 text-xs font-black text-themeTextSec uppercase tracking-widest">Category</th>
@@ -385,7 +390,7 @@ export default function Achievements() {
                                         {filteredAchievements.map(item => {
                                             const theme = getCatTheme(item.category);
                                             return (
-                                                <tr key={item.id} onClick={() => setSelectedAchievement(item)} className="border-b border-themeBorder hover:bg-themeElevated cursor-pointer transition-colors group">
+                                                <tr key={item.id} onClick={() => setSelectedAchievement(item)} className="border-b border-black/10 dark:border-white/20 hover:bg-themePanel border-theme border-themeBorderStrong cursor-pointer transition-colors group">
                                                     <td className="px-5 py-4">
                                                         <p className="text-sm font-bold text-themeText group-hover:text-themeAccent transition-colors">{item.title}</p>
                                                         <p className="text-xs font-medium text-themeTextSec">{item.issuer}</p>
@@ -416,11 +421,11 @@ export default function Achievements() {
             {selectedAchievement && (
                 <>
                     <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 transition-opacity" onClick={() => setSelectedAchievement(null)}></div>
-                    <div className="fixed top-0 right-0 h-full w-full max-w-md bg-themePanel shadow-2xl z-50 flex flex-col animate-slide-in-right border-l border-themeBorder">
+                    <div className="fixed top-0 right-0 h-full w-full max-w-md bg-themePanel border-theme border-themeBorderStrong shadow-2xl z-50 flex flex-col animate-slide-in-right border-l border-black/10 dark:border-white/20">
                         {/* Drawer Header */}
-                        <div className="px-6 py-5 border-b border-themeBorder flex justify-between items-center bg-themeElevated">
+                        <div className="px-6 py-5 border-b border-black/10 dark:border-white/20 flex justify-between items-center bg-themePanel border-theme border-themeBorderStrong">
                             <h2 className="text-lg font-bold text-themeText">Achievement Record</h2>
-                            <button onClick={() => setSelectedAchievement(null)} className="w-8 h-8 rounded-full bg-themePanel border border-themeBorder flex items-center justify-center text-themeTextSec hover:text-black hover:shadow transition-all">
+                            <button onClick={() => setSelectedAchievement(null)} className="w-8 h-8 rounded-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] flex items-center justify-center text-themeTextSec hover:text-themeText hover:shadow transition-all">
                                 <i className="fa-solid fa-xmark"></i>
                             </button>
                         </div>
@@ -433,7 +438,7 @@ export default function Achievements() {
                                 <h3 className="text-2xl font-black text-themeText leading-tight">{selectedAchievement.title}</h3>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 bg-themeElevated p-4 rounded-xl border border-themeBorder">
+                            <div className="grid grid-cols-2 gap-4 bg-themePanel border-theme border-themeBorderStrong p-4 rounded-xl border border-black/10 dark:border-white/20">
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">Organizer</p>
                                     <p className="text-sm font-bold text-themeText">{selectedAchievement.issuer}</p>
@@ -454,7 +459,7 @@ export default function Achievements() {
 
                             <div>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Verification Status</p>
-                                <div className="flex items-center justify-between border border-themeBorder rounded-lg p-3 bg-themePanel">
+                                <div className="flex items-center justify-between border border-black/10 dark:border-white/20 rounded-lg p-3 bg-themePanel border-theme border-themeBorderStrong">
                                     {getStatusBadge(selectedAchievement.status || (selectedAchievement.is_verified ? 'verified' : 'pending'))}
                                 </div>
                                 {selectedAchievement.mentor_remarks && (
@@ -466,10 +471,10 @@ export default function Achievements() {
                                 )}
                             </div>
 
-                            <div className="border-t border-themeBorder pt-6">
+                            <div className="border-t border-black/10 dark:border-white/20 pt-6">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-3">Digital Locker (Proofs)</p>
                                 {selectedAchievement.proof_link ? (
-                                    <a href={selectedAchievement.proof_link} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 border border-themeBorder rounded-lg hover:bg-themeElevated hover:border-themeAccent/30 transition-all group">
+                                    <a href={selectedAchievement.proof_link} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 border border-black/10 dark:border-white/20 rounded-lg hover:bg-themePanel border-theme border-themeBorderStrong hover:border-themeAccent/30 transition-all group">
                                         <div className="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center text-lg">
                                             <i className="fa-solid fa-file-pdf"></i>
                                         </div>
@@ -486,23 +491,23 @@ export default function Achievements() {
                         </div>
 
                         {/* Drawer Footer Actions */}
-                        <div className="p-6 border-t border-themeBorder bg-themeElevated flex flex-col gap-3">
-                            <div className="flex items-center justify-between p-4 bg-themePanel border border-themeBorder rounded-xl mb-2">
+                        <div className="p-6 border-t border-black/10 dark:border-white/20 bg-themePanel border-theme border-themeBorderStrong flex flex-col gap-3">
+                            <div className="flex items-center justify-between p-4 bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-xl mb-2">
                                 <div>
                                     <p className="text-sm font-bold text-themeText">Include in CV</p>
                                     <p className="text-xs text-themeTextSec">Show this on your generated profile</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" className="sr-only peer" checked={selectedAchievement.include_in_cv !== false} onChange={() => toggleCV(selectedAchievement)} />
-                                    <div className="w-11 h-6 bg-themeBorder peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-themePanel after:border-themeBorderStrong after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-themeAccent"></div>
+                                    <div className="w-11 h-6 bg-themeBorder peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-themePanel border-theme border-themeBorderStrong after:border-black/5 dark:border-white/10 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-themeAccent"></div>
                                 </label>
                             </div>
 
-                            <button className="w-full bg-themeText hover:bg-black text-white font-bold text-sm py-3.5 rounded-xl shadow-md transition-all flex justify-center items-center gap-2">
-                                <i className="fa-solid fa-download"></i> Download Certificate
+                            <button onClick={() => handlePrintCertificate(selectedAchievement)} className="w-full bg-themeText hover:bg-black text-white font-bold text-sm py-3.5 rounded-xl shadow-md transition-all flex justify-center items-center gap-2">
+                                <i className="fa-solid fa-print"></i> Print Certificate
                             </button>
-                            <button className="w-full bg-themePanel hover:bg-themeElevated text-themeText border border-themeBorder font-bold text-sm py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
-                                <i className="fa-solid fa-qrcode"></i> Generate QR Code
+                            <button onClick={() => { setSelectedQrAch(selectedAchievement); setShowQrModal(true); }} className="w-full bg-themePanel border-theme border-themeBorderStrong hover:bg-themePanel border-theme border-themeBorderStrong text-themeText border border-black/10 dark:border-white/20 font-bold text-sm py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
+                                <i className="fa-solid fa-qrcode"></i> Generate Verification QR
                             </button>
                         </div>
                     </div>
@@ -512,10 +517,10 @@ export default function Achievements() {
             {/* --- ADD ACHIEVEMENT WIZARD --- */}
             {showAddWizard && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-                    <div className="bg-themePanel w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                        <div className="px-6 py-5 border-b border-themeBorder flex justify-between items-center bg-themeElevated">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                        <div className="px-6 py-5 border-b border-black/10 dark:border-white/20 flex justify-between items-center bg-themePanel border-theme border-themeBorderStrong">
                             <h2 className="text-xl font-bold text-themeText">Add Achievement</h2>
-                            <button onClick={() => setShowAddWizard(false)} className="text-themeTextSec hover:text-black transition-colors"><i className="fa-solid fa-xmark text-xl"></i></button>
+                            <button onClick={() => setShowAddWizard(false)} className="text-themeTextSec hover:text-themeText transition-colors"><i className="fa-solid fa-xmark text-xl"></i></button>
                         </div>
                         
                         <form onSubmit={handleAddSubmit} className="flex-1 overflow-y-auto p-6 lg:p-8 flex flex-col gap-6">
@@ -524,7 +529,7 @@ export default function Achievements() {
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Category</label>
                                 <select 
                                     required value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}
-                                    className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
+                                    className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
                                 >
                                     {CATEGORIES.filter(c=>c.id!=='All').map(c => <option key={c.id} value={c.id}>{c.id}</option>)}
                                 </select>
@@ -535,7 +540,7 @@ export default function Achievements() {
                                 <input 
                                     required type="text" placeholder="e.g. National Moot Court Competition"
                                     value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})}
-                                    className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
+                                    className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
                                 />
                             </div>
 
@@ -545,7 +550,7 @@ export default function Achievements() {
                                     <input 
                                         required type="text" placeholder="e.g. NLSIU Bangalore"
                                         value={formData.issuer} onChange={e => setFormData({...formData, issuer: e.target.value})}
-                                        className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
+                                        className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
                                     />
                                 </div>
                                 <div>
@@ -553,7 +558,7 @@ export default function Achievements() {
                                     <input 
                                         required type="date"
                                         value={formData.date_achieved} onChange={e => setFormData({...formData, date_achieved: e.target.value})}
-                                        className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
+                                        className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
                                     />
                                 </div>
                             </div>
@@ -563,7 +568,7 @@ export default function Achievements() {
                                 <input 
                                     type="text" placeholder="e.g. Speaker, Semi-Finalist"
                                     value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}
-                                    className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
+                                    className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
                                 />
                             </div>
 
@@ -572,7 +577,7 @@ export default function Achievements() {
                                 <input 
                                     type="url" placeholder="Link to certificate or proof document"
                                     value={formData.proof_link} onChange={e => setFormData({...formData, proof_link: e.target.value})}
-                                    className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
+                                    className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none"
                                 />
                             </div>
 
@@ -581,18 +586,49 @@ export default function Achievements() {
                                 <textarea 
                                     rows="3" placeholder="Additional details..."
                                     value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})}
-                                    className="w-full bg-themePanel border border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none resize-none"
+                                    className="w-full bg-themePanel border-theme border-themeBorderStrong rounded-lg px-4 py-3 text-sm font-bold text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none resize-none"
                                 ></textarea>
                             </div>
 
                         </form>
 
-                        <div className="p-6 border-t border-themeBorder bg-themeElevated flex justify-end gap-3">
+                        <div className="p-6 border-t border-black/10 dark:border-white/20 bg-themePanel border-theme border-themeBorderStrong flex justify-end gap-3">
                             <button onClick={() => setShowAddWizard(false)} className="px-6 py-3 rounded-lg text-sm font-bold text-themeTextSec opacity-80 hover:bg-themeBorder transition-colors">Cancel</button>
                             <button onClick={handleAddSubmit} disabled={isSubmitting} className="px-6 py-3 rounded-lg text-sm font-bold bg-themeAccent text-white hover:brightness-110 shadow-md shadow-themeAccent/20 transition-all flex items-center gap-2">
                                 {isSubmitting ? <i className="fa-solid fa-spinner fa-spin"></i> : "Submit to Mentor"}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+
+            {/* QR Verification Modal */}
+            {showQrModal && selectedQrAch && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-themeBg border border-black/10 dark:border-white/20 rounded-3xl w-full max-w-sm p-8 shadow-2xl relative flex flex-col items-center text-center">
+                        <button onClick={() => setShowQrModal(false)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-themePanel border-theme border-themeBorderStrong hover:bg-themeBorder text-themeTextSec hover:text-themeText transition-colors">
+                            <i className="fa-solid fa-xmark"></i>
+                        </button>
+                        
+                        <div className="w-16 h-16 rounded-full bg-themeAccent/10 text-themeAccent flex items-center justify-center text-3xl mb-4">
+                            <i className="fa-solid fa-shield-check"></i>
+                        </div>
+                        
+                        <h3 className="text-xl font-black uppercase tracking-widest text-themeText mb-1">Verification QR</h3>
+                        <p className="text-xs text-themeTextSec font-semibold mb-8">Scan to verify this achievement</p>
+                        
+                        <div className="bg-themePanel border-theme border-themeBorderStrong p-4 rounded-2xl shadow-inner mb-6">
+                            <img 
+                                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`PCL-VERIFY:${selectedQrAch.id}|STUDENT:${userSession?.id}`)}`} 
+                                alt="Verification QR Code" 
+                                className="w-48 h-48 object-contain"
+                            />
+                        </div>
+                        
+                        <p className="text-[10px] text-themeTextSec px-4">
+                            This QR code contains cryptographic verification data linked to the Prudentia College of Law blockchain registry.
+                        </p>
                     </div>
                 </div>
             )}

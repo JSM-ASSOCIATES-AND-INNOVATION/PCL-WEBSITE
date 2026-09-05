@@ -9,7 +9,7 @@ import FacultyAttendance from "../FacultyAttendance/FacultyAttendance";
 import FacultyAssignments from "../FacultyAssignments/FacultyAssignments";
 import ClassRoster from "../ClassRoster/ClassRoster";
 
-export default function FacultyCourses({ setActiveTab }) {
+export default function FacultyCourses({ setActiveTab }, isEmbedded = false) {
     const { userSession } = useERP();
     
     const [courses, setCourses] = useState(() => {
@@ -180,22 +180,24 @@ export default function FacultyCourses({ setActiveTab }) {
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 animate-fade-in selection:bg-themeElevated">
                 
                 {/* HEADER */}
-                <div className={`rounded-themePanel p-6 lg:p-8 relative overflow-hidden bg-themeAccent text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-themeElevated`}>
-                    <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
-
-                    <div className="relative z-10 w-full lg:w-auto flex-1">
-                        <div className="flex items-center gap-4 mb-3 lg:mb-2">
-                            <div className="w-14 h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-themePanel flex items-center justify-center shrink-0">
-                                <i className="fa-brands fa-google-drive text-white text-2xl lg:text-3xl drop-shadow-sm"></i>
-                            </div>
-                            <div>
-                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm`}>My Courses</h1>
-                                <p className={`text-white/80 text-xs lg:text-sm font-medium`}>Unified command center for your subjects, attendance, assignments, marks, and resources.</p>
-                            </div>
+                {!isEmbedded && (
+                <div 
+                    className="w-full relative overflow-hidden rounded-[2.5rem] p-8 lg:p-10 xl:p-12 border border-black/10 dark:border-white/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.2)] bg-black/5 dark:bg-white/10 backdrop-blur-[80px] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 xl:gap-10 shrink-0 mb-6 lg:mb-8"
+                >
+                    <div className="relative z-10 flex-1">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-themeTextSec text-[10px] font-black uppercase tracking-widest mb-4 xl:mb-6 shadow-inner">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399] animate-pulse"></span> 
+                            Faculty Hub
                         </div>
+                        <h1 className={`${theme.text.heading} text-3xl sm:text-4xl lg:text-5xl xl:text-6xl tracking-tight mb-3 xl:mb-4 leading-none drop-shadow-sm dark:drop-shadow-md text-white`}>
+                            My Courses
+                        </h1>
+                        <p className="text-white/80 text-xs lg:text-sm font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                            Manage your course materials and syllabus
+                        </p>
                     </div>
                 </div>
+            )}
 
                 {courses.length === 0 ? (
                     <div className="py-24 text-center border-2 border-dashed border-themeBorder rounded-2xl bg-themePanel/30 px-4">

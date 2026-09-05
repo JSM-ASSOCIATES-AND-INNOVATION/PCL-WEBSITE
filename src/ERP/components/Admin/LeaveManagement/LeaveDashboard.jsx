@@ -92,7 +92,7 @@ export default function LeaveDashboard({ setActiveTab }) {
     ];
 
     const StatCard = ({ label, value, icon, color }) => (
-        <div className={`bg-themeElevated border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-6 flex items-center justify-between transition-all hover:border-${color}-500 hover:shadow-[0_0_20px_rgba(var(--color-${color}-500),0.15)] group relative overflow-hidden`}>
+        <div className={`bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-themePanel p-5 lg:p-6 flex items-center justify-between transition-all hover:border-${color}-500 hover:shadow-[0_0_20px_rgba(var(--color-${color}-500),0.15)] group relative overflow-hidden`}>
             {/* Background Glow on Hover */}
             <div className={`absolute inset-0 bg-gradient-to-br from-${color}-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}></div>
             
@@ -125,7 +125,7 @@ export default function LeaveDashboard({ setActiveTab }) {
                         <button
                             key={idx}
                             onClick={() => setActiveTab(action.tab)}
-                            className={`bg-themeElevated border-[length:var(--border-width)] border-themeBorder rounded-xl p-4 lg:p-5 flex flex-col items-center justify-center gap-2 lg:gap-3 hover:border-${action.color}-500/50 hover:bg-${action.color}-500/10 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group`}
+                            className={`bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-xl p-4 lg:p-5 flex flex-col items-center justify-center gap-2 lg:gap-3 hover:border-${action.color}-500/50 hover:bg-${action.color}-500/10 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group`}
                         >
                             <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-${action.color}-500/10 flex items-center justify-center text-${action.color}-500 group-hover:scale-110 transition-transform`}>
                                 <i className={`fa-solid ${action.icon} text-lg lg:text-xl`}></i>

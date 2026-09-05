@@ -34,14 +34,14 @@ function CarouselItem({ item, index, itemWidth, round, trackItemOffset, x, trans
         <>
           <div className={`carousel-item-header ${round ? 'round' : ''}`} style={{ padding: 0, height: '110px', overflow: 'hidden' }}>
             {item.image ? (
-              <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img decoding="async" loading="lazy" src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <span className="carousel-icon-container">{item.icon}</span>
             )}
           </div>
           <div className="carousel-item-content">
             <h3 style={{ margin: '0 0 5px 0', fontSize: '0.85rem', color: 'var(--primary-color)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>{item.degree}</h3>
-            <div className="carousel-item-title" style={{ fontFamily: '"Playfair Display", serif', fontSize: '1.3rem', letterSpacing: '0' }}>{item.title}</div>
+            <div className="carousel-item-title">{item.title}</div>
             <p className="carousel-item-description" style={{ color: 'var(--text-muted)' }}>{item.description}</p>
             {item.link && (
               <Link to={item.link} className="carousel-explore-btn" style={{ marginTop: 'auto', paddingTop: '10px' }}>

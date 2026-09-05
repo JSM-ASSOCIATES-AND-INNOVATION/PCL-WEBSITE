@@ -61,7 +61,7 @@ export default function FacilityDetail() {
       <div className={`${styles.pageWrapper} min-h-screen flex flex-col items-center justify-center bg-[var(--bg-color)] text-[var(--text-color)]`}>
         <div className={styles.ambientBackground} />
         <AlertCircle className="w-16 h-16 text-red-500 mb-6 relative z-10" />
-        <h2 className="text-4xl mb-4 font-bold relative z-10" style={{ fontFamily: "'Playfair Display', serif" }}>Facility not found</h2>
+        <h2 className="text-4xl mb-4 font-bold relative z-10">Facility not found</h2>
         <button
           onClick={() => navigate('/campus/facilities')}
           className="relative z-10 hover:underline uppercase tracking-widest text-sm text-[var(--primary-color)] font-bold mt-4"
@@ -98,7 +98,7 @@ export default function FacilityDetail() {
           <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] border-b border-[var(--card-border)] overflow-hidden">
             {imageSrc ? (
               <>
-                <img src={imageSrc} alt={facility.title} className="absolute inset-0 w-full h-full object-cover opacity-70 scale-105" />
+                <img decoding="async" loading="lazy" src={imageSrc} alt={facility.title} className="absolute inset-0 w-full h-full object-cover opacity-70 scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-[var(--bg-color)]/60 to-transparent opacity-90" />
               </>
             ) : (
@@ -132,7 +132,7 @@ export default function FacilityDetail() {
               </span>
               <h1
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] drop-shadow-2xl max-w-4xl leading-tight"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+               
               >
                 {facility.title}
               </h1>

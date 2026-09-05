@@ -13,7 +13,7 @@ export default function AdminOverview() {
         fees: Array(12).fill(0),
         admissions: Array(12).fill(0),
         support: Array(12).fill(0),
-        growth: Array(12).fill(0)
+        traffic: Array(12).fill(0)
     });
 
     const [insights, setInsights] = useState([
@@ -35,7 +35,7 @@ export default function AdminOverview() {
         const fetchData = async () => {
             try {
                 const { data, error } = await supabase.rpc('get_admin_dashboard_stats');
-                if (error) throw error;
+                if (error) { console.warn("Dashboard stats error (RPC missing):", error.message); if (isMounted) setLoading(false); return; }
                 if (!isMounted) return;
 
                 if (data) {
@@ -120,17 +120,17 @@ export default function AdminOverview() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Left: Institution Overview (Graph) */}
-            <div className={`col-span-1 lg:col-span-8 bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder flex flex-col p-5 shadow-sm`}>
+            <div className={`col-span-1 lg:col-span-8 bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 flex flex-col p-5 shadow-sm`}>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <h2 className={`${theme.text.heading} text-lg text-themeText tracking-tight shrink-0`}>Institution Overview</h2>
                     
                     {/* Graph Tabs */}
-                    <div className="flex flex-wrap bg-themeElevated p-1 rounded-themeBtn border-[length:var(--border-width)] border-themeBorderStrong w-full md:w-auto gap-1">
+                    <div className="flex flex-wrap bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-1 rounded-themeBtn border border-black/5 dark:border-white/10 w-full md:w-auto gap-1">
                         {tabs.map((tab) => (
                             <button 
                                 key={tab.id}
                                 onClick={() => setActiveGraph(tab.id)}
-                                className={`px-4 py-2 md:py-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest rounded-md transition-all shrink-0 ${activeGraph === tab.id ? 'bg-themePanel text-themeAccent shadow-sm border border-themeBorder/50' : 'text-themeTextSec hover:text-themeText border border-transparent'}`}
+                                className={`px-4 py-2 md:py-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-widest rounded-md transition-all shrink-0 ${activeGraph === tab.id ? 'bg-themePanel text-themeAccent shadow-sm border border-black/5 dark:border-white/10' : 'text-themeTextSec hover:text-themeText border border-transparent'}`}
                             >
                                 {tab.label}
                             </button>
@@ -145,7 +145,7 @@ export default function AdminOverview() {
                             <i className="fa-solid fa-circle-notch fa-spin text-themeTextSec text-2xl"></i>
                         </div>
                     ) : (
-                        graphData[activeGraph].map((h, i) => {
+                        (graphData[activeGraph] || []).map((h, i) => {
                             const activeTab = tabs.find(t => t.id === activeGraph);
                             // Guarantee at least 2% height if data exists so it's visible, else 0.
                             const heightPercentage = h > 0 ? Math.max(h, 2) : 0;
@@ -161,7 +161,7 @@ export default function AdminOverview() {
                     )}
                 </div>
                 
-                <div className="flex justify-between mt-4 text-[8px] md:text-[9px] font-bold text-themeTextSec uppercase tracking-widest border-t-[length:var(--border-width)] border-themeBorder pt-4">
+                <div className="flex justify-between mt-4 text-[8px] md:text-[9px] font-bold text-themeTextSec uppercase tracking-widest border-t-[length:var(--border-width)] border-white/5 pt-4">
                     {months.map(m => <span key={m} className="flex-1 text-center">{m}</span>)}
                 </div>
             </div>
@@ -170,7 +170,7 @@ export default function AdminOverview() {
             <div className="col-span-1 lg:col-span-4 flex flex-col gap-6">
                 
                 {/* Quick Insights */}
-                <div className={`bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-5 flex flex-col min-h-[160px] relative overflow-hidden shadow-sm`}>
+                <div className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 p-5 flex flex-col min-h-[160px] relative overflow-hidden shadow-sm`}>
                     <h2 className={`${theme.text.heading} text-sm text-themeText tracking-tight mb-4 flex justify-between items-center`}>
                         <span>Quick Insights</span>
                         {loading ? <i className="fa-solid fa-spinner fa-spin text-themeTextSec text-xs"></i> : <i className="fa-solid fa-lightbulb text-themeAccent"></i>}
@@ -197,16 +197,16 @@ export default function AdminOverview() {
                 </div>
 
                 {/* Pending Tasks */}
-                <div className={`bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-5 flex-1 flex flex-col shadow-sm`}>
+                <div className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 p-5 flex-1 flex flex-col shadow-sm`}>
                     <h2 className={`${theme.text.heading} text-sm text-themeText tracking-tight mb-4 flex justify-between`}>
                         <span>Action Required</span>
-                        <span className="text-[10px] font-bold text-themeTextSec border-[length:var(--border-width)] border-themeBorder px-2 py-0.5 rounded">Queues</span>
+                        <span className="text-[10px] font-bold text-themeTextSec border border-white/5 px-2 py-0.5 rounded">Queues</span>
                     </h2>
                     <div className="flex flex-col gap-3 flex-1 overflow-y-auto custom-scrollbar pr-1">
                         
-                        <button className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder hover:border-amber-500/50 transition-colors text-left group">
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 hover:border-amber-500/50 transition-colors text-left group">
                             <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded ${tasks.leaves > 0 ? 'bg-amber-500/10 text-amber-500' : 'bg-themePanel text-themeTextSec border-[length:var(--border-width)] border-themeBorder'} flex items-center justify-center shrink-0`}>
+                                <div className={`w-8 h-8 rounded ${tasks.leaves > 0 ? 'bg-amber-500/10 text-amber-500' : 'bg-themeApp text-themeTextSec border border-white/5'} flex items-center justify-center shrink-0`}>
                                     <span className="font-black text-xs">{tasks.leaves}</span>
                                 </div>
                                 <span className="text-xs font-bold text-themeText">Leave Requests</span>
@@ -214,9 +214,9 @@ export default function AdminOverview() {
                             <span className="text-[10px] font-bold text-themeAccent uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">Review <i className="fa-solid fa-arrow-right"></i></span>
                         </button>
                         
-                        <button className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder hover:border-blue-500/50 transition-colors text-left group">
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 hover:border-blue-500/50 transition-colors text-left group">
                             <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded ${tasks.admissions > 0 ? 'bg-blue-500/10 text-blue-500' : 'bg-themePanel text-themeTextSec border-[length:var(--border-width)] border-themeBorder'} flex items-center justify-center shrink-0`}>
+                                <div className={`w-8 h-8 rounded ${tasks.admissions > 0 ? 'bg-blue-500/10 text-blue-500' : 'bg-themeApp text-themeTextSec border border-white/5'} flex items-center justify-center shrink-0`}>
                                     <span className="font-black text-xs">{tasks.admissions}</span>
                                 </div>
                                 <span className="text-xs font-bold text-themeText">Admissions</span>
@@ -224,9 +224,9 @@ export default function AdminOverview() {
                             <span className="text-[10px] font-bold text-themeAccent uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">Review <i className="fa-solid fa-arrow-right"></i></span>
                         </button>
                         
-                        <button className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder hover:border-rose-500/50 transition-colors text-left group">
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 hover:border-rose-500/50 transition-colors text-left group">
                             <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded ${tasks.tickets > 0 ? 'bg-rose-500/10 text-rose-500' : 'bg-themePanel text-themeTextSec border-[length:var(--border-width)] border-themeBorder'} flex items-center justify-center shrink-0`}>
+                                <div className={`w-8 h-8 rounded ${tasks.tickets > 0 ? 'bg-rose-500/10 text-rose-500' : 'bg-themeApp text-themeTextSec border border-white/5'} flex items-center justify-center shrink-0`}>
                                     <span className="font-black text-xs">{tasks.tickets}</span>
                                 </div>
                                 <span className="text-xs font-bold text-themeText">Support Tickets</span>
@@ -234,9 +234,9 @@ export default function AdminOverview() {
                             <span className="text-[10px] font-bold text-themeAccent uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">Review <i className="fa-solid fa-arrow-right"></i></span>
                         </button>
                         
-                        <button className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder hover:border-indigo-500/50 transition-colors text-left group">
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full flex items-center justify-between p-3 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 hover:border-indigo-500/50 transition-colors text-left group">
                             <div className="flex items-center gap-3">
-                                <div className={`w-8 h-8 rounded ${tasks.docs > 0 ? 'bg-indigo-500/10 text-indigo-500' : 'bg-themePanel text-themeTextSec border-[length:var(--border-width)] border-themeBorder'} flex items-center justify-center shrink-0`}>
+                                <div className={`w-8 h-8 rounded ${tasks.docs > 0 ? 'bg-indigo-500/10 text-indigo-500' : 'bg-themeApp text-themeTextSec border border-white/5'} flex items-center justify-center shrink-0`}>
                                     <span className="font-black text-xs">{tasks.docs}</span>
                                 </div>
                                 <span className="text-xs font-bold text-themeText">Student Docs</span>

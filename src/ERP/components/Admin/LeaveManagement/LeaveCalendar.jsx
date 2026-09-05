@@ -51,7 +51,7 @@ export default function LeaveCalendar() {
         
         // Blank days before 1st
         for (let i = 0; i < firstDay; i++) {
-            days.push(<div key={`blank-${i}`} className="min-h-[100px] border-[length:var(--border-width)] border-themeBorder/50 bg-themeElevated/30 rounded-xl"></div>);
+            days.push(<div key={`blank-${i}`} className="min-h-[100px] border border-white/5/50 bg-themeElevated/30 rounded-xl"></div>);
         }
 
         // Days of month
@@ -67,7 +67,7 @@ export default function LeaveCalendar() {
 
             days.push(
                 <div key={day} className={`min-h-[80px] lg:min-h-[100px] border-[length:var(--border-width)] rounded-xl p-1.5 lg:p-2 transition-all relative flex flex-col gap-1 overflow-hidden group
-                    ${isToday ? 'border-indigo-500 bg-indigo-500/5 shadow-[inset_0_0_10px_rgba(99,102,241,0.1)]' : 'border-themeBorder bg-themePanel hover:bg-themeElevated hover:border-themeBorderStrong'}
+                    ${isToday ? 'border-indigo-500 bg-indigo-500/5 shadow-[inset_0_0_10px_rgba(99,102,241,0.1)]' : 'border-white/5 bg-themePanel/85 backdrop-blur-2xl shadow-premium hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:border-black/5 dark:border-white/10'}
                 `}>
                     <div className="flex justify-between items-center mb-0.5 lg:mb-1">
                         <span className={`text-[10px] lg:text-xs font-black ${isToday ? 'text-indigo-500' : 'text-themeTextSec'} group-hover:text-themeText transition-colors w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-indigo-500/10' : ''}`}>{day}</span>
@@ -90,13 +90,13 @@ export default function LeaveCalendar() {
     return (
         <div className="flex flex-col gap-6 animate-fade-in">
             
-            <div className="flex flex-col md:flex-row items-center justify-between bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-4 lg:p-5 gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-4 lg:p-5 gap-4">
                 <div className="flex items-center gap-3 lg:gap-4 w-full md:w-auto justify-between md:justify-start">
-                    <button onClick={prevMonth} className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong flex items-center justify-center text-themeText hover:text-indigo-500 transition-colors">
+                    <button onClick={prevMonth} className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5Strong flex items-center justify-center text-themeText hover:text-indigo-500 transition-colors">
                         <i className="fa-solid fa-chevron-left"></i>
                     </button>
                     <h2 className={`${theme.text.heading} text-lg lg:text-xl text-themeText min-w-[140px] lg:w-48 text-center`}>{monthName} {year}</h2>
-                    <button onClick={nextMonth} className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong flex items-center justify-center text-themeText hover:text-indigo-500 transition-colors">
+                    <button onClick={nextMonth} className="w-8 h-8 lg:w-10 lg:h-10 rounded-xl bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5Strong flex items-center justify-center text-themeText hover:text-indigo-500 transition-colors">
                         <i className="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>

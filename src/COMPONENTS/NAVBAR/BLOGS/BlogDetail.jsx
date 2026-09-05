@@ -1,10 +1,9 @@
-/* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../../../LIB/supabaseClient';
 import { ArrowLeft, User, Calendar, Tag, Briefcase } from 'lucide-react';
-import fallbackImg from '../../../ASSETS/LOGOS/pcl_logo.svg';
+import ReactMarkdown from 'react-markdown';
 import styles from '../PROGRAMS/Programs.module.css';
 
 export default function BlogDetail() {
@@ -53,7 +52,7 @@ export default function BlogDetail() {
     return (
       <div className={`${styles.pageWrapper} flex flex-col items-center justify-center text-center px-6`}>
         <div className={styles.ambientBackground} />
-        <h2 className="text-4xl md:text-6xl font-bold mb-6 text-[var(--text-color)] relative z-10" style={{ fontFamily: "'Playfair Display', serif" }}>Post Not Found</h2>
+        <h2 className="text-4xl md:text-6xl font-bold mb-6 text-[var(--text-color)] relative z-10">Post Not Found</h2>
         <Link to="/blogs" className="relative z-10 text-[var(--primary-color)] font-bold uppercase tracking-widest text-sm hover:underline transition-all">
           Return to Blogs
         </Link>
@@ -85,7 +84,7 @@ export default function BlogDetail() {
             transition={{ duration: 0.8 }}
             className="w-full aspect-[21/9] md:aspect-[3/1] rounded-[32px] overflow-hidden relative border border-[var(--card-border)] mb-12 shadow-[0_20px_60px_rgba(0,0,0,0.4)] z-10"
           >
-            <img 
+            <img decoding="async" loading="lazy" 
               src={blog.image_url} 
               alt={blog.title} 
               className="absolute inset-0 w-full h-full object-cover opacity-90"
@@ -108,19 +107,21 @@ export default function BlogDetail() {
                   {blog.category || 'Announcement'}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] leading-[1.1] mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] leading-[1.1] mb-6">
                 {blog.title}
               </h1>
               
               {/* Mobile Author Info (Hidden on Desktop) */}
               <div className="flex lg:hidden items-center gap-4 text-[var(--text-muted)] border-y border-[var(--card-border)] py-4 my-6">
-                <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--primary-color)]/30">
-                  <img 
-                    src={authorProfile?.avatar_url || `https://ui-avatars.com/api/?name=${blog.author_name || 'Admin'}&background=random`} 
-                    alt={blog.author_name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                {authorProfile && (
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--primary-color)]/30 shrink-0">
+                    <img decoding="async" loading="lazy" 
+                      src={authorProfile.avatar_url || `https://ui-avatars.com/api/?name=${blog.author_name || 'Admin'}&background=random`} 
+                      alt={blog.author_name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
                 <div className="flex flex-col">
                   <span className="text-sm font-bold text-[var(--text-color)]">{authorProfile?.full_name || blog.author_name || 'Admin'}</span>
                   <span className="text-[10px] uppercase tracking-widest">{pubDate.toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -128,10 +129,8 @@ export default function BlogDetail() {
               </div>
             </div>
 
-            <div className="prose prose-invert prose-lg max-w-none text-[var(--text-muted)] leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
-              {(blog.content || '').split('\n').map((para, i) => (
-                para.trim() ? <p key={i} className="mb-6">{para}</p> : <br key={i} />
-              ))}
+            <div className="text-[var(--text-muted)] leading-relaxed text-lg [&>p]:mb-6 [&>h1]:text-4xl [&>h1]:font-bold [&>h1]:text-[var(--text-color)] [&>h1]:mt-12 [&>h1]:mb-6 [&>h1]:font-serif [&>h2]:text-3xl [&>h2]:font-bold [&>h2]:text-[var(--text-color)] [&>h2]:mt-10 [&>h2]:mb-4 [&>h2]:font-serif [&>h3]:text-2xl [&>h3]:font-bold [&>h3]:text-[var(--text-color)] [&>h3]:mt-8 [&>h3]:mb-4 [&>h3]:font-serif [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-6 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol]:mb-6 [&>li]:mb-2 [&>blockquote]:border-l-4 [&>blockquote]:border-[var(--primary-color)] [&>blockquote]:pl-6 [&>blockquote]:italic [&>blockquote]:my-8 [&>blockquote]:text-xl [&>a]:text-[var(--primary-color)] [&>a]:underline">
+              <ReactMarkdown>{blog.content || ''}</ReactMarkdown>
             </div>
           </motion.div>
 
@@ -146,15 +145,18 @@ export default function BlogDetail() {
               
               {/* Author Card */}
               <div className={`${styles.glassCard} p-8 border border-[var(--card-border)] flex flex-col items-center text-center`}>
-                <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--primary-color)]/50 shadow-[0_0_20px_var(--primary-glow)] mb-6">
-                  <img 
-                    src={authorProfile?.avatar_url || `https://ui-avatars.com/api/?name=${blog.author_name || 'Admin'}&background=random`} 
-                    alt={blog.author_name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 
-                <h3 className="text-[var(--text-color)] text-xl font-bold mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                {authorProfile && (
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--primary-color)]/50 shadow-[0_0_20px_var(--primary-glow)] mb-6">
+                    <img decoding="async" loading="lazy" 
+                      src={authorProfile.avatar_url || `https://ui-avatars.com/api/?name=${blog.author_name || 'Admin'}&background=random`} 
+                      alt={blog.author_name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                
+                <h3 className="text-[var(--text-color)] text-xl font-bold mb-2">
                   {authorProfile?.full_name || blog.author_name || 'Admin'}
                 </h3>
                 

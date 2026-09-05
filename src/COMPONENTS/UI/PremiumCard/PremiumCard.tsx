@@ -46,7 +46,7 @@ export default function PremiumCard({
         
         {/* Left Side: Avatar/Image */}
         <div className={styles.imageContainer}>
-          <img src={image} alt={title} className={styles.image} loading="lazy" />
+          <img decoding="async" src={image} alt={title} className={styles.image} loading="lazy" />
           <div className={styles.imageOverlay} />
           
           {status && (

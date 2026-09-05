@@ -1,3 +1,7 @@
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import SystemUpdater from './ERP/components/shared/SystemUpdater';
+import { setupPushNotifications } from './utils/PushEngine';
+import { Capacitor } from '@capacitor/core';
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -19,16 +23,23 @@ const ErpWrapper = () => {
 };
 
 const RootApp = () => {
+  React.useEffect(() => {
+    setupPushNotifications(null);
+    CapacitorUpdater.notifyAppReady();
+  }, []);
+
   const location = useLocation();
   const path = location.pathname.toLowerCase();
-  const isErpRoute = path.startsWith('/erp') || 
+  const isErpRoute = Capacitor.isNativePlatform() || path.startsWith('/erp') || 
                      path.startsWith('/login') || 
                      path.startsWith('/student') || 
                      path.startsWith('/faculty') || 
                      path.startsWith('/admin') || 
                      path.startsWith('/verify');
   return (
+    <SystemUpdater>
     <>
+      <Preloader />
       <ScrollToTop />
       {isErpRoute ? <ErpWrapper /> : (
         <SiteProvider>
@@ -37,7 +48,8 @@ const RootApp = () => {
           </Suspense>
         </SiteProvider>
       )}
-    </>
+      </>
+    </SystemUpdater>
   );
 };
 

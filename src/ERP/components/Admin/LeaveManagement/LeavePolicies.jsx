@@ -26,12 +26,12 @@ export default function LeavePolicies() {
     return (
         <div className="flex flex-col gap-6 animate-fade-in">
             
-            <div className="flex flex-col md:flex-row md:items-center justify-between bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-4 lg:p-5 gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-4 lg:p-5 gap-4">
                 <div>
                     <h2 className={`${theme.text.heading} text-lg lg:text-xl text-themeText`}>Leave Policies Configuration</h2>
                     <p className="text-[10px] lg:text-xs text-themeTextSec mt-1">Manage annual limits and rules for different leave types.</p>
                 </div>
-                <button className="w-full md:w-auto px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] flex items-center justify-center gap-2">
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full md:w-auto px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] flex items-center justify-center gap-2">
                     <i className="fa-solid fa-plus"></i> New Policy
                 </button>
             </div>
@@ -43,7 +43,7 @@ export default function LeavePolicies() {
                     </div>
                 ) : (
                     policies.map(policy => (
-                        <div key={policy.id} className={`bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-6 relative overflow-hidden group hover:border-${policy.color_theme}-500/50 hover:shadow-[0_0_20px_rgba(var(--color-${policy.color_theme}-500),0.1)] transition-all duration-300`}>
+                        <div key={policy.id} className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 lg:p-6 relative overflow-hidden group hover:border-${policy.color_theme}-500/50 hover:shadow-[0_0_20px_rgba(var(--color-${policy.color_theme}-500),0.1)] transition-all duration-300`}>
                             {/* Background Glow */}
                             <div className={`absolute inset-0 bg-gradient-to-br from-${policy.color_theme}-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}></div>
                             <div className={`absolute top-0 left-0 w-full h-1 bg-${policy.color_theme}-500`}></div>
@@ -58,14 +58,14 @@ export default function LeavePolicies() {
                                         <p className={`text-[8px] lg:text-[9px] font-bold uppercase tracking-widest mt-0.5 ${policy.is_active ? 'text-emerald-500' : 'text-rose-500'}`}>{policy.is_active ? 'Active' : 'Inactive'}</p>
                                     </div>
                                 </div>
-                                <button className="text-themeTextSec hover:text-indigo-500 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-indigo-500/10">
+                                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="text-themeTextSec hover:text-indigo-500 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-indigo-500/10">
                                     <i className="fa-solid fa-ellipsis-vertical"></i>
                                 </button>
                             </div>
 
                             <p className="text-[10px] lg:text-xs text-themeTextSec mb-6 min-h-[40px] leading-relaxed relative z-10">{policy.description}</p>
 
-                            <div className="grid grid-cols-2 gap-4 border-t-[length:var(--border-width)] border-themeBorder pt-4 relative z-10">
+                            <div className="grid grid-cols-2 gap-4 border-t-[length:var(--border-width)] border-white/5 pt-4 relative z-10">
                                 <div>
                                     <p className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Annual Limit</p>
                                     <p className="text-xs lg:text-sm font-bold text-themeText mt-1 group-hover:text-indigo-500 transition-colors">{policy.annual_limit} Days</p>

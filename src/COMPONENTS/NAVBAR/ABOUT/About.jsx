@@ -24,7 +24,7 @@ function LeadershipCard({ leader, index }) {
         onClick={go}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }}
         aria-label={`View profile of ${leader.name}`}
-        className="w-full h-full cursor-pointer relative group aspect-[3/4] rounded-[32px] overflow-hidden focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--primary-color)] border border-[var(--card-border)] hover:border-[var(--primary-color)]/50 hover:shadow-[0_0_40px_var(--primary-glow)] transition-all duration-500"
+        className="w-full h-full cursor-pointer relative group aspect-[3/4] rounded-[32px] overflow-hidden focus:outline-none focus-visible:ring-4 focus-visible:ring-[var(--primary-color)] border border-[var(--card-border)] hover:border-[var(--primary-color)]/50 hover:shadow-[0_0_40px_rgba(255,191,0,0.15)] transition-all duration-500"
       >
         <img
           src={leader.image}
@@ -35,7 +35,7 @@ function LeadershipCard({ leader, index }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-700" />
         
         <div className="absolute bottom-0 left-0 w-full p-8 flex flex-col z-10 overflow-hidden">
-          <h3 className="text-2xl md:text-3xl text-white font-bold mb-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h3 className="text-2xl md:text-3xl text-white font-bold mb-2 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
             {leader.name}
           </h3>
           <p className="text-[var(--primary-color)] uppercase tracking-widest text-xs md:text-sm font-semibold mb-6 transform translate-y-8 group-hover:translate-y-0 transition-transform duration-700 delay-[50ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
@@ -87,7 +87,7 @@ export default function About() {
     <div className="min-h-screen w-full relative bg-[var(--bg-color)] text-[var(--text-color)] overflow-x-hidden pb-32">
       
       {/* Content Container */}
-      <div className="relative z-20 w-full max-w-7xl px-6 md:px-12 flex flex-col items-center pt-32 md:pt-48 pb-12">
+      <div className="relative z-20 w-full max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col items-center pt-[120px] md:pt-[160px] pb-12">
 
         {/* Editorial Intro Section */}
         <div className="w-full mb-32 flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
@@ -96,8 +96,8 @@ export default function About() {
               initial={{ opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold text-[var(--text-color)] mb-6 uppercase leading-[1.1] tracking-tight"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-[var(--text-color)] mb-6 tracking-tight"
+             
             >
               {cms.hero_line1} <br/>
               <span className="text-[var(--primary-color)] italic pr-2">{cms.hero_highlight}</span>
@@ -106,13 +106,13 @@ export default function About() {
               initial={{ opacity: 0, scaleX: 0 }} 
               animate={{ opacity: 1, scaleX: 1 }} 
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-[1px] w-32 bg-[var(--primary-color)] opacity-50 mb-8 origin-left"
+              className="h-[2px] w-16 bg-[var(--primary-color)] opacity-80 mb-8 origin-left"
             />
           </div>
 
-          <div className="lg:w-1/2 text-[var(--text-muted)] text-lg md:text-xl leading-relaxed text-justify space-y-8" style={{ fontFamily: "'Outfit', sans-serif" }}>
+          <div className="lg:w-1/2 text-[var(--text-muted)] text-lg md:text-xl leading-relaxed text-justify space-y-8">
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
-              <span className="font-semibold drop-cap block float-left mr-3 mt-1 mb-[-12px] text-[var(--primary-color)] drop-shadow-md" style={{ fontSize: '4.5rem', lineHeight: '0.8', fontFamily: "'Playfair Display', serif" }}>
+              <span className="font-semibold italic drop-cap block float-left mr-3 mt-1 mb-[-12px] text-[var(--primary-color)] drop-shadow-md" style={{ fontSize: '4.5rem', lineHeight: '0.8' }}>
                 {cms.hero_desc_1.charAt(0)}
               </span>
               {cms.hero_desc_1.slice(1)}
@@ -133,16 +133,16 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.2, ease: "easeOut" }}
-              className="relative p-10 md:p-12 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[32px] overflow-hidden group hover:border-[var(--primary-color)]/30 hover:shadow-[0_0_30px_var(--primary-glow)] backdrop-blur-xl transition-all duration-500 transform hover:-translate-y-1"
+              className="relative p-10 md:p-12 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[32px] overflow-hidden group hover:border-[var(--primary-color)]/30 hover:shadow-[0_0_30px_rgba(255,191,0,0.15)] backdrop-blur-xl transition-all duration-500 transform hover:-translate-y-1"
             >
-              <div className="absolute -top-6 -right-6 text-[120px] font-black text-[var(--text-color)] opacity-5 group-hover:scale-110 group-hover:-translate-x-4 group-hover:translate-y-4 group-hover:text-[var(--primary-color)] group-hover:opacity-10 transition-all duration-700 pointer-events-none" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              <div className="absolute -top-6 -right-6 text-[120px] font-black text-[var(--text-color)] opacity-5 group-hover:scale-110 group-hover:-translate-x-4 group-hover:translate-y-4 group-hover:text-[var(--primary-color)] group-hover:opacity-10 transition-all duration-700 pointer-events-none">
                 {tab.number}
               </div>
               
-              <h3 className="relative z-10 text-3xl text-[var(--primary-color)] uppercase tracking-widest font-bold mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h3 className="relative z-10 text-2xl lg:text-3xl font-bold mb-6 text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors duration-500">
                 {tab.label}
               </h3>
-              <p className="relative z-10 text-[var(--text-muted)] leading-relaxed text-lg group-hover:text-[var(--text-color)] transition-colors duration-500" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              <p className="relative z-10 text-[var(--text-muted)] leading-relaxed text-lg group-hover:text-[var(--text-color)] transition-colors duration-500">
                 {tab.content}
               </p>
             </motion.div>
@@ -155,10 +155,10 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl md:text-6xl font-bold text-[var(--text-color)] mb-16 text-center tracking-wide"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-4xl md:text-6xl font-bold text-[var(--text-color)] mb-16 text-center tracking-tight"
+           
           >
-            OUR <span className="text-[var(--primary-color)] italic pr-2">LEADERSHIP</span>
+            OUR <span className="text-[var(--primary-color)] italic font-medium pr-2">LEADERSHIP</span>
           </motion.h2>
 
           <div className="flex flex-col md:flex-row gap-12 lg:gap-24 items-center justify-center w-full">

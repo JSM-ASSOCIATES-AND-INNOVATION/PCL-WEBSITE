@@ -26,6 +26,8 @@ export default function SubjectBuilder() {
     const [themeColor, setThemeColor] = useState('blue');
     const [semesterId, setSemesterId] = useState('');
     const [facultyId, setFacultyId] = useState('');
+    const [batches, setBatches] = useState([]);
+    const [availableBatches, setAvailableBatches] = useState([]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -51,6 +53,13 @@ export default function SubjectBuilder() {
             // Fetch faculty for the dropdown
             const { data: facData } = await supabase.from('profiles').select('id, full_name').eq('role', 'faculty');
             setFaculties(facData || []);
+            
+            // Fetch batches
+            const { data: profiles } = await supabase.from('profiles').select('academic_batch').eq('role', 'student');
+            if (profiles) {
+                const unique = [...new Set(profiles.map(p => p.academic_batch).filter(Boolean))];
+                setAvailableBatches(unique.sort());
+            }
         } catch (err) {
             console.error("Failed to fetch subjects data:", err);
         } finally {
@@ -71,7 +80,8 @@ export default function SubjectBuilder() {
                 credits,
                 theme_color: themeColor,
                 semester_id: semesterId || null,
-                faculty_id: facultyId || null
+                faculty_id: facultyId || null,
+                batches: batches
             }]);
 
             if (error) throw error;
@@ -80,6 +90,7 @@ export default function SubjectBuilder() {
             setCode('');
             setName('');
             setCredits(4);
+            setBatches([]);
             fetchData();
         } catch (err) {
             console.error("Failed to create subject:", err);
@@ -100,37 +111,58 @@ export default function SubjectBuilder() {
             </div>
 
             {isCreating && (
-                <form onSubmit={handleCreate} className="bg-themeElevated border border-themeBorderStrong rounded-2xl p-6 flex flex-col gap-4 shadow-lg animate-fade-in">
+                <form onSubmit={handleCreate} className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-2xl p-6 flex flex-col gap-4 shadow-lg animate-fade-in">
                     <h3 className="text-sm font-black text-themeText">Register New Subject</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Subject Code</label>
-                            <input type="text" value={code} onChange={e => setCode(e.target.value)} required placeholder="e.g. LAW401" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="text" value={code} onChange={e => setCode(e.target.value)} required placeholder="e.g. LAW401" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div className="lg:col-span-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Subject Name</label>
-                            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. Constitutional Law" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. Constitutional Law" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Credits</label>
-                            <input type="number" min="1" max="10" value={credits} onChange={e => setCredits(parseInt(e.target.value))} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="number" min="1" max="10" value={credits} onChange={e => setCredits(parseInt(e.target.value))} required className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Assign Active Semester (Optional)</label>
-                            <select value={semesterId} onChange={e => setSemesterId(e.target.value)} className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
+                            <select value={semesterId} onChange={e => setSemesterId(e.target.value)} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
                                 <option value="">-- No specific semester --</option>
                                 {semesters.map(s => <option key={s.id} value={s.id}>{s.programme} - {s.name}</option>)}
                             </select>
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Assign Primary Faculty (Optional)</label>
-                            <select value={facultyId} onChange={e => setFacultyId(e.target.value)} className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
+                            <select value={facultyId} onChange={e => setFacultyId(e.target.value)} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none appearance-none">
                                 <option value="">-- No faculty assigned --</option>
                                 {faculties.map(f => <option key={f.id} value={f.id}>{f.full_name}</option>)}
                             </select>
+                        </div>
+                    </div>
+                    
+                    <div className="mt-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Assign Target Batches</label>
+                        <div className="flex flex-wrap gap-2">
+                            {availableBatches.map(batch => (
+                                <label key={batch} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-bold cursor-pointer transition-colors ${batches.includes(batch) ? 'bg-themeAccent/10 border-themeAccent text-themeAccent' : 'bg-themePanel/85 backdrop-blur-2xl shadow-premium border-white/5 text-themeTextSec hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated'}`}>
+                                    <input 
+                                        type="checkbox" 
+                                        className="hidden"
+                                        checked={batches.includes(batch)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) setBatches(prev => [...prev, batch]);
+                                            else setBatches(prev => prev.filter(b => b !== batch));
+                                        }}
+                                    />
+                                    {batch}
+                                </label>
+                            ))}
+                            {availableBatches.length === 0 && <span className="text-xs text-themeTextSec italic">No batches found in student profiles.</span>}
                         </div>
                     </div>
 
@@ -159,7 +191,7 @@ export default function SubjectBuilder() {
                     <i className="fa-solid fa-spinner fa-spin text-themeAccent text-3xl"></i>
                 </div>
             ) : subjects.length === 0 ? (
-                <div className="h-40 flex items-center justify-center border border-themeBorder border-dashed rounded-2xl">
+                <div className="h-40 flex items-center justify-center border border-white/5 border-dashed rounded-2xl">
                     <p className="text-sm font-bold text-themeTextSec">No subjects found. Create one above.</p>
                 </div>
             ) : (
@@ -167,17 +199,17 @@ export default function SubjectBuilder() {
                     {subjects.map((sub) => {
                         const c = AVAILABLE_COLORS.find(col => col.value === sub.theme_color) || AVAILABLE_COLORS[0];
                         return (
-                            <div key={sub.id} className={`bg-themePanel border ${c.border} rounded-2xl p-5 shadow-sm group hover:-translate-y-1 transition-transform`}>
+                            <div key={sub.id} className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium border ${c.border} rounded-2xl p-5 shadow-sm group hover:-translate-y-1 transition-transform`}>
                                 <div className="flex justify-between items-start mb-4">
                                     <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-widest ${c.bg} ${c.text}`}>{sub.code}</span>
                                     <div className="flex gap-2 items-center">
-                                        <span className="text-[9px] font-black text-themeTextSec bg-themeElevated px-2 py-0.5 rounded">{sub.credits} Credits</span>
+                                        <span className="text-[9px] font-black text-themeTextSec bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-2 py-0.5 rounded">{sub.credits} Credits</span>
                                         <div className={`w-3 h-3 rounded-full ${c.solid}`}></div>
                                     </div>
                                 </div>
                                 <h3 className="text-lg font-black text-themeText mb-4">{sub.name}</h3>
                                 
-                                <div className="flex flex-col gap-2 border-t border-themeBorder pt-4 mt-2">
+                                <div className="flex flex-col gap-2 border-t border-white/5 pt-4 mt-2">
                                     <p className="text-xs font-bold text-themeTextSec flex items-center gap-2">
                                         <i className="fa-solid fa-graduation-cap w-4 text-center"></i>
                                         {sub.semester ? `${sub.semester.programme} - ${sub.semester.name}` : 'Unassigned'}

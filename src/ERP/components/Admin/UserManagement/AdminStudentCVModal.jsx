@@ -71,7 +71,7 @@ const AchSection = ({ title, items, headStyle, mode }) => {
 const ModernTemplate = (data, config) => {
     const HS = { color: "#d97706" };
     return (
-        <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: "#1e293b", fontSize: "10pt", lineHeight: 1.55 }}>
+        <div>
             <div style={{ borderBottom: "3px solid #f59e0b", paddingBottom: "14px", marginBottom: "20px" }}>
                 <h1 style={{ fontSize: "26pt", fontWeight: 900, textTransform: "uppercase", letterSpacing: "-0.02em", color: "#0f172a", margin: "0 0 6px" }}>
                     {data.personal.name}
@@ -150,10 +150,10 @@ export default function AdminStudentCVModal({ studentId, onClose }) {
 
     return (
         <div className="fixed inset-0 z-[200] flex flex-col bg-themeApp animate-fade-in font-sans overflow-hidden">
-            <div className="w-full max-w-6xl mx-auto flex flex-col h-screen relative z-10 bg-themePanel shadow-2xl border-x border-themeBorder">
+            <div className="w-full max-w-6xl mx-auto flex flex-col h-screen relative z-10 bg-themePanel/85 backdrop-blur-2xl shadow-premium shadow-2xl border-x border-white/5">
                 
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b-theme border-themeBorder bg-themePanel">
+                <div className="flex justify-between items-center p-6 border-b-theme border-white/5 bg-themePanel/85 backdrop-blur-2xl shadow-premium">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500">
                             <i className="fa-solid fa-file-pdf"></i>
@@ -167,12 +167,12 @@ export default function AdminStudentCVModal({ studentId, onClose }) {
                         <button 
                             onClick={handleExport}
                             disabled={isLoading || isExporting}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-black px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 disabled:opacity-50"
+                            className="bg-emerald-500 hover:bg-emerald-400 text-themeText px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 disabled:opacity-50"
                         >
                             {isExporting ? <i className="fa-solid fa-circle-notch fa-spin"></i> : <i className="fa-solid fa-download"></i>} 
                             Export PDF
                         </button>
-                        <button onClick={onClose} className="w-10 h-10 rounded-lg border-theme border-themeBorderStrong flex justify-center items-center text-themeTextSec hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-colors">
+                        <button onClick={onClose} className="w-10 h-10 rounded-lg border border-black/5 dark:border-white/10 flex justify-center items-center text-themeTextSec hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 transition-colors">
                             <i className="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -186,7 +186,7 @@ export default function AdminStudentCVModal({ studentId, onClose }) {
                             <p className="text-sm font-black uppercase tracking-widest text-themeTextSec">Fetching Verified Records...</p>
                         </div>
                     ) : erpData ? (
-                        <div className="w-full max-w-[794px] bg-white rounded-md shadow-2xl overflow-hidden shrink-0" style={{ minHeight: '1123px' }}>
+                        <div className="w-full max-w-[794px] bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-md shadow-2xl overflow-hidden shrink-0" style={{ minHeight: '1123px' }}>
                             <div id="admin-cv-pdf-target" style={{
                                 width: "210mm",
                                 minHeight: "297mm",

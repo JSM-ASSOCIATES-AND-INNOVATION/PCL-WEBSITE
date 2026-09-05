@@ -1,7 +1,10 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
+import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useERP } from '../../../context/ErpContext';
 import { theme } from '../../../theme';
+import { Dialog } from '../../../utils/DialogManager';
 import pclLogo from '../../../../ASSETS/LOGOS/pcl_logo.svg';
 
 // --- Constants & Config ---
@@ -22,19 +25,18 @@ export default function SidebarFramework({
 }) {
     const { isSidebarCollapsed, toggleSidebar, notices } = useERP();
     
-    // --- Refs for Dragging ---
-    const sidebarRef = useRef(null);
-    const isResizing = useRef(false);
-
     // --- Core State ---
-    const [sidebarWidth, setSidebarWidth] = useState(() => {
-        if (isSidebarCollapsed) return SIDEBAR_MIN_WIDTH;
-        const saved = localStorage.getItem(STORAGE_KEY_WIDTH);
-        return saved ? parseInt(saved, 10) : SIDEBAR_DEFAULT_WIDTH;
-    });
+    const sidebarWidth = isSidebarCollapsed ? SIDEBAR_MIN_WIDTH : SIDEBAR_DEFAULT_WIDTH;
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    
+    const handleLogout = async () => {
+        const confirmed = await Dialog.confirm("Are you sure you want to securely sign out?", "End Session");
+        if (confirmed) {
+            onLogout();
+        }
+    };
+
     const [favorites, setFavorites] = useState(() => {
         try { return JSON.parse(localStorage.getItem(STORAGE_KEY_FAVS)) || []; }
         catch { return []; }
@@ -59,73 +61,13 @@ export default function SidebarFramework({
         localStorage.setItem(STORAGE_KEY_FAVS, JSON.stringify(favorites));
     }, [favorites]);
 
-    // Listen to Context toggles
-    useEffect(() => {
-        if (isSidebarCollapsed) {
-            setSidebarWidth(SIDEBAR_MIN_WIDTH);
-        } else {
-            const saved = localStorage.getItem(STORAGE_KEY_WIDTH);
-            setSidebarWidth(saved && parseInt(saved, 10) > SIDEBAR_MIN_WIDTH + 20 ? parseInt(saved, 10) : SIDEBAR_DEFAULT_WIDTH);
-        }
-    }, [isSidebarCollapsed]);
 
     // --- Resizing Engine ---
-    const handleMouseDown = useCallback((e) => {
-        e.preventDefault();
-        isResizing.current = true;
-        document.body.style.cursor = 'col-resize';
-        document.body.style.userSelect = 'none'; // Prevent text selection
-    }, []);
 
-    const handleMouseMove = useCallback((e) => {
-        if (!isResizing.current) return;
-        let newWidth = e.clientX;
-        if (newWidth < SIDEBAR_MIN_WIDTH) newWidth = SIDEBAR_MIN_WIDTH;
-        if (newWidth > SIDEBAR_MAX_WIDTH) newWidth = SIDEBAR_MAX_WIDTH;
-        setSidebarWidth(newWidth);
-    }, []);
-
-    const handleMouseUp = useCallback(() => {
-        if (isResizing.current) {
-            isResizing.current = false;
-            document.body.style.cursor = 'default';
-            document.body.style.userSelect = 'auto';
-            
-            // Snap to compact or save width
-            if (sidebarWidth < SIDEBAR_MIN_WIDTH + 40) {
-                setSidebarWidth(SIDEBAR_MIN_WIDTH);
-                if (!isSidebarCollapsed) toggleSidebar();
-            } else {
-                localStorage.setItem(STORAGE_KEY_WIDTH, sidebarWidth.toString());
-                if (isSidebarCollapsed) toggleSidebar();
-            }
-        }
-    }, [sidebarWidth, isSidebarCollapsed, toggleSidebar]);
-
-    useEffect(() => {
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [handleMouseMove, handleMouseUp]);
-
-    const handleDoubleClickResize = () => {
-        if (sidebarWidth === SIDEBAR_DEFAULT_WIDTH) {
-            setSidebarWidth(SIDEBAR_MIN_WIDTH);
-            if (!isSidebarCollapsed) toggleSidebar();
-        } else {
-            setSidebarWidth(SIDEBAR_DEFAULT_WIDTH);
-            localStorage.setItem(STORAGE_KEY_WIDTH, SIDEBAR_DEFAULT_WIDTH.toString());
-            if (isSidebarCollapsed) toggleSidebar();
-        }
-    };
 
     // --- Search & Filter Logic ---
     const filteredConfig = useMemo(() => {
-        if (!searchQuery.trim()) return config;
-        const q = searchQuery.toLowerCase();
+        return config;
         
         return config.map(group => {
             const filteredLinks = group.links.filter(link => {
@@ -135,7 +77,7 @@ export default function SidebarFramework({
             });
             return { ...group, links: filteredLinks };
         }).filter(group => group.links.length > 0);
-    }, [config, searchQuery]);
+    }, [config]);
 
     // --- Handlers ---
     const handleTabSwitch = (id) => {
@@ -191,8 +133,8 @@ export default function SidebarFramework({
                         relative w-full flex items-center justify-between py-2.5 my-0.5 rounded-xl
                         text-xs font-bold tracking-wide transition-all duration-200 outline-none
                         ${isActive 
-                            ? "bg-themeElevated/80 text-themeText shadow-sm" 
-                            : "text-themeTextSec hover:bg-themeElevated/50 hover:text-themeText"
+                            ? "bg-black/5 dark:bg-white/10 backdrop-blur-[30px] border border-black/10 dark:border-white/10 text-themeText shadow-md" 
+                            : "text-themeTextSec hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-black/5 dark:hover:border-white/5 hover:text-themeText"
                         }
                         ${isCompact ? "justify-center px-0" : "pr-3"}
                     `}
@@ -206,7 +148,7 @@ export default function SidebarFramework({
                     <div className={`flex items-center ${isCompact ? "justify-center w-full" : "gap-3"} overflow-hidden`}>
                         {/* Icon Lift Animation */}
                         <div className={`w-6 flex justify-center shrink-0 transition-transform duration-200 ${isActive ? "scale-110" : "group-hover/item:scale-110 group-hover/item:-translate-y-0.5"}`}>
-                            <i className={`${link.icon} text-lg ${isActive ? "text-themeAccent drop-shadow-sm" : "opacity-70 group-hover/item:opacity-100 group-hover/item:text-themeText"}`}></i>
+                            <i className={`${link.icon} text-lg ${isActive ? "text-black dark:text-white drop-shadow-sm" : "opacity-70 group-hover/item:opacity-100 group-hover/item:text-themeText"}`}></i>
                         </div>
                         
                         {/* Label */}
@@ -235,7 +177,7 @@ export default function SidebarFramework({
 
                 {/* Submenu Children */}
                 {hasChildren && !isCompact && (
-                    <div className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out pl-2 border-l border-themeBorder ml-4 mt-1 ${isSubmenuExpanded || searchQuery ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out pl-2 border-l border-black/5 dark:border-white/5 ml-4 mt-1 ${isSubmenuExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         {link.children.map(child => renderLink(child, depth + 1))}
                     </div>
                 )}
@@ -249,29 +191,18 @@ export default function SidebarFramework({
         <>
             {/* DESKTOP SIDEBAR */}
             <aside 
-                ref={sidebarRef}
-                style={{ width: `${sidebarWidth}px`, transition: isResizing.current ? 'none' : 'width 0.2s ease-out' }}
+                style={{ width: `${sidebarWidth}px`, transition: 'width 0.3s cubic-bezier(0.16, 1, 0.3, 1)' }}
                 className={`
                     hidden lg:flex flex-col shrink-0 h-screen relative z-40 
-                    bg-themePanel border-r border-themeBorder shadow-sm
+                    bg-white/40 dark:bg-black/40 backdrop-blur-[80px] shadow-[15px_0_50px_0_rgba(0,0,0,0.05)] dark:shadow-[15px_0_50px_0_rgba(0,0,0,0.3)] border-r border-black/10 dark:border-black/10 dark:border-black/5 dark:border-white/10
                 `}
             >
+                {/* Edge Specular Highlight */}
                 {/* 1. BRAND ZONE */}
-                <div className="h-20 flex items-center justify-between px-5 shrink-0 border-b border-themeBorder">
-                    <div className="flex items-center gap-3 overflow-hidden group cursor-pointer" onClick={() => handleTabSwitch('dashboard')}>
-                        <div className="w-9 h-9 rounded-xl bg-themeApp border border-themeBorderStrong flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-themeElevated group-hover:border-themeAccent/50 transition-all duration-300">
-                            <div 
-                                style={{
-                                    width: '18px', 
-                                    height: '18px', 
-                                    backgroundColor: 'var(--accent)', 
-                                    WebkitMaskImage: `url(${pclLogo})`,
-                                    WebkitMaskSize: 'contain',
-                                    WebkitMaskRepeat: 'no-repeat',
-                                    WebkitMaskPosition: 'center'
-                                }} 
-                                className="transition-colors duration-300"
-                            />
+                <div className="h-20 flex items-center justify-between px-5 shrink-0 border-b border-black/5 dark:border-white/5">
+                    <div className="flex items-center gap-3 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity" onClick={() => handleTabSwitch('dashboard')}>
+                        <div className="w-9 h-9 rounded-xl bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/20 dark:border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden">
+                            <img src={pclLogo} alt="PCL" className="w-5 h-5 theme-logo transition-transform duration-300" />
                         </div>
                         {!isCompact && (
                             <div className="flex flex-col min-w-0 animate-fade-in whitespace-nowrap">
@@ -289,37 +220,17 @@ export default function SidebarFramework({
                 {/* Collapse Toggle Button (Absolute Positioned on Edge) */}
                 <button 
                     onClick={toggleSidebar} 
-                    className="absolute -right-3 top-7 w-6 h-6 rounded-full bg-themeElevated border border-themeBorderStrong shadow-md flex items-center justify-center text-themeTextSec hover:text-themeText hover:scale-110 transition-all z-50"
+                    className="absolute -right-3 top-7 w-6 h-6 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/10 dark:border-black/5 dark:border-white/10 shadow-md flex items-center justify-center text-themeTextSec hover:text-themeText hover:scale-110 transition-all z-50"
                     title={isCompact ? "Expand Sidebar" : "Collapse Sidebar"}
                 >
                     <i className={`fa-solid ${isCompact ? 'fa-chevron-right' : 'fa-chevron-left'} text-[9px]`}></i>
                 </button>
 
-                {/* 2. SEARCH ZONE */}
-                {!isCompact && (
-                    <div className="px-4 pt-4 pb-2 shrink-0 animate-fade-in">
-                        <div className="relative group">
-                            <i className="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-themeTextSec group-focus-within:text-themeAccent transition-colors"></i>
-                            <input 
-                                type="text"
-                                placeholder="Search modules..."
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                className="w-full bg-themeApp border border-themeBorder rounded-lg pl-8 pr-3 py-2 text-xs font-bold text-themeText focus:outline-none focus:border-themeBorderStrong transition-colors shadow-inner"
-                            />
-                            {/* Keyboard shortcut hint */}
-                            <div className="absolute right-2 top-1/2 -translate-y-1/2 px-1.5 py-0.5 rounded border border-themeBorderStrong bg-themeElevated text-[8px] font-black text-themeTextSec opacity-50">
-                                ⌘K
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {/* 3. NAVIGATION ZONE */}
                 <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 custom-scrollbar flex flex-col gap-5">
                     
                     {/* Favorites Section */}
-                    {favorites.length > 0 && !searchQuery && (
+                    {favorites.length > 0 && (
                         <div className="flex flex-col gap-1">
                             {!isCompact && <p className="text-[9px] font-black text-themeTextSec opacity-60 uppercase tracking-widest px-3 mb-1 animate-fade-in">Favorites</p>}
                             {config.flatMap(g => g.links).filter(l => favorites.includes(l.id)).map(link => renderLink(link))}
@@ -342,10 +253,10 @@ export default function SidebarFramework({
                                         <i className={`fa-solid fa-chevron-down text-[8px] text-themeTextSec opacity-30 transition-transform duration-300 ${isExpanded ? 'rotate-180 opacity-60' : ''}`}></i>
                                     </button>
                                 ) : (
-                                    <div className="w-full border-t border-themeBorder my-2"></div>
+                                    <div className="w-full border-t border-black/5 dark:border-white/5 my-2"></div>
                                 )}
                                 
-                                <div className={`flex flex-col gap-0.5 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${isExpanded || isCompact || searchQuery ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div className={`flex flex-col gap-0.5 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${isExpanded || isCompact ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                     {group.links.map(link => renderLink(link))}
                                 </div>
                             </div>
@@ -354,10 +265,10 @@ export default function SidebarFramework({
                 </div>
 
                 {/* 4. UTILITY & USER CARD ZONE */}
-                <div className="p-3 shrink-0 border-t border-themeBorder flex flex-col gap-2">
+                <div className="p-3 shrink-0 border-t border-black/5 dark:border-white/5 flex flex-col gap-2">
                     <button 
-                        onClick={onLogout}
-                        className={`w-full flex items-center justify-center gap-3 p-2.5 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all border border-transparent hover:border-rose-500/20 group`}
+                        onClick={handleLogout}
+                        className={`w-full flex items-center justify-center gap-3 p-2.5 rounded-xl text-rose-500 bg-rose-500/5 hover:bg-rose-500/10 transition-all border border-rose-500/10 hover:border-rose-500/30 hover:shadow-[0_0_15px_rgba(244,63,94,0.15)] group relative overflow-hidden`}
                         title="Sign Out"
                     >
                         <i className="fa-solid fa-power-off text-sm group-hover:scale-110 transition-transform"></i>
@@ -365,8 +276,8 @@ export default function SidebarFramework({
                     </button>
                     
                     {!isCompact && (
-                        <div onClick={() => handleTabSwitch('credentials')} className="flex items-center gap-3 p-3 rounded-xl bg-themeApp border border-themeBorder mt-1 cursor-pointer hover:border-themeBorderStrong transition-colors">
-                            <div className="w-8 h-8 rounded-lg bg-themeElevated border border-themeBorderStrong flex items-center justify-center font-black text-xs text-themeText relative shrink-0 overflow-hidden">
+                        <div onClick={() => handleTabSwitch('credentials')} className="flex items-center gap-3 p-3 rounded-xl bg-white/50 dark:bg-black/20 backdrop-blur-xl border border-black/10 dark:border-black/5 dark:border-white/10 mt-1 cursor-pointer hover:bg-black/5 dark:bg-white/5 hover:border-black/20 dark:border-black/10 dark:border-white/20 transition-all shadow-inner group-hover:scale-[1.02]">
+                            <div className="w-8 h-8 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/10 dark:border-black/5 dark:border-white/10 flex items-center justify-center font-black text-xs text-themeText relative shrink-0 overflow-hidden">
                                 {userSession?.profile_picture_url ? (
                                     <img src={userSession.profile_picture_url} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -380,117 +291,127 @@ export default function SidebarFramework({
                             </div>
                         </div>
                     )}
+                    
                 </div>
 
-                {/* Resizing Handle */}
-                <div 
-                    className="absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-themeAccent/20 active:bg-themeAccent/40 transition-colors z-50 flex items-center justify-center group"
-                    onMouseDown={handleMouseDown}
-                    onDoubleClick={handleDoubleClickResize}
-                >
-                    <div className="w-0.5 h-8 bg-themeBorderStrong rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                </div>
+
             </aside>
 
             {/* CONTEXT MENU (Right Click) */}
             {contextMenu && (
                 <div 
-                    className="fixed z-[100] w-48 bg-themePanel border border-themeBorder shadow-2xl rounded-xl py-1 animate-fade-in scale-in custom-blur"
+                    className="fixed z-[100] w-48 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-black/5 dark:border-white/5 shadow-2xl rounded-xl py-1 animate-fade-in scale-in custom-blur"
                     style={{ top: Math.min(contextMenu.y, window.innerHeight - 150), left: contextMenu.x }}
                     onClick={e => e.stopPropagation()}
                 >
-                    <div className="px-3 py-2 border-b border-themeBorder mb-1">
+                    <div className="px-3 py-2 border-b border-black/5 dark:border-white/5 mb-1">
                         <p className="text-xs font-black text-themeText truncate">{contextMenu.item.label}</p>
                         <p className="text-[9px] text-themeTextSec uppercase tracking-widest mt-0.5">Context Options</p>
                     </div>
-                    <button onClick={(e) => toggleFavorite(e, contextMenu.item.id)} className="w-full text-left px-4 py-2 hover:bg-themeElevated text-xs font-bold text-themeText flex items-center gap-3 transition-colors">
+                    <button onClick={(e) => toggleFavorite(e, contextMenu.item.id)} className="w-full text-left px-4 py-2 hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-xs font-bold text-themeText flex items-center gap-3 transition-colors">
                         <i className={`fa-solid fa-star ${favorites.includes(contextMenu.item.id) ? 'text-amber-500' : 'text-themeTextSec'}`}></i>
                         {favorites.includes(contextMenu.item.id) ? 'Remove Favorite' : 'Pin to Favorites'}
                     </button>
-                    <button className="w-full text-left px-4 py-2 hover:bg-themeElevated text-xs font-bold text-themeText flex items-center gap-3 transition-colors">
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full text-left px-4 py-2 hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-xs font-bold text-themeText flex items-center gap-3 transition-colors">
                         <i className="fa-solid fa-arrow-up-right-from-square text-themeTextSec"></i> Open in New Tab
                     </button>
-                    <button className="w-full text-left px-4 py-2 hover:bg-themeElevated text-xs font-bold text-themeText flex items-center gap-3 transition-colors">
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-full text-left px-4 py-2 hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-xs font-bold text-themeText flex items-center gap-3 transition-colors">
                         <i className="fa-solid fa-link text-themeTextSec"></i> Copy Link
                     </button>
                 </div>
             )}
 
             {/* MOBILE BOTTOM NAVIGATION */}
-            <div className="lg:hidden fixed bottom-0 left-0 w-full bg-themeApp border-t border-themeBorder z-50 px-2 py-3 pb-safe flex items-center justify-between shadow-[0_-10px_20px_rgba(0,0,0,0.1)]">
+            <div className="lg:hidden fixed bottom-0 left-0 w-full bg-black/40 backdrop-blur-[60px] border-t border-black/10 dark:border-black/5 dark:border-white/10 z-50 px-2 py-3 pb-safe flex items-center justify-between shadow-[0_-20px_40px_rgba(0,0,0,0.4)]">
                 {bottomLinks.map(link => {
                     const isActive = activeTab === link.id && !mobileMenuOpen;
                     return (
-                        <button 
+                        <motion.button 
+                            whileTap={{ scale: 0.9 }}
                             key={link.id}
                             onClick={() => handleTabSwitch(link.id)}
-                            className={`flex flex-col items-center justify-center w-16 gap-1.5 transition-all duration-300 ${isActive ? 'text-themeAccent -translate-y-1' : 'text-themeTextSec opacity-70 hover:text-themeText'}`}
+                            className={`flex flex-col items-center justify-center w-16 gap-1.5 transition-all duration-300 relative z-10 ${isActive ? 'text-black dark:text-white -translate-y-1' : 'text-white/60 hover:text-black dark:hover:text-white'}`}
                         >
-                            <div className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${isActive ? 'bg-themeElevated shadow-sm border border-themeBorderStrong' : 'bg-transparent'}`}>
+                            <div className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors relative overflow-hidden ${isActive ? 'bg-black/10 dark:bg-white/15 backdrop-blur-3xl shadow-[0_10px_20px_rgba(0,0,0,0.3)] border border-black/20 dark:border-black/10 dark:border-white/20' : 'bg-transparent'}`}>
+                                
                                 <i className={`${link.icon} text-lg`}></i>
                             </div>
                             <span className="text-[9px] font-black uppercase tracking-widest">{link.label}</span>
-                        </button>
+                        </motion.button>
                     )
                 })}
                 
-                <button 
+                <motion.button 
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className={`flex flex-col items-center justify-center w-16 gap-1.5 transition-all duration-300 ${mobileMenuOpen ? 'text-themeAccent -translate-y-1' : 'text-themeTextSec opacity-70 hover:text-themeText'}`}
+                    className={`flex flex-col items-center justify-center w-16 gap-1.5 transition-all duration-300 relative z-10 ${mobileMenuOpen ? 'text-black dark:text-white -translate-y-1' : 'text-white/60 hover:text-black dark:hover:text-white'}`}
                 >
-                    <div className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors ${mobileMenuOpen ? 'bg-themeElevated shadow-sm border border-themeBorderStrong' : 'bg-transparent'}`}>
+                    <div className={`w-10 h-10 flex items-center justify-center rounded-xl transition-colors relative overflow-hidden ${mobileMenuOpen ? 'bg-black/10 dark:bg-white/15 backdrop-blur-3xl shadow-[0_10px_20px_rgba(0,0,0,0.3)] border border-black/20 dark:border-black/10 dark:border-white/20' : 'bg-transparent'}`}>
+                        
                         <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-lg`}></i>
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-widest">Menu</span>
-                </button>
+                </motion.button>
             </div>
 
             {/* FULL SCREEN MOBILE MENU OVERLAY */}
-            {mobileMenuOpen && (
-                <div className="lg:hidden fixed inset-0 z-40 bg-themeApp overflow-y-auto pb-24 animate-fade-in backdrop-blur-xl">
-                    <div className="p-6 pt-10 flex items-center gap-4 border-b border-themeBorder bg-themePanel/80 sticky top-0 backdrop-blur-lg z-10">
-                        <div className="w-14 h-14 rounded-2xl bg-themeApp border border-themeBorderStrong flex items-center justify-center font-black text-xl text-themeText relative shadow-sm overflow-hidden">
-                            {userSession?.profile_picture_url ? (
-                                <img src={userSession.profile_picture_url} alt="Profile" className="w-full h-full object-cover" />
-                            ) : (
-                                initials
-                            )}
-                            <div className="absolute top-1 right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-themeApp z-10"></div>
-                        </div>
-                        <div>
-                            <p className="text-xl font-black text-themeText tracking-tight">{userSession?.name || "User"}</p>
-                            <p className="text-[10px] font-black text-themeAccent uppercase tracking-widest mt-0.5">{userSession?.role}</p>
-                        </div>
-                    </div>
-
-                    <div className="p-6 flex flex-col gap-8">
-                        {config.map((group, idx) => (
-                            <div key={idx}>
-                                <p className="text-[11px] font-black text-themeTextSec opacity-70 uppercase tracking-widest mb-4 pl-2">
-                                    {group.category}
-                                </p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {group.links.map(link => {
-                                        const isActive = activeTab === link.id;
-                                        return (
-                                            <button
-                                                key={link.id}
-                                                onClick={() => handleTabSwitch(link.id)}
-                                                className={`flex flex-col items-start gap-3 p-4 rounded-xl border transition-all duration-300 ${isActive 
-                                                    ? 'bg-themeElevated border-themeAccent/50 text-themeAccent shadow-sm' 
-                                                    : 'bg-themePanel border-themeBorder text-themeText hover:border-themeBorderStrong'}`}
-                                            >
-                                                <i className={`${link.icon} text-2xl ${isActive ? '' : 'text-themeTextSec opacity-70'}`}></i>
-                                                <span className="text-[10px] font-black uppercase tracking-widest text-left leading-snug">{link.label}</span>
-                                            </button>
-                                        )
-                                    })}
-                                </div>
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 30, scale: 0.98 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        className="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-[60px] overflow-y-auto pb-24"
+                    >
+                        <div className="p-6 pt-10 flex items-center gap-4 border-b border-black/10 dark:border-black/5 dark:border-white/10 bg-white/50 dark:bg-black/20 sticky top-0 backdrop-blur-2xl z-10 shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+                            <div className="w-14 h-14 rounded-2xl bg-black/5 dark:bg-white/10 backdrop-blur-xl border border-black/20 dark:border-black/10 dark:border-white/20 flex items-center justify-center font-black text-xl text-black dark:text-white relative shadow-lg overflow-hidden">
+                                {userSession?.profile_picture_url ? (
+                                    <img src={userSession.profile_picture_url} alt="Profile" className="w-full h-full object-cover relative z-0" />
+                                ) : (
+                                    initials
+                                )}
+                                <div className="absolute top-1 right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-transparent z-20 shadow-[0_0_10px_#10b981]"></div>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+                            <div className="relative z-10">
+                                <p className="text-xl font-black text-black dark:text-white tracking-tight drop-shadow-sm dark:drop-shadow-md">{userSession?.name || "User"}</p>
+                                <p className="text-[10px] font-black text-black/70 dark:text-white/70 uppercase tracking-widest mt-0.5">{userSession?.role}</p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 flex flex-col gap-8">
+                            {config.map((group, idx) => (
+                                <div key={idx}>
+                                    <p className="text-[11px] font-black text-black/50 dark:text-white/50 uppercase tracking-widest mb-4 pl-2 drop-shadow-sm">
+                                        {group.category}
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {group.links.flatMap(l => l.children ? l.children : [l]).map(link => {
+                                            const isActive = activeTab === link.id;
+                                            return (
+                                                <motion.button
+                                                    key={link.id}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => handleTabSwitch(link.id)}
+                                                    className={`flex flex-col items-start gap-3 p-4 rounded-xl border transition-colors duration-300 relative overflow-hidden ${isActive 
+                                                        ? 'bg-black/10 dark:bg-white/15 backdrop-blur-3xl shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)] border-black/20 dark:border-black/10 dark:border-white/20 text-white' 
+                                                        : 'bg-white/50 dark:bg-black/20 backdrop-blur-xl border-black/5 dark:border-white/5 text-black/80 dark:text-white/80 hover:bg-black/5 dark:bg-white/5 hover:border-black/10 dark:border-black/5 dark:border-white/10 hover:text-black dark:hover:text-white'}`}
+                                                >
+                                                    
+                                                    <i className={`${link.icon} text-2xl ${isActive ? '' : 'text-black/50 dark:text-white/50'}`}></i>
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-left leading-snug drop-shadow-sm">{link.label}</span>
+                                                </motion.button>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 }
+
+

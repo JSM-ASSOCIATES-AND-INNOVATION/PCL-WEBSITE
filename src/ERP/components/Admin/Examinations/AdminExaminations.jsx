@@ -28,10 +28,10 @@ const writeCache = (key, data) => {
 };
 
 const INPUT_CLS =
-    "w-full bg-themeElevated border border-themeBorderStrong text-themeText text-[10px] lg:text-sm font-bold px-4 py-3 rounded-themePanel outline-none focus:border-themeAccent focus:bg-themePanel transition-colors placeholder:text-neutral-600";
+    "w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 text-themeText text-[10px] lg:text-sm font-bold px-4 py-3 rounded-themePanel outline-none focus:border-themeAccent focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium transition-colors placeholder:text-neutral-600";
 
 const SELECT_CLS =
-    "w-full bg-themeElevated border border-themeBorderStrong text-themeText text-[10px] lg:text-sm font-bold py-3 pl-4 pr-10 rounded-themePanel outline-none focus:border-themeAccent focus:bg-themePanel transition-colors appearance-none cursor-pointer truncate";
+    "w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 text-themeText text-[10px] lg:text-sm font-bold py-3 pl-4 pr-10 rounded-themePanel outline-none focus:border-themeAccent focus:bg-themePanel/85 backdrop-blur-2xl shadow-premium transition-colors appearance-none cursor-pointer truncate";
 
 const LABEL_CLS = `block text-[9px] lg:text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-1.5 ml-1`;
 
@@ -169,24 +169,24 @@ export default function AdminExaminations({ isHubView = false }) {
         <div className={`w-full ${isHubView ? 'bg-transparent text-themeText font-sans' : 'max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated'}`}>
             
             {!isHubView && (
-                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 mix-blend-overlay pointer-events-none"></div>
 
                     <div className="flex items-center gap-4 lg:gap-5 relative z-10">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                            <i className="fa-solid fa-building-columns text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                        <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                            <i className="fa-solid fa-building-columns text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                         </div>
                         <div>
                             <span className="px-2 lg:px-2.5 py-1 bg-white/20 text-white border border-white/30 rounded-md text-[8px] lg:text-[9px] font-black uppercase tracking-widest mb-1.5 lg:mb-2 inline-block shadow-sm">Controller of Exams</span>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Examinations HQ</h1>
+                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md`}>Examinations HQ</h1>
                             <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Schedule assessments and lock academic ledgers.</p>
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-full xl:w-auto overflow-x-auto no-scrollbar ${!isHubView ? '-mt-2 lg:-mt-4' : 'mb-6 lg:mb-8'}`}>
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated backdrop-blur-md rounded-2xl border border-black/5 dark:border-white/10 relative z-10 gap-1.5 w-full xl:w-auto overflow-x-auto no-scrollbar ${!isHubView ? '-mt-2 lg:-mt-4' : 'mb-6 lg:mb-8'}`}>
                 {tabs.map((t) => (
                     <button
                         key={t.id}
@@ -194,7 +194,7 @@ export default function AdminExaminations({ isHubView = false }) {
                         className={`flex-1 xl:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${
                             view === t.id 
                             ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
-                            : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
+                            : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'
                         }`}
                     >
                         <i className={`fa-solid ${t.icon} ${view === t.id ? 'animate-pulse' : ''}`}></i> {t.label}
@@ -206,7 +206,7 @@ export default function AdminExaminations({ isHubView = false }) {
             {view === "schedule" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-5 lg:p-6 sticky top-24`}>
+                        <div className={`${theme.layout.panel} rounded-themePanel border border-white/5 p-5 lg:p-6 sticky top-24`}>
                             <h3 className="text-lg font-black text-themeText mb-6">Schedule Exam</h3>
                             <form onSubmit={handleScheduleExam} className="flex flex-col gap-4">
                                 <div>
@@ -264,16 +264,16 @@ export default function AdminExaminations({ isHubView = false }) {
                     </div>
                     <div className="lg:col-span-8 flex flex-col gap-5">
                         {exams.length === 0 ? (
-                            <div className="py-20 border-2 border-dashed border-themeBorder rounded-themePanel flex flex-col items-center justify-center text-center px-4 bg-themeApp">
+                            <div className="py-20 border-2 border-dashed border-white/5 rounded-themePanel flex flex-col items-center justify-center text-center px-4 bg-themeApp">
                                 <i className="fa-regular fa-calendar text-4xl text-neutral-600 mb-3"></i>
                                 <p className="text-sm font-bold text-themeTextSec">No exams scheduled</p>
                             </div>
                         ) : (
                             exams.map((ex) => (
-                                <div key={ex.id} className={`${theme.layout.panel} p-5 rounded-themePanel border-theme border-themeBorder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`}>
+                                <div key={ex.id} className={`${theme.layout.panel} p-5 rounded-themePanel border border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4`}>
                                     <div>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <span className="px-2 py-1 bg-themePanel border-theme border-themeBorder rounded text-[9px] font-black uppercase text-themeTextSec">{ex.batch_courses?.batch_id}</span>
+                                            <span className="px-2 py-1 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded text-[9px] font-black uppercase text-themeTextSec">{ex.batch_courses?.batch_id}</span>
                                             <span className="px-2 py-1 bg-themeAccent/10 text-themeAccent border-theme border-themeAccent/20 rounded text-[9px] font-black uppercase">{ex.exam_type}</span>
                                         </div>
                                         <h4 className="text-lg font-black text-themeText mb-1">{ex.batch_courses?.course_name}</h4>
@@ -283,7 +283,7 @@ export default function AdminExaminations({ isHubView = false }) {
                                             <span><i className="fa-solid fa-location-dot mr-1"></i> {ex.exam_rooms?.room_name}</span>
                                         </div>
                                     </div>
-                                    <button onClick={() => handleGenerateTickets(ex.id)} className="px-4 py-2 bg-themeElevated hover:bg-themePanel border-theme border-themeBorder rounded-lg text-[10px] font-black uppercase tracking-widest text-themeText transition-colors flex items-center gap-2">
+                                    <button onClick={() => handleGenerateTickets(ex.id)} className="px-4 py-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg text-[10px] font-black uppercase tracking-widest text-themeText transition-colors flex items-center gap-2">
                                         <i className="fa-solid fa-ticket text-emerald-400"></i> Admit Cards
                                     </button>
                                 </div>
@@ -297,7 +297,7 @@ export default function AdminExaminations({ isHubView = false }) {
             {view === "rooms" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                     <div className="lg:col-span-4">
-                        <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-5 lg:p-6 sticky top-24`}>
+                        <div className={`${theme.layout.panel} rounded-themePanel border border-white/5 p-5 lg:p-6 sticky top-24`}>
                             <h3 className="text-lg font-black text-themeText mb-6">Create Room</h3>
                             <form onSubmit={handleCreateRoom} className="flex flex-col gap-4">
                                 <div>
@@ -323,18 +323,18 @@ export default function AdminExaminations({ isHubView = false }) {
                     <div className="lg:col-span-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
                             {rooms.length === 0 ? (
-                                <div className="col-span-full py-20 border-2 border-dashed border-themeBorder rounded-themePanel flex flex-col items-center justify-center text-center px-4 bg-themeApp">
+                                <div className="col-span-full py-20 border-2 border-dashed border-white/5 rounded-themePanel flex flex-col items-center justify-center text-center px-4 bg-themeApp">
                                     <i className="fa-solid fa-border-none text-4xl text-neutral-600 mb-3"></i>
                                     <p className="text-sm font-bold text-themeTextSec">No rooms configured</p>
                                 </div>
                             ) : (
                                 rooms.map((r) => (
-                                    <div key={r.id} className={`${theme.layout.panel} p-5 rounded-themePanel border-theme border-themeBorder flex justify-between items-center group`}>
+                                    <div key={r.id} className={`${theme.layout.panel} p-5 rounded-themePanel border border-white/5 flex justify-between items-center group`}>
                                         <div>
                                             <h4 className="text-base font-black text-themeText mb-1">{r.room_name}</h4>
                                             <p className="text-[10px] font-bold uppercase tracking-widest text-themeTextSec">{r.total_rows} rows × {r.seats_per_row} seats</p>
                                         </div>
-                                        <div className="w-12 h-12 rounded-full bg-themeElevated border-theme border-themeBorderStrong flex items-center justify-center">
+                                        <div className="w-12 h-12 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 flex items-center justify-center">
                                             <span className="text-sm font-black text-themeAccent">{r.total_capacity}</span>
                                         </div>
                                     </div>
@@ -350,8 +350,8 @@ export default function AdminExaminations({ isHubView = false }) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 animate-fade-in">
                     
                     {/* ASSIGNMENTS LEDGER */}
-                    <div className={`${theme.layout.panel} border-theme border-themeBorder rounded-themePanel overflow-hidden flex flex-col`}>
-                        <div className="p-6 border-b-theme border-themeBorder bg-themeElevated">
+                    <div className={`${theme.layout.panel} border border-white/5 rounded-themePanel overflow-hidden flex flex-col`}>
+                        <div className="p-6 border-b-theme border-white/5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated">
                             <h3 className="text-lg font-black text-themeText flex items-center gap-2">
                                 <i className="fa-solid fa-file-pen text-indigo-400"></i> Assignments Ledger
                             </h3>
@@ -362,11 +362,11 @@ export default function AdminExaminations({ isHubView = false }) {
                                 <p className="text-center text-themeTextSec text-xs font-bold p-8">No assignments published</p>
                             ) : (
                                 assignments.map(asg => (
-                                    <div key={asg.id} className="bg-themePanel border-theme border-themeBorder p-4 rounded-xl flex justify-between items-center gap-4">
+                                    <div key={asg.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 p-4 rounded-xl flex justify-between items-center gap-4">
                                         <div className="flex-1">
                                             <div className="flex gap-2 mb-1">
-                                                <span className="px-2 py-0.5 bg-themeElevated text-[8px] font-black uppercase text-themeTextSec rounded">{asg.batch_id}</span>
-                                                <span className="px-2 py-0.5 bg-themeElevated text-[8px] font-black uppercase text-indigo-400 rounded">{asg.subject_name}</span>
+                                                <span className="px-2 py-0.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-[8px] font-black uppercase text-themeTextSec rounded">{asg.batch_id}</span>
+                                                <span className="px-2 py-0.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-[8px] font-black uppercase text-indigo-400 rounded">{asg.subject_name}</span>
                                             </div>
                                             <p className="text-sm font-black text-themeText line-clamp-1">{asg.title}</p>
                                             <p className="text-[10px] text-themeTextSec mt-1"><i className="fa-solid fa-user-tie"></i> {asg.profiles?.full_name}</p>
@@ -385,8 +385,8 @@ export default function AdminExaminations({ isHubView = false }) {
                     </div>
 
                     {/* MANUAL EXAMS LEDGER */}
-                    <div className={`${theme.layout.panel} border-theme border-themeBorder rounded-themePanel overflow-hidden flex flex-col`}>
-                        <div className="p-6 border-b-theme border-themeBorder bg-themeElevated">
+                    <div className={`${theme.layout.panel} border border-white/5 rounded-themePanel overflow-hidden flex flex-col`}>
+                        <div className="p-6 border-b-theme border-white/5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated">
                             <h3 className="text-lg font-black text-themeText flex items-center gap-2">
                                 <i className="fa-solid fa-pen-ruler text-rose-400"></i> Manual Exams Ledger
                             </h3>
@@ -397,9 +397,9 @@ export default function AdminExaminations({ isHubView = false }) {
                                 <p className="text-center text-themeTextSec text-xs font-bold p-8">No manual marks submitted yet</p>
                             ) : (
                                 manualMarks.map((m, i) => (
-                                    <div key={i} className="bg-themePanel border-theme border-themeBorder p-4 rounded-xl flex justify-between items-center gap-4">
+                                    <div key={i} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 p-4 rounded-xl flex justify-between items-center gap-4">
                                         <div className="flex-1">
-                                            <span className="px-2 py-0.5 bg-themeElevated border-theme border-themeBorder text-[8px] font-black uppercase text-rose-400 rounded inline-block mb-1">
+                                            <span className="px-2 py-0.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 text-[8px] font-black uppercase text-rose-400 rounded inline-block mb-1">
                                                 {m.exam_type}
                                             </span>
                                             <p className="text-sm font-black text-themeText line-clamp-1">{m.subject_name}</p>

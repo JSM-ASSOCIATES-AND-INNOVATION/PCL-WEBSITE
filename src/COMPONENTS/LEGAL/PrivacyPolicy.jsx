@@ -4,21 +4,12 @@ import Navbar from '../NAVBAR/Navbar';
 // NOTE: adjust the Navbar import path to match your project structure, or remove it
 // if this page will render standalone.
 
-// ---------------------------------------------------------------------------
-// BEFORE YOU PUBLISH THIS FILE
-// This is a starting template, not a finished policy. Replace every
-// [bracketed] placeholder with your real company details, then have it
-// reviewed by a lawyer licensed where you and your customers operate —
-// especially if you'll have customers in the EU/UK (GDPR), California
-// (CCPA), or process health, financial, or children's data. Nothing here
-// is legal advice.
-// ---------------------------------------------------------------------------
 
-const COMPANY_NAME = 'JSM INNOVATIONS Software Pvt. Ltd.';
-const PRODUCT_NAME = 'JSM INNOVATIONS ERP';
-const SUPPORT_EMAIL = 'support@ledgerline.app';
-const PRIVACY_EMAIL = 'privacy@ledgerline.app';
-const COMPANY_ADDRESS = '[Registered office address, city, state, PIN]';
+const COMPANY_NAME = 'JSM Innovations';
+const PRODUCT_NAME = 'Prudentia College of Law Website & ERP';
+const SUPPORT_EMAIL = 'contact.jsminnovations@gmail.com';
+const PRIVACY_EMAIL = 'contact.jsminnovations@gmail.com';
+const COMPANY_ADDRESS = '3-23, Gurramguda, Opp Badangpet Municipal Office, Balapur Mandal, R.R. Dist, Hyderabad - Telangana 501510';
 const EFFECTIVE_DATE = '19 July 2026';
 const VERSION = 'v1.0';
 
@@ -37,6 +28,7 @@ const SECTIONS = [
   { id: 'dpa', label: 'Customer data and DPA' },
   { id: 'changes', label: 'Changes to this policy' },
   { id: 'contact', label: 'Contact us' },
+  { id: 'dpdpa', label: 'DPDPA Rights (India)' },
 ];
 
 function useScrollSpy(ids) {
@@ -79,7 +71,7 @@ function Clause({ id, index, title, summary, children }) {
         </span>
         <h2
           className="text-xl md:text-2xl font-bold text-white leading-snug"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+         
         >
           {title}
         </h2>
@@ -139,7 +131,7 @@ export default function PrivacyPolicy() {
 
           <h1
             className="text-4xl md:text-5xl font-bold mb-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+           
           >
             Privacy Policy
           </h1>
@@ -450,6 +442,27 @@ export default function PrivacyPolicy() {
                 </p>
               </div>
             </Clause>
+          <Clause
+            id="dpdpa"
+            index={15}
+            title="DPDPA Rights (India)"
+            summary="If you reside in India, you have specific rights under the Digital Personal Data Protection Act, 2023."
+          >
+            <p>
+              As a Data Fiduciary operating in India, {COMPANY_NAME} strictly adheres to the Digital Personal Data Protection Act, 2023. We process your personal data based on your explicit consent or for legitimate uses outlined in the Act.
+            </p>
+            <p>Under the DPDPA, Data Principals have the right to:</p>
+            <ul>
+              <li><strong>Information:</strong> Request a summary of personal data being processed.</li>
+              <li><strong>Correction & Erasure:</strong> Request the correction of inaccurate data or erasure of data no longer needed.</li>
+              <li><strong>Grievance Redressal:</strong> Readily available means of grievance redressal.</li>
+              <li><strong>Withdraw Consent:</strong> Withdraw your consent for data processing at any time.</li>
+            </ul>
+            <p>
+              To exercise these rights or contact our designated Data Protection Officer, please email us at <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
+            </p>
+          </Clause>
+
           </div>
         </div>
       </div>

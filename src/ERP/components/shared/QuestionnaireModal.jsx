@@ -5,7 +5,7 @@ import { theme } from '../../theme';
 import { supabase } from '../../lib/supabase/supabaseClient';
 import { useERP } from '../../context/ErpContext';
 
-export default function QuestionnaireModal({ onComplete }) {
+export default function QuestionnaireModal({ onComplete, onSkip }) {
     const { userSession } = useERP();
     const [isLoading, setIsLoading] = useState(false);
     
@@ -103,10 +103,10 @@ export default function QuestionnaireModal({ onComplete }) {
 
     return (
         <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className={`w-full max-w-3xl bg-themePanel border-theme border-themeBorder shadow-themeElevated rounded-themePanel overflow-hidden flex flex-col max-h-[90vh]`}>
+            <div className={`w-full max-w-3xl bg-black/5 dark:bg-white/10 backdrop-blur-[80px] backdrop-blur-2xl shadow-premium border border-black/10 dark:border-white/20 shadow-premiumElevated rounded-[2rem] overflow-hidden flex flex-col max-h-[90vh]`}>
                 
-                <div className="p-6 md:p-8 border-b-theme border-themeBorder flex flex-col gap-2 shrink-0">
-                    <div className="w-12 h-12 bg-themeApp border-theme border-themeBorder rounded-themeBtn flex items-center justify-center text-themeAccent mb-4 shadow-themeElevated">
+                <div className="p-6 md:p-8 border-b-theme border-black/10 dark:border-white/20 flex flex-col gap-2 shrink-0">
+                    <div className="w-12 h-12 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] flex items-center justify-center text-themeAccent mb-4 shadow-premiumElevated">
                         <i className="fa-solid fa-clipboard-list text-xl"></i>
                     </div>
                     <h2 className={`${theme.text.heading} text-2xl`}>Comprehensive Onboarding Details</h2>
@@ -120,12 +120,12 @@ export default function QuestionnaireModal({ onComplete }) {
                         
                         {/* Section 1: Academic & Professional Details */}
                         <div className="flex flex-col gap-4">
-                            <h3 className="text-sm font-bold uppercase tracking-widest text-themeAccent border-b-theme border-themeBorder pb-2">Academic & Background</h3>
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-themeAccent border-b-theme border-black/10 dark:border-white/20 pb-2">Academic & Background</h3>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Primary Area of Legal Interest *</label>
-                                    <select name="legalInterest" required value={formData.legalInterest} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none">
+                                    <select name="legalInterest" required value={formData.legalInterest} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none">
                                         <option value="" disabled>Select an area of interest</option>
                                         <option value="Corporate Law">Corporate Law</option>
                                         <option value="Criminal Law">Criminal Law</option>
@@ -137,14 +137,14 @@ export default function QuestionnaireModal({ onComplete }) {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">LinkedIn Profile URL *</label>
-                                    <input type="url" name="linkedInProfile" required placeholder="https://linkedin.com/in/..." value={formData.linkedInProfile} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                    <input type="url" name="linkedInProfile" required placeholder="https://linkedin.com/in/..." value={formData.linkedInProfile} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Past generations in legal profession? *</label>
-                                    <select name="pastLegalGenerations" required value={formData.pastLegalGenerations} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none">
+                                    <select name="pastLegalGenerations" required value={formData.pastLegalGenerations} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none">
                                         <option value="No">No</option>
                                         <option value="Yes">Yes</option>
                                     </select>
@@ -152,7 +152,7 @@ export default function QuestionnaireModal({ onComplete }) {
                                 {formData.pastLegalGenerations === 'Yes' && (
                                     <div className="flex flex-col gap-2">
                                         <label className="text-sm font-semibold text-themeText">Please Specify Details *</label>
-                                        <input type="text" name="pastLegalGenerationsDetails" required placeholder="e.g., Grandfather was a judge" value={formData.pastLegalGenerationsDetails} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                        <input type="text" name="pastLegalGenerationsDetails" required placeholder="e.g., Grandfather was a judge" value={formData.pastLegalGenerationsDetails} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                                     </div>
                                 )}
                             </div>
@@ -160,12 +160,12 @@ export default function QuestionnaireModal({ onComplete }) {
 
                         {/* Section 2: Personal & Identity Details */}
                         <div className="flex flex-col gap-4">
-                            <h3 className="text-sm font-bold uppercase tracking-widest text-themeAccent border-b-theme border-themeBorder pb-2">Personal & Identity Details</h3>
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-themeAccent border-b-theme border-black/10 dark:border-white/20 pb-2">Personal & Identity Details</h3>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Blood Group *</label>
-                                    <select name="bloodGroup" required value={formData.bloodGroup} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none">
+                                    <select name="bloodGroup" required value={formData.bloodGroup} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none">
                                         <option value="" disabled>Select Blood Group</option>
                                         <option value="A+">A+</option>
                                         <option value="A-">A-</option>
@@ -179,13 +179,13 @@ export default function QuestionnaireModal({ onComplete }) {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Aadhar Number *</label>
-                                    <input type="text" name="aadharNumber" required maxLength="12" placeholder="12 Digit Aadhar No." value={formData.aadharNumber} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                    <input type="text" name="aadharNumber" required maxLength="12" placeholder="12 Digit Aadhar No." value={formData.aadharNumber} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-semibold text-themeText">Present Address *</label>
-                                <textarea name="presentAddress" required rows="2" placeholder="Full residential address" value={formData.presentAddress} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none resize-none"></textarea>
+                                <textarea name="presentAddress" required rows="2" placeholder="Full residential address" value={formData.presentAddress} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none resize-none"></textarea>
                             </div>
 
                             <div className="flex flex-col gap-2">
@@ -196,41 +196,41 @@ export default function QuestionnaireModal({ onComplete }) {
                                         Same as Present Address
                                     </label>
                                 </div>
-                                <textarea name="permanentAddress" required rows="2" placeholder="Full permanent address" value={formData.permanentAddress} onChange={handleChange} disabled={formData.sameAsPresentAddress} className={`w-full border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none resize-none ${formData.sameAsPresentAddress ? 'bg-themePanel opacity-70' : 'bg-themeApp'}`}></textarea>
+                                <textarea name="permanentAddress" required rows="2" placeholder="Full permanent address" value={formData.permanentAddress} onChange={handleChange} disabled={formData.sameAsPresentAddress} className={`w-full border border-black/10 dark:border-white/20 rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none resize-none ${formData.sameAsPresentAddress ? 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] backdrop-blur-2xl shadow-premium opacity-70' : 'bg-themeApp'}`}></textarea>
                             </div>
                         </div>
 
                         {/* Section 3: Family & Emergency */}
                         <div className="flex flex-col gap-4">
-                            <h3 className="text-sm font-bold uppercase tracking-widest text-themeAccent border-b-theme border-themeBorder pb-2">Family & Emergency Contacts</h3>
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-themeAccent border-b-theme border-black/10 dark:border-white/20 pb-2">Family & Emergency Contacts</h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Father's Name *</label>
-                                    <input type="text" name="fatherName" required placeholder="Full Name" value={formData.fatherName} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                    <input type="text" name="fatherName" required placeholder="Full Name" value={formData.fatherName} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Mother's Name *</label>
-                                    <input type="text" name="motherName" required placeholder="Full Name" value={formData.motherName} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                    <input type="text" name="motherName" required placeholder="Full Name" value={formData.motherName} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                                 </div>
                             </div>
                             
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-semibold text-themeText">Primary Parent/Guardian Occupation *</label>
-                                <input type="text" name="parentOccupation" required placeholder="e.g. Business, Government Service, Doctor" value={formData.parentOccupation} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                <input type="text" name="parentOccupation" required placeholder="e.g. Business, Government Service, Doctor" value={formData.parentOccupation} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Emergency Contact Name *</label>
-                                    <input type="text" name="emergencyContact" required placeholder="e.g. John Doe (Father)" value={formData.emergencyContact} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
+                                    <input type="text" name="emergencyContact" required placeholder="e.g. John Doe (Father)" value={formData.emergencyContact} onChange={handleChange} className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/20 rounded-[1.5rem] px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none" />
                                 </div>
                                 
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-semibold text-themeText">Emergency Contact Phone *</label>
                                     <div className="flex">
-                                        <span className="bg-themePanel border-theme border-themeBorder border-r-0 rounded-l-themeBtn px-4 py-3 text-themeTextSec flex items-center select-none font-mono">+91</span>
-                                        <input type="text" name="emergencyPhone" required maxLength="10" placeholder="9876543210" value={formData.emergencyPhone} onChange={handleChange} className="w-full bg-themeApp border-theme border-themeBorder rounded-r-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none font-mono" />
+                                        <span className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] backdrop-blur-2xl shadow-premium border border-black/10 dark:border-white/20 border-r-0 rounded-l-themeBtn px-4 py-3 text-themeTextSec flex items-center select-none font-mono">+91</span>
+                                        <input type="text" name="emergencyPhone" required maxLength="10" placeholder="9876543210" value={formData.emergencyPhone} onChange={handleChange} className="w-full bg-themeApp border border-black/10 dark:border-white/20 rounded-r-themeBtn px-4 py-3 text-themeText focus:border-themeAccent focus:ring-1 focus:ring-themeAccent outline-none font-mono" />
                                     </div>
                                 </div>
                             </div>
@@ -239,18 +239,23 @@ export default function QuestionnaireModal({ onComplete }) {
                     </form>
                 </div>
 
-                <div className="p-6 md:p-8 border-t-theme border-themeBorder bg-themeApp shrink-0 flex items-center justify-between">
+                <div className="p-6 md:p-8 border-t-theme border-black/10 dark:border-white/20 bg-themeApp shrink-0 flex items-center justify-between">
                     <p className="text-xs text-themeTextSec">
                         <i className="fa-solid fa-lock mr-2 text-themeAccent"></i>
                         Record will be locked upon submission.
                     </p>
-                    <button type="submit" form="questionnaire-form" disabled={isLoading || formData.emergencyPhone.length !== 10 || formData.aadharNumber.length !== 12 || !formData.linkedInProfile.includes('linkedin.com/')} className={`${theme.action.btnPrimary} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                        {isLoading ? (
-                            <><i className="fa-solid fa-circle-notch fa-spin"></i> Submitting...</>
-                        ) : (
-                            <><i className="fa-solid fa-check"></i> Submit & Lock Record</>
-                        )}
-                    </button>
+                    <div className="flex gap-4">
+                        {onSkip && (<button type="button" onClick={onSkip} className="px-6 py-2 rounded-xl text-xs font-bold text-white/50 hover:text-white transition-colors">
+                            Skip for now
+                        </button>)}
+                        <button type="submit" form="questionnaire-form" disabled={isLoading || formData.emergencyPhone.length !== 10 || formData.aadharNumber.length !== 12 || !formData.linkedInProfile.includes('linkedin.com/')} className={`${theme.action.btnPrimary} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                            {isLoading ? (
+                                <><i className="fa-solid fa-circle-notch fa-spin"></i> Submitting...</>
+                            ) : (
+                                <><i className="fa-solid fa-check"></i> Submit & Lock Record</>
+                            )}
+                        </button>
+                    </div>
                 </div>
 
             </div>

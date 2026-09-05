@@ -3,7 +3,7 @@ import React, { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, GraduationCap, FileText, Landmark } from 'lucide-react';
 import { motion } from 'framer-motion';
-import campusLogoImg from '../../../ASSETS/LOGOS/pcl_campus_logo.webp';
+import campusImg from '../../../ASSETS/CAMPUS/PCL_CAMPUS.webp';
 import outdoorImg from '../../../ASSETS/CAMPUS/pcl_outdoor.webp';
 import { useSite } from '../../../CONTEXT/SiteContext';
 import { useSiteContent } from '../../../LIB/hooks/useSiteContent';
@@ -65,7 +65,7 @@ const metricsVariants = {
 const AnimatedHeadline = ({ text, className, style }) => {
   const words = text.split(" ");
   return (
-    <h1 className={`flex flex-wrap justify-center overflow-hidden ${className}`} style={style}>
+    <h1 className={`flex flex-wrap justify-center overflow-visible ${className}`} style={style}>
       {words.map((word, idx) => (
         <motion.span 
           key={idx} 
@@ -108,7 +108,7 @@ const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
           viewport={{ once: true }}
           transition={{ duration: 2.5, ease: "easeOut" }}
           className="w-full h-full bg-cover bg-center origin-center"
-          style={{ backgroundImage: `url(${windowWidth <= 900 ? campusLogoImg : outdoorImg})` }}
+          style={{ backgroundImage: `url(${windowWidth <= 900 ? campusImg : outdoorImg})` }}
         />
         
         {/* Cinematic Gradient Overlays */}
@@ -141,7 +141,7 @@ const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
         </motion.div>
 
         {/* Headline */}
-        <div className="mb-4 md:mb-[36px] w-full max-w-[1100px]" style={{ fontFamily: "'Playfair Display', serif", color: 'var(--text-color)' }}>
+        <div className="mb-4 md:mb-[36px] w-full max-w-[1100px]">
           <AnimatedHeadline 
             text={title1} 
             className="text-[2.75rem] sm:text-[3.5rem] md:text-[5rem] lg:text-[76px] font-bold leading-[1.1] tracking-[-0.01em] drop-shadow-2xl" 
@@ -158,7 +158,7 @@ const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
           className="mb-6 md:mb-[48px] backdrop-blur-xl rounded-full px-6 md:px-12 py-4 md:py-5 max-w-[700px] mx-auto shadow-2xl"
           style={{ backgroundColor: 'var(--hero-pill-bg)', border: '1px solid var(--hero-border)' }}
         >
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg font-light drop-shadow-md text-center" style={{ fontFamily: "'Outfit', sans-serif", lineHeight: 1.5, color: 'var(--text-muted)' }}>
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg font-light drop-shadow-md text-center">
             {desc}
           </p>
         </motion.div>
@@ -166,45 +166,49 @@ const Hero = forwardRef(({ windowWidth, ...props }, ref) => {
         {/* Buttons */}
         <motion.div 
           variants={containerVariants}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 w-full sm:w-auto px-4 relative bottom-4 md:bottom-8"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 w-full px-6 relative bottom-4 md:bottom-8"
         >
-          <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
+          <motion.div variants={buttonVariants} className="w-full sm:w-auto flex justify-center">
             {isAdmissionsOpen ? (
               <Link 
                 to={btn1Link} 
-                className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 bg-[var(--primary-color)] text-[#000000] !important font-extrabold uppercase tracking-[0.15em] text-[11px] rounded-[18px] shadow-[0_10px_30px_rgba(255,191,0,0.25)] hover:shadow-[0_15px_40px_rgba(255,191,0,0.35)] hover:-translate-y-1 transition-all duration-500 overflow-hidden"
-                style={{ color: '#000000' }}
+                className="tlh-btn w-full sm:w-auto flex justify-center items-center !py-4 px-10 min-w-[220px]"
               >
-                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-                {btn1Text} <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform duration-500" />
+                <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center justify-center">
+                  {btn1Text} <ArrowRight size={16} className="ml-2" />
+                </span>
               </Link>
             ) : (
               <Link 
                 to="/contact" 
-                className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 bg-white/5 text-white/50 border border-white/10 hover:bg-white/10 font-extrabold uppercase tracking-[0.15em] text-[11px] rounded-[18px] transition-all duration-500 overflow-hidden"
+                className="tlh-btn w-full sm:w-auto flex justify-center items-center !py-4 px-10 min-w-[220px]"
               >
-                Admissions Closed <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform duration-500" />
+                <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center justify-center">
+                  Inquire Admissions <ArrowRight size={16} className="ml-2" />
+                </span>
               </Link>
             )}
           </motion.div>
 
-          <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px]">
+          <motion.div variants={buttonVariants} className="w-full sm:w-auto flex justify-center">
             <Link 
               to={btn2Link} 
-              className="group relative w-full flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-8 font-bold uppercase tracking-[0.1em] text-[11px] rounded-[18px] backdrop-blur-md transition-all hover:-translate-y-1 duration-500"
-              style={{ color: 'var(--text-color)', backgroundColor: 'var(--hero-border)', border: '1px solid var(--card-border)' }}
+              className="tlh-btn w-full sm:w-auto flex justify-center items-center !py-4 px-10 min-w-[220px]"
             >
-              {btn2Text}
+              <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center justify-center">
+                {btn2Text}
+              </span>
             </Link>
           </motion.div>
 
-          <motion.div variants={buttonVariants} className="w-full sm:w-auto max-w-[320px] hidden md:block">
+          <motion.div variants={buttonVariants} className="w-full sm:w-auto flex justify-center hidden md:flex">
             <Link 
               to={btn3Link} 
-              className="group flex items-center justify-center gap-2 h-[48px] md:h-[56px] px-4 font-semibold uppercase tracking-wider text-[11px] transition-colors"
-              style={{ color: 'var(--text-muted)' }}
+              className="tlh-btn w-full sm:w-auto flex justify-center items-center !py-4 px-10 min-w-[220px]"
             >
-              {btn3Text} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center justify-center">
+                {btn3Text} <ArrowRight size={16} className="ml-2" />
+              </span>
             </Link>
           </motion.div>
         </motion.div>

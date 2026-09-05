@@ -52,7 +52,7 @@ export default function EventDetail() {
     return (
       <div className={`${styles.pageWrapper} flex flex-col items-center justify-center text-center px-6`}>
         <div className={styles.ambientBackground} />
-        <h2 className="text-4xl md:text-6xl font-bold mb-6 text-[var(--text-color)] relative z-10" style={{ fontFamily: "'Playfair Display', serif" }}>Event Not Found</h2>
+        <h2 className="text-4xl md:text-6xl font-bold mb-6 text-[var(--text-color)] relative z-10">Event Not Found</h2>
         <Link to="/events" className="relative z-10 text-[var(--primary-color)] font-bold uppercase tracking-widest text-sm hover:underline transition-all">
           Return to All Events
         </Link>
@@ -83,7 +83,7 @@ export default function EventDetail() {
           className="w-full aspect-[16/9] md:aspect-[3/1] rounded-[32px] overflow-hidden relative border border-[var(--card-border)] mb-12 md:mb-16 shadow-[0_20px_60px_rgba(0,0,0,0.4)] z-10 flex items-center justify-center bg-[var(--card-bg)]"
         >
           {event.image_url ? (
-            <img 
+            <img decoding="async" loading="lazy" 
               src={event.image_url} 
               alt={event.title} 
               className="absolute inset-0 w-full h-full object-cover"
@@ -114,7 +114,7 @@ export default function EventDetail() {
                 </span>
               )}
             </div>
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-[var(--text-color)] leading-tight">
               {event.title}
             </h1>
           </div>
@@ -130,7 +130,7 @@ export default function EventDetail() {
             <h3 className="text-[var(--primary-color)] text-lg font-bold uppercase tracking-widest mb-6 border-b border-[var(--card-border)] pb-4">
               About the Event
             </h3>
-            <div className="prose prose-invert prose-lg max-w-none text-[var(--text-muted)] leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            <div className="prose prose-invert prose-lg max-w-none text-[var(--text-muted)] leading-relaxed">
               {(event.description || '').split('\n').map((para, i) => (
                 <p key={i} className="mb-6">{para}</p>
               ))}
@@ -144,9 +144,9 @@ export default function EventDetail() {
             className="w-full md:w-1/3"
           >
             <div className={`${styles.glassCard} p-6 md:p-8 border border-[var(--card-border)] sticky top-32`}>
-              <h3 className="text-[var(--text-color)] text-xl font-bold mb-8" style={{ fontFamily: "'Playfair Display', serif" }}>Event Details</h3>
+              <h3 className="text-[var(--text-color)] text-xl font-bold mb-8">Event Details</h3>
               
-              <div className="flex flex-col gap-6 md:gap-8 text-[var(--text-muted)] font-medium" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              <div className="flex flex-col gap-6 md:gap-8 text-[var(--text-muted)] font-medium">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-full bg-[var(--primary-color)]/10 text-[var(--primary-color)] flex items-center justify-center shrink-0 border border-[var(--primary-color)]/20 shadow-[0_0_15px_var(--primary-glow)]">
                     <Calendar size={20} />
@@ -197,13 +197,13 @@ export default function EventDetail() {
             viewport={{ once: true }}
             className="mt-20 md:mt-24 relative z-10"
           >
-            <h3 className="text-[var(--primary-color)] text-2xl md:text-3xl font-bold uppercase tracking-widest mb-8 md:mb-12 border-b border-[var(--card-border)] pb-4 text-center md:text-left" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h3 className="text-[var(--primary-color)] text-2xl md:text-3xl font-bold uppercase tracking-widest mb-8 md:mb-12 border-b border-[var(--card-border)] pb-4 text-center md:text-left">
               Event Gallery
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {event.image_urls.map((url, idx) => (
                 <div key={idx} className="group aspect-[4/3] rounded-[24px] overflow-hidden border border-[var(--card-border)] relative shadow-lg">
-                  <img 
+                  <img decoding="async" loading="lazy" 
                     src={url} 
                     alt={`${event.title} gallery ${idx + 1}`} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"

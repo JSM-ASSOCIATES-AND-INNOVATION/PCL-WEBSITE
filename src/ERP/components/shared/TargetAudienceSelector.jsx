@@ -89,19 +89,19 @@ export default function TargetAudienceSelector({ value, onChange, role = 'admin'
             </label>
 
             {/* Mode Switcher */}
-            <div className="flex bg-themeElevated p-1 rounded-xl border border-themeBorderStrong">
+            <div className="flex bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-1 rounded-xl border border-black/5 dark:border-white/10">
                 {role === 'admin' && (
-                    <button type="button" onClick={() => setMode('Global')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Global' ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder' : 'text-themeTextSec hover:text-themeText'}`}>Global</button>
+                    <button type="button" onClick={() => setMode('Global')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Global' ? 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText shadow-sm border border-white/5' : 'text-themeTextSec hover:text-themeText'}`}>Global</button>
                 )}
                 {role === 'admin' && (
-                    <button type="button" onClick={() => setMode('Roles')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Roles' ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder' : 'text-themeTextSec hover:text-themeText'}`}>Roles</button>
+                    <button type="button" onClick={() => setMode('Roles')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Roles' ? 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText shadow-sm border border-white/5' : 'text-themeTextSec hover:text-themeText'}`}>Roles</button>
                 )}
-                <button type="button" onClick={() => setMode('Batches')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Batches' ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder' : 'text-themeTextSec hover:text-themeText'}`}>Batches</button>
-                <button type="button" onClick={() => setMode('Individual')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Individual' ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder' : 'text-themeTextSec hover:text-themeText'}`}>Individual</button>
+                <button type="button" onClick={() => setMode('Batches')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Batches' ? 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText shadow-sm border border-white/5' : 'text-themeTextSec hover:text-themeText'}`}>Batches</button>
+                <button type="button" onClick={() => setMode('Individual')} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${mode === 'Individual' ? 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText shadow-sm border border-white/5' : 'text-themeTextSec hover:text-themeText'}`}>Individual</button>
             </div>
 
             {/* Selection Area */}
-            <div className="min-h-[100px] bg-themeElevated border border-themeBorderStrong rounded-xl p-4 flex flex-col gap-2 justify-center relative">
+            <div className="min-h-[100px] bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-xl p-4 flex flex-col gap-2 justify-center relative">
                 
                 {mode === 'Global' && (
                     <div className="text-center animate-fade-in">
@@ -118,7 +118,7 @@ export default function TargetAudienceSelector({ value, onChange, role = 'admin'
                                 type="button"
                                 key={r} 
                                 onClick={() => toggleItem(r)}
-                                className={`px-4 py-2 rounded-lg text-xs font-black transition-all border ${value.includes(r) ? 'bg-themeAccent text-[#0a0a0a] border-themeAccent shadow-lg shadow-themeAccent/20' : 'bg-themePanel text-themeTextSec border-themeBorderStrong hover:border-themeText'}`}
+                                className={`px-4 py-2 rounded-lg text-xs font-black transition-all border ${value.includes(r) ? 'bg-themeAccent text-[#0a0a0a] border-themeAccent shadow-lg shadow-themeAccent/20' : 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeTextSec border-black/5 dark:border-white/10 hover:border-themeText'}`}
                             >
                                 {r}s
                             </button>
@@ -133,7 +133,7 @@ export default function TargetAudienceSelector({ value, onChange, role = 'admin'
                                 type="button"
                                 key={b} 
                                 onClick={() => toggleItem(b)}
-                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${value.includes(b) ? 'bg-themeAccent text-[#0a0a0a] border-themeAccent shadow-lg shadow-themeAccent/20' : 'bg-themePanel text-themeTextSec border-themeBorderStrong hover:border-themeText'}`}
+                                className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border ${value.includes(b) ? 'bg-themeAccent text-[#0a0a0a] border-themeAccent shadow-lg shadow-themeAccent/20' : 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeTextSec border-black/5 dark:border-white/10 hover:border-themeText'}`}
                             >
                                 {b}
                             </button>
@@ -163,19 +163,19 @@ export default function TargetAudienceSelector({ value, onChange, role = 'admin'
                                 placeholder="Search by Name or ERP ID..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-themeText placeholder:text-themeBorderStrong outline-none transition-all"
+                                className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl pl-10 pr-4 py-3 text-sm font-bold text-themeText placeholder:text-themeBorderStrong outline-none transition-all"
                             />
                             {isSearching && <i className="fa-solid fa-spinner fa-spin absolute right-4 top-1/2 -translate-y-1/2 text-themeAccent"></i>}
                             
                             {/* Search Dropdown */}
                             {searchResults.length > 0 && (
-                                <div className="absolute top-full left-0 right-0 mt-2 bg-themePanel border border-themeBorder rounded-xl shadow-xl overflow-hidden z-50 flex flex-col">
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl shadow-xl overflow-hidden z-50 flex flex-col">
                                     {searchResults.map(user => (
                                         <button 
                                             type="button"
                                             key={user.id}
                                             onClick={() => handleSelectIndividual(user.erp_id)}
-                                            className="flex flex-col text-left p-3 hover:bg-themeElevated transition-colors border-b border-themeBorder last:border-b-0"
+                                            className="flex flex-col text-left p-3 hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated transition-colors border-b border-white/5 last:border-b-0"
                                         >
                                             <span className="text-sm font-black text-themeText">{user.full_name}</span>
                                             <div className="flex gap-2 items-center mt-1">

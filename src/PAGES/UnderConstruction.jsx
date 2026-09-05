@@ -3,12 +3,16 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Hammer } from 'lucide-react';
+import SEO from '../COMPONENTS/SEO/SEO';
 
 export default function UnderConstruction({ title }) {
   const navigate = useNavigate();
 
+
   return (
     <div className="min-h-screen w-full bg-brand-bg flex flex-col items-center justify-center font-sans text-brand-text px-6">
+      <SEO title={title || "Under Construction"} description="This page is currently being crafted." />
+
       
       {/* Background Gradient */}
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#050505] to-[#000000] z-0 pointer-events-none" />
@@ -29,7 +33,7 @@ export default function UnderConstruction({ title }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-4xl md:text-6xl font-bold mb-4" 
-          style={{ fontFamily: "'Playfair Display', serif" }}
+         
         >
           {title || "Page Under Construction"}
         </motion.h1>

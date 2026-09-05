@@ -2,9 +2,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { theme } from "../../../theme";
 import { supabase } from "../../../lib/supabase/supabaseClient";
-import { useERP } from "../../../context/ErpContext"; 
+import { useERP } from "../../../context/ErpContext";
+import PageHeader from "../../shared/PageHeader/PageHeader"; 
 
-export default function Attendance() {
+export default function Attendance({ isEmbedded = false }) {
     const { userSession } = useERP();
 
     const [attendanceData, setAttendanceData] = useState([]);
@@ -169,7 +170,7 @@ export default function Attendance() {
         } catch (error) {
             console.error(error);
             setScanStatus("error");
-            setTimeout(() => setScanStatus("idle"), 3000);
+            setTimeout(() => setScanStatus("idle"), 50);
         }
     };
 
@@ -187,24 +188,25 @@ export default function Attendance() {
     };
 
     return (
-        <div className="w-full animate-fade-in selection:bg-themeElevated">
-            <div className="max-w-[1400px] mx-auto flex flex-col gap-6 lg:gap-8  pb-20">
+        <div className={`w-full animate-fade-in selection:bg-themeElevated ${!isEmbedded ? "min-h-screen bg-themeApp text-themeText" : ""}`}>
+            <div className={`max-w-[1400px] mx-auto flex flex-col gap-6 lg:gap-8 ${!isEmbedded ? "p-4 sm:p-6 lg:p-8 pb-32 lg:pb-12" : "pb-10"}`}>
 
                 {/* 1. MASTER HEADER */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl lg:text-4xl font-black text-themeText tracking-tight mb-2">Verified Attendance</h1>
-                        <p className="text-xs lg:text-sm font-bold text-themeTextSec max-w-2xl">Official class participation synced seamlessly with the global timetable and leave management.</p>
-                    </div>
-                    
-                    <button onClick={() => setShowScanner(true)} className="px-6 py-3.5 rounded-xl bg-themeAccent hover:bg-themeAccent/90 text-white text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg shadow-themeAccent/20 flex items-center justify-center gap-2">
-                        <i className="fa-solid fa-qrcode text-sm"></i> Scan QR
-                    </button>
-                </div>
+                <PageHeader 
+                    icon="fa-solid fa-user-check" 
+                    title="Verified Attendance" 
+                    subtitle="Official class participation synced seamlessly." 
+                    isEmbedded={isEmbedded}
+                    rightContent={
+                        <button onClick={() => setShowScanner(true)} className="px-8 py-4 rounded-xl bg-themeAccent hover:bg-themeAccent/90 text-[#0a0a0a] text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg shadow-themeAccent/20 flex items-center justify-center gap-2">
+                            <i className="fa-solid fa-qrcode text-lg"></i> Scan QR
+                        </button>
+                    }
+                />
 
-                {/* 2. OVERVIEW DASHBOARD */}
-                <div className="bg-themePanel rounded-2xl border border-themeBorder p-6 lg:p-8 shadow-sm flex flex-col lg:flex-row gap-8 items-center lg:items-start relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-themeAccent/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
+{/* 2. OVERVIEW DASHBOARD */}
+                <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-2xl border border-black/10 dark:border-white/20 p-6 lg:p-8 shadow-sm flex flex-col lg:flex-row gap-8 items-center lg:items-start relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-full max-w-[16rem] md:w-64 h-64 bg-themeAccent/5 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none blur-3xl"></div>
                     
                     {/* The Linear Gauge */}
                     <div className="w-full lg:w-1/2 flex flex-col gap-4 relative z-10">
@@ -219,7 +221,7 @@ export default function Attendance() {
                             </div>
                         </div>
                         
-                        <div className="relative h-4 bg-themeElevated rounded-full overflow-hidden border border-themeBorder">
+                        <div className="relative h-4 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-full overflow-hidden border border-black/10 dark:border-white/20">
                             {/* Target Line */}
                             <div className="absolute top-0 bottom-0 left-[75%] w-0.5 bg-themeText z-10"></div>
                             
@@ -248,19 +250,19 @@ export default function Attendance() {
                     
                     {/* Stat Cards */}
                     <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4 relative z-10">
-                        <div className="bg-themeElevated p-4 rounded-xl border border-themeBorder flex flex-col">
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-4 rounded-xl border border-black/10 dark:border-white/20 flex flex-col">
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">Classes Attended</p>
                             <p className="text-2xl font-black text-themeText">{totalAttended}</p>
                         </div>
-                        <div className="bg-themeElevated p-4 rounded-xl border border-themeBorder flex flex-col">
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-4 rounded-xl border border-black/10 dark:border-white/20 flex flex-col">
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">Classes Missed</p>
                             <p className="text-2xl font-black text-rose-500">{totalMissed}</p>
                         </div>
-                        <div className="bg-themeElevated p-4 rounded-xl border border-themeBorder flex flex-col">
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-4 rounded-xl border border-black/10 dark:border-white/20 flex flex-col">
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">Medical Leaves</p>
                             <p className="text-2xl font-black text-amber-500">{totalMedical}</p>
                         </div>
-                        <div className="bg-themeElevated p-4 rounded-xl border border-themeBorder flex flex-col">
+                        <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-4 rounded-xl border border-black/10 dark:border-white/20 flex flex-col">
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">Approved Leaves</p>
                             <p className="text-2xl font-black text-blue-500">{totalApproved}</p>
                         </div>
@@ -272,9 +274,12 @@ export default function Attendance() {
                     <h2 className="text-xl font-black text-themeText tracking-tight">Subject Breakdown</h2>
                     
                     {isLoading ? (
-                        <div className="py-20 text-center"><i className="fa-solid fa-spinner fa-spin text-3xl text-themeTextSec"></i></div>
+                        <div className="flex flex-col gap-6 w-full animate-pulse opacity-70 p-4 mt-6">
+    <div className="h-48 bg-white/10 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/20 shadow-xl"></div>
+    <div className="h-48 bg-white/10 backdrop-blur-md rounded-[2rem] border border-black/10 dark:border-white/20 shadow-xl"></div>
+</div>
                     ) : attendanceData.length === 0 ? (
-                        <div className="py-24 text-center border-2 border-dashed border-themeBorder rounded-2xl bg-themePanel/30 px-4">
+                        <div className="py-24 text-center border-2 border-dashed border-black/10 dark:border-white/20 rounded-2xl bg-themePanel/30 px-4">
                             <i className="fa-solid fa-book-blank text-4xl lg:text-5xl text-neutral-700 mb-4"></i>
                             <h3 className="text-lg lg:text-xl text-themeText font-black">No Verified Records</h3>
                             <p className="text-xs lg:text-sm text-themeTextSec opacity-70 mt-2 max-w-xs mx-auto">No classes have been marked for you yet.</p>
@@ -288,7 +293,7 @@ export default function Attendance() {
                                     <div 
                                         key={idx}
                                         onClick={() => setActiveSubject(subject)}
-                                        className="bg-themePanel border border-themeBorder rounded-2xl p-5 hover:border-themeAccent/50 transition-all cursor-pointer group flex flex-col gap-4 shadow-sm"
+                                        className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-2xl p-5 hover:border-themeAccent/50 transition-all cursor-pointer group flex flex-col gap-4 shadow-sm"
                                     >
                                         <div className="flex justify-between items-start">
                                             <div>
@@ -301,11 +306,11 @@ export default function Attendance() {
                                             <h2 className={`text-2xl font-black ${getHealthTextClass(percentage)} shrink-0`}>{percentage}%</h2>
                                         </div>
                                         
-                                        <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-themeTextSec bg-themeElevated p-3 rounded-xl border border-themeBorder justify-around">
+                                        <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-themeTextSec bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-3 rounded-xl border border-black/10 dark:border-white/20 justify-around">
                                             <div className="text-center">
                                                 <span className="block text-emerald-500 text-sm mb-0.5">{subject.present}</span> Present
                                             </div>
-                                            <div className="text-center border-l border-r border-themeBorder px-4">
+                                            <div className="text-center border-l border-r border-black/10 dark:border-white/20 px-4">
                                                 <span className="block text-rose-500 text-sm mb-0.5">{subject.absent}</span> Absent
                                             </div>
                                             <div className="text-center">
@@ -314,7 +319,7 @@ export default function Attendance() {
                                         </div>
                                         
                                         {/* Linear progress bar small */}
-                                        <div className="relative h-1.5 bg-themeElevated rounded-full overflow-hidden">
+                                        <div className="relative h-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-full overflow-hidden">
                                             <div 
                                                 className={`h-full rounded-full ${getHealthColor(percentage).split(' ')[0]}`}
                                                 style={{ width: `${percentage}%` }}
@@ -332,17 +337,17 @@ export default function Attendance() {
                 {/* QR Scanner Modal */}
                 {showScanner && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                        <div className="w-full max-w-sm bg-themePanel border border-themeBorder rounded-2xl shadow-2xl overflow-hidden flex flex-col relative">
-                            <div className="p-4 border-b border-themeBorder flex justify-between items-center bg-themeElevated">
+                        <div className="w-full max-w-sm bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-2xl shadow-2xl overflow-hidden flex flex-col relative">
+                            <div className="p-4 border-b border-black/10 dark:border-white/20 flex justify-between items-center bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20">
                                 <h3 className="text-sm font-black text-themeText uppercase tracking-widest">Live Attendance</h3>
-                                <button onClick={() => setShowScanner(false)} className="w-8 h-8 rounded-full bg-themePanel border border-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors">
+                                <button onClick={() => setShowScanner(false)} className="w-8 h-8 rounded-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors">
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                             </div>
                             
                             <form onSubmit={handleScanQR} className="p-6 flex flex-col items-center gap-6">
                                 <div className={`w-24 h-24 rounded-2xl border-4 flex items-center justify-center text-4xl transition-all ${
-                                    scanStatus === 'idle' ? 'border-themeBorder text-themeTextSec' :
+                                    scanStatus === 'idle' ? 'border-black/10 dark:border-white/20 text-themeTextSec' :
                                     scanStatus === 'scanning' ? 'border-themeAccent text-themeAccent animate-pulse' :
                                     scanStatus === 'success' ? 'border-emerald-500 text-emerald-500' :
                                     'border-rose-500 text-rose-500'
@@ -361,7 +366,7 @@ export default function Attendance() {
                                         placeholder="e.g. A7X9P2"
                                         value={scanToken}
                                         onChange={(e) => setScanToken(e.target.value)}
-                                        className="w-full bg-themeElevated border border-themeBorder rounded-xl px-4 py-3 text-center text-xl font-mono font-black text-themeText tracking-[0.2em] outline-none focus:border-themeAccent uppercase placeholder:tracking-normal placeholder:font-sans placeholder:font-bold placeholder:text-sm"
+                                        className="w-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-xl px-4 py-3 text-center text-xl font-mono font-black text-themeText tracking-[0.2em] outline-none focus:border-themeAccent uppercase placeholder:tracking-normal placeholder:font-sans placeholder:font-bold placeholder:text-sm"
                                         maxLength={8}
                                         disabled={scanStatus !== 'idle'}
                                     />
@@ -384,21 +389,21 @@ export default function Attendance() {
                 {/* Subject Details Drawer */}
                 {activeSubject && (
                     <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fade-in">
-                        <div className="w-full max-w-md h-full bg-themePanel border-l border-themeBorder shadow-2xl flex flex-col animate-slide-in-right">
-                            <div className="p-6 border-b border-themeBorder flex justify-between items-start bg-themeElevated shrink-0">
+                        <div className="w-full max-w-md h-full bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border-l border-black/10 dark:border-white/20 shadow-2xl flex flex-col animate-slide-in-right">
+                            <div className="p-6 border-b border-black/10 dark:border-white/20 flex justify-between items-start bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 shrink-0">
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-1">{activeSubject.course_code}</p>
                                     <h2 className="text-xl font-black text-themeText leading-tight">{activeSubject.course_name}</h2>
                                     <p className="text-xs font-bold text-themeTextSec mt-2"><i className="fa-solid fa-user-tie mr-1"></i> {activeSubject.faculty_name}</p>
                                 </div>
-                                <button onClick={() => setActiveSubject(null)} className="w-8 h-8 rounded-full bg-themePanel border border-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors shrink-0">
+                                <button onClick={() => setActiveSubject(null)} className="w-8 h-8 rounded-full bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors shrink-0">
                                     <i className="fa-solid fa-xmark text-sm"></i>
                                 </button>
                             </div>
                             
                             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar flex flex-col gap-8">
                                 {/* Prediction Engine */}
-                                <div className="bg-themeElevated p-5 rounded-2xl border border-themeBorder relative overflow-hidden">
+                                <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-5 rounded-2xl border border-black/10 dark:border-white/20 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-themeAccent/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-xl pointer-events-none"></div>
                                     <h3 className="text-xs font-black text-themeText uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <i className="fa-solid fa-wand-magic-sparkles text-themeAccent"></i> Prediction Engine
@@ -441,7 +446,7 @@ export default function Attendance() {
                                                     </div>
                                                     
                                                     {/* Details */}
-                                                    <div className="bg-themeElevated p-3 rounded-xl border border-themeBorder flex-1 mb-2 last:mb-0">
+                                                    <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-3 rounded-xl border border-black/10 dark:border-white/20 flex-1 mb-2 last:mb-0">
                                                         <div className="flex justify-between items-start mb-1">
                                                             <p className="text-xs font-black text-themeText">{new Date(rec.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
                                                             <p className={`text-[9px] font-black uppercase tracking-widest ${

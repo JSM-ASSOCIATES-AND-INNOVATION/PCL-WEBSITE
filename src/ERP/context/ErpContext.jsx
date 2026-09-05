@@ -187,7 +187,7 @@ export const ErpProvider = ({ children }) => {
                 id: profile.erp_id,
                 db_id: userId,
                 name: profile.full_name,
-                email: userEmail,
+                email: profile.email || userEmail,
                 role: normalizedRole,
                 academic_batch: profile.academic_batch,
                 questionnaire_completed: profile.questionnaire_completed || false,
@@ -256,10 +256,7 @@ export const ErpProvider = ({ children }) => {
         try {
             let cleanCredential = credential.toLowerCase().trim();
             
-            // MAGIC SHORTHAND MAPPING FOR DEV
-            if (cleanCredential === '26bbl') cleanCredential = '26bbl7020';
-            if (cleanCredential === 'fac') cleanCredential = 'fac0001';
-            if (cleanCredential === 'adm') cleanCredential = 'adm0001';
+            // Shorthand mapping removed for production security
 
             const emailToLogin = cleanCredential.includes('@')
                 ? cleanCredential
@@ -294,6 +291,8 @@ export const ErpProvider = ({ children }) => {
                 return { success: false, error: { message: `System configuration error: Invalid role '${profile.role}'. Contact Administration.` } };
             }
 
+            sessionStorage.removeItem('jsmerp_timer_start'); // Fresh timer for new session
+
             // Let the onAuthStateChange listener (which just fired) handle state & caching cleanly!
             return { success: true };
 
@@ -307,6 +306,8 @@ export const ErpProvider = ({ children }) => {
     const logout = async () => {
         await supabase.auth.signOut();
         localStorage.removeItem('jsmerp_master_session'); // Hard purge cache
+        sessionStorage.removeItem('jsmerp_timer_start'); // Clear session timer
+        localStorage.removeItem('erp_otp_verified'); // Clear OTP state
     };
 
     // --- 6. GLOBAL NOTICES & PUSH NOTIFICATIONS ---

@@ -97,27 +97,27 @@ export default function AdminCareers({ isHubView = false }) {
             <div className={`w-full ${!isHubView ? 'max-w-5xl mx-auto p-6 lg:p-8' : ''} animate-fade-in`}>
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-black text-themeText tracking-tight">{currentJob ? 'Edit Job Posting' : 'New Job Posting'}</h2>
-                    <button onClick={() => setIsEditing(false)} className="px-4 py-2 bg-themeElevated hover:bg-themeBorder text-themeText text-xs font-black uppercase tracking-widest rounded-lg transition-colors border border-themeBorderStrong">
+                    <button onClick={() => setIsEditing(false)} className="px-4 py-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder text-themeText text-xs font-black uppercase tracking-widest rounded-lg transition-colors border border-black/5 dark:border-white/10">
                         <i className="fa-solid fa-arrow-left mr-2"></i> Back
                     </button>
                 </div>
                 
-                <form onSubmit={handleSave} className="flex flex-col gap-6 bg-themePanel p-6 rounded-2xl border border-themeBorder shadow-sm">
+                <form onSubmit={handleSave} className="flex flex-col gap-6 bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 rounded-2xl border border-white/5 shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Job Title</label>
-                            <input required type="text" className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Assistant Professor of Law" />
+                            <input required type="text" className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Assistant Professor of Law" />
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Department</label>
-                            <input required type="text" className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} placeholder="e.g. Faculty, Administration" />
+                            <input required type="text" className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} placeholder="e.g. Faculty, Administration" />
                         </div>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Job Type</label>
-                            <select className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
+                            <select className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})}>
                                 <option value="Full-time">Full-time</option>
                                 <option value="Part-time">Part-time</option>
                                 <option value="Contract">Contract</option>
@@ -126,7 +126,7 @@ export default function AdminCareers({ isHubView = false }) {
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Location</label>
-                            <select className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})}>
+                            <select className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})}>
                                 <option value="On-Campus">On-Campus</option>
                                 <option value="Hybrid">Hybrid</option>
                                 <option value="Remote">Remote</option>
@@ -134,7 +134,7 @@ export default function AdminCareers({ isHubView = false }) {
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Status</label>
-                            <select className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.is_active ? "active" : "inactive"} onChange={e => setFormData({...formData, is_active: e.target.value === "active"})}>
+                            <select className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent" value={formData.is_active ? "active" : "inactive"} onChange={e => setFormData({...formData, is_active: e.target.value === "active"})}>
                                 <option value="active">Active (Visible)</option>
                                 <option value="inactive">Inactive (Hidden)</option>
                             </select>
@@ -143,7 +143,7 @@ export default function AdminCareers({ isHubView = false }) {
 
                     <div className="flex flex-col gap-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Description / Requirements</label>
-                        <textarea className="bg-themeElevated border border-themeBorder rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent min-h-[200px]" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Job description..."></textarea>
+                        <textarea className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-lg px-4 py-3 text-sm text-themeText outline-none focus:border-themeAccent min-h-[200px]" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Job description..."></textarea>
                     </div>
 
                     <div className="flex justify-between mt-4">
@@ -178,18 +178,18 @@ export default function AdminCareers({ isHubView = false }) {
             <div className="flex justify-between items-center mb-6">
                 <div className="relative w-full max-w-xs">
                     <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-themeTextSec"></i>
-                    <input type="text" placeholder="Search jobs..." className="w-full bg-themePanel border border-themeBorder rounded-xl pl-10 pr-4 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" />
+                    <input type="text" placeholder="Search jobs..." className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl pl-10 pr-4 py-2.5 text-xs text-themeText outline-none focus:border-themeAccent" />
                 </div>
                 <button onClick={handleCreateNew} className="px-5 py-2.5 bg-themeAccent text-[#0a0a0a] hover:opacity-90 text-xs font-black uppercase tracking-widest rounded-xl shadow-md transition-all flex items-center gap-2">
                     <i className="fa-solid fa-plus"></i> New Job
                 </button>
             </div>
 
-            <div className="bg-themePanel border border-themeBorder rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-themeElevated border-b border-themeBorder">
+                            <tr className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-b border-white/5">
                                 <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Title</th>
                                 <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Department</th>
                                 <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Type</th>
@@ -212,7 +212,7 @@ export default function AdminCareers({ isHubView = false }) {
                                 </tr>
                             ) : (
                                 jobs.map((job) => (
-                                    <tr key={job.id} className="border-b border-themeBorder hover:bg-themeElevated/50 transition-colors">
+                                    <tr key={job.id} className="border-b border-white/5 hover:bg-themeElevated/50 transition-colors">
                                         <td className="p-4 text-sm font-bold text-themeText">{job.title}</td>
                                         <td className="p-4 text-xs font-bold text-themeTextSec">{job.department}</td>
                                         <td className="p-4 text-xs font-bold text-themeTextSec">{job.type} / {job.location}</td>

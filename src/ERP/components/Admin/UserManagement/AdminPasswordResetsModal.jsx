@@ -119,7 +119,7 @@ export default function AdminPasswordResetsModal({ onClose }) {
             <button 
                 type="button"
                 onClick={onClose}
-                className="absolute top-6 right-6 lg:top-10 lg:right-10 w-12 h-12 rounded-full bg-themeElevated hover:bg-themeBorder border border-themeBorderStrong flex items-center justify-center text-themeTextSec hover:text-themeText transition-all outline-none z-[250] shadow-2xl cursor-pointer hover:scale-110"
+                className="absolute top-6 right-6 lg:top-10 lg:right-10 w-12 h-12 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder border border-black/5 dark:border-white/10 flex items-center justify-center text-themeTextSec hover:text-themeText transition-all outline-none z-[250] shadow-2xl cursor-pointer hover:scale-110"
             >
                 <i className="fa-solid fa-times text-xl"></i>
             </button>
@@ -158,10 +158,10 @@ export default function AdminPasswordResetsModal({ onClose }) {
                         </div>
                     ) : (
                         requests.map(req => (
-                            <div key={req.id} className="bg-themeApp border border-themeBorder rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                            <div key={req.id} className="bg-themeApp border border-white/5 rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className="px-2 py-1 bg-themeElevated rounded text-[10px] font-black uppercase tracking-wider text-themeText">
+                                        <span className="px-2 py-1 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated rounded text-[10px] font-black uppercase tracking-wider text-themeText">
                                             {req.institutional_id.toUpperCase()}
                                         </span>
                                         <span className="text-[10px] text-themeTextSec font-medium">
@@ -176,7 +176,7 @@ export default function AdminPasswordResetsModal({ onClose }) {
                                     <button
                                         onClick={() => handleReject(req.id)}
                                         disabled={processingId === req.id}
-                                        className="flex-1 md:flex-none px-4 py-2 rounded-xl bg-themeElevated hover:bg-rose-500/10 text-rose-500 text-xs font-bold transition-colors disabled:opacity-50"
+                                        className="flex-1 md:flex-none px-4 py-2 rounded-xl bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-rose-500/10 text-rose-500 text-xs font-bold transition-colors disabled:opacity-50"
                                     >
                                         Reject
                                     </button>

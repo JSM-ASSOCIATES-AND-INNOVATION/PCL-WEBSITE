@@ -79,8 +79,8 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
         <div className="flex flex-col gap-6 animate-fade-in max-w-4xl mx-auto">
             
             {/* Header Profile Card */}
-            <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-8 flex flex-col md:flex-row items-start md:items-center gap-4 lg:gap-6 relative overflow-hidden">
-                <div className="w-16 h-16 lg:w-20 lg:h-20 bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded-full flex items-center justify-center text-xl lg:text-2xl text-themeTextSec shrink-0">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 lg:p-8 flex flex-col md:flex-row items-start md:items-center gap-4 lg:gap-6 relative overflow-hidden">
+                <div className="w-16 h-16 lg:w-20 lg:h-20 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5Strong rounded-full flex items-center justify-center text-xl lg:text-2xl text-themeTextSec shrink-0">
                     <i className="fa-solid fa-user"></i>
                 </div>
                 <div>
@@ -103,9 +103,9 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
                 
                 <div className="lg:col-span-2 flex flex-col gap-6">
                     {/* Details Box */}
-                    <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-6">
+                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-6">
                         
-                        <div className="flex justify-between items-start mb-6 border-b-[length:var(--border-width)] border-themeBorder pb-6">
+                        <div className="flex justify-between items-start mb-6 border-b-[length:var(--border-width)] border-white/5 pb-6">
                             <div>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Leave Type</p>
                                 <div className="flex items-center gap-2 mt-1">
@@ -124,7 +124,7 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
 
                         <div className="mb-6">
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Reason Provided</p>
-                            <div className="bg-themeElevated p-4 rounded-xl border-[length:var(--border-width)] border-themeBorderStrong">
+                            <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-4 rounded-xl border border-white/5Strong">
                                 <p className="text-sm text-themeText italic leading-relaxed">"{request.reason}"</p>
                             </div>
                         </div>
@@ -134,7 +134,7 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
                             {affectedClasses.length > 0 ? (
                                 <div className="flex flex-wrap gap-2">
                                     {affectedClasses.map((cls, idx) => (
-                                        <span key={idx} className="bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong px-3 py-1.5 rounded-md text-[10px] lg:text-xs font-bold text-themeText">
+                                        <span key={idx} className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5Strong px-3 py-1.5 rounded-md text-[10px] lg:text-xs font-bold text-themeText">
                                             {cls}
                                         </span>
                                     ))}
@@ -144,7 +144,7 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
                             )}
                         </div>
                         
-                        <div className="mt-6 pt-6 border-t-[length:var(--border-width)] border-themeBorder flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="mt-6 pt-6 border-t-[length:var(--border-width)] border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Class Replacement Status</p>
                             <span className="bg-rose-500/10 border-[length:var(--border-width)] border-rose-500/20 text-rose-500 px-3 py-1 rounded text-[9px] lg:text-[10px] font-black uppercase tracking-widest w-fit">
                                 {request.replacement_status === 'Assigned' ? 'Assigned' : 'Not Assigned'}
@@ -170,7 +170,7 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
 
                     {/* Actions Box */}
                     {request.status === 'Pending' && (
-                        <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 flex flex-col gap-3">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 flex flex-col gap-3">
                             <button 
                                 onClick={() => handleAction('ApproveAndReplace')}
                                 disabled={isProcessing}
@@ -188,7 +188,7 @@ export default function LeaveReview({ request, onClose, onAssignReplacement }) {
                             <button 
                                 onClick={() => handleAction('Reject')}
                                 disabled={isProcessing}
-                                className="w-full py-3 bg-themeElevated hover:bg-rose-500 hover:text-white text-rose-500 border-[length:var(--border-width)] border-themeBorderStrong rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                                className="w-full py-3 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-rose-500 hover:text-white text-rose-500 border border-white/5Strong rounded-xl text-xs font-black uppercase tracking-widest transition-all"
                             >
                                 Reject
                             </button>

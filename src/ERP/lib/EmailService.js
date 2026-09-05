@@ -1,45 +1,28 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
-// ==========================================
-// TEMPLATES REPOSITORY
-// ==========================================
-// EmailJS requires you to map these keys in your EmailJS dashboard template.
-// E.g., Your template in EmailJS should look like:
-// Subject: {{subject}}
-// Hello, {{message_body}}
+import { HTML_EMAIL_TEMPLATES } from './emailtemplate';
 
 export const EMAIL_TEMPLATES = {
+    ERP_LOGIN_OTP: (params) => ({
+        subject: `Your ERP Login Passcode`,
+        message_body: HTML_EMAIL_TEMPLATES.ERP_LOGIN_OTP(params),
+    }),
+    // Legacy wrappers for backward compatibility if needed, though we prefer HTML
+    APPLICATION_RECEIVED: (params) => ({
+        subject: `Application Received - Ticket #${params.ticket_id}`,
+        message_body: HTML_EMAIL_TEMPLATES.APPLICATION_RECEIVED(params),
+    }),
+    TICKET_REPLY: (params) => ({
+        subject: `Update on Ticket #${params.ticket_id} - Prudentia`,
+        message_body: HTML_EMAIL_TEMPLATES.TICKET_REPLY(params),
+    }),
+    SUPPORT_ENQUIRY: (params) => ({
+        subject: `We Received Your Enquiry - Ticket #${params.ticket_id}`,
+        message_body: HTML_EMAIL_TEMPLATES.SUPPORT_ENQUIRY(params),
+    }),
     ONBOARDING: (params) => ({
-        subject: `Welcome to JSM ERP - Your Official Credentials`,
-        message_body: `Welcome to the JSM Academic Infrastructure.\n\nYour institutional account has been successfully provisioned.\n\nOfficial ID: ${params.erp_id}\nTemporary Password: ${params.password}\n\nPlease log in at ${params.login_url} and set up your Biometric authentication immediately.`,
+        subject: `Welcome to PCL ERP - Your Official Credentials`,
+        message_body: HTML_EMAIL_TEMPLATES.FIRST_CREDENTIALS ? HTML_EMAIL_TEMPLATES.FIRST_CREDENTIALS(params) : `Welcome to the JSM Academic Infrastructure...\n\nOfficial ID: ${params.erp_id}\nTemporary Password: ${params.password}`,
     }),
-    PASSWORD_RESET: (params) => ({
-        subject: `JSM ERP - Password Reset Request`,
-        message_body: `A password reset was requested for ID: ${params.erp_id}.\n\nYour temporary access code is: ${params.temp_code}\n\nIf you did not request this, please contact the IT Administrator immediately.`,
-    }),
-    FEE_REMINDER: (params) => ({
-        subject: `URGENT: Fee Invoice Generated - JSM ERP`,
-        message_body: `Dear Student (${params.erp_id}),\n\nA new fee invoice for ${params.fee_amount} has been generated on your account for ${params.fee_type}.\n\nDue Date: ${params.due_date}\n\nPlease clear your dues via the Finance Ledger portal to avoid late penalties.`,
-    }),
-    EXAM_RESULT: (params) => ({
-        subject: `CONFIDENTIAL: Examination Results Declared`,
-        message_body: `Dear Student (${params.erp_id}),\n\nYour examination results for ${params.exam_name} have been published.\n\nPlease log in to your Academic Vault to view your secure marks ledger.`,
-    }),
-    DISCIPLINARY: (params) => ({
-        subject: `NOTICE: Disciplinary Action / Attendance Warning`,
-        message_body: `Dear Student (${params.erp_id}),\n\nThis is an official notice regarding your academic standing.\n\nReason: ${params.reason}\n\nYou are required to meet your Faculty Mentor within 48 hours.`,
-    }),
-    CUSTOM_ANNOUNCEMENT: (params) => ({
-        subject: `JSM ERP Notice: ${params.title}`,
-        message_body: `${params.announcement_body}\n\n- JSM Administration`,
-    }),
-    BLOG_ACCEPTED: (params) => ({
-        subject: `Congratulations! Your Blog Post has been Published`,
-        message_body: `Dear ${params.author_name},\n\nWe are thrilled to inform you that your blog post titled "${params.title}" has been reviewed and APPROVED by the Editorial Board.\n\nIt is now live on the JSM website! You can view and share it using the following link:\n${params.post_url}\n\nThank you for your valuable contribution to our academic community.\n\n- Website Administration`,
-    }),
-    BLOG_REJECTED: (params) => ({
-        subject: `Update regarding your Blog Post Submission`,
-        message_body: `Dear ${params.author_name},\n\nThank you for submitting your blog post titled "${params.title}".\n\nAfter careful review, the Editorial Board has decided not to publish this piece at this time. ${params.feedback ? `\n\nFeedback: ${params.feedback}` : ''}\n\nWe appreciate your effort and encourage you to submit future articles.\n\n- Website Administration`,
-    })
 };
 
 // ==========================================
@@ -54,7 +37,11 @@ export const sendSystemEmail = async (templateKey, params) => {
 
         const { subject, message_body } = templateBuilder(params);
 
-        const response = await fetch('http://localhost:3001/send-email', {
+        const emailEndpoint = (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') 
+            ? '/api/send-email' 
+            : (import.meta.env.VITE_EMAIL_SERVER_URL || 'http://localhost:3001/send-email');
+
+        const response = await fetch(emailEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,6 +62,7 @@ export const sendSystemEmail = async (templateKey, params) => {
         console.log(`[Email Engine] Dispatched: ${subject} to ${params.to_email}`);
         return true;
     } catch (error) {
+        console.error("Email Engine Error:", error);
         throw error;
     }
 };

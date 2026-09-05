@@ -90,7 +90,7 @@ export default function SecuritySettings() {
                         Manage your encryption and active sessions
                     </p>
                 </div>
-                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel lg:rounded-themePanel flex items-center justify-center text-rose-500 shrink-0 hidden sm:flex">
+                <div className="w-12 h-12 lg:w-14 lg:h-14 bg-themeElevated border-theme border-themeBorderStrong rounded-[2rem] lg:rounded-[2rem] flex items-center justify-center text-rose-500 shrink-0 hidden sm:flex">
                     <i className="fa-solid fa-shield-halved text-xl lg:text-2xl"></i>
                 </div>
             </div>
@@ -98,7 +98,7 @@ export default function SecuritySettings() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
 
                 {/* Change Password Engine */}
-                <div className="bg-themePanel border-theme border-themeBorder p-5 lg:p-6 rounded-themePanel lg:rounded-themePanel flex flex-col gap-5 lg:gap-6 relative overflow-hidden">
+                <div className="bg-themePanel border-theme border-themeBorder p-5 lg:p-6 rounded-[2rem] lg:rounded-[2rem] flex flex-col gap-5 lg:gap-6 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-themeElevated rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
                     <h3 className="text-[10px] lg:text-xs font-black text-themeText uppercase tracking-widest flex items-center gap-2 relative z-10">
@@ -107,7 +107,7 @@ export default function SecuritySettings() {
 
                     <form onSubmit={handlePasswordUpdate} className="flex flex-col gap-4 lg:gap-5 relative z-10">
                         {statusMessage.text && (
-                            <div className={`p-4 rounded-themePanel text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-2  border-theme animate-fade-in ${statusMessage.type === "success" ? "bg-themeElevated border-themeBorderStrong text-emerald-400" : "bg-themeElevated border-themeBorderStrong text-rose-400"
+                            <div className={`p-4 rounded-[2rem] text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-2  border-theme animate-fade-in ${statusMessage.type === "success" ? "bg-themeElevated border-themeBorderStrong text-emerald-400" : "bg-themeElevated border-themeBorderStrong text-rose-400"
                                 }`}>
                                 <i className={`fa-solid ${statusMessage.type === "success" ? "fa-circle-check" : "fa-triangle-exclamation"}`}></i>
                                 {statusMessage.text}
@@ -121,7 +121,7 @@ export default function SecuritySettings() {
                                 value={passwords.new}
                                 onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
                                 placeholder="••••••••"
-                                className="w-full bg-themeElevated border-theme border-themeBorder rounded-themePanel px-4 py-3 lg:py-3.5 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all placeholder:text-neutral-700"
+                                className="w-full bg-themeElevated border-theme border-themeBorder rounded-[2rem] px-4 py-3 lg:py-3.5 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all placeholder:text-neutral-700"
                                 required
                             />
                         </div>
@@ -133,7 +133,7 @@ export default function SecuritySettings() {
                                 value={passwords.confirm}
                                 onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
                                 placeholder="••••••••"
-                                className="w-full bg-themeElevated border-theme border-themeBorder rounded-themePanel px-4 py-3 lg:py-3.5 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all placeholder:text-neutral-700"
+                                className="w-full bg-themeElevated border-theme border-themeBorder rounded-[2rem] px-4 py-3 lg:py-3.5 text-xs lg:text-sm font-bold text-themeText focus:border-themeAccent outline-none transition-all placeholder:text-neutral-700"
                                 required
                             />
                         </div>
@@ -141,7 +141,7 @@ export default function SecuritySettings() {
                         <button
                             type="submit"
                             disabled={isUpdating || !passwords.new}
-                            className="w-full py-3.5 lg:py-4 mt-2 bg-white hover:bg-neutral-200 text-[#050505] rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full py-3.5 lg:py-4 mt-2 bg-white hover:bg-neutral-200 text-[#050505] rounded-[2rem] text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                             {isUpdating ? <><i className="fa-solid fa-circle-notch fa-spin"></i> Propagating...</> : "Update Identity Key"}
                         </button>
@@ -161,9 +161,9 @@ export default function SecuritySettings() {
                     ) : (
                         <div className="flex flex-col gap-3 lg:gap-4">
                             {sessions.map((session) => (
-                                <div key={session.id} className="p-4 lg:p-5 border-theme border-themeBorderStrong bg-themeElevated rounded-themePanel lg:rounded-themePanel flex items-center justify-between">
+                                <div key={session.id} className="p-4 lg:p-5 border-theme border-themeBorderStrong bg-themeElevated rounded-[2rem] lg:rounded-[2rem] flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themePanel border-theme border-themeBorder rounded-themePanel lg:rounded-themePanel flex items-center justify-center text-emerald-500 text-lg lg:text-xl shrink-0">
+                                        <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themePanel border-theme border-themeBorder rounded-[2rem] lg:rounded-[2rem] flex items-center justify-center text-emerald-500 text-lg lg:text-xl shrink-0">
                                             <i className="fa-solid fa-laptop"></i>
                                         </div>
                                         <div>
@@ -183,7 +183,7 @@ export default function SecuritySettings() {
                             ))}
 
                             {/* Dummy Security Tip */}
-                            <div className="mt-2 lg:mt-4 p-4 lg:p-5 bg-themePanel border-theme border-themeBorder rounded-themePanel lg:rounded-themePanel flex flex-col sm:flex-row items-start gap-3 lg:gap-4">
+                            <div className="mt-2 lg:mt-4 p-4 lg:p-5 bg-themePanel border-theme border-themeBorder rounded-[2rem] lg:rounded-[2rem] flex flex-col sm:flex-row items-start gap-3 lg:gap-4">
                                 <i className="fa-solid fa-circle-info text-themeAccent mt-1 text-lg"></i>
                                 <p className="text-[9px] lg:text-[10px] font-medium text-themeTextSec leading-relaxed">
                                     <strong className="text-themeText block mb-0.5 lg:mb-1 font-bold uppercase tracking-widest text-[8px] lg:text-[9px]">Security Protocol:</strong>

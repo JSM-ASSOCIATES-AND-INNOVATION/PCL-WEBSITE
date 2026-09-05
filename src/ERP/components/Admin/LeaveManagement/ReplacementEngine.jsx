@@ -91,7 +91,7 @@ export default function ReplacementEngine({ request, onBack, onComplete }) {
             <div className="flex items-center gap-4">
                 <button 
                     onClick={onBack}
-                    className="w-10 h-10 rounded-full bg-themeElevated border-[length:var(--border-width)] border-themeBorder flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors"
+                    className="w-10 h-10 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 flex items-center justify-center text-themeTextSec hover:text-themeText transition-colors"
                 >
                     <i className="fa-solid fa-arrow-left"></i>
                 </button>
@@ -102,7 +102,7 @@ export default function ReplacementEngine({ request, onBack, onComplete }) {
             </div>
 
             {affectedClasses.length === 0 ? (
-                <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-12 text-center flex flex-col items-center">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-12 text-center flex flex-col items-center">
                     <i className="fa-solid fa-calendar-check text-4xl text-themeTextSec mb-4"></i>
                     <h3 className="text-lg font-black text-themeText">No Classes Affected</h3>
                     <p className="text-sm text-themeTextSec mt-2">This faculty member has no classes scheduled during the leave period. No replacement is necessary.</p>
@@ -116,9 +116,9 @@ export default function ReplacementEngine({ request, onBack, onComplete }) {
                 </div>
             ) : (
                 affectedClasses.map((cls, idx) => (
-                    <div key={idx} className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-5 lg:p-6 flex flex-col gap-5 lg:gap-6">
+                    <div key={idx} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-5 lg:p-6 flex flex-col gap-5 lg:gap-6">
                         
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-4 border-b-[length:var(--border-width)] border-themeBorder gap-3">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-4 border-b-[length:var(--border-width)] border-white/5 gap-3">
                             <div>
                                 <h3 className="text-sm font-black text-themeText">{cls}</h3>
                                 <p className="text-[10px] font-bold text-themeTextSec uppercase tracking-widest mt-1">Pending Assignment</p>
@@ -140,7 +140,7 @@ export default function ReplacementEngine({ request, onBack, onComplete }) {
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
                                     {suggestions.map((sug) => (
-                                        <div key={sug.id} className="bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded-xl p-4 flex flex-col gap-4 relative overflow-hidden group hover:border-indigo-500/50 transition-colors">
+                                        <div key={sug.id} className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5Strong rounded-xl p-4 flex flex-col gap-4 relative overflow-hidden group hover:border-indigo-500/50 transition-colors">
                                             <div className="absolute top-0 right-0 p-2 opacity-5 group-hover:opacity-100 transition-opacity">
                                                 <i className="fa-solid fa-circle-check text-4xl text-indigo-500"></i>
                                             </div>
@@ -177,7 +177,7 @@ export default function ReplacementEngine({ request, onBack, onComplete }) {
                             )}
 
                             <div className="mt-4 flex justify-center">
-                                <button className="px-4 py-2 bg-themeElevated hover:bg-themeBorder border-[length:var(--border-width)] border-themeBorderStrong rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec transition-colors">
+                                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="px-4 py-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder border border-white/5Strong rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec transition-colors">
                                     Manual Assignment <i className="fa-solid fa-chevron-right ml-1"></i>
                                 </button>
                             </div>

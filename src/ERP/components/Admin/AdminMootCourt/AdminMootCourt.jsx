@@ -90,23 +90,23 @@ export default function AdminMootCourt({ isHubView = false }) {
         <div className={`w-full ${isHubView ? 'bg-transparent text-themeText font-sans' : 'max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated'}`}>
             {/* Header and Tabs */}
             {!isHubView && (
-                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
                     {/* Background Decorations */}
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-4 lg:gap-5 mb-2">
-                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                                <i className="fa-solid fa-gavel text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-gavel text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                             </div>
                             <div>
-                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Moot Court Society Admin</h1>
+                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md`}>Moot Court Society Admin</h1>
                                 <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Create competitions and blindly evaluate research memos.</p>
                             </div>
                         </div>
                         <button
                             onClick={() => setShowCreateModal(true)}
-                            className="w-full lg:w-auto px-6 py-3 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 border border-white/50"
+                            className="w-full lg:w-auto px-6 py-3 bg-themePanel/85 backdrop-blur-2xl shadow-premium hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 border border-white/50"
                         >
                             <i className="fa-solid fa-plus"></i> Create Moot
                         </button>
@@ -114,11 +114,11 @@ export default function AdminMootCourt({ isHubView = false }) {
                 </div>
             )}
 
-            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-6 lg:mb-8'}`}>
-                <button onClick={() => setActiveTab('moots')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'moots' ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
+            <div className={`flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated backdrop-blur-md rounded-2xl border border-black/5 dark:border-white/10 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-6 lg:mb-8'}`}>
+                <button onClick={() => setActiveTab('moots')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'moots' ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-list"></i> Competitions
                 </button>
-                <button onClick={() => setActiveTab('bids')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'bids' ? 'bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)] border border-emerald-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'}`}>
+                <button onClick={() => setActiveTab('bids')} className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${activeTab === 'bids' ? 'bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.3)] border border-emerald-400 scale-100' : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'}`}>
                     <i className="fa-solid fa-user-ninja"></i> Blind Evaluation Bids
                 </button>
             </div>
@@ -126,18 +126,18 @@ export default function AdminMootCourt({ isHubView = false }) {
             {activeTab === 'moots' && (
                 <div className="flex flex-col gap-4">
                     {moots.length === 0 ? (
-                        <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorder rounded-themePanel">
+                        <div className="p-12 text-center text-themeTextSec bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel">
                             <i className="fa-solid fa-gavel text-4xl mb-4 opacity-50"></i>
                             <p>No active moot competitions.</p>
                         </div>
                     ) : (
                         moots.map(moot => (
-                            <div key={moot.id} className="bg-themePanel p-5 rounded-themePanel border-theme border-themeBorder flex justify-between items-center">
+                            <div key={moot.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-5 rounded-themePanel border border-white/5 flex justify-between items-center">
                                 <div>
                                     <h3 className="text-lg font-black text-themeText">{moot.moot_name}</h3>
                                     <p className="text-xs text-themeTextSec mt-1">{moot.level} • {moot.venue} • {moot.event_date}</p>
                                 </div>
-                                <span className="px-3 py-1 bg-themeElevated border-theme border-themeBorderStrong rounded-md text-[10px] font-black text-themeAccent uppercase">
+                                <span className="px-3 py-1 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-md text-[10px] font-black text-themeAccent uppercase">
                                     {moot.status}
                                 </span>
                             </div>
@@ -149,7 +149,7 @@ export default function AdminMootCourt({ isHubView = false }) {
             {activeTab === 'bids' && (
                 <div className="flex flex-col gap-5">
                     {bids.length === 0 ? (
-                        <div className="p-12 text-center text-themeTextSec bg-themePanel border-theme border-themeBorder rounded-themePanel">
+                        <div className="p-12 text-center text-themeTextSec bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel">
                             <i className="fa-solid fa-file-contract text-4xl mb-4 opacity-50"></i>
                             <p>No bids received yet.</p>
                         </div>
@@ -158,10 +158,10 @@ export default function AdminMootCourt({ isHubView = false }) {
                             const mootName = bid.moot_competitions?.moot_name || "Unknown Moot";
                             const isSelected = bid.status === 'SELECTED';
                             return (
-                                <div key={bid.id} className={`bg-themePanel p-6 rounded-themePanel border-theme ${isSelected ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-themeBorder'}`}>
+                                <div key={bid.id} className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 rounded-themePanel border-theme ${isSelected ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/5'}`}>
                                     <div className="flex justify-between items-start mb-4">
                                         <div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-themeAccent bg-themeElevated px-2 py-1 rounded-md border-theme border-themeBorderStrong">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-themeAccent bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-2 py-1 rounded-md border border-black/5 dark:border-white/10">
                                                 {mootName}
                                             </span>
                                             <h3 className="text-base font-black text-themeText mt-3 mb-1">
@@ -177,12 +177,12 @@ export default function AdminMootCourt({ isHubView = false }) {
                                             </span>
                                         )}
                                     </div>
-                                    <div className="bg-themeApp p-4 rounded-lg border-theme border-themeBorder mb-4">
+                                    <div className="bg-themeApp p-4 rounded-lg border border-white/5 mb-4">
                                         <p className="text-xs font-black text-themeTextSec uppercase tracking-widest mb-2"><i className="fa-solid fa-book-open"></i> Research Memo</p>
                                         <p className="text-sm text-themeText whitespace-pre-wrap">{bid.research_memo}</p>
                                     </div>
                                     {!isSelected && (
-                                        <button onClick={() => handleSelectTeam(bid.id)} className="w-full py-3 bg-themeElevated hover:bg-emerald-500/20 text-emerald-400 border-theme border-themeBorderStrong hover:border-emerald-500/50 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                                        <button onClick={() => handleSelectTeam(bid.id)} className="w-full py-3 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-emerald-500/20 text-emerald-400 border border-black/5 dark:border-white/10 hover:border-emerald-500/50 rounded-lg text-[10px] font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
                                             <i className="fa-solid fa-check"></i> Select for Team
                                         </button>
                                     )}
@@ -196,20 +196,20 @@ export default function AdminMootCourt({ isHubView = false }) {
             {/* CREATE MOOT MODAL */}
             {showCreateModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themeApp w-full max-w-lg rounded-themePanel overflow-hidden border-theme border-themeBorder flex flex-col max-h-[90vh]">
-                        <div className="bg-themePanel p-6 border-b-theme border-themeBorder flex justify-between items-center">
+                    <div className="bg-themeApp w-full max-w-lg rounded-themePanel overflow-hidden border border-white/5 flex flex-col max-h-[90vh]">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-6 border-b-theme border-white/5 flex justify-between items-center">
                             <h3 className="text-xl font-black text-themeText">Create Moot Competition</h3>
-                            <button onClick={() => setShowCreateModal(false)} className="w-8 h-8 rounded-full bg-themeElevated border-theme border-themeBorderStrong text-themeTextSec hover:text-themeText flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button>
+                            <button onClick={() => setShowCreateModal(false)} className="w-8 h-8 rounded-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 text-themeTextSec hover:text-themeText flex items-center justify-center"><i className="fa-solid fa-xmark"></i></button>
                         </div>
                         <form onSubmit={handleCreateMoot} className="p-6 flex flex-col gap-4 overflow-y-auto">
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Moot Name</label>
-                                <input type="text" value={mootForm.moot_name} onChange={e => setMootForm({...mootForm, moot_name: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent" required />
+                                <input type="text" value={mootForm.moot_name} onChange={e => setMootForm({...mootForm, moot_name: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none focus:border-themeAccent" required />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Level</label>
-                                    <select value={mootForm.level} onChange={e => setMootForm({...mootForm, level: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none">
+                                    <select value={mootForm.level} onChange={e => setMootForm({...mootForm, level: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none">
                                         <option value="National">National</option>
                                         <option value="International">International</option>
                                         <option value="Internal">Internal</option>
@@ -217,16 +217,16 @@ export default function AdminMootCourt({ isHubView = false }) {
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Event Date</label>
-                                    <input type="date" value={mootForm.event_date} onChange={e => setMootForm({...mootForm, event_date: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none" required />
+                                    <input type="date" value={mootForm.event_date} onChange={e => setMootForm({...mootForm, event_date: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none" required />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Venue</label>
-                                <input type="text" value={mootForm.venue} onChange={e => setMootForm({...mootForm, venue: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none" required />
+                                <input type="text" value={mootForm.venue} onChange={e => setMootForm({...mootForm, venue: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none" required />
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 ml-1">Description</label>
-                                <textarea rows="3" value={mootForm.description} onChange={e => setMootForm({...mootForm, description: e.target.value})} className="w-full bg-themePanel border-theme border-themeBorder rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none resize-none" required></textarea>
+                                <textarea rows="3" value={mootForm.description} onChange={e => setMootForm({...mootForm, description: e.target.value})} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-lg px-4 py-3 text-xs font-bold text-themeText outline-none resize-none" required></textarea>
                             </div>
                             <button type="submit" disabled={isSubmitting} className="w-full py-4 mt-2 bg-amber-500 hover:bg-amber-400 text-[#050505] rounded-lg text-[10px] font-black uppercase tracking-widest transition-all active:scale-[0.98]">
                                 {isSubmitting ? "Saving..." : "Create Competition"}

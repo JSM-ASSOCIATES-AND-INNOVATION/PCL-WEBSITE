@@ -30,8 +30,8 @@ const Philosophy = forwardRef((props, ref) => {
   const btnLink = content?.btn_link || "/about";
 
   return (
-    <section className="slide w-full h-full relative flex items-center justify-center bg-[var(--bg-color)] overflow-hidden" ref={ref} {...props}>
-      <div className="container relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-6 md:gap-16 pt-[80px] md:pt-[140px] pb-6 md:pb-10">
+    <section className="slide w-full h-[100dvh] relative flex flex-col items-center justify-center pt-[100px] md:pt-[140px] pb-6 md:pb-10 bg-[var(--bg-color)] overflow-hidden" ref={ref} {...props}>
+      <div className="container relative z-10 w-full max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-4 md:gap-16">
         
         {/* Left Side: Clean Image Box */}
         <motion.div 
@@ -54,33 +54,31 @@ const Philosophy = forwardRef((props, ref) => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "100px" }}
-          className="w-full md:w-1/2 flex flex-col justify-center text-left"
+          className="w-full md:w-1/2 flex flex-col justify-center text-left lg:pr-16 xl:pr-20"
         >
           <motion.div variants={textVariants} className="mb-3">
             <span className="block text-[10px] uppercase tracking-[0.3em] text-[var(--primary-color)] font-bold">{tagline}</span>
           </motion.div>
 
-          <motion.h2 variants={textVariants} className="text-[2.25rem] sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[var(--text-color)] leading-[1.1] mb-4 md:mb-6" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <motion.h2 variants={textVariants} className="text-[2.25rem] sm:text-4xl md:text-5xl lg:text-[54px] font-bold text-[var(--text-color)] leading-[1.1] mb-4 md:mb-6">
             {heading1} <br/>
             <span className="italic font-medium text-[var(--primary-color)]">
               {heading2}
             </span>
           </motion.h2>
 
-          <motion.p variants={textVariants} className="text-xs sm:text-sm md:text-base lg:text-[15px] text-[var(--text-muted)] font-light leading-[1.6] md:leading-[1.8] mb-6 md:mb-10 text-justify">
+          <motion.p variants={textVariants} className="text-sm md:text-base lg:text-lg text-[var(--text-muted)] font-light leading-relaxed text-justify mb-6 md:mb-10">
             {desc}
           </motion.p>
 
           <motion.div variants={textVariants}>
             <Link 
               to={btnLink} 
-              className="group/btn relative inline-flex items-center gap-3 px-8 py-3.5 bg-transparent border border-[var(--primary-color)]/50 rounded-full hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all duration-500 overflow-hidden"
+              className="tlh-btn !py-4 px-10 w-fit"
             >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-              
-              <span className="relative z-10 text-[var(--text-color)] group-hover/btn:!text-black font-extrabold uppercase tracking-[0.15em] text-[10px] transition-colors duration-500 flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center">
                 {btnText} 
-                <ArrowRight size={14} className="group-hover/btn:translate-x-1.5 transition-transform duration-500" />
+                <ArrowRight size={16} className="ml-2" />
               </span>
             </Link>
           </motion.div>

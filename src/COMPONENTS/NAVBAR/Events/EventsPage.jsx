@@ -112,7 +112,7 @@ export default function EventsPage() {
                 {/* Image Section */}
                 <div className="relative w-full aspect-[4/3] md:aspect-[3/2] overflow-hidden bg-[var(--card-bg)] flex items-center justify-center">
                     {evt.image_url ? (
-                        <img 
+                        <img decoding="async" loading="lazy" 
                             src={evt.image_url} 
                             alt={evt.title} 
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100" 
@@ -144,7 +144,7 @@ export default function EventsPage() {
 
                 {/* Content Section */}
                 <div className="p-5 md:p-8 flex flex-col relative z-10 bg-[var(--card-bg)]">
-                    <h3 className="text-xl md:text-2xl font-bold text-[var(--text-color)] mb-3 leading-tight group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <h3 className="text-xl md:text-2xl font-bold text-[var(--text-color)] mb-3 leading-tight group-hover:text-[var(--primary-color)] transition-colors">
                         {evt.title}
                     </h3>
                     
@@ -163,7 +163,7 @@ export default function EventsPage() {
 
     const renderMonthSection = (monthYear, evtList) => (
         <div key={monthYear} className="mb-16">
-            <h3 className="text-xl md:text-2xl font-bold text-[var(--primary-color)] mb-8 border-b border-[var(--card-border)] pb-4 inline-block pr-12" style={{ fontFamily: "'Outfit', sans-serif" }}>
+            <h3 className="text-xl md:text-2xl font-bold text-[var(--primary-color)] mb-8 border-b border-[var(--card-border)] pb-4 inline-block pr-12">
                 {monthYear}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
@@ -186,7 +186,7 @@ export default function EventsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                         className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-widest text-[var(--text-color)] mb-6 uppercase leading-tight"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
+                       
                     >
                         Campus <span className="text-[var(--primary-color)] italic">Events</span>
                     </motion.h1>
@@ -201,7 +201,7 @@ export default function EventsPage() {
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
                         className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg leading-relaxed"
-                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                       
                     >
                         Stay updated with all the upcoming seminars, workshops, moot courts, and cultural activities happening at Prudentia College of Law.
                     </motion.p>
@@ -221,7 +221,7 @@ export default function EventsPage() {
                                     <span className="text-[var(--primary-color)] font-bold tracking-[0.2em] uppercase text-sm mb-2 animate-pulse flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_10px_var(--primary-color)]"></div>Happening Today
                                     </span>
-                                    <h2 className="text-3xl md:text-5xl font-bold text-[var(--text-color)] uppercase tracking-widest" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                    <h2 className="text-3xl md:text-5xl font-bold text-[var(--text-color)] uppercase tracking-widest">
                                         Present <span className="text-[var(--primary-color)] italic">Events</span>
                                     </h2>
                                 </div>
@@ -233,12 +233,12 @@ export default function EventsPage() {
 
                         {/* 2. UPCOMING EVENTS */}
                         <div className="mb-32">
-                            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-12 uppercase tracking-widest flex items-center justify-center md:justify-start gap-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-color)] mb-12 uppercase tracking-widest flex items-center justify-center md:justify-start gap-4">
                                 Upcoming <span className="text-[var(--primary-color)] italic">Events</span>
                             </h2>
                             {upcomingEvents.length === 0 ? (
                                 <div className={`${styles.glassCard} py-20 text-center border border-[var(--card-border)]`}>
-                                    <p className="text-[var(--text-muted)] text-xl" style={{ fontFamily: "'Outfit', sans-serif" }}>No future events scheduled at the moment.</p>
+                                    <p className="text-[var(--text-muted)] text-xl">No future events scheduled at the moment.</p>
                                 </div>
                             ) : (
                                 <div>
@@ -252,7 +252,7 @@ export default function EventsPage() {
                         {/* 3. PAST EVENTS */}
                         {pastEvents.length > 0 && (
                             <div>
-                                <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-muted)] mb-12 uppercase tracking-widest flex items-center justify-center md:justify-start gap-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+                                <h2 className="text-3xl md:text-4xl font-bold text-[var(--text-muted)] mb-12 uppercase tracking-widest flex items-center justify-center md:justify-start gap-4">
                                     Past <span className="opacity-70 italic">Events</span>
                                 </h2>
                                 <div className="opacity-90 hover:opacity-100 transition-opacity duration-700">

@@ -17,7 +17,7 @@ export const generateCalendarICS = (filename, events) => {
     const header = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//JSM ERP//EN",
+        "PRODID:-//PCL ERP//EN",
         "CALSCALE:GREGORIAN",
         "METHOD:PUBLISH"
     ].join("\n");

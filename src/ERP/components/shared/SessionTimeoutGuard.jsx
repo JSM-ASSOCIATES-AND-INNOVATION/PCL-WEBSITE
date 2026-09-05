@@ -2,6 +2,7 @@
 /* eslint-disable */
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useERP } from '../../context/ErpContext';
 import { theme } from '../../theme';
 
@@ -20,6 +21,8 @@ export default function SessionTimeoutGuard({ children }) {
     const countdownIntervalRef = useRef(null);
 
     const resetInactivityTimer = () => {
+        if (Capacitor.isNativePlatform()) return; // Disable timeout guard on native mobile apps
+
         if (showWarning) return; // Do not reset if warning is actively showing
         
         clearTimeout(inactivityTimerRef.current);
@@ -33,13 +36,7 @@ export default function SessionTimeoutGuard({ children }) {
         setCountdown(60);
         
         countdownIntervalRef.current = setInterval(() => {
-            setCountdown((prev) => {
-                if (prev <= 1) {
-                    executeLogout();
-                    return 0;
-                }
-                return prev - 1;
-            });
+            setCountdown((prev) => prev - 1);
         }, 1000);
     };
 
@@ -48,6 +45,13 @@ export default function SessionTimeoutGuard({ children }) {
         clearInterval(countdownIntervalRef.current);
         resetInactivityTimer();
     };
+
+
+    useEffect(() => {
+        if (showWarning && countdown <= 0) {
+            executeLogout();
+        }
+    }, [countdown, showWarning]);
 
     const executeLogout = () => {
         clearInterval(countdownIntervalRef.current);
@@ -79,7 +83,7 @@ export default function SessionTimeoutGuard({ children }) {
 
             {showWarning && (
                 <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-                    <div className="w-full max-w-md bg-themePanel border-theme border-rose-500 rounded-themePanel overflow-hidden shadow-[0_0_50px_rgba(244,63,94,0.2)]">
+                    <div className="w-full max-w-md bg-themePanel/85 backdrop-blur-2xl shadow-premium border-theme border-rose-500 rounded-themePanel overflow-hidden shadow-[0_0_50px_rgba(244,63,94,0.2)]">
                         <div className="p-8 flex flex-col items-center text-center gap-4">
                             <div className="w-16 h-16 rounded-full bg-rose-500/10 border-theme border-rose-500/30 flex items-center justify-center text-rose-500 mb-2">
                                 <i className="fa-solid fa-shield-halved text-2xl animate-pulse"></i>
@@ -97,13 +101,13 @@ export default function SessionTimeoutGuard({ children }) {
                             <div className="flex w-full gap-3 mt-4">
                                 <button 
                                     onClick={executeLogout}
-                                    className="flex-1 py-3 px-4 bg-themeApp text-themeText border-theme border-themeBorder rounded-themeBtn font-bold uppercase tracking-widest text-xs hover:bg-themeElevated transition-all"
+                                    className="flex-1 py-3 px-4 bg-themeApp text-themeText border border-white/5 rounded-themeBtn font-bold uppercase tracking-widest text-xs hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated transition-all"
                                 >
                                     Log Out Now
                                 </button>
                                 <button 
                                     onClick={continueSession}
-                                    className="flex-[2] py-3 px-4 bg-emerald-500 text-black border-theme border-emerald-500 rounded-themeBtn font-black uppercase tracking-widest text-xs hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                                    className="flex-[2] py-3 px-4 bg-emerald-500 text-themeText border-theme border-emerald-500 rounded-themeBtn font-black uppercase tracking-widest text-xs hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
                                 >
                                     <i className="fa-solid fa-bolt mr-2"></i> Continue Session
                                 </button>

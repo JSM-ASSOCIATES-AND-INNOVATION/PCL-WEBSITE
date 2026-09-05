@@ -323,18 +323,27 @@ export default function FacultyAttendance({ subjectContext }) {
         <div className={`w-full ${!subjectContext ? 'animate-fade-in' : ''}`}>
             <div className={`${!subjectContext ? 'w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12' : 'flex flex-col gap-4'}`}>
                 
-                {/* 1. HEADER */}
-                {!subjectContext && (
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                        <div>
-                            <h1 className="text-3xl lg:text-4xl font-black text-themeText tracking-tight mb-2">Attendance Engine</h1>
-                            <p className="text-xs lg:text-sm font-bold text-themeTextSec max-w-2xl">Manage automated class sessions, QR marking, and engagement analytics.</p>
+                {/* 1. HEADER (Liquid Glass) */}
+                {(!subjectContext && !isEmbedded) && (
+                    <div 
+                        className="w-full relative overflow-hidden rounded-[2.5rem] p-8 lg:p-10 xl:p-12 border border-white/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.2)] bg-white/10 backdrop-blur-[80px] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 xl:gap-10 shrink-0 mb-6 lg:mb-8"
+                    >
+                        <div className="relative z-10 flex-1">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-themeTextSec text-[10px] font-black uppercase tracking-widest mb-4 xl:mb-6 shadow-inner">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399] animate-pulse"></span> 
+                                Faculty Hub
+                            </div>
+                            <h1 className={`font-black text-3xl sm:text-4xl lg:text-5xl xl:text-6xl tracking-tight mb-3 xl:mb-4 leading-none drop-shadow-sm dark:drop-shadow-md text-white`}>
+                                Attendance Engine
+                            </h1>
+                            <p className="text-white/80 text-xs lg:text-sm font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                                Manage automated class sessions, QR marking, and engagement analytics.
+                            </p>
                         </div>
                         
-                        {/* Tab Navigation */}
-                        <div className="flex bg-themeElevated p-1 rounded-xl border border-themeBorderStrong shrink-0 overflow-x-auto no-scrollbar">
+                        <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_10px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_20px_rgba(0,0,0,0.2)] rounded-2xl border border-black/10 dark:border-white/20 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar relative z-10">
                             {[
-                                { id: "today", label: "Today's Classes", icon: "fa-calendar-day" },
+                                { id: "today", label: "Daily Sessions", icon: "fa-calendar-day" },
                                 { id: "window", label: "Active Window", icon: "fa-clipboard-check", disabled: !activeSession },
                                 { id: "analytics", label: "Risk Analytics", icon: "fa-chart-pie" }
                             ].map((tab) => (
@@ -342,13 +351,13 @@ export default function FacultyAttendance({ subjectContext }) {
                                     key={tab.id}
                                     disabled={tab.disabled}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`px-5 py-2.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${
+                                    className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${
                                         activeTab === tab.id
-                                            ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder'
-                                            : 'text-themeTextSec hover:text-themeText border border-transparent'
+                                            ? 'bg-white dark:bg-white/20 backdrop-blur-[80px] text-black dark:text-white shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/40 scale-100'
+                                            : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
                                     } ${tab.disabled ? 'opacity-30 cursor-not-allowed' : ''}`}
                                 >
-                                    <i className={`fa-solid ${tab.icon} mr-2 ${activeTab === tab.id ? 'text-themeAccent' : 'opacity-70'}`}></i>
+                                    <i className={`fa-solid ${tab.icon} ${activeTab === tab.id ? '' : 'opacity-70'}`}></i>
                                     {tab.label}
                                 </button>
                             ))}

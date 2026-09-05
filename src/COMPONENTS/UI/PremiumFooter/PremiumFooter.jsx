@@ -39,7 +39,7 @@ export default function PremiumFooter() {
         ease: 'power3.out',
         scrollTrigger: {
           trigger: el,
-          start: 'top 90%', // Triggers when top of footer hits 90% of viewport
+          start: 'top bottom', // Triggers when top of footer enters viewport
           toggleActions: 'play none none none'
         }
       }

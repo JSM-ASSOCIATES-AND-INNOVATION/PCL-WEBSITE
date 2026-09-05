@@ -194,12 +194,12 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.02 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="fixed inset-0 bg-themeApp z-[9999] flex flex-col overflow-y-auto custom-scrollbar"
+                className="fixed inset-0 bg-transparent z-[9999] flex flex-col overflow-y-auto custom-scrollbar"
             >
                 {/* Premium Full-Screen Header */}
-                <div className="sticky top-0 z-50 bg-themeApp/80 backdrop-blur-xl border-b border-themeBorder px-6 lg:px-12 py-5 flex items-center justify-between shadow-sm">
+                <div className="sticky top-0 z-50 bg-transparent/80 backdrop-blur-xl border-b border-black/10 dark:border-white/20 px-6 lg:px-12 py-5 flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-4">
-                        <button onClick={onClose} className="w-10 h-10 rounded-full bg-themeElevated hover:bg-themeBorder text-themeText flex items-center justify-center transition-colors">
+                        <button onClick={onClose} className="w-10 h-10 rounded-full bg-themePanel border-theme border-themeBorderStrong hover:bg-themeBorder text-themeText flex items-center justify-center transition-colors">
                             <i className="fa-solid fa-arrow-left"></i>
                         </button>
                         <div>
@@ -225,7 +225,7 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                 <div className="flex-1 w-full max-w-4xl mx-auto px-6 lg:px-12 py-10 flex flex-col gap-10">
                     
                     {hasPendingRequest ? (
-                        <div className="bg-themePanel border border-amber-500/30 rounded-2xl p-10 text-center flex flex-col items-center justify-center">
+                        <div className="bg-themePanel border-theme border-themeBorderStrong border border-amber-500/30 rounded-2xl p-10 text-center flex flex-col items-center justify-center">
                             <div className="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mb-6">
                                 <i className="fa-solid fa-hourglass-half text-3xl text-amber-500"></i>
                             </div>
@@ -235,12 +235,12 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                     ) : (
                         <>
                             {/* Avatar Section */}
-                            <div className="bg-themePanel border border-themeBorder rounded-3xl p-8 flex flex-col items-center justify-center gap-6 relative overflow-hidden shadow-sm">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-themeAccent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-3xl p-8 flex flex-col items-center justify-center gap-6 relative overflow-hidden shadow-sm">
+                                <div className="absolute top-0 right-0 w-full max-w-[16rem] md:w-64 h-64 bg-themeAccent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                                 <h3 className="text-xs font-black uppercase tracking-widest text-themeTextSec w-full text-left absolute top-6 left-8">Profile Picture</h3>
                                 
                                 <div className="relative group cursor-pointer mt-4" onClick={() => fileInputRef.current?.click()}>
-                                    <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-themeElevated border-4 border-themePanel ring-2 ring-themeBorder flex items-center justify-center overflow-hidden shadow-xl transition-all group-hover:ring-themeAccent">
+                                    <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full bg-themePanel border-theme border-themeBorderStrong border-4 border-themePanel ring-2 ring-themeBorder flex items-center justify-center overflow-hidden shadow-xl transition-all group-hover:ring-themeAccent">
                                         {formData.profile_picture_url ? (
                                             <img src={formData.profile_picture_url} alt="Profile" className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
                                         ) : (
@@ -270,18 +270,18 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                             </div>
 
                             {/* Personal Details */}
-                            <div className="bg-themePanel border border-themeBorder rounded-3xl p-8 shadow-sm">
+                            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-3xl p-8 shadow-sm">
                                 <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-6 flex items-center gap-2">
                                     <i className="fa-solid fa-id-card text-themeAccent"></i> Personal Details
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Phone Number</label>
-                                        <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="+91 9876543210" />
+                                        <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="+91 9876543210" />
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Blood Group</label>
-                                        <select value={formData.blood_group} onChange={e => setFormData({...formData, blood_group: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all appearance-none font-medium">
+                                        <select value={formData.blood_group} onChange={e => setFormData({...formData, blood_group: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all appearance-none font-medium">
                                             <option value="">Select...</option>
                                             <option>A+</option><option>A-</option>
                                             <option>B+</option><option>B-</option>
@@ -291,32 +291,32 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Date of Birth</label>
-                                        <input type="date" value={formData.dob} onChange={e => setFormData({...formData, dob: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" />
+                                        <input type="date" value={formData.dob} onChange={e => setFormData({...formData, dob: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" />
                                     </div>
                                     <div className="flex flex-col gap-2 md:col-span-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Current Address</label>
-                                        <input type="text" value={formData.currentAddress} onChange={e => setFormData({...formData, currentAddress: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="Full residential address" />
+                                        <input type="text" value={formData.currentAddress} onChange={e => setFormData({...formData, currentAddress: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="Full residential address" />
                                     </div>
                                 </div>
                             </div>
 
                             {/* Emergency Contact */}
-                            <div className="bg-themePanel border border-themeBorder rounded-3xl p-8 shadow-sm">
+                            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] rounded-3xl p-8 shadow-sm">
                                 <h3 className="text-xs font-black uppercase tracking-widest text-themeText mb-6 flex items-center gap-2">
                                     <i className="fa-solid fa-heart-pulse text-rose-500"></i> Emergency Contact
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="flex flex-col gap-2 md:col-span-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Contact Name</label>
-                                        <input type="text" value={formData.emergencyName} onChange={e => setFormData({...formData, emergencyName: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="Full Name" />
+                                        <input type="text" value={formData.emergencyName} onChange={e => setFormData({...formData, emergencyName: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="Full Name" />
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Relationship</label>
-                                        <input type="text" value={formData.emergencyRelation} onChange={e => setFormData({...formData, emergencyRelation: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="e.g. Father, Mother" />
+                                        <input type="text" value={formData.emergencyRelation} onChange={e => setFormData({...formData, emergencyRelation: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="e.g. Father, Mother" />
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Emergency Phone</label>
-                                        <input type="tel" value={formData.emergencyPhone} onChange={e => setFormData({...formData, emergencyPhone: e.target.value})} className="bg-themeElevated border border-themeBorder rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="+91 9876543210" />
+                                        <input type="tel" value={formData.emergencyPhone} onChange={e => setFormData({...formData, emergencyPhone: e.target.value})} className="bg-themePanel border-theme border-themeBorderStrong rounded-xl px-5 py-3.5 text-sm text-themeText outline-none focus:border-themeAccent focus:ring-4 focus:ring-themeAccent/10 transition-all font-medium" placeholder="+91 9876543210" />
                                     </div>
                                 </div>
                             </div>
@@ -327,7 +327,7 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                 {/* Cropping Modal Overlay */}
                 {isCropping && upImg && (
                     <div className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-6">
-                        <div className="bg-themePanel p-6 rounded-3xl w-full max-w-2xl flex flex-col items-center shadow-2xl border border-themeBorder">
+                        <div className="bg-themePanel border-theme border-themeBorderStrong p-6 rounded-3xl w-full max-w-2xl flex flex-col items-center shadow-2xl border border-black/10 dark:border-white/20">
                             <h3 className="text-lg font-black text-themeText mb-6">Crop Profile Picture</h3>
                             
                             <div className="w-full max-h-[50vh] overflow-auto flex justify-center bg-black/20 rounded-xl mb-6">
@@ -346,7 +346,7 @@ export default function ProfileEditModal({ profileData, userRole = 'student', on
                             <div className="flex gap-4 w-full justify-end">
                                 <button 
                                     onClick={() => { setIsCropping(false); setUpImg(null); if(fileInputRef.current) fileInputRef.current.value = ''; }} 
-                                    className="px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest text-themeTextSec hover:bg-themeElevated transition-colors"
+                                    className="px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest text-themeTextSec hover:bg-themePanel border-theme border-themeBorderStrong transition-colors"
                                 >
                                     Cancel
                                 </button>

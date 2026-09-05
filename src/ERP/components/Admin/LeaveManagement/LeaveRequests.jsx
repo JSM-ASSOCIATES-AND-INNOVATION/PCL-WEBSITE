@@ -66,7 +66,7 @@ export default function LeaveRequests({ onReviewRequest }) {
             case 'Approved': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
             case 'Rejected': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
             case 'Pending': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-            default: return 'bg-themeElevated text-themeTextSec border-themeBorderStrong';
+            default: return 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeTextSec border-black/5 dark:border-white/10';
         }
     };
 
@@ -74,7 +74,7 @@ export default function LeaveRequests({ onReviewRequest }) {
         <div className="flex flex-col gap-6 animate-fade-in">
             
             {/* Toolbar */}
-            <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel p-3 lg:p-5 flex flex-col lg:flex-row gap-3 lg:gap-4 items-start lg:items-center justify-between">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel p-3 lg:p-5 flex flex-col lg:flex-row gap-3 lg:gap-4 items-start lg:items-center justify-between">
                 <div className="relative w-full lg:w-96">
                     <i className="fa-solid fa-search absolute left-3 lg:left-4 top-1/2 -translate-y-1/2 text-themeTextSec"></i>
                     <input 
@@ -82,18 +82,18 @@ export default function LeaveRequests({ onReviewRequest }) {
                         placeholder="Search faculty, department, or leave type..." 
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-themeElevated border-[length:var(--border-width)] border-themeBorderStrong rounded-lg pl-9 lg:pl-10 pr-4 py-2 lg:py-2.5 text-xs text-themeText focus:border-indigo-500 outline-none transition-colors"
+                        className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5Strong rounded-lg pl-9 lg:pl-10 pr-4 py-2 lg:py-2.5 text-xs text-themeText focus:border-indigo-500 outline-none transition-colors"
                     />
                 </div>
 
-                <div className="flex flex-wrap items-center bg-themeElevated p-1 rounded-lg border-[length:var(--border-width)] border-themeBorderStrong w-full lg:w-auto">
+                <div className="flex flex-wrap items-center bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-1 rounded-lg border border-white/5Strong w-full lg:w-auto">
                     {["Pending", "Approved", "Rejected", "All"].map(status => (
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}
                             className={`flex-1 lg:flex-none px-2 lg:px-4 py-2 lg:py-1.5 rounded-md text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${
                                 statusFilter === status 
-                                    ? 'bg-themePanel text-themeText shadow-sm border-[length:var(--border-width)] border-themeBorder' 
+                                    ? 'bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText shadow-sm border border-white/5' 
                                     : 'text-themeTextSec hover:text-themeText border-[length:var(--border-width)] border-transparent'
                             }`}
                         >
@@ -104,11 +104,11 @@ export default function LeaveRequests({ onReviewRequest }) {
             </div>
 
             {/* Table */}
-            <div className="bg-themePanel border-[length:var(--border-width)] border-themeBorder rounded-themePanel overflow-hidden">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel overflow-hidden">
                 <div className="overflow-x-auto no-scrollbar">
                     <table className="w-full text-left border-collapse min-w-[700px]">
                         <thead>
-                            <tr className="bg-themeElevated/50 border-b-[length:var(--border-width)] border-themeBorder">
+                            <tr className="bg-themeElevated/50 border-b-[length:var(--border-width)] border-white/5">
                                 <th className="p-3 lg:p-4 text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">Faculty</th>
                                 <th className="p-3 lg:p-4 text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">Leave Type</th>
                                 <th className="p-3 lg:p-4 text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeTextSec">Dates</th>
@@ -127,7 +127,7 @@ export default function LeaveRequests({ onReviewRequest }) {
                             ) : filteredRequests.length === 0 ? (
                                 <tr>
                                     <td colSpan="5" className="p-12 text-center">
-                                        <div className="w-16 h-16 bg-themeElevated rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <div className="w-16 h-16 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated rounded-full flex items-center justify-center mx-auto mb-4">
                                             <i className="fa-solid fa-inbox text-2xl text-themeTextSec"></i>
                                         </div>
                                         <h3 className="text-sm font-black text-themeText">No Requests Found</h3>
@@ -159,7 +159,7 @@ export default function LeaveRequests({ onReviewRequest }) {
                                         <td className="p-3 lg:p-4 text-right">
                                             <button 
                                                 onClick={() => onReviewRequest(req)}
-                                                className="px-3 py-1.5 lg:px-4 lg:py-2 bg-themeElevated hover:bg-themeBorder border-[length:var(--border-width)] border-themeBorderStrong rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeText transition-colors whitespace-nowrap"
+                                                className="px-3 py-1.5 lg:px-4 lg:py-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder border border-white/5Strong rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest text-themeText transition-colors whitespace-nowrap"
                                             >
                                                 Review
                                             </button>

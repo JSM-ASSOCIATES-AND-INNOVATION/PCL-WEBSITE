@@ -5,6 +5,7 @@ import { supabase } from "../../../lib/supabase/supabaseClient";
 import { generateCalendarICS } from "../../../lib/calendarGenerator";
 import WeeklyChart from "../../shared/WeeklyChart";
 import SubjectFlipCard from "../../shared/SubjectFlipCard";
+import PageHeader from "../../shared/PageHeader/PageHeader";
 
 const SUBJECT_COLORS = {
     blue: { bg: 'bg-blue-500/10', text: 'text-blue-500', border: 'border-blue-500/20', solid: 'bg-blue-500' },
@@ -13,10 +14,10 @@ const SUBJECT_COLORS = {
     orange: { bg: 'bg-orange-500/10', text: 'text-orange-500', border: 'border-orange-500/20', solid: 'bg-orange-500' },
     rose: { bg: 'bg-rose-500/10', text: 'text-rose-500', border: 'border-rose-500/20', solid: 'bg-rose-500' },
     amber: { bg: 'bg-amber-500/10', text: 'text-amber-500', border: 'border-amber-500/20', solid: 'bg-amber-500' },
-    gray: { bg: 'bg-themeElevated', text: 'text-themeTextSec', border: 'border-themeBorder', solid: 'bg-themeBorderStrong' }
+    gray: { bg: 'bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20', text: 'text-themeTextSec', border: 'border-white/20', solid: 'bg-themeBorderStrong' }
 };
 
-export default function Timetable() {
+export default function Timetable({ isEmbedded = false }) {
     const { userSession } = useERP();
     const [activeTab, setActiveTab] = useState('today');
     const [selectedLecture, setSelectedLecture] = useState(null);
@@ -128,12 +129,15 @@ export default function Timetable() {
         const todayClasses = schedule.filter(c => c.day === currentDayName);
 
         if (loading) {
-            return <div className="h-64 flex items-center justify-center"><i className="fa-solid fa-spinner fa-spin text-themeAccent text-3xl"></i></div>;
+            return <div className="flex flex-col gap-6 w-full animate-pulse opacity-70 p-4 mt-6">
+    <div className="h-48 bg-white/10 backdrop-blur-md rounded-[2rem] border border-white/20 shadow-xl"></div>
+    <div className="h-48 bg-white/10 backdrop-blur-md rounded-[2rem] border border-white/20 shadow-xl"></div>
+</div>;
         }
 
         if (todayClasses.length === 0) {
             return (
-                <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50 mt-4">
+                <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50 mt-4">
                     <i className="fa-regular fa-calendar text-4xl mb-4 text-themeTextSec"></i>
                     <p className="text-sm font-bold text-themeTextSec">No classes scheduled for today.</p>
                 </div>
@@ -143,7 +147,7 @@ export default function Timetable() {
         return (
             <div className="flex flex-col relative py-4">
                 <div className="absolute left-[72px] right-0 h-px bg-themeAccent z-10 flex items-center top-[30%] opacity-50">
-                    <div className="absolute -left-16 text-[10px] font-black tracking-widest text-themeAccent bg-themeApp pr-2">
+                    <div className="absolute -left-16 text-[10px] font-black tracking-widest text-[var(--primary-color)] bg-white/50 dark:bg-transparent bg-transparent pr-2">
                         {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                     <div className="w-1.5 h-1.5 rounded-full bg-themeAccent shadow-[0_0_8px_rgba(var(--color-themeAccent),0.8)] -ml-1"></div>
@@ -162,20 +166,20 @@ export default function Timetable() {
                             </div>
                             
                             <div className="relative w-px bg-themeBorder flex-col flex items-center">
-                                <div className={`w-3 h-3 rounded-full border-[3px] border-themeApp z-10 mt-4 transition-colors ${isCurrent ? c.solid + ' animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.5)]' : 'bg-themeBorderStrong group-hover:' + c.solid}`}></div>
+                                <div className={`w-3 h-3 rounded-full border-[3px] border-themeApp z-10 mt-4 transition-colors ${isCurrent ? c.solid + ' animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.2)]' : 'bg-themeBorderStrong group-hover:' + c.solid}`}></div>
                             </div>
 
                             <div className="flex-1 pb-8 pt-2">
                                 <div 
                                     onClick={() => setSelectedLecture(lec)}
-                                    className={`w-full rounded-2xl p-5 border transition-all cursor-pointer ${isCurrent ? `${c.bg} ${c.border} shadow-lg scale-[1.02]` : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong shadow-sm hover:shadow-md hover:scale-[1.01]'}`}
+                                    className={`w-full rounded-2xl p-5 border transition-all cursor-pointer ${isCurrent ? `${c.bg} ${c.border} shadow-lg scale-[1.02]` : 'bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 border-white/20 hover:border-black/5 dark:border-white/10 shadow-sm hover:shadow-md hover:scale-[1.01]'}`}
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex items-center gap-2">
                                             <div className={`w-2 h-2 rounded-full ${c.solid}`}></div>
                                             <h3 className={`text-lg font-black tracking-tight ${isCurrent ? c.text : 'text-themeText'}`}>{lec.subject}</h3>
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest bg-themeElevated px-2 py-1 rounded-full text-themeTextSec border border-themeBorderStrong shadow-sm">{lec.room}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 px-2 py-1 rounded-full text-themeTextSec border border-black/5 dark:border-white/10 shadow-sm">{lec.room}</span>
                                     </div>
                                     <div className="flex items-center gap-4 mt-3">
                                         <span className="text-xs font-bold text-themeTextSec flex items-center gap-1.5"><i className="fa-regular fa-user"></i> {lec.faculty}</span>
@@ -222,9 +226,12 @@ export default function Timetable() {
                     </div>
                 </div>
                 {loading ? (
-                    <div className="h-64 flex items-center justify-center"><i className="fa-solid fa-spinner fa-spin text-themeAccent text-3xl"></i></div>
+                    <div className="flex flex-col gap-6 w-full animate-pulse opacity-70 p-4 mt-6">
+    <div className="h-48 bg-white/10 backdrop-blur-md rounded-[2rem] border border-white/20 shadow-xl"></div>
+    <div className="h-48 bg-white/10 backdrop-blur-md rounded-[2rem] border border-white/20 shadow-xl"></div>
+</div>
                 ) : schedule.length === 0 ? (
-                    <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50">
+                    <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50">
                         <i className="fa-solid fa-calendar-xmark text-4xl mb-4 text-themeTextSec"></i>
                         <p className="text-sm font-bold text-themeTextSec">No timetable published for your batch yet.</p>
                     </div>
@@ -241,19 +248,19 @@ export default function Timetable() {
 
     const renderCalendar = () => (
         <div className="flex flex-col gap-4 animate-fade-in">
-            <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm flex items-center justify-between">
+            <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] rounded-2xl p-6 shadow-sm flex items-center justify-between">
                 <div>
                     <h3 className="text-lg font-black text-themeText tracking-tight">{new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
                     <p className="text-xs font-bold text-themeTextSec">Academic Calendar</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="w-8 h-8 rounded-full bg-themeElevated text-themeText hover:bg-themeBorder transition-colors"><i className="fa-solid fa-chevron-left text-xs"></i></button>
-                    <button className="w-8 h-8 rounded-full bg-themeElevated text-themeText hover:bg-themeBorder transition-colors"><i className="fa-solid fa-chevron-right text-xs"></i></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 text-themeText hover:bg-themeBorder transition-colors"><i className="fa-solid fa-chevron-left text-xs"></i></button>
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 text-themeText hover:bg-themeBorder transition-colors"><i className="fa-solid fa-chevron-right text-xs"></i></button>
                 </div>
             </div>
 
             <div className="grid gap-4">
-                <div className="bg-themePanel border border-themeBorder rounded-2xl p-5 shadow-sm flex items-center gap-6">
+                <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] rounded-2xl p-5 shadow-sm flex items-center gap-6">
                     <div className="w-16 h-16 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col items-center justify-center shrink-0">
                         <span className="text-xs font-black uppercase tracking-widest text-purple-500">Aug</span>
                         <span className="text-xl font-black text-purple-500">19</span>
@@ -262,7 +269,7 @@ export default function Timetable() {
                         <h4 className="text-base font-black text-themeText">CAT II Examinations</h4>
                         <p className="text-xs font-bold text-themeTextSec mt-1">Continuous Assessment Test II begins for all semesters.</p>
                     </div>
-                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-themeElevated text-themeTextSec border border-themeBorderStrong">Exam</span>
+                    <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 text-themeTextSec border border-black/5 dark:border-white/10">Exam</span>
                 </div>
             </div>
         </div>
@@ -275,11 +282,11 @@ export default function Timetable() {
         return (
             <div className="fixed inset-0 z-50 flex justify-end">
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in" onClick={() => setSelectedLecture(null)}></div>
-                <div className="relative w-full max-w-md bg-themeApp h-full border-l border-themeBorder shadow-2xl flex flex-col animate-[slideInRight_0.3s_ease-out]">
+                <div className="relative w-full max-w-md bg-transparent h-full border-l border-white/20 shadow-2xl flex flex-col animate-[slideInRight_0.3s_ease-out]">
                     <div className={`${c.bg} p-6 border-b ${c.border} relative overflow-hidden`}>
                         <div className={`absolute top-0 right-0 w-48 h-48 ${c.solid} opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none`}></div>
                         <div className="flex justify-between items-start mb-6 relative z-10">
-                            <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-themeApp/80 backdrop-blur-md ${c.text} shadow-sm border ${c.border}`}>{selectedLecture.day}, {selectedLecture.time} - {selectedLecture.endTime}</span>
+                            <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-transparent/80 backdrop-blur-md ${c.text} shadow-sm border ${c.border}`}>{selectedLecture.day}, {selectedLecture.time} - {selectedLecture.endTime}</span>
                             <button onClick={() => setSelectedLecture(null)} className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-themeText flex items-center justify-center transition-colors">
                                 <i className="fa-solid fa-xmark"></i>
                             </button>
@@ -293,17 +300,17 @@ export default function Timetable() {
 
                     <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-8 custom-scrollbar">
                         <div className="grid grid-cols-2 gap-3">
-                            <button className="bg-themePanel border border-themeBorder hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
-                                <i className="fa-solid fa-book-open text-themeAccent"></i> Syllabus
+                            <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
+                                <i className="fa-solid fa-book-open text-[var(--primary-color)] bg-white/50 dark:bg-transparent"></i> Syllabus
                             </button>
-                            <button className="bg-themePanel border border-themeBorder hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
-                                <i className="fa-solid fa-folder-open text-themeAccent"></i> Material
+                            <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.erpDialog?.alert("Feature coming soon!"); }} className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
+                                <i className="fa-solid fa-folder-open text-[var(--primary-color)] bg-white/50 dark:bg-transparent"></i> Material
                             </button>
                         </div>
 
                         <div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Subject Workspace</h3>
-                            <div className="bg-themePanel border border-themeBorder rounded-2xl p-4 flex justify-between items-center shadow-sm">
+                            <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] rounded-2xl p-4 flex justify-between items-center shadow-sm">
                                 <div className="flex flex-col gap-1">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Credits</span>
                                     <span className="text-xl font-black text-themeText">{selectedLecture.credits || 4}</span>
@@ -311,7 +318,7 @@ export default function Timetable() {
                                 <div className="w-px h-8 bg-themeBorderStrong"></div>
                                 <div className="flex flex-col gap-1 items-center">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec">Attendance</span>
-                                    <span className="text-xl font-black text-emerald-500">100%</span>
+                                    <span className="text-xl font-black text-emerald-500">--</span>
                                 </div>
                                 <div className="w-px h-8 bg-themeBorderStrong"></div>
                                 <div className="flex flex-col gap-1 items-end">
@@ -327,30 +334,31 @@ export default function Timetable() {
     };
 
     return (
-        <div className="w-full min-h-screen bg-themeApp text-themeText font-sans pb-32">
-            <div className="bg-themePanel border-b border-themeBorder shadow-sm">
-                <div className="max-w-[1200px] mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-2xl font-black tracking-tight text-themeText">Academic Planning</h1>
-                        <p className="text-xs font-bold text-themeTextSec mt-1">Your official schedule and subject workspaces.</p>
-                    </div>
-                    
-                    <div className="flex bg-themeElevated p-1 rounded-xl border border-themeBorderStrong overflow-x-auto w-full md:w-auto no-scrollbar">
-                        {['Today', 'Week', 'Calendar', 'Changes'].map(tab => (
-                            <button 
-                                key={tab}
-                                onClick={() => setActiveTab(tab.toLowerCase())}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all shrink-0 ${
-                                    activeTab === tab.toLowerCase() 
-                                    ? 'bg-themePanel text-themeText shadow-sm border border-themeBorder' 
-                                    : 'text-themeTextSec hover:text-themeText'
-                                }`}
-                            >
-                                {tab}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+        <div className={`w-full text-themeText font-sans ${!isEmbedded ? "min-h-screen bg-transparent pb-32" : "pb-10"}`}>
+            <div className={`w-full max-w-[1200px] mx-auto ${!isEmbedded ? 'mt-8' : ''}`}>
+                <PageHeader 
+                    icon="fa-solid fa-calendar-days" 
+                    title="Academic Planning" 
+                    subtitle="Your official schedule and subject workspaces." 
+                    isEmbedded={isEmbedded}
+                    rightContent={
+                        <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_10px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_20px_rgba(0,0,0,0.2)] rounded-2xl border border-black/10 dark:border-white/20 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+                            {['Today', 'Week', 'Calendar', 'Changes'].map(tab => (
+                                <button 
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab.toLowerCase())}
+                                    className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${
+                                        activeTab === tab.toLowerCase() 
+                                        ? 'bg-white dark:bg-white/20 backdrop-blur-[80px] text-themeText shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-black/10 dark:border-white/40 scale-100' 
+                                        : 'text-themeTextSec opacity-80 hover:text-themeText hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
+                                    }`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+                    }
+                />
             </div>
 
             <div className="max-w-[1200px] mx-auto p-6 flex flex-col lg:flex-row gap-8 items-start mt-4">
@@ -359,7 +367,7 @@ export default function Timetable() {
                     {activeTab === 'week' && (
                         <>
                             {renderWeeklyGrid()}
-                            <div className="lg:hidden p-8 border border-themeBorder border-dashed rounded-2xl text-center flex flex-col items-center justify-center bg-themePanel mt-4">
+                            <div className="lg:hidden p-8 border border-white/20 border-dashed rounded-2xl text-center flex flex-col items-center justify-center bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 mt-4">
                                 <i className="fa-solid fa-desktop text-3xl text-themeTextSec mb-4"></i>
                                 <h3 className="text-sm font-black text-themeText mb-1">Desktop Recommended</h3>
                                 <p className="text-xs font-bold text-themeTextSec">The weekly timetable chart requires a larger screen. Please use a tablet or desktop, or switch to the 'Today' timeline view.</p>
@@ -368,7 +376,7 @@ export default function Timetable() {
                     )}
                     {activeTab === 'calendar' && renderCalendar()}
                     {activeTab === 'changes' && (
-                        <div className="bg-themePanel border border-themeBorder border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50">
+                        <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] border-dashed rounded-2xl p-12 flex flex-col items-center justify-center opacity-50">
                             <i className="fa-solid fa-code-compare text-4xl mb-4 text-themeTextSec"></i>
                             <p className="text-sm font-bold text-themeTextSec">No recent timetable changes.</p>
                         </div>
@@ -376,8 +384,8 @@ export default function Timetable() {
                 </div>
 
                 <div className="w-full lg:w-80 shrink-0 flex flex-col gap-6 sticky top-32">
-                    <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm relative overflow-hidden group">
-                        <div className="absolute -right-12 -top-12 w-32 h-32 bg-themeAccent/10 rounded-full blur-2xl group-hover:bg-themeAccent/20 transition-all"></div>
+                    <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] rounded-2xl p-6 shadow-sm relative overflow-hidden group">
+                        <div className="absolute -right-12 -top-12 w-32 h-32 bg-themeAccent/5 rounded-full blur-2xl group-hover:bg-themeAccent/10 transition-all"></div>
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Daily Academic Pulse</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex flex-col gap-1">
@@ -385,10 +393,10 @@ export default function Timetable() {
                                 <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Total Classes</span>
                             </div>
                             <div className="flex flex-col gap-1">
-                                <span className="text-3xl font-black text-emerald-500">100%</span>
+                                <span className="text-3xl font-black text-emerald-500">--</span>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec">Overall Attd.</span>
                             </div>
-                            <div className="col-span-2 pt-4 border-t border-themeBorderStrong mt-2">
+                            <div className="col-span-2 pt-4 border-t border-black/5 dark:border-white/10 mt-2">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Next Up</p>
                                 {schedule.find(s => s.status === 'upcoming') ? (
                                     <div className="flex items-center gap-3">
@@ -405,13 +413,13 @@ export default function Timetable() {
                         </div>
                     </div>
 
-                    <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm">
+                    <div className="bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-white/20 rounded-[2rem] rounded-2xl p-6 shadow-sm">
                         <h3 className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-4">Personal Calendar Sync</h3>
                         <p className="text-xs font-bold text-themeTextSec mb-4 leading-relaxed">
                             Sync official updates, extra classes, and holidays directly to your Apple or Google Calendar.
                         </p>
-                        <button onClick={exportCalendar} className="w-full bg-themeElevated border border-themeBorderStrong hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
-                            <i className="fa-regular fa-calendar-plus text-themeAccent"></i> Export as .ICS
+                        <button onClick={exportCalendar} className="w-full bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-white/20 border border-black/5 dark:border-white/10 hover:border-themeAccent hover:shadow-lg py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-themeText transition-all">
+                            <i className="fa-regular fa-calendar-plus text-[var(--primary-color)] bg-white/50 dark:bg-transparent"></i> Export as .ICS
                         </button>
                     </div>
                 </div>

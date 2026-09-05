@@ -1,3 +1,4 @@
+import Preloader from '../../UI/Preloader/Preloader';
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,6 +28,13 @@ export default function Programs() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('courses');
   const contentRef = useRef(null);
+
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ['courses', 'admissions', 'documents', 'calendar', 'collaborations'].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, [window.location.hash]);
 
   // Fetch CMS Data
   const { content: introContent } = useSiteContent('/programs', 'intro');
@@ -87,16 +95,16 @@ export default function Programs() {
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-[var(--text-color)] mb-6 uppercase"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[var(--text-color)] mb-6"
+           
           >
-            {introContent?.title?.split(' ')[0] || 'Academic'} <span className="text-[var(--primary-color)]">{introContent?.title?.split(' ')[1] || 'Excellence'}</span>
+            Academic <span className="text-[var(--primary-color)] italic font-medium pr-2">Excellence.</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg"
+            className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg leading-relaxed text-justify"
           >
             {introContent?.content || "Where rigorous scholarship meets uncompromising integrity. Shaping the vanguards of modern jurisprudence."}
           </motion.p>
@@ -137,13 +145,13 @@ export default function Programs() {
               {activeTab === 'courses' && (
                 <>
                   <div className="mb-12 text-center md:text-left">
-                    <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Approved Academic Courses</h2>
-                    <p className="text-[var(--text-muted)] leading-relaxed text-lg mb-8 max-w-3xl">
+                    <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold font-['Playfair_Display']">Approved Academic <span className="italic font-medium text-[var(--primary-color)] pr-2">Courses</span></h2>
+                    <p className="text-[var(--text-muted)] leading-relaxed text-lg mb-8 max-w-3xl text-justify">
                       Prudentia College of Law offers integrated and professional law programs approved by the Bar Council of India. Our curriculum is designed to bridge the rural-urban gap, integrating academic rigor with practical legal training starting from year one.
                     </p>
                     
                     <div className="w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden mb-12 relative flex items-center justify-center group shadow-2xl">
-                      <img src={outdoorImg} alt="Prudentia Campus" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
+                      <img decoding="async" loading="lazy" src={outdoorImg} alt="Prudentia Campus" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
                       <div className="absolute inset-0 ring-1 ring-inset ring-[var(--primary-color)]/30 rounded-3xl pointer-events-none"></div>
                     </div>
                   </div>
@@ -183,8 +191,8 @@ export default function Programs() {
               {activeTab === 'admissions' && (
                 <>
                   <div className="text-center mb-12">
-                    <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {admissionsData?.title || 'Admissions & Fee Structure'}
+                    <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold font-['Playfair_Display']">
+                      Admissions & <span className="italic font-medium text-[var(--primary-color)] pr-2">Fees</span>
                     </h2>
                     <p className="text-[var(--primary-color)] text-lg max-w-3xl mx-auto italic font-['Playfair_Display']">
                       "{admissionsData?.subtitle || 'We are committed to offering quality legal education at affordable fees to underserved communities.'}"
@@ -255,8 +263,8 @@ export default function Programs() {
               {activeTab === 'documents' && (
                 <>
                   <div className="text-center mb-12">
-                    <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {documentsData?.title || 'Documents Required'}
+                    <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold font-['Playfair_Display']">
+                      Required <span className="italic font-medium text-[var(--primary-color)] pr-2">Documents</span>
                     </h2>
                     <p className="text-[var(--text-muted)] text-lg max-w-2xl mx-auto">
                       {documentsData?.subtitle || 'Originals and photocopies required at admission.'}
@@ -313,7 +321,7 @@ export default function Programs() {
                               </div>
                               {item.image_url && (
                                 <div className="w-full md:w-48 h-32 shrink-0 rounded-xl overflow-hidden border border-[var(--card-border)] shadow-lg group-hover:shadow-[0_0_20px_var(--primary-glow)] transition-all duration-500 relative">
-                                  <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                  <img decoding="async" loading="lazy" src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
                                 </div>
                               )}
@@ -328,8 +336,11 @@ export default function Programs() {
                     </div>
                   </div>
 
-                  <button className={styles.magneticBtn} style={{ maxWidth: '300px' }}>
-                    Download PDF Calendar
+                  <button onClick={() => alert("Syllabus PDF is currently being updated for the 2026 academic year.")} className="tlh-btn justify-center" style={{ maxWidth: '300px' }}>
+                    <span className="text-xs font-bold uppercase tracking-widest">Download PDF Calendar</span>
+                    <svg width="9" height="13" viewBox="0 0 9 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1.64453 0.972656L6.97897 6.3071L1.67567 11.6104" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
                   </button>
                 </div>
               )}
@@ -338,8 +349,8 @@ export default function Programs() {
                 <>
                   <div className="flex flex-col md:flex-row gap-12 items-center mb-16">
                     <div className="md:w-2/3 text-center md:text-left">
-                      <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
-                        {collabData?.title || 'Educational Collaborations'}
+                      <h2 className="text-3xl text-[var(--text-color)] mb-4 font-bold font-['Playfair_Display']">
+                        Educational <span className="italic font-medium text-[var(--primary-color)] pr-2">Collaborations</span>
                       </h2>
                       <h3 className="text-xl text-[var(--primary-color)] font-semibold mb-6 font-['Playfair_Display']">
                         {collabData?.subtitle || 'Career Focus & Coaching'}
@@ -353,8 +364,8 @@ export default function Programs() {
                       </p>
                     </div>
                     <div className="md:w-1/3 flex justify-center">
-                       <div className="w-48 h-48 bg-[var(--card-bg)] rounded-full border border-[var(--primary-color)]/30 flex items-center justify-center p-8 backdrop-blur-md shadow-[0_0_50px_var(--primary-glow)] transition-transform hover:scale-105 duration-500">
-                          <img src={saratChandraLogo} alt={collabData?.partner_name || "Sarat Chandra IAS Academy"} className="w-full h-full object-contain" />
+                       <div className="w-56 h-56 bg-white rounded-3xl border border-[var(--card-border)] flex items-center justify-center p-6 shadow-xl transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(255,191,0,0.15)] duration-500 overflow-hidden">
+                          <img decoding="async" loading="lazy" src={saratChandraLogo} alt={collabData?.partner_name || "Sarat Chandra IAS Academy"} className="w-full h-full object-contain scale-110" />
                        </div>
                     </div>
                   </div>
@@ -375,7 +386,7 @@ export default function Programs() {
                   </div>
 
                   <div className="w-full h-[300px] md:h-[400px] rounded-3xl overflow-hidden relative flex items-center justify-center group shadow-2xl">
-                    <img src={classroom1} alt="Collaborative Learning" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+                    <img decoding="async" loading="lazy" src={classroom1} alt="Collaborative Learning" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 ring-1 ring-inset ring-[var(--primary-color)]/30 rounded-3xl pointer-events-none"></div>
                   </div>
                 </>

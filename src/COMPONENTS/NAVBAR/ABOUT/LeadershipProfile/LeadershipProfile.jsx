@@ -143,7 +143,7 @@ export default function LeadershipProfile({ overrideId }) {
                 <div className="w-12 h-[2px] bg-[var(--primary-color)] mb-6"></div>
                 <h1
                   className="text-4xl md:text-5xl text-white font-bold mb-3 leading-tight"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                 
                 >
                   {profile.name}
                 </h1>
@@ -162,8 +162,8 @@ export default function LeadershipProfile({ overrideId }) {
                 <span className="block uppercase tracking-[0.25em] text-xs text-[var(--primary-color)] font-semibold mb-4">
                   {profile.eyebrow}
                 </span>
-                <h2 className="text-4xl lg:text-6xl font-bold tracking-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Leadership &amp; <span className="text-[var(--primary-color)] italic pr-2">Vision.</span>
+                <h2 className="text-4xl lg:text-6xl font-bold tracking-tight">
+                  Leadership &amp; <span className="text-[var(--primary-color)] italic font-medium pr-2">Vision.</span>
                 </h2>
               </div>
 
@@ -185,7 +185,7 @@ export default function LeadershipProfile({ overrideId }) {
                 {profile.quote && (
                   <motion.div
                     {...fadeUp(0.7)}
-                    className="mt-16 p-10 md:p-12 rounded-[32px] bg-[var(--card-bg)] border border-[var(--card-border)] shadow-xl relative overflow-hidden group hover:shadow-[0_0_40px_var(--primary-glow)] transition-all duration-500 hover:-translate-y-1 backdrop-blur-xl"
+                    className="mt-16 p-10 md:p-12 rounded-[32px] bg-[var(--card-bg)] border border-[var(--card-border)] shadow-xl relative overflow-hidden group hover:shadow-[0_0_40px_rgba(255,191,0,0.15)] transition-all duration-500 hover:-translate-y-1 backdrop-blur-xl"
                   >
                     <div className="h-[2px] w-12 bg-[var(--primary-color)] mb-8 transition-all duration-500 group-hover:w-16"></div>
                     <div
@@ -197,7 +197,7 @@ export default function LeadershipProfile({ overrideId }) {
                     <div className="relative z-10">
                       <p
                         className="text-brand-text text-2xl md:text-3xl font-medium italic leading-relaxed"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
+                       
                       >
                         &ldquo;{profile.quote}&rdquo;
                       </p>

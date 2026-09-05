@@ -16,7 +16,7 @@ const SUBJECT_COLORS = {
     gray: { bg: 'bg-themeElevated', text: 'text-themeTextSec', border: 'border-themeBorder', solid: 'bg-themeBorderStrong' }
 };
 
-export default function FacultyTimetable() {
+export default function FacultyTimetable({ isEmbedded = false }) {
     const { userSession } = useERP();
     const [activeTab, setActiveTab] = useState('timeline');
     const [selectedLecture, setSelectedLecture] = useState(null);
@@ -194,7 +194,7 @@ export default function FacultyTimetable() {
                             </div>
                             
                             <div className="relative w-px bg-themeBorder flex-col flex items-center">
-                                <div className={`w-3 h-3 rounded-full border-[3px] border-themeApp z-10 mt-4 transition-colors ${isCurrent ? c.solid + ' animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.5)]' : 'bg-themeBorderStrong group-hover:' + c.solid}`}></div>
+                                <div className={`w-3 h-3 rounded-full border-[3px] border-themeApp z-10 mt-4 transition-colors ${isCurrent ? c.solid + ' animate-pulse shadow-[0_0_10px_rgba(0,0,0,0.2)]' : 'bg-themeBorderStrong group-hover:' + c.solid}`}></div>
                             </div>
 
                             <div className="flex-1 pb-8 pt-2">
@@ -366,15 +366,15 @@ export default function FacultyTimetable() {
                             </div>
                         </div>
                         <div className="relative z-10 w-full lg:w-auto shrink-0 mt-4 md:mt-0">
-                            <div className="flex bg-white/10 backdrop-blur-sm p-1 rounded-xl border border-white/20 overflow-x-auto w-full md:w-auto no-scrollbar">
+                            <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_10px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_20px_rgba(0,0,0,0.2)] rounded-2xl border border-black/10 dark:border-white/20 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
                                 {['Timeline', 'Week', 'Requests'].map(tab => (
                                     <button 
                                         key={tab}
                                         onClick={() => setActiveTab(tab.toLowerCase())}
-                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all shrink-0 ${
+                                        className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${
                                             activeTab === tab.toLowerCase() 
-                                            ? 'bg-white text-themeAccent shadow-sm' 
-                                            : 'text-white/80 hover:text-white hover:bg-white/10'
+                                            ? 'bg-white dark:bg-white/20 backdrop-blur-[80px] text-black dark:text-white shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/40 scale-100' 
+                                            : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
                                         }`}
                                     >
                                         {tab}

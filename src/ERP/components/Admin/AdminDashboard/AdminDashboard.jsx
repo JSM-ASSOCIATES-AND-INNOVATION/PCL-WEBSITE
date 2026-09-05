@@ -1,5 +1,6 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useState } from "react";
+import BirthdayWidget from "../../shared/BirthdayWidget";
 import AdminHeroBanner from "./AdminHeroBanner";
 import AdminKPIGrid from "./AdminKPIGrid";
 import AdminOverview from "./AdminOverview";
@@ -11,12 +12,13 @@ export default function AdminDashboard({ setActiveTab }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className="w-full max-w-[1920px] mx-auto relative selection:bg-themeElevated">
+        <div className="w-full max-w-7xl mx-auto relative selection:bg-themeElevated flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in">
             
+            <BirthdayWidget />
             {/* Mobile Utility Toggle */}
-            <div className="xl:hidden w-full flex justify-between items-center mb-4 bg-themePanel p-3 rounded-themePanel border-[length:var(--border-width)] border-themeBorder shadow-sm animate-fade-in">
+            <div className="xl:hidden w-full flex justify-between items-center mb-4 bg-themePanel/85 backdrop-blur-2xl shadow-premium p-3 rounded-themePanel border border-white/5 shadow-sm animate-fade-in">
                 <span className="text-xs font-bold text-themeTextSec flex items-center gap-2"><i className="fa-solid fa-layer-group"></i> Utilities & Monitors</span>
-                <button onClick={() => setIsSidebarOpen(true)} className="flex items-center gap-2 bg-themeElevated px-3 py-1.5 rounded-lg border-[length:var(--border-width)] border-themeBorder text-themeText hover:border-themeAccent transition-colors">
+                <button onClick={() => setIsSidebarOpen(true)} className="flex items-center gap-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-3 py-1.5 rounded-lg border border-white/5 text-themeText hover:border-themeAccent transition-colors">
                     <i className="fa-solid fa-bars"></i>
                     <span className="text-[10px] font-black uppercase tracking-widest">Open Panel</span>
                 </button>
@@ -56,11 +58,11 @@ export default function AdminDashboard({ setActiveTab }) {
                         p-6 xl:p-0 overflow-y-auto xl:overflow-visible no-scrollbar
                         transition-all duration-300 ease-in-out
                         ${isSidebarOpen ? 'translate-x-0 opacity-100' : 'translate-x-[110%] opacity-0 pointer-events-none xl:pointer-events-auto xl:opacity-100 xl:translate-x-0'}
-                        xl:col-span-3 flex flex-col min-w-0 pb-28 xl:pb-0 shadow-2xl xl:shadow-none border-l-[length:var(--border-width)] border-themeBorder xl:border-none
+                        xl:col-span-3 flex flex-col min-w-0 pb-28 xl:pb-0 shadow-2xl xl:shadow-none border-l-[length:var(--border-width)] border-white/5 xl:border-none
                     `}>
                         <div className="xl:hidden flex justify-between items-center mb-6">
                             <h2 className="text-sm font-black text-themeText tracking-tight flex items-center gap-2"><i className="fa-solid fa-layer-group text-themeTextSec"></i> Utilities</h2>
-                            <button onClick={() => setIsSidebarOpen(false)} className="w-8 h-8 rounded-lg bg-themeElevated flex items-center justify-center text-themeTextSec border-[length:var(--border-width)] border-themeBorder hover:text-themeText transition-colors">
+                            <button onClick={() => setIsSidebarOpen(false)} className="w-8 h-8 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated flex items-center justify-center text-themeTextSec border border-white/5 hover:text-themeText transition-colors">
                                 <i className="fa-solid fa-xmark"></i>
                             </button>
                         </div>

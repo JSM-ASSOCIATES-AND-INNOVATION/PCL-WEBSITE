@@ -7,7 +7,6 @@ import { supabase } from '../../../LIB/supabase/supabaseClient';
 import FacultyCard from './FacultyCard';
 
 export default function Faculty() {
-  const [query, setQuery] = useState('');
   const [facultyList, setFacultyList] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -47,19 +46,8 @@ export default function Faculty() {
     fetchFaculty();
   }, []);
 
-  const filteredFaculty = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return facultyList;
-    return facultyList.filter(
-      (f) =>
-        f.full_name?.toLowerCase().includes(q) ||
-        f.faculty_profiles?.designation?.toLowerCase().includes(q) ||
-        f.department?.toLowerCase().includes(q)
-    );
-  }, [query, facultyList]);
-
   useEffect(() => {
-    if (gridRef.current && filteredFaculty.length > 0) {
+    if (gridRef.current && facultyList.length > 0) {
       const cards = gridRef.current.children;
       gsap.fromTo(
         cards,
@@ -74,18 +62,18 @@ export default function Faculty() {
         }
       );
     }
-  }, [filteredFaculty]);
+  }, [facultyList]);
 
   return (
     <div className="min-h-screen w-full relative bg-[var(--bg-color)] text-[var(--text-color)] overflow-x-hidden pb-32">
       <div className="relative z-20 pt-32 md:pt-40 px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="text-center mb-24">
+        <div className="text-center mb-16">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-widest text-[var(--text-color)] mb-8 uppercase"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+           
           >
             OUR <span className="text-[var(--primary-color)] italic">FACULTY</span>
           </motion.h1>
@@ -93,37 +81,20 @@ export default function Faculty() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg mb-16"
-            style={{ fontFamily: "'Outfit', sans-serif" }}
+            className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg"
+           
           >
             Distinguished scholars and experienced practitioners dedicated to shaping the future of legal education.
           </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="max-w-md mx-auto"
-          >
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name or department..."
-              aria-label="Search faculty"
-              className="w-full bg-[var(--card-bg)] border border-[var(--card-border)] rounded-full py-4 px-8 text-[var(--text-color)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] transition-all backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.1)]"
-              style={{ fontFamily: "'Outfit', sans-serif" }}
-            />
-          </motion.div>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center py-32">
              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-color)]"></div>
           </div>
-        ) : filteredFaculty.length > 0 ? (
-          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            {filteredFaculty.map((faculty) => {
+        ) : facultyList.length > 0 ? (
+          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            {facultyList.map((faculty) => {
               const fProfile = faculty.faculty_profiles;
               
               return (
@@ -137,13 +108,7 @@ export default function Faculty() {
           </div>
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-32">
-            <p className="text-[var(--text-muted)] text-xl" style={{ fontFamily: "'Outfit', sans-serif" }}>No faculty members match "{query}".</p>
-            <button
-              onClick={() => setQuery('')}
-              className="mt-6 text-[var(--primary-color)] hover:text-[var(--primary-hover)] transition-colors text-sm font-bold uppercase tracking-widest focus:outline-none"
-            >
-              Clear search
-            </button>
+            <p className="text-[var(--text-muted)] text-xl">No faculty members found.</p>
           </motion.div>
         )}
       </div>

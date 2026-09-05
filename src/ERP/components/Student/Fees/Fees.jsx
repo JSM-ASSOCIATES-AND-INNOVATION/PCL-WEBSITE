@@ -1,6 +1,8 @@
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 /* eslint-disable */
+import { motion } from 'framer-motion';
 import React, { useState, useEffect } from "react";
+import PageHeader from "../../shared/PageHeader/PageHeader";
 import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
 import { supabase } from "../../../lib/supabase/supabaseClient";
@@ -59,7 +61,7 @@ export default function Fees() {
                     .from('fee_transactions')
                     .select('*')
                     .eq('student_id', studentId)
-                    .order('transaction_date', { ascending: false })
+                    .order('created_at', { ascending: false })
             ]);
 
             if (invoicesRes.error) throw invoicesRes.error;
@@ -116,7 +118,7 @@ export default function Fees() {
 
         try {
             // 1. Simulate Payment Gateway Delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 50));
 
             const transactionId = `TXN${Math.floor(Math.random() * 1000000000)}`;
             const purposeStr = feeBreakdown.filter(f => selectedFees.includes(f.id)).map(f => f.title).join(", ");
@@ -169,10 +171,10 @@ export default function Fees() {
 
     const getFeeTheme = (type) => {
         switch (type) {
-            case "academic": return "text-blue-400 bg-themeElevated border-themeBorderStrong";
+            case "academic": return "text-blue-400 bg-themePanel border-theme border-themeBorderStrong border-black/5 dark:border-white/10";
             case "accommodation": return "text-purple-400 bg-purple-500/10 border-purple-500/20";
-            case "penalty": return "text-rose-400 bg-themeElevated border-themeBorderStrong";
-            default: return "text-themeTextSec bg-neutral-800 border-themeBorderStrong";
+            case "penalty": return "text-rose-400 bg-themePanel border-theme border-themeBorderStrong border-black/5 dark:border-white/10";
+            default: return "text-themeTextSec bg-neutral-800 border-black/5 dark:border-white/10";
         }
     };
 
@@ -186,16 +188,19 @@ export default function Fees() {
     };
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated relative">
+        <div className="w-full h-auto xl:h-[calc(100vh-9rem)] xl:min-h-[600px] min-h-full relative flex-1 bg-transparent text-themeText selection:bg-themeAccent/30 overflow-x-hidden xl:overflow-hidden font-sans flex flex-col">
+            <div className="relative z-20 w-full max-w-7xl mx-auto flex flex-col xl:flex-row gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8 h-auto xl:h-full overflow-visible xl:overflow-hidden">
+                <div className="flex-1 flex flex-col gap-6 overflow-visible xl:overflow-y-auto custom-scrollbar pb-10 xl:pb-0 h-auto xl:h-full relative xl:pr-2">
+                    <div className="w-full flex flex-col gap-6 lg:gap-8 animate-fade-in">
 
             {/* PROCESSING OVERLAY */}
             {isProcessing && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/80 animate-fade-in">
-                    <div className="bg-themeElevated p-8 rounded-themePanel border-theme border-themeBorderStrong flex flex-col items-center max-w-sm w-full mx-4 shadow-2xl">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong p-8 rounded-themePanel border border-black/5 dark:border-white/10 flex flex-col items-center max-w-sm w-full mx-4 shadow-2xl">
                         <i className="fa-solid fa-circle-notch fa-spin text-4xl text-themeAccent mb-6"></i>
                         <h3 className={`${theme.text.heading} text-xl mb-2 text-center text-themeText`}>Processing Payment</h3>
                         <p className={`${theme.text.secondary} text-sm text-center mb-6`}>Securing your transaction with 256-bit SSL encryption. Please do not close this window.</p>
-                        <div className="w-full bg-themePanel h-2 rounded-full overflow-hidden">
+                        <div className="w-full bg-white/10 backdrop-blur-[60px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 h-2 rounded-full overflow-hidden">
                             <div className="h-full bg-amber-500 animate-pulse rounded-full" style={{ width: '60%' }}></div>
                         </div>
                     </div>
@@ -205,7 +210,7 @@ export default function Fees() {
             {/* SUCCESS MODAL */}
             {successModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm bg-black/80 animate-fade-in">
-                    <div className="bg-themeElevated p-8 rounded-themePanel border-theme border-emerald-500/30 flex flex-col items-center max-w-sm w-full mx-4 shadow-2xl">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong p-8 rounded-themePanel border-theme border-emerald-500/30 flex flex-col items-center max-w-sm w-full mx-4 shadow-2xl">
                         <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center text-3xl mb-4 border border-emerald-500/20">
                             <i className="fa-solid fa-check"></i>
                         </div>
@@ -213,7 +218,7 @@ export default function Fees() {
                         <p className={`${theme.text.secondary} text-sm text-center mb-6`}>
                             Your payment of <span className="font-bold text-themeText">{formatCurrency(successModal.amount)}</span> has been securely processed.
                         </p>
-                        <div className="w-full bg-themePanel rounded-lg p-4 mb-6 border border-themeBorder flex flex-col gap-2">
+                        <div className="w-full bg-white/10 backdrop-blur-[60px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 rounded-lg p-4 mb-6 flex flex-col gap-2">
                             <div className="flex justify-between text-xs">
                                 <span className="text-themeTextSec">Transaction ID</span>
                                 <span className="font-mono text-themeText">{successModal.transactionId}</span>
@@ -225,7 +230,7 @@ export default function Fees() {
                         </div>
                         <button 
                             onClick={() => setSuccessModal(null)}
-                            className="w-full py-3 bg-themePanel hover:bg-neutral-800 text-themeText text-sm font-bold rounded-lg border border-themeBorder hover:border-themeAccent/50 transition-all duration-300"
+                            className="w-full py-3 bg-white/10 backdrop-blur-[60px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 hover:bg-neutral-800 text-themeText text-sm font-bold rounded-lg hover:border-themeAccent/50 transition-all duration-300"
                         >
                             Back to Ledger
                         </button>
@@ -233,24 +238,21 @@ export default function Fees() {
                 </div>
             )}
 
-            {/* Header & View Toggle */}
-            <div className={`flex flex-col lg:flex-row lg:items-end justify-between gap-6 ${theme.layout.panel} p-6 lg:p-8 rounded-themePanel border-theme border-themeBorder no-print`}>
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 lg:w-16 lg:h-16 bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel lg:rounded-themePanel flex items-center justify-center text-themeAccent text-2xl lg:text-3xl shrink-0">
-                        <i className="fa-solid fa-file-invoice-dollar"></i>
-                    </div>
-                    <div>
-                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl text-themeText mb-1`}>Financial Ledger</h1>
-                        <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>View outstanding dues, pay securely, and download receipts.</p>
-                    </div>
-                </div>
+            <PageHeader 
+                icon="fa-solid fa-file-invoice-dollar"
+                title="Financial Ledger"
+                subtitle="View outstanding dues, pay securely, and download receipts."
+            />
+                
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 no-print">
 
-                <div className={`flex p-1.5 bg-themePanel rounded-themePanel lg:rounded-themePanel w-full lg:w-fit border-theme border-themeBorder overflow-x-auto no-scrollbar`}>
+
+                <div className={`flex p-1.5 bg-themePanel border-theme border-themeBorderStrong rounded-themePanel lg:rounded-themePanel w-full lg:w-fit overflow-x-auto no-scrollbar`}>
                     <button
                         onClick={() => setView("overview")}
                         className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg lg:rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${view === "overview"
-                            ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong shadow-sm"
-                            : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
+                            ? theme.action.rowActive + " justify-center"
+                            : "text-themeTextSec opacity-70 hover:text-themeText border border-transparent"
                             }`}
                     >
                         Outstanding Dues
@@ -258,8 +260,8 @@ export default function Fees() {
                     <button
                         onClick={() => setView("history")}
                         className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg lg:rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap ${view === "history"
-                            ? "bg-themeElevated text-themeAccent border-theme border-themeBorderStrong shadow-sm"
-                            : "text-themeTextSec opacity-70 hover:text-themeText border-theme border-transparent"
+                            ? theme.action.rowActive + " justify-center"
+                            : "text-themeTextSec opacity-70 hover:text-themeText border border-transparent"
                             }`}
                     >
                         Payment History
@@ -270,7 +272,7 @@ export default function Fees() {
 
             {/* FINANCIAL STANDING DASHBOARD */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 animate-fade-in no-print">
-                <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden`}>
+                <div className={`bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden`}>
                     <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Total Expected Fee</p>
@@ -278,14 +280,14 @@ export default function Fees() {
                     </div>
                 </div>
                 
-                <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden`}>
+                <div className={`bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden`}>
                     <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Amount Paid</p>
                             <h2 className="text-3xl font-black text-emerald-400 font-mono">{formatCurrency(totalPaid)}</h2>
                         </div>
-                        <div className="w-12 h-12 rounded-full border-[4px] border-themeBorderStrong flex items-center justify-center relative">
+                        <div className="w-12 h-12 rounded-full border-[4px] border-black/5 dark:border-white/10 flex items-center justify-center relative">
                             <svg className="absolute top-0 left-0 w-full h-full transform -rotate-90">
                                 <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="4" className="text-themePanel" />
                                 <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray="113" strokeDashoffset={113 - (113 * progressPercent) / 100} className="text-emerald-500 transition-all duration-1000" />
@@ -295,7 +297,7 @@ export default function Fees() {
                     </div>
                 </div>
 
-                <div className={`${theme.layout.panel} rounded-themePanel border-theme border-themeBorder p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden`}>
+                <div className={`bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-6 lg:p-8 flex flex-col justify-between relative overflow-hidden`}>
                     <div className="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2">Outstanding Dues</p>
@@ -317,21 +319,19 @@ export default function Fees() {
                     <div className="xl:col-span-1 flex flex-col gap-6">
 
                         {/* The Master Card */}
-                        <div className="bg-themeElevated rounded-themePanel p-6 lg:p-8 relative overflow-hidden border-theme border-themeBorder text-themeText flex flex-col justify-between min-h-[300px] lg:min-h-[350px] shadow-lg group hover:border-themeAccent/30 transition-all duration-500">
+                        <div className="bg-themePanel border-theme border-themeBorderStrong rounded-themePanel p-6 lg:p-8 relative overflow-hidden text-themeText flex flex-col justify-between min-h-[300px] lg:min-h-[350px] shadow-lg group hover:border-themeAccent/30 transition-all duration-500">
                             {/* Background Glows */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-themePanel/50 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none transition-all duration-500 group-hover:scale-110 group-hover:bg-themeAccent/5"></div>
-                            <div className="absolute bottom-0 left-0 w-48 h-48 bg-themePanel/50 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none transition-all duration-500 group-hover:scale-110 group-hover:bg-themeAccent/5"></div>
 
                             <div className="relative z-10 flex justify-between items-start">
-                                <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-themePanel flex items-center justify-center border-theme border-themeBorderStrong bg-themeApp text-themeAccent text-xl lg:text-2xl shadow-inner`}>
+                                <div className={`w-12 h-12 lg:w-14 lg:h-14 rounded-themePanel flex items-center justify-center border border-black/5 dark:border-white/10 bg-transparent text-themeAccent text-xl lg:text-2xl shadow-inner`}>
                                     <i className="fa-solid fa-wallet"></i>
                                 </div>
                                 {currentTotal > 0 ? (
-                                    <span className="px-3 py-1.5 bg-themeApp text-rose-400 border-theme border-themeBorderStrong rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                    <span className="px-3 py-1.5 bg-transparent text-rose-400 border border-black/5 dark:border-white/10 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest shadow-sm">
                                         Dues Pending
                                     </span>
                                 ) : (
-                                    <span className="px-3 py-1.5 bg-themeApp text-emerald-400 border-theme border-themeBorderStrong rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                    <span className="px-3 py-1.5 bg-transparent text-emerald-400 border border-black/5 dark:border-white/10 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest shadow-sm">
                                         All Clear
                                     </span>
                                 )}
@@ -352,7 +352,7 @@ export default function Fees() {
                                 disabled={currentTotal === 0 || isProcessing}
                                 className={`relative z-10 w-full mt-6 lg:mt-8 py-4 rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex justify-center items-center gap-2 overflow-hidden shadow-md ${currentTotal > 0 && !isProcessing
                                     ? 'bg-amber-500 text-[#050505] hover:bg-amber-400 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98]'
-                                    : 'bg-themeApp text-themeTextSec opacity-70 cursor-not-allowed border-theme border-themeBorder'
+                                    : 'bg-transparent text-themeTextSec opacity-70 cursor-not-allowed border border-transparent'
                                     }`}
                             >
                                 Pay Securely <i className="fa-solid fa-arrow-right"></i>
@@ -370,11 +370,11 @@ export default function Fees() {
                         <h2 className={`${theme.text.heading} text-lg lg:text-xl text-themeText tracking-tight ml-2`}>Detailed Breakdown</h2>
 
                         {feeBreakdown.length === 0 ? (
-                            <div className="w-full py-16 text-center border-2 border-dashed border-themeBorder rounded-themePanel bg-themeApp px-4">
+                            <div className="w-full py-16 text-center border-2 border-dashed border-black/10 dark:border-white/20 rounded-[2rem] bg-white/10 backdrop-blur-[60px] shadow-inner px-4 border border-black/5 dark:border-white/10">
                                 <p className="text-themeTextSec opacity-70 font-bold text-xs lg:text-sm">No fee records found in your ledger.</p>
                             </div>
                         ) : (
-                            <div className={`${theme.layout.panel} rounded-themePanel lg:rounded-themePanel overflow-hidden p-2 lg:p-3 border-theme border-themeBorder shadow-sm bg-themeApp/50`}>
+                            <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2.5rem] overflow-hidden p-4 lg:p-6">
                                 {feeBreakdown.map((item) => {
                                     const isSelected = selectedFees.includes(item.id);
 
@@ -383,8 +383,8 @@ export default function Fees() {
                                             key={item.id}
                                             onClick={() => item.status === 'pending' && !isProcessing && toggleFeeSelection(item.id)}
                                             className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 lg:p-5 rounded-themePanel lg:rounded-themePanel transition-all duration-300 mb-2 last:mb-0 border-theme ${item.status === 'paid'
-                                                ? 'opacity-50 grayscale bg-themeApp border-themeBorder/50'
-                                                : `bg-themePanel hover:bg-themeElevated cursor-pointer hover:border-themeAccent/40 hover:shadow-md hover:-translate-y-0.5 ${isSelected ? 'border-themeAccent/30 bg-amber-500/[0.02]' : 'border-themeBorder'}`
+                                                ? 'opacity-50 grayscale bg-white/5 backdrop-blur-sm border-black/5 dark:border-white/10 shadow-inner'
+                                                : `bg-white/10 backdrop-blur-[60px] border border-black/10 dark:border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:bg-white/20 hover:border-white/30 cursor-pointer hover:border-themeAccent/40 hover:shadow-md hover:-translate-y-0.5 ${isSelected ? 'border-themeAccent/30 bg-amber-500/[0.02]' : 'border-transparent'}`
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3 lg:gap-4">
@@ -408,7 +408,7 @@ export default function Fees() {
                                                 </span>
 
                                                 {item.status === 'paid' ? (
-                                                    <span className="text-emerald-400 text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 bg-themeElevated border-theme border-themeBorderStrong px-2.5 lg:px-3 py-1.5 rounded-lg shadow-sm">
+                                                    <span className="text-emerald-400 text-[9px] lg:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 bg-themePanel border-theme border-themeBorderStrong border border-black/5 dark:border-white/10 px-2.5 lg:px-3 py-1.5 rounded-lg shadow-sm">
                                                         <i className="fa-solid fa-check"></i> Paid
                                                     </span>
                                                 ) : (
@@ -417,7 +417,7 @@ export default function Fees() {
                                                             type="checkbox"
                                                             checked={isSelected}
                                                             readOnly
-                                                            className="peer appearance-none w-5 h-5 lg:w-6 lg:h-6 bg-themeApp border-theme border-themeBorderStrong rounded-md lg:rounded-lg checked:bg-amber-500 checked:border-amber-500 transition-all outline-none"
+                                                            className="peer appearance-none w-5 h-5 lg:w-6 lg:h-6 bg-transparent border border-black/5 dark:border-white/10 rounded-md lg:rounded-lg checked:bg-amber-500 checked:border-amber-500 transition-all outline-none"
                                                         />
                                                         <i className="fa-solid fa-check text-[#050505] text-[10px] lg:text-xs absolute opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                                                     </div>
@@ -436,26 +436,26 @@ export default function Fees() {
             {view === "history" && (
                 <div className="flex flex-col gap-5 lg:gap-6 animate-fade-in">
                     {transactionHistory.length === 0 ? (
-                        <div className="w-full py-16 lg:py-24 text-center border-2 border-dashed border-themeBorder rounded-themePanel bg-themeApp px-4">
+                        <div className="w-full py-16 lg:py-24 text-center border-2 border-dashed border-black/10 dark:border-white/20 rounded-[2rem] bg-white/10 backdrop-blur-[60px] shadow-inner px-4 border border-black/5 dark:border-white/10">
                             <i className="fa-solid fa-receipt text-4xl lg:text-5xl text-neutral-600 mb-4"></i>
                             <p className="text-themeTextSec font-bold text-xs lg:text-sm">No transactions have been recorded yet.</p>
                         </div>
                     ) : (
-                        <div className={`${theme.layout.panel} rounded-themePanel lg:rounded-themePanel overflow-hidden p-2 lg:p-3 border-theme border-themeBorder shadow-sm bg-themeApp/50`}>
+                        <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2.5rem] overflow-hidden p-4 lg:p-6">
                             {transactionHistory.map((txn) => (
                                 <div
                                     key={txn.id}
-                                    className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 lg:p-5 rounded-themePanel lg:rounded-themePanel bg-themePanel hover:bg-themeElevated transition-all duration-300 border-theme border-themeBorder hover:border-themeAccent/40 hover:shadow-md hover:-translate-y-0.5 mb-2 last:mb-0`}
+                                    className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 lg:p-5 rounded-themePanel lg:rounded-themePanel bg-white/10 backdrop-blur-[60px] border border-black/10 dark:border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:border-themeAccent/40 hover:shadow-md hover:-translate-y-0.5 mb-2 last:mb-0`}
                                 >
                                     <div className="flex items-center gap-3 lg:gap-4 w-full md:w-auto">
-                                        <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-themePanel flex items-center justify-center shrink-0 border-theme ${txn.status === 'successful' ? 'bg-themeElevated text-emerald-400 border-themeBorderStrong' : 'bg-themeElevated text-rose-400 border-themeBorderStrong'
+                                        <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-themePanel flex items-center justify-center shrink-0 border-theme ${txn.status === 'successful' ? 'bg-themePanel border-theme border-themeBorderStrong text-emerald-400 border-black/5 dark:border-white/10' : 'bg-themePanel border-theme border-themeBorderStrong text-rose-400 border-black/5 dark:border-white/10'
                                             }`}>
                                             <i className={`fa-solid ${txn.status === 'successful' ? 'fa-arrow-down' : 'fa-xmark'} text-base lg:text-lg`}></i>
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="text-sm lg:text-base font-black text-themeText tracking-tight leading-tight mb-1 truncate max-w-[200px] sm:max-w-md lg:max-w-xl" title={txn.purpose}>{txn.purpose}</h3>
                                             <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-                                                <span className={`text-[8px] lg:text-[9px] font-bold ${theme.text.muted} uppercase tracking-widest`}>{new Date(txn.transaction_date).toLocaleDateString('en-GB')}</span>
+                                                <span className={`text-[8px] lg:text-[9px] font-bold ${theme.text.muted} uppercase tracking-widest`}>{new Date(txn.created_at).toLocaleDateString('en-GB')}</span>
                                                 <span className="w-1 h-1 bg-neutral-700 rounded-full hidden sm:block"></span>
                                                 <span className={`text-[8px] lg:text-[9px] font-bold ${theme.text.muted} uppercase tracking-widest hidden sm:block`}>{txn.method}</span>
                                                 <span className="w-1 h-1 bg-neutral-700 rounded-full"></span>
@@ -464,15 +464,15 @@ export default function Fees() {
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-2 lg:gap-3 border-t-theme md:border-0 border-themeBorder pt-3 md:pt-0">
+                                    <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto gap-2 lg:gap-3 border-t-theme md:border-0 border-transparent pt-3 md:pt-0">
                                         <span className="text-base lg:text-xl font-black text-themeText">{formatCurrency(txn.amount)}</span>
                                         <div className="flex items-center gap-2 lg:gap-3">
-                                            <span className={`text-[8px] lg:text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg border-theme ${txn.status === 'successful' ? 'bg-themeElevated text-emerald-400 border-themeBorderStrong' : 'bg-themeElevated text-rose-400 border-themeBorderStrong'
+                                            <span className={`text-[8px] lg:text-[9px] font-black uppercase tracking-widest px-2.5 py-1.5 rounded-lg border-theme ${txn.status === 'successful' ? 'bg-themePanel border-theme border-themeBorderStrong text-emerald-400 border-black/5 dark:border-white/10' : 'bg-themePanel border-theme border-themeBorderStrong text-rose-400 border-black/5 dark:border-white/10'
                                                 }`}>
                                                 {txn.status}
                                             </span>
                                             {txn.status === 'successful' && (
-                                                <button onClick={() => generatePDF(`Receipt_${txn.id}`)} className="text-themeTextSec opacity-70 hover:text-themeAccent transition-all duration-300 bg-themeApp hover:bg-themeElevated w-8 h-8 lg:w-9 lg:h-9 rounded-lg lg:rounded-themePanel flex items-center justify-center border-theme border-themeBorderStrong hover:border-themeAccent/50 no-print hover:shadow-md" title="Download Receipt">
+                                                <button onClick={() => generatePDF(`Receipt_${txn.id}`)} className="text-themeTextSec opacity-70 hover:text-themeAccent transition-all duration-300 bg-transparent hover:bg-themePanel border-theme border-themeBorderStrong w-8 h-8 lg:w-9 lg:h-9 rounded-lg lg:rounded-themePanel flex items-center justify-center border border-black/5 dark:border-white/10 hover:border-themeAccent/50 no-print hover:shadow-md" title="Download Receipt">
                                                     <i className="fa-solid fa-download text-[10px] lg:text-xs"></i>
                                                 </button>
                                             )}
@@ -484,6 +484,6 @@ export default function Fees() {
                     )}
                 </div>
             )}
-        </div>
+        </div></div></div></div>
     );
 }

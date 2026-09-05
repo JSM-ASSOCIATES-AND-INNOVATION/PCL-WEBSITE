@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { supabase } from '../../../LIB/supabase/supabaseClient';
+import DOMPurify from 'dompurify';
 
 const ALL_TABS = [
   { id: 'education', label: 'Education' },
@@ -41,7 +42,6 @@ export default function FacultyProfile() {
   const navigate = useNavigate();
   const [faculty, setFaculty] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -89,20 +89,12 @@ export default function FacultyProfile() {
     });
   }, [faculty]);
 
-  useEffect(() => {
-      if (availableTabs.length > 0 && !activeTab) {
-          setActiveTab(availableTabs[0].id);
-      }
-  }, [availableTabs, activeTab]);
-
-  const currentTab = availableTabs.some((t) => t.id === activeTab) ? activeTab : availableTabs[0]?.id;
-
   if (loading) return <SkeletonLoader />;
 
   if (!faculty) {
     return (
       <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[var(--bg-color)] text-[var(--text-color)] px-6 text-center">
-        <h2 className="text-4xl mb-4 font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>Profile Not Found</h2>
+        <h2 className="text-4xl mb-4 font-bold">Profile Not Found</h2>
         <p className="text-[var(--text-muted)] mb-8 font-sans">This faculty member's profile is unavailable or private.</p>
         <button
           onClick={() => navigate('/about/faculty')}
@@ -135,7 +127,7 @@ export default function FacultyProfile() {
                   >
                       {/* Timeline dot */}
                       <div className="absolute w-2 h-2 bg-[var(--primary-color)] rounded-full -left-[29px] top-2 shadow-[0_0_10px_var(--primary-glow)] transition-transform group-hover:scale-150"></div>
-                      <span dangerouslySetInnerHTML={{ __html: item }} />
+                      <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item) }} />
                   </motion.li>
               ))}
           </ul>
@@ -145,170 +137,151 @@ export default function FacultyProfile() {
   return (
     <div className="min-h-screen w-full relative bg-[var(--bg-color)] text-[var(--text-color)] overflow-x-hidden font-sans">
       
-      {/* Decorative Blur (Tasteful, not cheap) */}
+      {/* Decorative Background Element */}
       <div className="fixed top-0 right-0 w-[40vw] h-[40vw] bg-[var(--primary-color)] rounded-full blur-[200px] opacity-[0.03] pointer-events-none z-0" />
 
-      <div className="relative z-20 pt-28 pb-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 xl:gap-24 items-start">
+      <div className="relative z-20 pt-28 pb-32 px-6 md:px-12 max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
         
-        {/* LEFT COLUMN: STICKY HERO */}
-        <div className="w-full lg:w-5/12 shrink-0 lg:sticky lg:top-32 flex flex-col gap-6">
+        {/* LEFT COLUMN: Image & Details */}
+        <div className="w-full lg:w-5/12 shrink-0 flex flex-col lg:sticky lg:top-32">
+          <Link
+            to="/about/faculty"
+            className="inline-flex items-center text-[var(--text-muted)] hover:text-[var(--primary-color)] transition-colors mb-8 uppercase tracking-widest text-xs font-bold focus:outline-none w-max"
+          >
+            <i className="fa-solid fa-arrow-left mr-3 text-sm"></i> Back to Directory
+          </Link>
+
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full aspect-[3/4] relative rounded-[2rem] overflow-hidden border border-[var(--card-border)] shadow-2xl group bg-black"
+            className="w-full aspect-[4/5] relative rounded-sm overflow-hidden mb-8 bg-black/20"
           >
-            <img 
+            <img decoding="async" loading="lazy" 
               src={faculty.image} 
               alt={faculty.name} 
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" 
+              className="absolute inset-0 w-full h-full object-cover grayscale opacity-90 transition-all duration-700 hover:grayscale-0 hover:scale-105" 
             />
-            {/* Inner Vignette */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
-            
-            {/* Quick Badges overlaid on image bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col gap-2">
-                <p className="text-[#FFBF00] font-bold tracking-widest uppercase text-xs">{faculty.designation}</p>
-                <h3 className="text-white text-3xl font-bold font-serif leading-none">{faculty.name}</h3>
-            </div>
           </motion.div>
 
-          {/* Social / Contact Actions */}
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-            className="flex flex-wrap gap-3"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col gap-4"
           >
-            {faculty.email && (
-                <a href={`mailto:${faculty.email}`} className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:-translate-y-1 hover:shadow-lg">
-                    <i className="fa-solid fa-envelope text-[#FFBF00]"></i> Email
+            <h1 className="text-4xl md:text-5xl font-bold font-serif text-[var(--text-color)]">
+              {faculty.name}
+            </h1>
+            <h2 className="text-lg md:text-xl font-medium text-[var(--primary-color)] uppercase tracking-wide">
+              {faculty.designation}
+            </h2>
+
+            <div className="flex flex-col gap-2 mt-2">
+              {faculty.phone && (
+                <a href={`tel:${faculty.phone}`} className="text-[var(--text-color)]/80 hover:text-[var(--primary-color)] transition-colors w-max text-base font-medium">
+                  {faculty.phone}
                 </a>
-            )}
-            {faculty.linkedin_url && (
-                <a href={faculty.linkedin_url} target="_blank" rel="noreferrer" className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:-translate-y-1 hover:shadow-lg">
-                    <i className="fa-brands fa-linkedin text-[#FFBF00]"></i> LinkedIn
+              )}
+              {faculty.email && (
+                <a href={`mailto:${faculty.email}`} className="text-[var(--text-color)]/80 hover:text-[var(--primary-color)] transition-colors w-max text-base font-medium">
+                  {faculty.email}
                 </a>
-            )}
-            {faculty.scholar_url && (
-                <a href={faculty.scholar_url} target="_blank" rel="noreferrer" className="flex-1 min-w-[120px] flex items-center justify-center gap-2 bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 py-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all hover:-translate-y-1 hover:shadow-lg">
-                    <i className="fa-solid fa-graduation-cap text-[#FFBF00]"></i> Scholar
+              )}
+            </div>
+
+            <div className="flex gap-4 mt-4">
+              {faculty.linkedin_url && (
+                <a href={faculty.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[var(--text-muted)] flex items-center justify-center text-[var(--text-muted)] hover:text-black hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all">
+                  <i className="fa-brands fa-linkedin-in"></i>
                 </a>
-            )}
+              )}
+              {faculty.scholar_url && (
+                <a href={faculty.scholar_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[var(--text-muted)] flex items-center justify-center text-[var(--text-muted)] hover:text-black hover:bg-[var(--primary-color)] hover:border-[var(--primary-color)] transition-all">
+                  <i className="fa-solid fa-graduation-cap"></i>
+                </a>
+              )}
+            </div>
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: SCROLLING DETAILS */}
-        <div className="w-full lg:w-7/12 flex flex-col lg:min-h-[80vh]">
+        {/* RIGHT COLUMN: Stacked Info */}
+        <div className="w-full lg:w-7/12 flex flex-col pt-12 lg:pt-20">
           
-          <Link
-            to="/about/faculty"
-            className="inline-flex items-center text-[var(--text-muted)] hover:text-[#FFBF00] transition-colors mb-12 uppercase tracking-widest text-xs font-bold focus:outline-none w-max"
-          >
-            <i className="fa-solid fa-arrow-left mr-3 text-sm"></i> Directory
-          </Link>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-            className="text-5xl md:text-6xl lg:text-[5rem] font-bold text-[var(--text-color)] mb-6 uppercase leading-[1.05]"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {firstNames} <span className="text-[#FFBF00] italic">{lastName}</span>
-          </motion.h1>
-
-          <motion.div 
-            initial={{ opacity: 0, scaleX: 0 }} 
-            animate={{ opacity: 1, scaleX: 1 }} 
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="h-[2px] w-24 bg-[#FFBF00] mb-12 origin-left"
-          />
-
           {/* Bio Section */}
-          {faculty.bio ? (
-            <motion.p 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-[var(--text-color)]/80 leading-relaxed mb-12 font-light"
+          {faculty.bio && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ delay: 0.3 }}
+              className="mb-16"
             >
-              <span className="text-4xl text-[#FFBF00] font-serif float-left mr-3 leading-none mt-1">
-                {faculty.bio.charAt(0)}
-              </span>
-              {faculty.bio.slice(1)}
-            </motion.p>
-          ) : (
-            <div className="mb-12"></div> // spacer
-          )}
-
-          {/* Info Grid */}
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-16 p-8 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-md"
-          >
-            {faculty.specialisation && (
-              <div>
-                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Expertise</span>
-                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.specialisation}</span>
+              <div className="text-base md:text-lg text-[var(--text-color)]/80 leading-relaxed font-light space-y-4">
+                {faculty.bio.split('\n').filter(p => p.trim()).map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
               </div>
-            )}
-            {faculty.department && (
-              <div>
-                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Department</span>
-                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.department}</span>
-              </div>
-            )}
-            {faculty.office_address && (
-                <div>
-                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Office Location</span>
-                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.office_address}</span>
-                </div>
-            )}
-            {faculty.phone && (
-                <div>
-                  <span className="block text-[#FFBF00] uppercase tracking-widest text-[10px] font-black mb-1">Direct Line</span>
-                  <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{faculty.phone}</span>
-                </div>
-            )}
-          </motion.div>
-
-          {/* Interactive Tabs */}
-          {availableTabs.length > 0 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="flex-1 flex flex-col">
-              
-              <div className="flex flex-nowrap overflow-x-auto hide-scrollbar gap-2 mb-10 pb-2">
-                {availableTabs.map((tab) => {
-                  const isActive = currentTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap focus:outline-none flex-shrink-0 ${
-                        isActive 
-                          ? 'bg-[#FFBF00] text-black shadow-[0_0_20px_rgba(255,191,0,0.3)]' 
-                          : 'bg-[var(--card-bg)] text-[var(--text-muted)] border border-[var(--card-border)] hover:border-[#FFBF00]/50 hover:text-[var(--text-color)]'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="flex-1">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentTab}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full"
-                  >
-                    {renderList(faculty[currentTab])}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
             </motion.div>
           )}
+
+          {/* Quick Info Grid */}
+          {(faculty.specialisation || faculty.department || faculty.office_address) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-12"
+            >
+              <h3 className="text-2xl font-bold font-serif mb-6 text-[var(--text-color)]">Expertise & Details</h3>
+              <div className="flex flex-wrap gap-4">
+                {faculty.specialisation && (
+                  <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-5 py-3 rounded-sm flex flex-col gap-1">
+                    <span className="text-[10px] text-[var(--primary-color)] uppercase tracking-widest font-bold">Specialisation</span>
+                    <span className="text-sm font-medium">{faculty.specialisation}</span>
+                  </div>
+                )}
+                {faculty.department && (
+                  <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-5 py-3 rounded-sm flex flex-col gap-1">
+                    <span className="text-[10px] text-[var(--primary-color)] uppercase tracking-widest font-bold">Department</span>
+                    <span className="text-sm font-medium">{faculty.department}</span>
+                  </div>
+                )}
+                {faculty.office_address && (
+                  <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-5 py-3 rounded-sm flex flex-col gap-1">
+                    <span className="text-[10px] text-[var(--primary-color)] uppercase tracking-widest font-bold">Office</span>
+                    <span className="text-sm font-medium">{faculty.office_address}</span>
+                  </div>
+                )}
+              </div>
+              <div className="w-full h-px bg-[var(--card-border)] mt-12"></div>
+            </motion.div>
+          )}
+
+          {/* Stacked Details Sections */}
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ delay: 0.5 }}
+            className="flex flex-col space-y-12"
+          >
+            {availableTabs.map((section, index) => {
+              const content = faculty[section.id];
+              if (!content || (typeof content === 'string' && content.trim().length === 0)) return null;
+
+              return (
+                <div key={section.id} className="w-full">
+                  <h3 className="text-2xl font-bold font-serif mb-6 text-[var(--text-color)]">{section.label}</h3>
+                  <div className="text-[var(--text-color)]/80 text-sm md:text-base mb-12">
+                    {renderList(content)}
+                  </div>
+                  {/* Divider, unless it's the last item */}
+                  {index < availableTabs.length - 1 && (
+                    <div className="w-full h-px bg-[var(--card-border)]"></div>
+                  )}
+                </div>
+              );
+            })}
+          </motion.div>
 
         </div>
       </div>

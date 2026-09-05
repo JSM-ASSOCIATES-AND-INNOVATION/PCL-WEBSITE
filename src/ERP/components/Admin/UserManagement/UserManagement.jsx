@@ -12,8 +12,8 @@ import AdminUserProfileModal from './AdminUserProfileModal';
 import AdminPasswordResetsModal from './AdminPasswordResetsModal';
 
 // Safe provisioning client so admin doesn't get logged out
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
-const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA';
 const provisionClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
 });
@@ -58,7 +58,7 @@ export default function UserManagement({ isHubView = false }) {
     // --- DATA FETCHER ---
     const fetchDirectory = async () => {
         try {
-            const { data: profiles, error } = await supabase.from('profiles').select('*');
+            const { data: profiles, error } = await supabase.from('profiles').select('*').limit(1500);
             if (error) throw error;
 
             const structuredData = { students: [], faculty: [], disciplinary: [] };
@@ -233,7 +233,8 @@ export default function UserManagement({ isHubView = false }) {
                 setProvisionLogs(prev => [...prev, `[${generatedId}] Profile inserted. Triggering EmailJS dispatch...`]);
 
                 try {
-                    await sendSystemEmail('ONBOARDING', email, {
+                    await sendSystemEmail('ONBOARDING', {
+                        to_email: email,
                         erp_id: generatedId,
                         password: generatedPassword,
                         login_url: window.location.origin
@@ -289,16 +290,16 @@ export default function UserManagement({ isHubView = false }) {
 
             {/* 1. MASTER HEADER */}
             {!isHubView && (
-                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-4 lg:gap-5">
-                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                                <i className="fa-solid fa-users-gear text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-users-gear text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                             </div>
                             <div>
-                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>User Access Management</h1>
+                                <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md`}>User Access Management</h1>
                                 <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Provision accounts, manage roles, and enforce disciplinary actions.</p>
                             </div>
                         </div>
@@ -312,7 +313,7 @@ export default function UserManagement({ isHubView = false }) {
                             </button>
                             <button
                                 onClick={() => setShowProvisionModal(true)}
-                                className="flex-1 lg:flex-none px-6 py-3 bg-white hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/50"
+                                className="flex-1 lg:flex-none px-6 py-3 bg-themePanel/85 backdrop-blur-2xl shadow-premium hover:bg-white/90 text-themeAccent rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/50"
                             >
                                 <i className="fa-solid fa-user-plus text-base"></i> Rapid Provisioning
                             </button>
@@ -337,25 +338,25 @@ export default function UserManagement({ isHubView = false }) {
             <div className="flex flex-col gap-4 lg:gap-6 animate-fade-in">
 
                 {/* Top Controls: Tabs, Search, Sort */}
-                <div className={`${theme.layout.panel} rounded-themePanel p-4 lg:p-5 flex flex-col lg:flex-row justify-between items-center gap-4 border-theme border-themeBorder shadow-sm`}>
+                <div className={`${theme.layout.panel} rounded-themePanel p-4 lg:p-5 flex flex-col lg:flex-row justify-between items-center gap-4 border border-white/5 shadow-sm`}>
                     
                     {/* Tabs */}
-                    <div className="flex p-1.5 bg-themeApp rounded-themePanel border-theme border-themeBorder w-full lg:w-auto shrink-0">
+                    <div className="flex p-1.5 bg-themeApp rounded-themePanel border border-white/5 w-full lg:w-auto shrink-0">
                         <button
                             onClick={() => setActiveTab('students')}
-                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'students' ? "bg-themeElevated text-themeAccent shadow-sm border-theme border-themeBorderStrong" : "text-themeTextSec opacity-70 hover:text-themeText hover:bg-themeElevated/50 border-theme border-transparent"}`}
+                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'students' ? "bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeAccent shadow-sm border border-black/5 dark:border-white/10" : "text-themeTextSec opacity-70 hover:text-themeText hover:bg-themeElevated/50 border border-transparent"}`}
                         >
                             Students <span className="ml-2 px-1.5 py-0.5 bg-themeApp rounded-md text-[9px] text-themeTextSec">{usersData.students.length}</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('faculty')}
-                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'faculty' ? "bg-themeElevated text-themeAccent shadow-sm border-theme border-themeBorderStrong" : "text-themeTextSec opacity-70 hover:text-themeText hover:bg-themeElevated/50 border-theme border-transparent"}`}
+                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'faculty' ? "bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeAccent shadow-sm border border-black/5 dark:border-white/10" : "text-themeTextSec opacity-70 hover:text-themeText hover:bg-themeElevated/50 border border-transparent"}`}
                         >
                             Faculty <span className="ml-2 px-1.5 py-0.5 bg-themeApp rounded-md text-[9px] text-themeTextSec">{usersData.faculty.length}</span>
                         </button>
                         <button
                             onClick={() => setActiveTab('disciplinary')}
-                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'disciplinary' ? "bg-rose-500/10 text-rose-500 shadow-sm border-theme border-rose-500/20" : "text-themeTextSec opacity-70 hover:text-rose-400 hover:bg-rose-500/5 border-theme border-transparent"}`}
+                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'disciplinary' ? "bg-rose-500/10 text-rose-500 shadow-sm border-theme border-rose-500/20" : "text-themeTextSec opacity-70 hover:text-rose-400 hover:bg-rose-500/5 border border-transparent"}`}
                         >
                             Disciplinary <span className="ml-2 px-1.5 py-0.5 bg-themeApp rounded-md text-[9px] text-themeTextSec">{usersData.disciplinary.length}</span>
                         </button>
@@ -370,7 +371,7 @@ export default function UserManagement({ isHubView = false }) {
                                 placeholder="Search Name, ID, Email..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-themeApp border-theme border-themeBorder rounded-themePanel pl-10 pr-4 py-3 text-xs lg:text-sm font-bold text-themeText focus:bg-themeElevated focus:border-themeAccent outline-none transition-all placeholder:text-neutral-600"
+                                className="w-full bg-themeApp border border-white/5 rounded-themePanel pl-10 pr-4 py-3 text-xs lg:text-sm font-bold text-themeText focus:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated focus:border-themeAccent outline-none transition-all placeholder:text-neutral-600"
                             />
                         </div>
 
@@ -379,7 +380,7 @@ export default function UserManagement({ isHubView = false }) {
                             <select 
                                 value={sortBy} 
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="w-full bg-themeApp border-theme border-themeBorder rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold text-themeText focus:bg-themeElevated focus:border-themeAccent outline-none appearance-none cursor-pointer"
+                                className="w-full bg-themeApp border border-white/5 rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold text-themeText focus:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated focus:border-themeAccent outline-none appearance-none cursor-pointer"
                             >
                                 <option value="name_asc">Sort: Name (A-Z)</option>
                                 <option value="name_desc">Sort: Name (Z-A)</option>
@@ -393,13 +394,13 @@ export default function UserManagement({ isHubView = false }) {
                 </div>
 
                 {/* Data Grid / Mobile Cards */}
-                <div className={`${theme.layout.panel} rounded-themePanel lg:rounded-themePanel overflow-hidden border-theme border-themeBorder shadow-sm min-h-[400px]`}>
+                <div className={`${theme.layout.panel} rounded-themePanel lg:rounded-themePanel overflow-hidden border border-white/5 shadow-sm min-h-[400px]`}>
                     
                     {/* Desktop Table View */}
                     <div className="hidden md:block overflow-x-auto no-scrollbar">
                         <table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
-                                <tr className="bg-themeApp border-b-theme border-themeBorder">
+                                <tr className="bg-themeApp border-b-theme border-white/5">
                                     <th className={`p-4 lg:p-5 pl-5 lg:pl-6 text-[9px] lg:text-[10px] font-black ${theme.text.muted} uppercase tracking-widest w-12 lg:w-16`}>Status</th>
                                     <th className={`p-4 lg:p-5 text-[9px] lg:text-[10px] font-black ${theme.text.muted} uppercase tracking-widest`}>User Profile</th>
                                     <th className={`p-4 lg:p-5 text-[9px] lg:text-[10px] font-black ${theme.text.muted} uppercase tracking-widest`}>{activeTab === 'students' ? 'Curriculum / Batch' : 'Department'}</th>
@@ -420,7 +421,7 @@ export default function UserManagement({ isHubView = false }) {
                                         </td>
                                         <td className="p-4 lg:p-5">
                                             <div className="flex items-center gap-4 cursor-pointer group/profile" onClick={() => { setSelectedProfileUser(user); setIsProfileModalOpen(true); }}>
-                                                <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 group-hover/profile:shadow-lg transition-shadow ${activeTab === 'students' ? 'bg-themeElevated text-themeAccent border-themeBorderStrong' : 'bg-themeElevated text-blue-400 border-themeBorderStrong'}`}>
+                                                <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 group-hover/profile:shadow-lg transition-shadow ${activeTab === 'students' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeAccent border-black/5 dark:border-white/10' : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-blue-400 border-black/5 dark:border-white/10'}`}>
                                                     {user.name.charAt(0)}
                                                 </div>
                                                 <div className="min-w-0">
@@ -434,26 +435,26 @@ export default function UserManagement({ isHubView = false }) {
                                             </div>
                                         </td>
                                         <td className="p-4 lg:p-5">
-                                            <span className={`text-xs font-bold text-themeText bg-themeApp px-3 py-1.5 rounded-lg border-theme border-themeBorder inline-block truncate max-w-none`}>
+                                            <span className={`text-xs font-bold text-themeText bg-themeApp px-3 py-1.5 rounded-lg border border-white/5 inline-block truncate max-w-none`}>
                                                 {user.batch || user.department || "Unassigned"}
                                             </span>
                                         </td>
                                         <td className="p-4 lg:p-5 pr-5 lg:pr-6">
                                             <div className="flex justify-end gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
                                                 {activeTab === 'students' && (
-                                                    <button onClick={() => setCvStudentId(user.db_id)} className="w-8 h-8 rounded-lg bg-themeApp border-theme border-themeBorderStrong hover:border-emerald-500 hover:text-emerald-400 text-themeTextSec flex items-center justify-center transition-colors shadow-sm" title="View Student CV">
+                                                    <button onClick={() => setCvStudentId(user.db_id)} className="w-8 h-8 rounded-lg bg-themeApp border border-black/5 dark:border-white/10 hover:border-emerald-500 hover:text-emerald-400 text-themeTextSec flex items-center justify-center transition-colors shadow-sm" title="View Student CV">
                                                         <i className="fa-solid fa-file-pdf text-[10px]"></i>
                                                     </button>
                                                 )}
-                                                <button onClick={() => handleResetPassword(user)} className="w-8 h-8 rounded-lg bg-themeApp border-theme border-themeBorderStrong hover:border-indigo-500 hover:text-themeAccent text-themeTextSec flex items-center justify-center transition-colors shadow-sm" title="Reset Password">
+                                                <button onClick={() => handleResetPassword(user)} className="w-8 h-8 rounded-lg bg-themeApp border border-black/5 dark:border-white/10 hover:border-indigo-500 hover:text-themeAccent text-themeTextSec flex items-center justify-center transition-colors shadow-sm" title="Reset Password">
                                                     <i className="fa-solid fa-key text-[10px]"></i>
                                                 </button>
                                                 {activeTab === 'students' && (
-                                                    <button onClick={() => { setSelectedQuestionnaireUser(user); setQFormData(user.questionnaire_data || { legalInterest: '', accommodation: '', emergencyContact: '', emergencyPhone: '' }); }} className="w-8 h-8 rounded-lg bg-themeApp border-theme border-themeBorderStrong hover:border-amber-500 hover:text-amber-400 text-themeTextSec flex items-center justify-center transition-colors shadow-sm" title="Edit Questionnaire">
+                                                    <button onClick={() => { setSelectedQuestionnaireUser(user); setQFormData(user.questionnaire_data || { legalInterest: '', accommodation: '', emergencyContact: '', emergencyPhone: '' }); }} className="w-8 h-8 rounded-lg bg-themeApp border border-black/5 dark:border-white/10 hover:border-amber-500 hover:text-amber-400 text-themeTextSec flex items-center justify-center transition-colors shadow-sm" title="Edit Questionnaire">
                                                         <i className="fa-solid fa-clipboard-list text-[10px]"></i>
                                                     </button>
                                                 )}
-                                                <button onClick={() => handleToggleStatus(user)} className={`w-8 h-8 rounded-lg bg-themeApp border-theme flex items-center justify-center transition-colors shadow-sm ${user.status === 'Active' ? 'border-themeBorderStrong hover:border-rose-500 hover:text-rose-500 text-themeTextSec' : 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-emerald-500 hover:text-white hover:border-emerald-500'}`} title={user.status === 'Active' ? 'Suspend Account' : 'Reactivate'}>
+                                                <button onClick={() => handleToggleStatus(user)} className={`w-8 h-8 rounded-lg bg-themeApp border-theme flex items-center justify-center transition-colors shadow-sm ${user.status === 'Active' ? 'border-black/5 dark:border-white/10 hover:border-rose-500 hover:text-rose-500 text-themeTextSec' : 'border-rose-500/50 bg-rose-500/10 text-rose-500 hover:bg-emerald-500 hover:text-white hover:border-emerald-500'}`} title={user.status === 'Active' ? 'Suspend Account' : 'Reactivate'}>
                                                     <i className={`fa-solid ${user.status === 'Active' ? 'fa-ban' : 'fa-rotate-left'} text-[10px]`}></i>
                                                 </button>
                                             </div>
@@ -481,7 +482,7 @@ export default function UserManagement({ isHubView = false }) {
                             <div key={i} className="p-4 flex flex-col gap-4">
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex items-center gap-3 min-w-0 cursor-pointer group/profile" onClick={() => { setSelectedProfileUser(user); setIsProfileModalOpen(true); }}>
-                                        <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 group-hover/profile:shadow-lg transition-shadow ${activeTab === 'students' ? 'bg-themeElevated text-themeAccent border-themeBorderStrong' : 'bg-themeElevated text-blue-400 border-themeBorderStrong'}`}>
+                                        <div className={`w-10 h-10 rounded-themePanel flex items-center justify-center font-black text-sm border-theme shrink-0 group-hover/profile:shadow-lg transition-shadow ${activeTab === 'students' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeAccent border-black/5 dark:border-white/10' : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-blue-400 border-black/5 dark:border-white/10'}`}>
                                             {user.name.charAt(0)}
                                         </div>
                                         <div className="min-w-0">
@@ -497,25 +498,25 @@ export default function UserManagement({ isHubView = false }) {
                                     </div>
                                 </div>
                                 
-                                <div className="flex items-center gap-2 text-xs font-medium text-themeAccent/80 bg-themeElevated p-2 rounded-lg border-theme border-themeBorderStrong truncate">
+                                <div className="flex items-center gap-2 text-xs font-medium text-themeAccent/80 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-2 rounded-lg border border-black/5 dark:border-white/10 truncate">
                                     <i className="fa-solid fa-envelope text-themeTextSec"></i> {user.email}
                                 </div>
 
                                 <div className="flex items-center justify-between mt-1">
-                                    <span className={`text-[10px] font-bold text-themeText bg-themeElevated px-2 py-1 rounded-md border-theme border-themeBorderStrong truncate max-w-[150px]`}>
+                                    <span className={`text-[10px] font-bold text-themeText bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-2 py-1 rounded-md border border-black/5 dark:border-white/10 truncate max-w-[150px]`}>
                                         {user.batch || user.department || "Unassigned"}
                                     </span>
 
                                     <div className="flex gap-2">
-                                        <button onClick={() => handleResetPassword(user)} className="w-8 h-8 rounded-lg bg-themeElevated border-theme border-themeBorderStrong text-themeTextSec flex items-center justify-center">
+                                        <button onClick={() => handleResetPassword(user)} className="w-8 h-8 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 text-themeTextSec flex items-center justify-center">
                                             <i className="fa-solid fa-key text-[10px]"></i>
                                         </button>
                                         {activeTab === 'students' && (
-                                            <button onClick={() => { setSelectedQuestionnaireUser(user); setQFormData(user.questionnaire_data || { legalInterest: '', accommodation: '', emergencyContact: '', emergencyPhone: '' }); }} className="w-8 h-8 rounded-lg bg-themeElevated border-theme border-themeBorderStrong text-amber-500 flex items-center justify-center">
+                                            <button onClick={() => { setSelectedQuestionnaireUser(user); setQFormData(user.questionnaire_data || { legalInterest: '', accommodation: '', emergencyContact: '', emergencyPhone: '' }); }} className="w-8 h-8 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 text-amber-500 flex items-center justify-center">
                                                 <i className="fa-solid fa-clipboard-list text-[10px]"></i>
                                             </button>
                                         )}
-                                        <button onClick={() => handleToggleStatus(user)} className={`w-8 h-8 rounded-lg border-theme flex items-center justify-center ${user.status === 'Active' ? 'bg-themeElevated border-themeBorderStrong text-rose-400' : 'bg-rose-500 border-rose-600 text-white'}`}>
+                                        <button onClick={() => handleToggleStatus(user)} className={`w-8 h-8 rounded-lg border-theme flex items-center justify-center ${user.status === 'Active' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-black/5 dark:border-white/10 text-rose-400' : 'bg-rose-500 border-rose-600 text-white'}`}>
                                             <i className={`fa-solid ${user.status === 'Active' ? 'fa-ban' : 'fa-rotate-left'} text-[10px]`}></i>
                                         </button>
                                     </div>
@@ -534,16 +535,16 @@ export default function UserManagement({ isHubView = false }) {
             {/* 3. PROVISIONING WIZARD MODAL */}
             {showProvisionModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themePanel w-full max-w-2xl rounded-themePanel lg:rounded-themePanel overflow-hidden border-theme border-themeBorder flex flex-col max-h-[90vh] shadow-2xl">
+                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium w-full max-w-2xl rounded-themePanel lg:rounded-themePanel overflow-hidden border border-white/5 flex flex-col max-h-[90vh] shadow-2xl">
 
                         {/* Modal Header */}
-                        <div className="bg-themeElevated p-5 lg:p-6 text-themeText relative shrink-0 border-b-theme border-themeBorder">
+                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-5 lg:p-6 text-themeText relative shrink-0 border-b-theme border-white/5">
                             <div className="flex justify-between items-start relative z-10">
                                 <div>
                                     <h3 className="text-lg lg:text-xl font-black tracking-tight mb-1 text-themeText">Provision New Account</h3>
                                     <p className={`text-[10px] lg:text-xs text-themeAccent font-medium`}>Generate credentials and assign records.</p>
                                 </div>
-                                <button onClick={closeProvisionWizard} className="w-8 h-8 flex items-center justify-center rounded-full bg-themeApp hover:bg-themeBorder border-theme border-themeBorderStrong text-themeText transition-colors shrink-0">
+                                <button onClick={closeProvisionWizard} className="w-8 h-8 flex items-center justify-center rounded-full bg-themeApp hover:bg-themeBorder border border-black/5 dark:border-white/10 text-themeText transition-colors shrink-0">
                                     <i className="fa-solid fa-xmark text-sm"></i>
                                 </button>
                             </div>
@@ -553,18 +554,18 @@ export default function UserManagement({ isHubView = false }) {
                         <div className="overflow-y-auto p-5 lg:p-6 flex-1 bg-themeApp no-scrollbar">
                             {provisionSuccess ? (
                                 <div className="flex flex-col items-center justify-center py-8 lg:py-10 animate-fade-in text-center">
-                                    <div className="w-16 h-16 lg:w-20 lg:h-20 bg-themeElevated text-emerald-400 border-theme border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)] rounded-full flex items-center justify-center text-3xl lg:text-4xl mb-4">
+                                    <div className="w-16 h-16 lg:w-20 lg:h-20 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-emerald-400 border-theme border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)] rounded-full flex items-center justify-center text-3xl lg:text-4xl mb-4">
                                         <i className="fa-solid fa-check"></i>
                                     </div>
                                     <h3 className={`${theme.text.heading} text-xl lg:text-2xl text-themeText mb-1`}>Account Provisioned!</h3>
                                     <p className={`text-xs lg:text-sm ${theme.text.muted} mb-6 lg:mb-8`}>Securely share these credentials.</p>
 
-                                    <div className="w-full max-w-sm bg-themePanel rounded-themePanel p-5 lg:p-6 border-theme border-themeBorder flex flex-col gap-4 relative overflow-hidden text-left">
+                                    <div className="w-full max-w-sm bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel p-5 lg:p-6 border border-white/5 flex flex-col gap-4 relative overflow-hidden text-left">
                                         <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
 
-                                        <div className="border-t-theme border-themeBorder pt-3 lg:pt-4">
+                                        <div className="border-t-theme border-white/5 pt-3 lg:pt-4">
                                             <span className={`text-[9px] lg:text-[10px] font-black uppercase tracking-widest ${theme.text.muted} mb-2 block`}>Automation Logs</span>
-                                            <div className="bg-themeApp border-theme border-themeBorder rounded-lg p-3 text-left font-mono text-[10px] lg:text-xs h-32 overflow-y-auto">
+                                            <div className="bg-themeApp border border-white/5 rounded-lg p-3 text-left font-mono text-[10px] lg:text-xs h-32 overflow-y-auto">
                                                 {provisionLogs.map((log, i) => (
                                                     <div key={i} className={`mb-1 ${log.includes('SUCCESS') ? 'text-emerald-400' : log.includes('ERROR') || log.includes('WARNING') ? 'text-rose-400' : 'text-themeTextSec'}`}>
                                                         &gt; {log}
@@ -582,9 +583,9 @@ export default function UserManagement({ isHubView = false }) {
                                 <form onSubmit={handleProvisionSubmit} className="flex flex-col gap-5 lg:gap-6">
 
                                     {/* Role Selector */}
-                                    <div className="flex p-1.5 bg-themePanel rounded-themePanel border-theme border-themeBorder w-full">
-                                        <button type="button" onClick={() => setNewUserRole("student")} className={`flex-1 py-3 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${newUserRole === 'student' ? 'bg-themeElevated text-themeAccent shadow-sm border-theme border-themeBorderStrong' : 'text-neutral-600 hover:text-themeText'}`}>Student</button>
-                                        <button type="button" onClick={() => setNewUserRole("faculty")} className={`flex-1 py-3 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${newUserRole === 'faculty' ? 'bg-themeElevated text-themeAccent shadow-sm border-theme border-themeBorderStrong' : 'text-neutral-600 hover:text-themeText'}`}>Faculty</button>
+                                    <div className="flex p-1.5 bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 w-full">
+                                        <button type="button" onClick={() => setNewUserRole("student")} className={`flex-1 py-3 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${newUserRole === 'student' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeAccent shadow-sm border border-black/5 dark:border-white/10' : 'text-neutral-600 hover:text-themeText'}`}>Student</button>
+                                        <button type="button" onClick={() => setNewUserRole("faculty")} className={`flex-1 py-3 rounded-lg text-[9px] lg:text-[10px] font-black uppercase tracking-widest transition-all ${newUserRole === 'faculty' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeAccent shadow-sm border border-black/5 dark:border-white/10' : 'text-neutral-600 hover:text-themeText'}`}>Faculty</button>
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-4 lg:gap-5">
@@ -596,7 +597,7 @@ export default function UserManagement({ isHubView = false }) {
                                                 <select
                                                     value={assignment}
                                                     onChange={(e) => setAssignment(e.target.value)}
-                                                    className="w-full border-theme border-themeBorderStrong rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold bg-themePanel text-themeText focus:bg-themeElevated focus:border-themeAccent outline-none transition-all appearance-none cursor-pointer"
+                                                    className="w-full border border-black/5 dark:border-white/10 rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText focus:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated focus:border-themeAccent outline-none transition-all appearance-none cursor-pointer"
                                                     required
                                                 >
                                                     {newUserRole === 'student' ? (
@@ -628,7 +629,7 @@ export default function UserManagement({ isHubView = false }) {
                                                 value={bulkEmails}
                                                 onChange={(e) => setBulkEmails(e.target.value)}
                                                 placeholder="e.g. john@jsm.edu.in, sarah@jsm.edu.in"
-                                                className="w-full border-theme border-themeBorderStrong rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold bg-themePanel text-themeText focus:bg-themeElevated focus:border-themeAccent outline-none transition-all placeholder:text-neutral-600 resize-none"
+                                                className="w-full border border-black/5 dark:border-white/10 rounded-themePanel px-4 py-3 text-xs lg:text-sm font-bold bg-themePanel/85 backdrop-blur-2xl shadow-premium text-themeText focus:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated focus:border-themeAccent outline-none transition-all placeholder:text-neutral-600 resize-none"
                                                 required
                                             />
                                         </div>
@@ -636,7 +637,7 @@ export default function UserManagement({ isHubView = false }) {
 
                                     {/* Logs Display during provisioning */}
                                     {isProvisioning && (
-                                        <div className="bg-themeApp border-theme border-themeBorder rounded-lg p-3 text-left font-mono text-[10px] h-32 overflow-y-auto mt-2">
+                                        <div className="bg-themeApp border border-white/5 rounded-lg p-3 text-left font-mono text-[10px] h-32 overflow-y-auto mt-2">
                                             {provisionLogs.map((log, i) => (
                                                 <div key={i} className={`mb-1 ${log.includes('SUCCESS') ? 'text-emerald-400' : log.includes('ERROR') || log.includes('WARNING') ? 'text-rose-400' : 'text-themeTextSec'}`}>
                                                     &gt; {log}
@@ -651,8 +652,8 @@ export default function UserManagement({ isHubView = false }) {
 
                         {/* Modal Footer */}
                         {!provisionSuccess && (
-                            <div className="p-4 lg:p-5 border-t-theme border-themeBorder bg-themePanel shrink-0 flex flex-col sm:flex-row gap-3">
-                                <button type="button" onClick={closeProvisionWizard} className="w-full sm:w-auto px-6 py-3.5 bg-themeElevated hover:bg-themeBorder text-themeTextSec hover:text-themeText rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-colors border-theme border-themeBorderStrong active:scale-95">Cancel</button>
+                            <div className="p-4 lg:p-5 border-t-theme border-white/5 bg-themePanel/85 backdrop-blur-2xl shadow-premium shrink-0 flex flex-col sm:flex-row gap-3">
+                                <button type="button" onClick={closeProvisionWizard} className="w-full sm:w-auto px-6 py-3.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder text-themeTextSec hover:text-themeText rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-colors border border-black/5 dark:border-white/10 active:scale-95">Cancel</button>
                                 <button onClick={handleProvisionSubmit} disabled={isProvisioning || !bulkEmails || !assignment} className="w-full sm:flex-1 bg-themeAccent hover:bg-themeAccentMuted text-white rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all disabled:opacity-50 disabled:shadow-none flex justify-center items-center gap-2 group relative overflow-hidden active:scale-[0.98] shadow-lg">
                                     {!isProvisioning && bulkEmails && assignment && (
                                         <div className="absolute inset-0 w-full h-full -translate-x-full group-hover:"></div>
@@ -668,13 +669,13 @@ export default function UserManagement({ isHubView = false }) {
             {/* 4. ADMIN QUESTIONNAIRE OVERRIDE MODAL */}
             {selectedQuestionnaireUser && (
                 <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-                    <div className={`w-full max-w-lg bg-themePanel border-theme border-themeBorder shadow-2xl rounded-themePanel overflow-hidden flex flex-col max-h-[90vh]`}>
-                        <div className="p-6 border-b-theme border-themeBorder flex justify-between items-center bg-themeElevated">
+                    <div className={`w-full max-w-lg bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 shadow-2xl rounded-themePanel overflow-hidden flex flex-col max-h-[90vh]`}>
+                        <div className="p-6 border-b-theme border-white/5 flex justify-between items-center bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated">
                             <div>
                                 <h3 className={`${theme.text.heading} text-lg text-themeText`}>Edit Questionnaire Data</h3>
                                 <p className="text-xs text-themeTextSec font-medium mt-1">For: {selectedQuestionnaireUser.name} ({selectedQuestionnaireUser.id})</p>
                             </div>
-                            <button onClick={() => setSelectedQuestionnaireUser(null)} className="w-8 h-8 rounded-full bg-themeApp text-themeTextSec hover:text-themeText flex items-center justify-center border-theme border-themeBorderStrong transition-colors">
+                            <button onClick={() => setSelectedQuestionnaireUser(null)} className="w-8 h-8 rounded-full bg-themeApp text-themeTextSec hover:text-themeText flex items-center justify-center border border-black/5 dark:border-white/10 transition-colors">
                                 <i className="fa-solid fa-xmark"></i>
                             </button>
                         </div>
@@ -682,53 +683,53 @@ export default function UserManagement({ isHubView = false }) {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Legal Interest</label>
-                                    <input type="text" value={qFormData.legalInterest || ''} onChange={e => setQFormData({...qFormData, legalInterest: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.legalInterest || ''} onChange={e => setQFormData({...qFormData, legalInterest: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Blood Group</label>
-                                    <input type="text" value={qFormData.bloodGroup || ''} onChange={e => setQFormData({...qFormData, bloodGroup: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.bloodGroup || ''} onChange={e => setQFormData({...qFormData, bloodGroup: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Aadhar Number</label>
-                                    <input type="text" value={qFormData.aadharNumber || ''} onChange={e => setQFormData({...qFormData, aadharNumber: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.aadharNumber || ''} onChange={e => setQFormData({...qFormData, aadharNumber: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Past Legal Gens</label>
-                                    <input type="text" value={qFormData.pastLegalGenerations || ''} onChange={e => setQFormData({...qFormData, pastLegalGenerations: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.pastLegalGenerations || ''} onChange={e => setQFormData({...qFormData, pastLegalGenerations: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Father's Name</label>
-                                    <input type="text" value={qFormData.fatherName || ''} onChange={e => setQFormData({...qFormData, fatherName: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.fatherName || ''} onChange={e => setQFormData({...qFormData, fatherName: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Mother's Name</label>
-                                    <input type="text" value={qFormData.motherName || ''} onChange={e => setQFormData({...qFormData, motherName: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.motherName || ''} onChange={e => setQFormData({...qFormData, motherName: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Present Address</label>
-                                <textarea rows="2" value={qFormData.presentAddress || ''} onChange={e => setQFormData({...qFormData, presentAddress: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors resize-none" />
+                                <textarea rows="2" value={qFormData.presentAddress || ''} onChange={e => setQFormData({...qFormData, presentAddress: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors resize-none" />
                             </div>
 
                             <div className="flex flex-col gap-1.5">
                                 <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Permanent Address</label>
-                                <textarea rows="2" value={qFormData.permanentAddress || ''} onChange={e => setQFormData({...qFormData, permanentAddress: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors resize-none" />
+                                <textarea rows="2" value={qFormData.permanentAddress || ''} onChange={e => setQFormData({...qFormData, permanentAddress: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors resize-none" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Emergency Contact Name</label>
-                                    <input type="text" value={qFormData.emergencyContact || ''} onChange={e => setQFormData({...qFormData, emergencyContact: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.emergencyContact || ''} onChange={e => setQFormData({...qFormData, emergencyContact: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                                 <div className="flex flex-col gap-1.5">
                                     <label className="text-[10px] text-themeTextSec uppercase tracking-widest font-bold ml-1">Emergency Phone</label>
-                                    <input type="text" value={qFormData.emergencyPhone || ''} onChange={e => setQFormData({...qFormData, emergencyPhone: e.target.value})} className="w-full bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
+                                    <input type="text" value={qFormData.emergencyPhone || ''} onChange={e => setQFormData({...qFormData, emergencyPhone: e.target.value})} className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-themePanel p-3.5 text-xs font-bold text-themeText outline-none focus:border-themeAccent transition-colors" />
                                 </div>
                             </div>
                         </div>
-                        <div className="p-5 border-t-theme border-themeBorder bg-themePanel flex justify-end gap-3 shrink-0">
-                            <button onClick={() => setSelectedQuestionnaireUser(null)} className="px-6 py-3 bg-themeElevated hover:bg-themeBorder text-themeTextSec hover:text-themeText rounded-themePanel text-[10px] font-black uppercase tracking-widest transition-colors border-theme border-themeBorderStrong">Cancel</button>
+                        <div className="p-5 border-t-theme border-white/5 bg-themePanel/85 backdrop-blur-2xl shadow-premium flex justify-end gap-3 shrink-0">
+                            <button onClick={() => setSelectedQuestionnaireUser(null)} className="px-6 py-3 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated hover:bg-themeBorder text-themeTextSec hover:text-themeText rounded-themePanel text-[10px] font-black uppercase tracking-widest transition-colors border border-black/5 dark:border-white/10">Cancel</button>
                             <button onClick={handleSaveQuestionnaire} className="px-6 py-3 bg-themeAccent hover:bg-themeAccentMuted text-white rounded-themePanel text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95">Save Override</button>
                         </div>
                     </div>

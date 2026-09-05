@@ -5,8 +5,8 @@ import { supabase } from "../../../lib/supabase/supabaseClient";
 import { createClient } from '@supabase/supabase-js';
 import { sendSystemEmail } from '../../../lib/EmailService';
 
-const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
-const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://saswiwkahpubgivrtjwy.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhc3dpd2thaHB1YmdpdnJ0and5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMjQ1ODgsImV4cCI6MjA5MzgwMDU4OH0.tDp34Pnyy3v25D6GBW7RCQVvbwiAxKBCR_8e7cTlHpA';
 const provisionClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
 });
@@ -202,7 +202,8 @@ export default function AdminAdmissions({ isHubView = false }) {
             // 5. Send Welcome Email
             addLog(`[EMAIL] Dispatching secure welcome letter and credentials via EmailJS...`);
             try {
-                await sendSystemEmail('ONBOARDING', app.email, {
+                await sendSystemEmail('ONBOARDING', {
+                    to_email: app.email,
                     erp_id: generatedId,
                     password: generatedPassword,
                     login_url: window.location.origin
@@ -230,20 +231,20 @@ export default function AdminAdmissions({ isHubView = false }) {
         <div className={`flex flex-col gap-6 animate-fade-in ${isHubView ? 'w-full' : 'max-w-7xl mx-auto p-6 lg:p-8 pb-32'}`}>
             {/* Header and Tabs */}
             {!isHubView && (
-                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80 mb-4`}>
+                <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80 mb-4`}>
                     {/* Background Decorations */}
-                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                     <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 mix-blend-overlay pointer-events-none"></div>
 
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
                         <div className="flex items-center gap-4 lg:gap-5">
-                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                                <i className="fa-solid fa-user-graduate text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                            <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                                <i className="fa-solid fa-user-graduate text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                             </div>
                             <div>
                                 <div className="flex items-center gap-3 mb-1">
-                                    <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white drop-shadow-md`}>Admissions Command Center</h1>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-widest border border-white/20 ${isAdmissionsOpen ? 'bg-emerald-500/20 text-emerald-100' : 'bg-rose-500/20 text-rose-100'}`}>
+                                    <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white drop-shadow-sm dark:drop-shadow-md`}>Admissions Command Center</h1>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-widest border border-black/10 dark:border-white/20 ${isAdmissionsOpen ? 'bg-emerald-500/20 text-emerald-100' : 'bg-rose-500/20 text-rose-100'}`}>
                                         {isAdmissionsOpen ? 'INTAKE OPEN' : 'INTAKE CLOSED'}
                                     </span>
                                 </div>
@@ -255,7 +256,7 @@ export default function AdminAdmissions({ isHubView = false }) {
                             <button
                                 onClick={handleToggleAdmissions}
                                 disabled={isTogglingStatus}
-                                className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-white/20 backdrop-blur-md ${isAdmissionsOpen ? 'bg-rose-500/20 hover:bg-rose-500 text-white' : 'bg-emerald-500/20 hover:bg-emerald-500 text-white'}`}
+                                className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 border border-black/10 dark:border-white/20 backdrop-blur-md ${isAdmissionsOpen ? 'bg-rose-500/20 hover:bg-rose-500 text-white' : 'bg-emerald-500/20 hover:bg-emerald-500 text-white'}`}
                             >
                                 <i className={`fa-solid ${isAdmissionsOpen ? 'fa-lock' : 'fa-lock-open'}`}></i>
                                 {isTogglingStatus ? 'Processing...' : (isAdmissionsOpen ? 'Close Admissions' : 'Open Admissions')}
@@ -266,7 +267,7 @@ export default function AdminAdmissions({ isHubView = false }) {
             )}
 
             <div className={`flex items-center justify-between relative z-10 flex-wrap gap-4 ${!isHubView ? '-mt-10 lg:-mt-12 ml-6 lg:ml-8' : 'mb-2'}`}>
-                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated backdrop-blur-md rounded-2xl border border-themeBorderStrong gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar shadow-md">
+                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated backdrop-blur-md rounded-2xl border border-black/5 dark:border-white/10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar shadow-md">
                     {['all', 'pending', 'approved', 'rejected'].map(f => (
                         <button 
                             key={f}
@@ -274,7 +275,7 @@ export default function AdminAdmissions({ isHubView = false }) {
                             className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
                                 filter === f 
                                     ? 'bg-themeAccent text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-themeAccent scale-100' 
-                                    : 'text-themeTextSec hover:text-themeText hover:bg-themePanel border border-transparent scale-95 hover:scale-100'
+                                    : 'text-themeTextSec hover:text-themeText hover:bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-transparent scale-95 hover:scale-100'
                             }`}
                         >
                             {f}
@@ -299,16 +300,16 @@ export default function AdminAdmissions({ isHubView = false }) {
                     <div className="animate-spin w-8 h-8 border-4 border-themeAccent border-t-transparent rounded-full"></div>
                 </div>
             ) : (
-                <div className="bg-themePanel rounded-themePanel border-theme border-themeBorder shadow-sm overflow-hidden">
+                <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead className="bg-themeElevated border-b-theme border-themeBorder text-xs uppercase tracking-widest text-themeTextSec font-black">
+                            <thead className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-b-theme border-white/5 text-xs uppercase tracking-widest text-themeTextSec font-black">
                                 <tr>
-                                    <th className="p-4 border-r-theme border-themeBorder">Applicant</th>
-                                    <th className="p-4 border-r-theme border-themeBorder">Program</th>
-                                    <th className="p-4 border-r-theme border-themeBorder">Marks / Exams</th>
-                                    <th className="p-4 border-r-theme border-themeBorder">Date</th>
-                                    <th className="p-4 border-r-theme border-themeBorder">Status</th>
+                                    <th className="p-4 border-r-theme border-white/5">Applicant</th>
+                                    <th className="p-4 border-r-theme border-white/5">Program</th>
+                                    <th className="p-4 border-r-theme border-white/5">Marks / Exams</th>
+                                    <th className="p-4 border-r-theme border-white/5">Date</th>
+                                    <th className="p-4 border-r-theme border-white/5">Status</th>
                                     <th className="p-4 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -317,14 +318,14 @@ export default function AdminAdmissions({ isHubView = false }) {
                                     <tr><td colSpan="6" className="p-8 text-center text-themeTextSec font-black uppercase tracking-widest">No applications found.</td></tr>
                                 ) : (
                                     filteredApps.map(app => (
-                                        <tr key={app.id} className="hover:bg-themeElevated transition-colors group">
-                                            <td className="p-4 border-r-theme border-themeBorder">
+                                        <tr key={app.id} className="hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated transition-colors group">
+                                            <td className="p-4 border-r-theme border-white/5">
                                                 <p className="font-black text-themeText">{app.name}</p>
                                                 <p className="text-xs text-themeTextSec font-medium mt-1">{app.email}</p>
                                                 <p className="text-xs text-themeTextSec font-medium mt-0.5">{app.phone}</p>
                                             </td>
-                                            <td className="p-4 text-sm font-black text-themeText border-r-theme border-themeBorder">{app.program}</td>
-                                            <td className="p-4 border-r-theme border-themeBorder">
+                                            <td className="p-4 text-sm font-black text-themeText border-r-theme border-white/5">{app.program}</td>
+                                            <td className="p-4 border-r-theme border-white/5">
                                                 <p className="text-xs text-themeText font-black uppercase tracking-widest mb-1">
                                                     10th: <span className="text-indigo-400">{app.marks_10th}</span> | 12th: <span className="text-emerald-400">{app.marks_inter}</span>
                                                 </p>
@@ -333,11 +334,11 @@ export default function AdminAdmissions({ isHubView = false }) {
                                                 {app.exam_other && <p className="text-[10px] text-themeTextSec font-bold uppercase tracking-widest mt-2">Other Exam: {app.exam_other}</p>}
                                                 {app.family_in_legal === 'Yes' && <p className="text-[10px] text-themeTextSec font-bold uppercase tracking-widest mt-1">Legal Family: {app.family_in_legal_who}</p>}
                                             </td>
-                                            <td className="p-4 text-xs text-themeTextSec font-medium border-r-theme border-themeBorder">
+                                            <td className="p-4 text-xs text-themeTextSec font-medium border-r-theme border-white/5">
                                                 {new Date(app.created_at).toLocaleDateString()}
                                             </td>
-                                            <td className="p-4 border-r-theme border-themeBorder">
-                                                <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border border-themeBorder inline-block mb-2 ${
+                                            <td className="p-4 border-r-theme border-white/5">
+                                                <span className={`px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border border-white/5 inline-block mb-2 ${
                                                     app.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
                                                     app.status === 'rejected' ? 'bg-rose-500/10 text-rose-400 border-rose-500/30' :
                                                     'bg-amber-500/10 text-amber-400 border-amber-500/30'
@@ -370,14 +371,14 @@ export default function AdminAdmissions({ isHubView = false }) {
             {/* Automation Pipeline Modal */}
             {showProvisionModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themePanel border-theme border-themeBorder rounded-themePanel w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
-                        <div className="bg-themeElevated border-b-theme border-themeBorder p-5 flex justify-between items-center shrink-0">
+                    <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-themePanel w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col h-[500px]">
+                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-b-theme border-white/5 p-5 flex justify-between items-center shrink-0">
                             <div className="flex items-center gap-3">
                                 <i className="fa-solid fa-robot text-themeAccent text-xl"></i>
                                 <span className="font-mono text-sm font-black text-themeText tracking-widest uppercase">Pipeline Execution</span>
                             </div>
                             {provisionStatus !== "running" && (
-                                <button onClick={() => { setShowProvisionModal(false); setGeneratedCredentials(null); }} className="w-8 h-8 flex items-center justify-center bg-themeApp hover:bg-themeElevated rounded-full border border-themeBorderStrong text-themeTextSec hover:text-themeText transition-all">
+                                <button onClick={() => { setShowProvisionModal(false); setGeneratedCredentials(null); }} className="w-8 h-8 flex items-center justify-center bg-themeApp hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated rounded-full border border-black/5 dark:border-white/10 text-themeTextSec hover:text-themeText transition-all">
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                             )}
@@ -391,16 +392,16 @@ export default function AdminAdmissions({ isHubView = false }) {
                                 <h3 className={`font-black uppercase tracking-widest text-2xl text-themeText mb-1`}>Student Provisioned!</h3>
                                 <p className={`text-sm font-medium text-themeTextSec mb-6 uppercase tracking-widest`}>Securely share these credentials with the student.</p>
 
-                                <div className="w-full max-w-sm bg-themeApp p-6 rounded-2xl border border-themeBorderStrong flex flex-col gap-5 text-left shadow-lg">
+                                <div className="w-full max-w-sm bg-themeApp p-6 rounded-2xl border border-black/5 dark:border-white/10 flex flex-col gap-5 text-left shadow-lg">
                                     <div className="flex flex-col gap-2">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Generated ERP ID</span>
-                                        <div className="bg-themePanel border border-themeBorder p-3 rounded-lg text-base font-black text-themeText tracking-widest select-all text-center">
+                                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 p-3 rounded-lg text-base font-black text-themeText tracking-widest select-all text-center">
                                             {generatedCredentials.id}
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <span className="text-[10px] font-black uppercase tracking-widest text-themeTextSec ml-1">Temporary Password</span>
-                                        <div className="bg-themePanel border border-themeBorder p-3 rounded-lg text-base font-black text-themeText tracking-widest select-all text-center">
+                                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 p-3 rounded-lg text-base font-black text-themeText tracking-widest select-all text-center">
                                             {generatedCredentials.password}
                                         </div>
                                     </div>
@@ -429,13 +430,13 @@ export default function AdminAdmissions({ isHubView = false }) {
                             </div>
                         )}
 
-                        <div className="bg-themeElevated border-t-theme border-themeBorder p-4 shrink-0 flex justify-end">
+                        <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-t-theme border-white/5 p-4 shrink-0 flex justify-end">
                             {provisionStatus === "running" ? (
                                 <div className="text-amber-400 font-mono text-sm font-black tracking-widest animate-pulse px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded">PIPELINE ACTIVE...</div>
                             ) : (
                                 <button
                                     onClick={() => { setShowProvisionModal(false); setGeneratedCredentials(null); }}
-                                    className="bg-themeApp hover:bg-neutral-800 text-themeText border border-themeBorderStrong px-6 py-2.5 font-black uppercase tracking-widest rounded-lg transition-colors"
+                                    className="bg-themeApp hover:bg-neutral-800 text-themeText border border-black/5 dark:border-white/10 px-6 py-2.5 font-black uppercase tracking-widest rounded-lg transition-colors"
                                 >
                                     {provisionStatus === "success" ? "Done & Close" : "Close Pipeline"}
                                 </button>

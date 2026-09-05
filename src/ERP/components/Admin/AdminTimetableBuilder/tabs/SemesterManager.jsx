@@ -90,20 +90,20 @@ export default function SemesterManager() {
             </div>
 
             {isCreating && (
-                <form onSubmit={handleCreate} className="bg-themeElevated border border-themeBorderStrong rounded-2xl p-6 flex flex-col gap-4 animate-fade-in shadow-lg">
+                <form onSubmit={handleCreate} className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-2xl p-6 flex flex-col gap-4 animate-fade-in shadow-lg">
                     <h3 className="text-sm font-black text-themeText">Create New Semester</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Academic Term Name</label>
-                            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. Winter 2026" className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
+                            <input type="text" value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. Winter 2026" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">Start Date</label>
-                            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
+                            <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
                         </div>
                         <div>
                             <label className="text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 block">End Date</label>
-                            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required className="w-full bg-themePanel border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
+                            <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" />
                         </div>
                     </div>
                     <button type="submit" className="mt-2 self-end bg-themeAccent text-[#0a0a0a] px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity">
@@ -112,9 +112,10 @@ export default function SemesterManager() {
                 </form>
             )}
 
-            <div className="bg-themePanel border border-themeBorder rounded-2xl overflow-hidden shadow-sm">
-                <table className="w-full text-left">
-                    <thead className="bg-themeElevated border-b border-themeBorder">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl overflow-hidden shadow-sm">
+                <div className="w-full overflow-x-auto">
+                                    <table className="w-full text-left">
+                    <thead className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border-b border-white/5">
                         <tr>
                             <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Academic Term</th>
                             <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Timeline</th>
@@ -127,7 +128,7 @@ export default function SemesterManager() {
                         ) : semesters.length === 0 ? (
                             <tr><td colSpan="4" className="p-8 text-center text-sm font-bold text-themeTextSec">No semesters found. Create one to begin.</td></tr>
                         ) : semesters.map((sem) => (
-                            <tr key={sem.id} className={`transition-colors ${sem.is_active_globally ? 'bg-emerald-500/5' : 'hover:bg-themeElevated'}`}>
+                            <tr key={sem.id} className={`transition-colors ${sem.is_active_globally ? 'bg-emerald-500/5' : 'hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated'}`}>
                                 <td className="p-4 text-sm font-bold text-themeText">{sem.name}</td>
                                 <td className="p-4 text-xs font-bold text-themeTextSec">
                                     {new Date(sem.start_date).toLocaleDateString()} - {new Date(sem.end_date).toLocaleDateString()}
@@ -135,7 +136,7 @@ export default function SemesterManager() {
                                 <td className="p-4 text-center">
                                     <button 
                                         onClick={() => toggleActive(sem.id, sem.is_active_globally)}
-                                        className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border transition-all ${sem.is_active_globally ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-lg shadow-emerald-500/10' : 'bg-themeElevated text-themeTextSec border-themeBorderStrong hover:text-themeText hover:border-themeText'}`}
+                                        className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border transition-all ${sem.is_active_globally ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-lg shadow-emerald-500/10' : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeTextSec border-black/5 dark:border-white/10 hover:text-themeText hover:border-themeText'}`}
                                     >
                                         {sem.is_active_globally ? <><i className="fa-solid fa-toggle-on text-lg"></i> Active</> : <><i className="fa-solid fa-toggle-off text-lg"></i> Inactive</>}
                                     </button>
@@ -144,6 +145,7 @@ export default function SemesterManager() {
                         ))}
                     </tbody>
                 </table>
+                                </div>
             </div>
 
             <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl flex items-start gap-4">

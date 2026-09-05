@@ -78,7 +78,7 @@ export default function AdminRightSidebar({ setActiveTab }) {
         <div className="w-full flex flex-col gap-6">
             
             {/* Card 1: Quick Actions */}
-            <div className={`bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-5 flex flex-col shadow-sm`}>
+            <div className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 p-5 flex flex-col shadow-sm`}>
                 <h2 className={`${theme.text.heading} text-sm text-themeText tracking-tight mb-4 flex items-center justify-between`}>
                     <span>Quick Actions</span>
                     <i className="fa-solid fa-bolt text-themeAccent"></i>
@@ -92,7 +92,7 @@ export default function AdminRightSidebar({ setActiveTab }) {
                                     setActiveTab(action.tab);
                                 }
                             }}
-                            className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg bg-themeElevated border-[length:var(--border-width)] border-themeBorder hover:border-themeAccent transition-all group"
+                            className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 hover:border-themeAccent transition-all group"
                         >
                             <i className={`fa-solid ${action.icon} text-lg text-themeTextSec group-hover:${action.color} group-hover:scale-110 transition-transform`}></i>
                             <span className="text-[9px] font-bold text-themeText uppercase tracking-widest text-center">{action.label}</span>
@@ -104,7 +104,7 @@ export default function AdminRightSidebar({ setActiveTab }) {
 
 
             {/* Card 3: Website Overview */}
-            <div className={`bg-themePanel rounded-themePanel border-[length:var(--border-width)] border-themeBorder p-5 flex flex-col shadow-sm`}>
+            <div className={`bg-themePanel/85 backdrop-blur-2xl shadow-premium rounded-themePanel border border-white/5 p-5 flex flex-col shadow-sm`}>
                 <div className="flex justify-between items-center mb-4">
                     <h2 className={`${theme.text.heading} text-sm text-themeText tracking-tight`}>Website CMS</h2>
                     <i className="fa-solid fa-globe text-themeTextSec"></i>
@@ -119,14 +119,14 @@ export default function AdminRightSidebar({ setActiveTab }) {
                         <span className="text-[10px] font-bold text-themeTextSec">Active Users</span>
                         <span className="text-xs font-black text-emerald-500 flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></span> {dbStats.active}</span>
                     </div>
-                    <div className="flex justify-between items-center py-2.5 border-b border-themeBorder">
+                    <div className="flex justify-between items-center py-2.5 border-b border-white/5">
                         <span className="text-[10px] font-bold text-themeTextSec">Pending Changes</span>
                         <span className="text-xs font-black text-rose-500">{dbStats.pending}</span>
                     </div>
                 </div>
                 <button 
                     onClick={() => setActiveTab && setActiveTab('siteeditor')}
-                    className="w-full mt-4 py-1.5 text-[9px] font-black text-themeTextSec hover:text-themeText border-[length:var(--border-width)] border-themeBorder rounded-lg transition-colors uppercase tracking-widest active:scale-[0.98]"
+                    className="w-full mt-4 py-1.5 text-[9px] font-black text-themeTextSec hover:text-themeText border border-white/5 rounded-lg transition-colors uppercase tracking-widest active:scale-[0.98]"
                 >
                     Open CMS
                 </button>
@@ -160,7 +160,7 @@ export default function AdminRightSidebar({ setActiveTab }) {
                 
                 <button 
                     onClick={() => setActiveTab && setActiveTab('sql')}
-                    className="w-full mt-4 py-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-black rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
+                    className="w-full mt-4 py-1.5 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-themeText rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-[0.98]"
                 >
                     Console <i className="fa-solid fa-arrow-up-right-from-square ml-1"></i>
                 </button>

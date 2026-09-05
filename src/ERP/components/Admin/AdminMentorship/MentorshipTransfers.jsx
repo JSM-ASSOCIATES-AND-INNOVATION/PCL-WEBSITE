@@ -158,13 +158,13 @@ export default function MentorshipTransfers() {
     return (
         <div className="flex flex-col gap-6 animate-fade-in relative pb-10">
             {isProcessing && (
-                <div className="fixed bottom-6 right-6 bg-themeElevated px-5 py-3 rounded-full border border-themeBorderStrong flex items-center gap-3 animate-fade-in z-50 shadow-2xl">
+                <div className="fixed bottom-6 right-6 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-5 py-3 rounded-full border border-black/5 dark:border-white/10 flex items-center gap-3 animate-fade-in z-50 shadow-2xl">
                     <i className="fa-solid fa-circle-notch fa-spin text-themeAccent text-sm"></i>
                     <span className="text-xs font-black uppercase tracking-widest text-themeAccent">{actionMessage}</span>
                 </div>
             )}
 
-            <div className="bg-themePanel border border-themeBorder rounded-2xl p-6 shadow-sm">
+            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-2xl p-6 shadow-sm">
                 <h3 className={`${theme.text.heading} text-sm tracking-tight text-themeText mb-6 flex items-center justify-between`}>
                     <span>Transfer Mentees</span>
                     <i className="fa-solid fa-right-left text-themeTextSec"></i>
@@ -182,7 +182,7 @@ export default function MentorshipTransfers() {
                                 <select 
                                     value={sourceMentorId} 
                                     onChange={(e) => setSourceMentorId(e.target.value)}
-                                    className="w-full bg-themeElevated border border-themeBorderStrong rounded px-4 py-3 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded px-4 py-3 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
                                 >
                                     <option value="">Select a Faculty Member</option>
                                     {mentors.map(m => (
@@ -193,22 +193,22 @@ export default function MentorshipTransfers() {
 
                             {sourceMentorId && (
                                 <div className="flex flex-col gap-2 mt-2">
-                                    <div className="flex justify-between items-center bg-themeElevated p-3 border border-themeBorderStrong rounded-lg">
+                                    <div className="flex justify-between items-center bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-3 border border-black/5 dark:border-white/10 rounded-lg">
                                         <span className="text-xs font-bold text-themeText">Total Mentees Assigned</span>
-                                        <span className="text-xs font-black bg-themePanel px-2 py-1 rounded border border-themeBorder">{mentees.length}</span>
+                                        <span className="text-xs font-black bg-themePanel/85 backdrop-blur-2xl shadow-premium px-2 py-1 rounded border border-white/5">{mentees.length}</span>
                                     </div>
 
                                     {mentees.length > 0 ? (
-                                        <div className="border border-themeBorderStrong rounded-lg overflow-hidden flex flex-col mt-2">
-                                            <div className="bg-themeElevated p-3 flex justify-between items-center border-b-[length:var(--border-width)] border-themeBorderStrong">
+                                        <div className="border border-black/5 dark:border-white/10 rounded-lg overflow-hidden flex flex-col mt-2">
+                                            <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-3 flex justify-between items-center border-b-[length:var(--border-width)] border-black/5 dark:border-white/10">
                                                 <button onClick={selectAll} className="text-[10px] font-black uppercase tracking-widest text-indigo-500 hover:text-indigo-400">
                                                     {selectedMentees.size === mentees.length ? "Deselect All" : "Select All"}
                                                 </button>
                                                 <span className="text-[10px] font-bold text-themeTextSec">{selectedMentees.size} Selected</span>
                                             </div>
-                                            <div className="max-h-[300px] overflow-y-auto bg-themePanel flex flex-col divide-y divide-themeBorder">
+                                            <div className="max-h-[300px] overflow-y-auto bg-themePanel/85 backdrop-blur-2xl shadow-premium flex flex-col divide-y divide-themeBorder">
                                                 {mentees.map(student => (
-                                                    <label key={student.id} className="flex items-center gap-3 p-3 hover:bg-themeElevated cursor-pointer transition-colors">
+                                                    <label key={student.id} className="flex items-center gap-3 p-3 hover:bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated cursor-pointer transition-colors">
                                                         <input 
                                                             type="checkbox" 
                                                             checked={selectedMentees.has(student.id)}
@@ -224,7 +224,7 @@ export default function MentorshipTransfers() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="p-8 text-center bg-themeElevated rounded-lg border border-themeBorderStrong mt-2">
+                                        <div className="p-8 text-center bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated rounded-lg border border-black/5 dark:border-white/10 mt-2">
                                             <p className="text-xs font-bold text-themeTextSec">This faculty has no mentees assigned.</p>
                                         </div>
                                     )}
@@ -245,7 +245,7 @@ export default function MentorshipTransfers() {
                                 <select 
                                     value={targetMentorId} 
                                     onChange={(e) => setTargetMentorId(e.target.value)}
-                                    className="w-full bg-themeElevated border border-themeBorderStrong rounded px-4 py-3 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded px-4 py-3 text-xs font-bold text-themeText focus:border-indigo-500 outline-none appearance-none"
                                 >
                                     <option value="">Select a Faculty Member</option>
                                     {mentors.map(m => (

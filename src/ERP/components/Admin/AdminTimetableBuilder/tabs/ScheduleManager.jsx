@@ -171,11 +171,11 @@ export default function ScheduleManager() {
             </div>
 
             {/* TIMINGS & OFF DAYS SECTION */}
-            <form onSubmit={handleSaveSchedule} className="bg-themeElevated border border-themeBorderStrong rounded-2xl p-6 flex flex-col gap-6 shadow-lg">
+            <form onSubmit={handleSaveSchedule} className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-2xl p-6 flex flex-col gap-6 shadow-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Operating Hours */}
-                    <div className="flex flex-col gap-4 bg-themePanel p-5 rounded-2xl border border-themeBorder">
-                        <div className="flex items-center gap-3 border-b border-themeBorder pb-3">
+                    <div className="flex flex-col gap-4 bg-themePanel/85 backdrop-blur-2xl shadow-premium p-5 rounded-2xl border border-white/5">
+                        <div className="flex items-center gap-3 border-b border-white/5 pb-3">
                             <i className="fa-regular fa-clock text-blue-500 text-lg"></i>
                             <h3 className="text-sm font-black text-themeText">Operating Hours</h3>
                         </div>
@@ -188,7 +188,7 @@ export default function ScheduleManager() {
                                     value={startTime} 
                                     onChange={e => setStartTime(e.target.value)} 
                                     required 
-                                    className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" 
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" 
                                 />
                             </div>
                             <div>
@@ -198,15 +198,15 @@ export default function ScheduleManager() {
                                     value={endTime} 
                                     onChange={e => setEndTime(e.target.value)} 
                                     required 
-                                    className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" 
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-3 text-sm font-bold text-themeText outline-none color-scheme-dark" 
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Weekly Off Days */}
-                    <div className="flex flex-col gap-4 bg-themePanel p-5 rounded-2xl border border-themeBorder">
-                        <div className="flex items-center gap-3 border-b border-themeBorder pb-3">
+                    <div className="flex flex-col gap-4 bg-themePanel/85 backdrop-blur-2xl shadow-premium p-5 rounded-2xl border border-white/5">
+                        <div className="flex items-center gap-3 border-b border-white/5 pb-3">
                             <i className="fa-regular fa-calendar-xmark text-rose-500 text-lg"></i>
                             <h3 className="text-sm font-black text-themeText">Weekly Off Days</h3>
                         </div>
@@ -222,7 +222,7 @@ export default function ScheduleManager() {
                                         className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${
                                             isOff 
                                             ? 'bg-rose-500/20 text-rose-500 border border-rose-500/50 shadow-md shadow-rose-500/10' 
-                                            : 'bg-themeElevated text-themeTextSec border border-themeBorderStrong hover:border-themeText hover:text-themeText'
+                                            : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-themeTextSec border border-black/5 dark:border-white/10 hover:border-themeText hover:text-themeText'
                                         }`}
                                     >
                                         {isOff ? <i className="fa-solid fa-xmark mr-1"></i> : <i className="fa-solid fa-check mr-1 text-emerald-500"></i>}
@@ -237,7 +237,7 @@ export default function ScheduleManager() {
                     </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-themeBorder">
+                <div className="flex justify-end pt-4 border-t border-white/5">
                     <button 
                         type="submit" 
                         disabled={saving}
@@ -250,8 +250,8 @@ export default function ScheduleManager() {
             </form>
 
             {/* CLASSROOM MANAGEMENT SECTION */}
-            <div className="bg-themeElevated border border-themeBorderStrong rounded-2xl p-6 flex flex-col gap-6 shadow-lg">
-                <div className="flex items-center gap-3 border-b border-themeBorder pb-4">
+            <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-black/5 dark:border-white/10 rounded-2xl p-6 flex flex-col gap-6 shadow-lg">
+                <div className="flex items-center gap-3 border-b border-white/5 pb-4">
                     <i className="fa-solid fa-school text-emerald-500 text-lg"></i>
                     <div>
                         <h3 className="text-base font-black text-themeText">Academic Classrooms</h3>
@@ -261,7 +261,7 @@ export default function ScheduleManager() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Add Room Form */}
-                    <div className="lg:col-span-1 bg-themePanel p-5 rounded-2xl border border-themeBorder flex flex-col gap-4">
+                    <div className="lg:col-span-1 bg-themePanel/85 backdrop-blur-2xl shadow-premium p-5 rounded-2xl border border-white/5 flex flex-col gap-4">
                         <h4 className="text-xs font-black uppercase tracking-widest text-themeText">Add New Room</h4>
                         
                         <form onSubmit={handleAddClassroom} className="flex flex-col gap-4">
@@ -273,7 +273,7 @@ export default function ScheduleManager() {
                                     value={newRoomName}
                                     onChange={e => setNewRoomName(e.target.value)}
                                     required
-                                    className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-2.5 text-sm font-bold text-themeText outline-none transition-all"
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-2.5 text-sm font-bold text-themeText outline-none transition-all"
                                 />
                             </div>
                             <div>
@@ -284,7 +284,7 @@ export default function ScheduleManager() {
                                     value={newRoomCapacity}
                                     onChange={e => setNewRoomCapacity(parseInt(e.target.value) || 0)}
                                     required
-                                    className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-2.5 text-sm font-bold text-themeText outline-none transition-all"
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-2.5 text-sm font-bold text-themeText outline-none transition-all"
                                 />
                             </div>
                             <div>
@@ -292,7 +292,7 @@ export default function ScheduleManager() {
                                 <select 
                                     value={newRoomType}
                                     onChange={e => setNewRoomType(e.target.value)}
-                                    className="w-full bg-themeElevated border border-themeBorder focus:border-themeAccent rounded-xl px-4 py-2.5 text-sm font-bold text-themeText outline-none transition-all appearance-none"
+                                    className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 focus:border-themeAccent rounded-xl px-4 py-2.5 text-sm font-bold text-themeText outline-none transition-all appearance-none"
                                 >
                                     <option value="Lecture Hall">Lecture Hall</option>
                                     <option value="Moot Court">Moot Court</option>
@@ -303,7 +303,7 @@ export default function ScheduleManager() {
                             </div>
                             <button 
                                 type="submit"
-                                className="w-full bg-themeElevated text-emerald-500 hover:text-[#0a0a0a] hover:bg-emerald-500 border border-emerald-500/30 hover:border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all mt-2"
+                                className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-emerald-500 hover:text-[#0a0a0a] hover:bg-emerald-500 border border-emerald-500/30 hover:border-emerald-500 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all mt-2"
                             >
                                 <i className="fa-solid fa-plus mr-2"></i> Add Room
                             </button>
@@ -314,18 +314,18 @@ export default function ScheduleManager() {
                     <div className="lg:col-span-2">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {classrooms.length === 0 ? (
-                                <div className="col-span-full py-12 text-center text-themeTextSec text-sm font-bold border border-themeBorder border-dashed rounded-2xl">
+                                <div className="col-span-full py-12 text-center text-themeTextSec text-sm font-bold border border-white/5 border-dashed rounded-2xl">
                                     No classrooms defined yet.
                                 </div>
                             ) : (
                                 classrooms.map(room => (
-                                    <div key={room.id} className="bg-themePanel p-4 rounded-2xl border border-themeBorder flex flex-col gap-3 group relative overflow-hidden">
+                                    <div key={room.id} className="bg-themePanel/85 backdrop-blur-2xl shadow-premium p-4 rounded-2xl border border-white/5 flex flex-col gap-3 group relative overflow-hidden">
                                         <div className="flex justify-between items-start z-10">
                                             <div>
                                                 <h4 className="text-sm font-black text-themeText">{room.name}</h4>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec bg-themeElevated px-2 py-0.5 rounded border border-themeBorderStrong">{room.type}</span>
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec bg-themeElevated px-2 py-0.5 rounded border border-themeBorderStrong">{room.capacity} Seats</span>
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-2 py-0.5 rounded border border-black/5 dark:border-white/10">{room.type}</span>
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-themeTextSec bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated px-2 py-0.5 rounded border border-black/5 dark:border-white/10">{room.capacity} Seats</span>
                                                 </div>
                                             </div>
                                             
@@ -338,14 +338,14 @@ export default function ScheduleManager() {
                                             </button>
                                         </div>
 
-                                        <div className="border-t border-themeBorder pt-3 flex justify-between items-center z-10 mt-1">
+                                        <div className="border-t border-white/5 pt-3 flex justify-between items-center z-10 mt-1">
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-2 h-2 rounded-full ${room.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'}`}></div>
                                                 <span className="text-[10px] font-black uppercase tracking-widest text-themeText">{room.status}</span>
                                             </div>
                                             <button 
                                                 onClick={() => toggleClassroomStatus(room.id, room.status)}
-                                                className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded transition-colors ${room.status === 'Active' ? 'bg-themeElevated text-amber-500 hover:bg-amber-500/20' : 'bg-themeElevated text-emerald-500 hover:bg-emerald-500/20'}`}
+                                                className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded transition-colors ${room.status === 'Active' ? 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-amber-500 hover:bg-amber-500/20' : 'bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated text-emerald-500 hover:bg-emerald-500/20'}`}
                                             >
                                                 {room.status === 'Active' ? 'Set Maintenance' : 'Set Active'}
                                             </button>

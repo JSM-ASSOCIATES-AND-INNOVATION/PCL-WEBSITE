@@ -2,6 +2,7 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback } from "react";
 import { theme } from "../../../theme";
+import PageHeader from "../../shared/PageHeader/PageHeader";
 import { useERP } from "../../../context/ErpContext";
 import { supabase } from "../../../lib/supabase/supabaseClient";
 
@@ -16,7 +17,7 @@ const writeCache = (key, data) => {
     try { sessionStorage.setItem(key, JSON.stringify(data)); } catch {}
 };
 
-export default function Assignments() {
+export default function Assignments({ isEmbedded = false }) {
     const { userSession } = useERP();
 
     // --- STATE (instant from cache) ---
@@ -117,7 +118,7 @@ export default function Assignments() {
 
             setSubmitSuccess(true);
             fetchAssignments();
-            setTimeout(() => closeModal(), 2000);
+            setTimeout(() => closeModal(), 50);
         } catch (err) {
             console.error("Submission failed:", err);
             setSubmitError("Submission failed. Please try again.");
@@ -139,9 +140,9 @@ export default function Assignments() {
 
     const getStatusBadge = (status) => {
         switch (status) {
-            case 'Graded': return { color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', icon: 'fa-check-double', label: 'Graded' };
+            case 'Graded': return { color: 'text-emerald-600 dark:text-emerald-400 bg-white/50 dark:bg-transparent bg-emerald-500/10 border-emerald-500/20', icon: 'fa-check-double', label: 'Graded' };
             case 'Pending Review': return { color: 'text-blue-400 bg-blue-500/10 border-blue-500/20', icon: 'fa-clock', label: 'Awaiting Grade' };
-            default: return { color: 'text-themeTextSec bg-themePanel border-themeBorder', icon: 'fa-hourglass-half', label: status || 'Processing' };
+            default: return { color: 'text-themeTextSec bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border-black/10 dark:border-white/20', icon: 'fa-hourglass-half', label: status || 'Processing' };
         }
     };
 
@@ -149,49 +150,45 @@ export default function Assignments() {
     const isOverLimit = selectedTask && selectedTask.word_limit && wordCount > selectedTask.word_limit;
 
     return (
-        <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated">
+        <div className={`w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 animate-fade-in selection:bg-themeElevated ${!isEmbedded ? "pb-32 lg:pb-12" : "pb-10"}`}>
 
             {/* ═══════════════ HEADER ═══════════════ */}
-            <div className={`flex flex-col lg:flex-row lg:items-end justify-between gap-6 ${theme.layout.panel} p-6 lg:p-8 rounded-themePanel border-theme border-themeBorder`}>
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 lg:w-14 lg:h-14 bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel flex items-center justify-center text-indigo-400 text-xl lg:text-2xl shrink-0 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                        <i className="fa-solid fa-file-pen"></i>
+            <PageHeader 
+                icon="fa-solid fa-file-signature" 
+                title="Assignment Portal" 
+                subtitle="Draft your coursework and submit securely to faculty." 
+                isEmbedded={isEmbedded}
+                rightContent={
+                    <div className="flex p-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-black/10 dark:border-white/20 rounded-[2rem] w-full lg:w-auto overflow-x-auto no-scrollbar">
+                        <button
+                            onClick={() => setView("pending")}
+                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap ${view === "pending"
+                                ? "bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-indigo-600 dark:text-indigo-400 bg-white/50 dark:bg-transparent border border-black/5 dark:border-white/10 shadow-sm"
+                                : "text-themeTextSec opacity-80 hover:text-themeText"
+                                }`}
+                        >
+                            <span className={`w-2 h-2 rounded-full ${view === "pending" && pendingAssignments.length > 0 ? 'bg-rose-500 animate-pulse' : 'bg-neutral-600'}`}></span>
+                            Pending ({pendingAssignments.length})
+                        </button>
+                        <button
+                            onClick={() => setView("completed")}
+                            className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap ${view === "completed"
+                                ? "bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-emerald-600 dark:text-emerald-400 bg-white/50 dark:bg-transparent border border-black/5 dark:border-white/10 shadow-sm"
+                                : "text-themeTextSec opacity-80 hover:text-themeText"
+                                }`}
+                        >
+                            <i className="fa-solid fa-check-double text-[10px]"></i>
+                            Completed ({completedAssignments.length})
+                        </button>
                     </div>
-                    <div>
-                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl text-themeText mb-1 tracking-tight`}>Assignment Portal</h1>
-                        <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Draft your coursework and submit securely to faculty.</p>
-                    </div>
-                </div>
-
-                <div className="flex p-1.5 bg-themePanel border-theme border-themeBorder rounded-themePanel w-full lg:w-auto overflow-x-auto no-scrollbar">
-                    <button
-                        onClick={() => setView("pending")}
-                        className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap ${view === "pending"
-                            ? "bg-themeElevated text-indigo-400 border-theme border-themeBorderStrong shadow-sm"
-                            : "text-themeTextSec opacity-70 hover:text-themeText"
-                            }`}
-                    >
-                        <span className={`w-2 h-2 rounded-full ${view === "pending" && pendingAssignments.length > 0 ? 'bg-rose-500 animate-pulse' : 'bg-neutral-600'}`}></span>
-                        Pending ({pendingAssignments.length})
-                    </button>
-                    <button
-                        onClick={() => setView("completed")}
-                        className={`flex-1 lg:flex-none px-4 lg:px-6 py-2.5 rounded-lg text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap ${view === "completed"
-                            ? "bg-themeElevated text-emerald-400 border-theme border-themeBorderStrong shadow-sm"
-                            : "text-themeTextSec opacity-70 hover:text-themeText"
-                            }`}
-                    >
-                        <i className="fa-solid fa-check-double text-[10px]"></i>
-                        Completed ({completedAssignments.length})
-                    </button>
-                </div>
-            </div>
+                }
+            />
 
             {/* ═══════════════ PENDING VIEW ═══════════════ */}
             {view === "pending" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 animate-fade-in">
                     {pendingAssignments.length === 0 ? (
-                        <div className="col-span-full py-20 flex flex-col items-center justify-center text-center border-2 border-dashed border-themeBorder rounded-themePanel bg-themeApp px-4">
+                        <div className="col-span-full py-20 flex flex-col items-center justify-center text-center border-2 border-dashed border-black/10 dark:border-white/20 rounded-[2rem] bg-transparent px-4">
                             <i className="fa-solid fa-mug-hot text-5xl text-neutral-700 mb-6"></i>
                             <h3 className={`${theme.text.heading} text-2xl text-themeText tracking-tight`}>You're all caught up!</h3>
                             <p className={`${theme.text.secondary} text-sm mt-2 max-w-sm`}>There are no pending assignments active for {userSession?.academic_batch || 'your batch'}.</p>
@@ -201,39 +198,39 @@ export default function Assignments() {
                             const timeLeft = getTimeLeft(task.due_date);
 
                             return (
-                                <div key={task.id} className={`${theme.layout.panel} border-theme border-themeBorder rounded-themePanel hover:border-themeBorderStrong transition-all duration-300 overflow-hidden flex flex-col relative group`}>
+                                <div key={task.id} className={`${theme.layout.panel} border border-black/10 dark:border-white/20 rounded-[2rem] hover:border-black/5 dark:border-white/10 transition-all duration-300 overflow-hidden flex flex-col relative group`}>
                                     {timeLeft.urgent && <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 to-amber-500"></div>}
 
                                     <div className="p-5 lg:p-6 flex-1 flex flex-col">
                                         <div className="flex items-center justify-between gap-3 mb-3">
-                                            <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest truncate">{task.subject_name || 'Subject'}</span>
+                                            <span className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 bg-white/50 dark:bg-transparent uppercase tracking-widest truncate">{task.subject_name || 'Subject'}</span>
                                             <span className={`px-2.5 py-1 rounded-md text-[8px] font-black uppercase tracking-widest shrink-0 border-theme ${timeLeft.urgent
                                                 ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                                : 'bg-themePanel text-themeTextSec border-themeBorder'
+                                                : 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-themeTextSec border-black/10 dark:border-white/20'
                                                 }`}>
                                                 <i className={`fa-solid ${timeLeft.urgent ? 'fa-fire' : 'fa-clock'} mr-1`}></i> {timeLeft.label}
                                             </span>
                                         </div>
 
-                                        <h3 className="text-lg font-black text-themeText tracking-tight leading-tight group-hover:text-indigo-400 transition-colors mb-2 line-clamp-2">
+                                        <h3 className="text-lg font-black text-themeText tracking-tight leading-tight group-hover:text-indigo-600 dark:text-indigo-400 bg-white/50 dark:bg-transparent transition-colors mb-2 line-clamp-2">
                                             {task.title}
                                         </h3>
 
                                         {task.description && (
-                                            <p className="text-xs text-themeTextSec opacity-70 leading-relaxed mb-4 line-clamp-2">{task.description}</p>
+                                            <p className="text-xs text-themeTextSec opacity-80 leading-relaxed mb-4 line-clamp-2">{task.description}</p>
                                         )}
 
                                         <div className="mt-auto flex flex-wrap items-center gap-3 text-[9px] font-bold text-themeTextSec uppercase tracking-widest">
-                                            <span className="flex items-center gap-1.5 bg-themeElevated px-2 py-1 border-theme border-themeBorder rounded">
-                                                <i className="fa-solid fa-align-left text-indigo-400/50"></i> {task.word_limit ? `${task.word_limit} Words` : 'No Limit'}
+                                            <span className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-2 py-1 border border-black/10 dark:border-white/20 rounded">
+                                                <i className="fa-solid fa-align-left text-indigo-600 dark:text-indigo-400 bg-white/50 dark:bg-transparent/50"></i> {task.word_limit ? `${task.word_limit} Words` : 'No Limit'}
                                             </span>
-                                            <span className="flex items-center gap-1.5 bg-themeElevated px-2 py-1 border-theme border-themeBorder rounded">
-                                                <i className="fa-solid fa-award text-emerald-400/50"></i> {task.max_marks || 100} Marks
+                                            <span className="flex items-center gap-1.5 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 px-2 py-1 border border-black/10 dark:border-white/20 rounded">
+                                                <i className="fa-solid fa-award text-emerald-600 dark:text-emerald-400 bg-white/50 dark:bg-transparent/50"></i> {task.max_marks || 100} Marks
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="p-4 border-t-theme border-themeBorder bg-themePanel">
+                                    <div className="p-4 border-t-theme border-black/10 dark:border-white/20 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20">
                                         <button
                                             onClick={() => openModal(task)}
                                             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest text-[10px] py-3.5 rounded-lg transition-all active:scale-[0.98] shadow-lg shadow-indigo-500/20"
@@ -252,7 +249,7 @@ export default function Assignments() {
             {view === "completed" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 animate-fade-in">
                     {completedAssignments.length === 0 ? (
-                        <div className="col-span-full py-20 flex flex-col items-center justify-center text-center border-2 border-dashed border-themeBorder rounded-themePanel bg-themeApp px-4">
+                        <div className="col-span-full py-20 flex flex-col items-center justify-center text-center border-2 border-dashed border-black/10 dark:border-white/20 rounded-[2rem] bg-transparent px-4">
                             <i className="fa-solid fa-file-circle-check text-5xl text-neutral-700 mb-6"></i>
                             <h3 className={`${theme.text.heading} text-2xl text-themeText tracking-tight`}>No submissions yet</h3>
                             <p className={`${theme.text.secondary} text-sm mt-2`}>Your completed assignments will appear here.</p>
@@ -264,10 +261,10 @@ export default function Assignments() {
                             const maxM = task.max_marks || 100;
 
                             return (
-                                <div key={sub.id} className={`${theme.layout.panel} border-theme border-themeBorder rounded-themePanel flex flex-col relative`}>
+                                <div key={sub.id} className={`${theme.layout.panel} border border-black/10 dark:border-white/20 rounded-[2rem] flex flex-col relative`}>
                                     <div className="p-5 lg:p-6 flex-1 flex flex-col">
                                         <div className="flex items-center justify-between gap-3 mb-3">
-                                            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest truncate">{task.subject_name}</span>
+                                            <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 bg-white/50 dark:bg-transparent uppercase tracking-widest truncate">{task.subject_name}</span>
                                             <span className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest shrink-0 border-theme ${badge.color}`}>
                                                 <i className={`fa-solid ${badge.icon} mr-1`}></i> {badge.label}
                                             </span>
@@ -281,7 +278,7 @@ export default function Assignments() {
                                             <div className="mt-2 mb-4 bg-emerald-500/5 border-theme border-emerald-500/20 rounded-xl p-4 flex justify-between items-center">
                                                 <div>
                                                     <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500/70 mb-1">Marks Awarded</p>
-                                                    <p className="text-2xl font-black text-emerald-400">{sub.marks_awarded} <span className="text-sm text-themeTextSec">/ {maxM}</span></p>
+                                                    <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 bg-white/50 dark:bg-transparent">{sub.marks_awarded} <span className="text-sm text-themeTextSec">/ {maxM}</span></p>
                                                 </div>
                                                 {sub.remarks && (
                                                     <div className="text-right max-w-[50%]">
@@ -308,24 +305,24 @@ export default function Assignments() {
             {/* ═══════════════ SUBMISSION MODAL ═══════════════ */}
             {selectedTask && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-themePanel border-theme border-themeBorder w-full max-w-3xl rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
+                    <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] w-full max-w-3xl rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
                         
                         {/* Modal Header */}
-                        <div className="p-5 border-b-theme border-themeBorder bg-themeElevated flex items-start justify-between gap-4 rounded-t-xl">
+                        <div className="p-5 border-b-theme border-black/10 dark:border-white/20 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 flex items-start justify-between gap-4 rounded-t-xl">
                             <div>
-                                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-1 block">{selectedTask.subject_name}</span>
+                                <span className="text-[9px] font-black text-indigo-600 dark:text-indigo-400 bg-white/50 dark:bg-transparent uppercase tracking-widest mb-1 block">{selectedTask.subject_name}</span>
                                 <h3 className="text-xl font-black text-themeText tracking-tight">{selectedTask.title}</h3>
                             </div>
-                            <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-themeApp text-themeTextSec hover:text-white transition-colors shrink-0">
+                            <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full bg-transparent text-themeTextSec hover:text-white transition-colors shrink-0">
                                 <i className="fa-solid fa-xmark"></i>
                             </button>
                         </div>
 
                         {/* Modal Body */}
-                        <div className="flex-1 overflow-y-auto p-6 bg-themeApp">
+                        <div className="flex-1 overflow-y-auto p-6 bg-transparent">
                             {submitSuccess ? (
                                 <div className="py-20 flex flex-col items-center justify-center text-center animate-scale-in">
-                                    <div className="w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center text-4xl mb-4 border border-emerald-500/20">
+                                    <div className="w-20 h-20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 bg-white/50 dark:bg-transparent rounded-full flex items-center justify-center text-4xl mb-4 border border-emerald-500/20">
                                         <i className="fa-solid fa-check-double"></i>
                                     </div>
                                     <h2 className="text-2xl font-black text-themeText tracking-tight mb-2">Submission Successful</h2>
@@ -333,7 +330,7 @@ export default function Assignments() {
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmission} className="flex flex-col gap-5">
-                                    <div className="bg-themeElevated p-4 rounded-lg border-theme border-themeBorder text-sm text-themeTextSec leading-relaxed">
+                                    <div className="bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 p-4 rounded-lg border border-black/10 dark:border-white/20 text-sm text-themeTextSec leading-relaxed">
                                         {selectedTask.description}
                                     </div>
 
@@ -346,7 +343,7 @@ export default function Assignments() {
                                     <div className="flex flex-col">
                                         <div className="flex justify-between items-end mb-2">
                                             <label className="text-[10px] font-black uppercase tracking-widest text-themeText">Write your submission</label>
-                                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${isOverLimit ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-themeElevated text-indigo-400 border-theme border-themeBorder'}`}>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded ${isOverLimit ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 text-indigo-600 dark:text-indigo-400 bg-white/50 dark:bg-transparent border border-black/10 dark:border-white/20'}`}>
                                                 {wordCount} / {selectedTask.word_limit || '∞'} Words
                                             </span>
                                         </div>
@@ -354,13 +351,13 @@ export default function Assignments() {
                                             value={submissionText}
                                             onChange={(e) => setSubmissionText(e.target.value)}
                                             placeholder="Begin typing your assignment here..."
-                                            className={`w-full h-64 bg-themeElevated border-theme ${isOverLimit ? 'border-rose-500 focus:border-rose-400' : 'border-themeBorderStrong focus:border-indigo-400'} rounded-lg p-4 text-sm text-themeText outline-none resize-none transition-colors font-serif`}
+                                            className={`w-full h-64 bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 border-theme ${isOverLimit ? 'border-rose-500 focus:border-rose-400' : 'border-black/5 dark:border-white/10 focus:border-indigo-400'} rounded-lg p-4 text-sm text-themeText outline-none resize-none transition-colors font-serif`}
                                             required
                                         ></textarea>
                                     </div>
 
-                                    <div className="flex justify-end gap-3 pt-4 border-t-theme border-themeBorder">
-                                        <button type="button" onClick={closeModal} className="px-5 py-2.5 rounded-lg text-xs font-bold text-themeTextSec hover:bg-themeElevated transition-colors">
+                                    <div className="flex justify-end gap-3 pt-4 border-t-theme border-black/10 dark:border-white/20">
+                                        <button type="button" onClick={closeModal} className="px-5 py-2.5 rounded-lg text-xs font-bold text-themeTextSec hover:bg-black/5 dark:bg-white/10 backdrop-blur-[80px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] border border-black/10 dark:border-white/20 transition-colors">
                                             Cancel
                                         </button>
                                         <button 

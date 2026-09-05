@@ -4,7 +4,7 @@ import { theme } from "../../../theme";
 import { useERP } from "../../../context/ErpContext";
 import { supabase } from "../../../lib/supabase/supabaseClient";
 
-export default function FacultyLeave() {
+export default function FacultyLeave(isEmbedded = false) {
     const { userSession } = useERP();
 
     const [leaveHistory, setLeaveHistory] = useState(() => {
@@ -135,26 +135,24 @@ export default function FacultyLeave() {
     return (
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 animate-fade-in selection:bg-themeElevated">
             {/* Header */}
-            <div className={`rounded-themePanel p-6 lg:p-8 relative overflow-hidden bg-themeAccent text-white flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-themeElevated`}>
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
-
-                <div className="relative z-10 w-full lg:w-auto flex-1">
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-sm border border-white/30 rounded-themePanel flex items-center justify-center shrink-0">
-                            <i className="fa-solid fa-mug-hot text-white text-2xl lg:text-3xl drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"></i>
+            {!isEmbedded && (
+                <div 
+                    className="w-full relative overflow-hidden rounded-[2.5rem] p-8 lg:p-10 xl:p-12 border border-black/10 dark:border-white/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.2)] bg-black/5 dark:bg-white/10 backdrop-blur-[80px] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 xl:gap-10 shrink-0 mb-6 lg:mb-8"
+                >
+                    <div className="relative z-10 flex-1">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-themeTextSec text-[10px] font-black uppercase tracking-widest mb-4 xl:mb-6 shadow-inner">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399] animate-pulse"></span> 
+                            Faculty Hub
                         </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm`}>Time Off & Leaves</h1>
-                            <p className={`text-white/80 text-xs lg:text-sm font-medium`}>Submit requests and track approvals. Approved leaves trigger substitute allocation.</p>
-                        </div>
+                        <h1 className={`${theme.text.heading} text-3xl sm:text-4xl lg:text-5xl xl:text-6xl tracking-tight mb-3 xl:mb-4 leading-none drop-shadow-sm dark:drop-shadow-md text-white`}>
+                            Time Off & Leaves
+                        </h1>
+                        <p className="text-white/80 text-xs lg:text-sm font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                            Request and track your faculty leaves
+                        </p>
                     </div>
                 </div>
-
-                <button onClick={() => setShowRequestModal(true)} className="relative z-10 w-full lg:w-auto shrink-0 bg-white hover:bg-white/90 text-themeAccent px-6 py-3.5 lg:py-4 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all flex justify-center items-center gap-2 group overflow-hidden active:scale-[0.98] shadow-sm hover:shadow-md">
-                    <i className="fa-solid fa-calendar-plus text-sm lg:text-base group-hover:rotate-12 transition-transform"></i> Request Time Off
-                </button>
-            </div>
+            )}
 
             {/* History Ledger */}
             <div className="flex flex-col gap-4">

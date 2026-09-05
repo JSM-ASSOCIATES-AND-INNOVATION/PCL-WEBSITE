@@ -5,12 +5,28 @@ import { BrowserRouter } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import './index.css'
 import RootApp from './RootApp.jsx'
+import { HelmetProvider } from 'react-helmet-async'
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: import.meta.env.VITE_SENTRY_DSN,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration(),
+  ],
+  tracesSampleRate: 1.0, 
+  replaysSessionSampleRate: 0.1, 
+  replaysOnErrorSampleRate: 1.0, 
+});
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <HelmetProvider>
     <BrowserRouter>
       <RootApp />
     </BrowserRouter>
+    </HelmetProvider>
     <Analytics />
   </StrictMode>,
 )

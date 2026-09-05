@@ -15,35 +15,47 @@ export default function Home() {
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    
+    // Enable scroll snapping only on the homepage
+    document.documentElement.classList.add('home-snap');
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.documentElement.classList.remove('home-snap');
+    };
   }, []);
 
   useEffect(() => {
-    const options = {
-      root: containerRef.current,
-      rootMargin: '0px',
-      threshold: 0.5 
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY;
+          const windowHeight = window.innerHeight;
+          // Add half window height to trigger change midway through the scroll
+          const newActiveSlide = Math.floor((scrollPosition + windowHeight / 2) / windowHeight);
+          setActiveSlide(Math.max(0, Math.min(newActiveSlide, TOTAL_SLIDES - 1)));
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute('data-index') || '0', 10);
-          setActiveSlide(index);
-        }
-      });
-    }, options);
 
-    const slides = document.querySelectorAll('.slide');
-    slides.forEach(slide => observer.observe(slide));
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Trigger once on mount
+    handleScroll();
 
-    return () => observer.disconnect();
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToSlide = (index) => {
     const slides = document.querySelectorAll('.slide');
-    if (slides[index]) {
-      slides[index].scrollIntoView({ behavior: 'smooth' });
+    if (slides.length > 0) {
+      const slideHeight = slides[0].offsetHeight;
+      window.scrollTo({
+        top: index * slideHeight,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -52,12 +64,12 @@ export default function Home() {
   return (
     <div ref={containerRef} className="snap-container bg-[var(--bg-color)]">
        {/* Pagination */}
-       <div className="fixed right-6 top-1/2 -translate-y-1/2 z-[99999] flex flex-col gap-3">
+       <div className="hidden md:flex fixed right-2 lg:right-4 top-1/2 -translate-y-1/2 z-[99999] flex-col gap-3">
         {Array.from({ length: TOTAL_SLIDES }).map((_, i) => (
           <div 
             key={i} 
             onClick={() => scrollToSlide(i)}
-            className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${activeSlide === i ? 'bg-[var(--primary-color)] scale-125' : 'bg-gray-400/30 hover:bg-[var(--primary-color)]/60'}`}
+            className={`w-2 h-2 rounded-full cursor-pointer transition-all duration-300 shadow-sm ${activeSlide === i ? 'bg-[var(--primary-color)] scale-125' : 'bg-gray-400/40 hover:bg-[var(--primary-color)]/60'}`}
           />
         ))}
       </div>

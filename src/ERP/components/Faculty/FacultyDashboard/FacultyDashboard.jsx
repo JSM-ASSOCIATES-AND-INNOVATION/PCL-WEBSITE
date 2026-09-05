@@ -153,30 +153,33 @@ export default function FacultyDashboard({ setActiveTab }) {
     return (
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 pb-12 animate-fade-in selection:bg-themeElevated">
 
-            {/* 1. COMMAND CENTER BANNER */}
-            <div className={`rounded-themePanel p-6 lg:p-8 relative overflow-hidden bg-themeAccent text-white border-none shadow-themeElevated transition-all duration-300`}>
-                <div className="absolute top-0 right-0 w-64 h-64 lg:w-96 lg:h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
-
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                        <p className="text-white/80 font-bold text-xs uppercase tracking-widest mb-2"><i className="fa-regular fa-calendar mr-1"></i> {todayStr}</p>
-                        <h1 className={`${theme.text.heading} text-3xl md:text-4xl font-black text-white tracking-tight mb-2 drop-shadow-sm`}>
-                            Welcome back, {userSession?.name?.split(' ')[0] || "Professor"}.
-                        </h1>
-                        <p className={`text-white/80 text-sm font-medium`}>
-                            You have {dashboardData.stats.classesToday} classes today and {dashboardData.stats.pendingApprovals} pending student requests.
-                        </p>
+            {/* 1. COMMAND CENTER BANNER (Liquid Glass) */}
+            <div 
+                className="w-full relative overflow-hidden rounded-[2.5rem] p-8 lg:p-10 xl:p-12 border border-black/10 dark:border-white/20 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.2)] bg-black/5 dark:bg-white/10 backdrop-blur-[80px] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 xl:gap-10 shrink-0 mb-2"
+            >
+                <div className="relative z-10 flex-1">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-themeTextSec text-[10px] font-black uppercase tracking-widest mb-4 xl:mb-6 shadow-inner">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399] animate-pulse"></span> 
+                        Faculty Command Center
                     </div>
+                    <h2 className={`${theme.text.heading} text-3xl sm:text-4xl lg:text-5xl xl:text-6xl tracking-tight mb-3 xl:mb-4 leading-none drop-shadow-sm dark:drop-shadow-md text-white`}>
+                        Welcome back,<br className="hidden sm:block lg:hidden" /> <span className="text-themeAccent">{userSession?.name?.split(' ')[0] || "Professor"}</span>.
+                    </h2>
+                    <p className="text-white/80 text-xs lg:text-sm font-bold uppercase tracking-[0.2em] flex items-center gap-2 mb-3 xl:mb-4">
+                        <i className="fa-regular fa-calendar-days opacity-70"></i> {todayStr}
+                    </p>
+                    <p className={`text-white/80 text-sm font-medium`}>
+                        You have {dashboardData.stats.classesToday} classes today and {dashboardData.stats.pendingApprovals} pending student requests.
+                    </p>
+                </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                        <button onClick={() => setActiveTab('notices')} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-themePanel text-xs font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2 group">
-                            <i className="fa-solid fa-satellite-dish group-hover:scale-110 transition-transform"></i> Announcements
-                        </button>
-                        <button onClick={() => setActiveTab('roster')} className="bg-white text-themeAccent px-8 py-4 rounded-themePanel text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md flex justify-center items-center gap-2 hover:opacity-95 relative overflow-hidden group">
-                            <i className="fa-solid fa-clipboard-user group-hover:scale-110 transition-transform"></i> Mark Attendance
-                        </button>
-                    </div>
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0 relative z-10">
+                    <button onClick={() => setActiveTab('notices')} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2 group">
+                        <i className="fa-solid fa-satellite-dish group-hover:scale-110 transition-transform"></i> Announcements
+                    </button>
+                    <button onClick={() => setActiveTab('roster')} className="bg-white text-black px-8 py-4 rounded-[2rem] text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] flex justify-center items-center gap-2 hover:opacity-95 group">
+                        <i className="fa-solid fa-clipboard-user group-hover:scale-110 transition-transform"></i> Mark Attendance
+                    </button>
                 </div>
             </div>
 

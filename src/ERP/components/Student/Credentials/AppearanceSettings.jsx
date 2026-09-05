@@ -61,13 +61,23 @@ export default function AppearanceSettings() {
             accent: 'bg-[#FDE047]',
             circles: 'border-[#FDE047]/20',
         },
+        { 
+            id: 'structural-neo-brutalism', 
+            name: 'Structural Brutalism', 
+            desc: 'Raw Edges & High Contrast', 
+            icon: 'fa-cube', 
+            gradient: 'bg-[#f4f4f0] border-4 border-black',
+            accent: 'bg-[#FF3333]',
+            circles: 'border-black/10',
+            specialBorder: 'border-b-4 border-black',
+        },
     ];
 
     return (
         <div className="flex flex-col gap-6 lg:gap-8 animate-fade-in">
             {/* Header */}
-            <div className="flex items-center gap-3 lg:gap-4 border-b border-themeBorder pb-4 lg:pb-6">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themeElevated border-theme border-themeBorderStrong rounded-2xl flex items-center justify-center text-themeAccent shadow-sm shrink-0">
+            <div className="flex items-center gap-3 lg:gap-4 border-b border-black/10 dark:border-white/20 pb-4 lg:pb-6">
+                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themePanel border-theme border-themeBorderStrong rounded-2xl flex items-center justify-center text-themeAccent shadow-sm shrink-0">
                     <i className="fa-solid fa-wand-magic-sparkles text-lg lg:text-xl"></i>
                 </div>
                 <div>
@@ -86,8 +96,8 @@ export default function AppearanceSettings() {
                             onClick={() => changeTheme(t.id)}
                             className={`group flex flex-col text-left rounded-2xl overflow-hidden border-theme transition-all duration-300 relative outline-none ${
                                 isActive
-                                    ? 'bg-themeElevated border-themeAccent shadow-[0_8px_30px_rgb(0,0,0,0.12)] ring-1 ring-themeAccent scale-[1.02]'
-                                    : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong hover:bg-themeElevated hover:-translate-y-1 hover:shadow-xl'
+                                    ? 'bg-themePanel border-theme border-themeBorderStrong border-themeAccent shadow-[0_8px_30px_rgb(0,0,0,0.12)] ring-1 ring-themeAccent scale-[1.02]'
+                                    : 'bg-themePanel border-theme border-themeBorderStrong border-black/10 dark:border-white/20 hover:border-black/5 dark:border-white/10 hover:bg-themePanel border-theme border-themeBorderStrong hover:-translate-y-1 hover:shadow-xl'
                             }`}
                         >
                             {isActive && (
@@ -97,13 +107,13 @@ export default function AppearanceSettings() {
                             )}
 
                             {/* Theme Illustration Header */}
-                            <div className={`w-full h-32 ${t.gradient} relative overflow-hidden flex items-center justify-center ${t.specialBorder || 'border-b border-themeBorder'}`}>
+                            <div className={`w-full h-32 ${t.gradient} relative overflow-hidden flex items-center justify-center ${t.specialBorder || 'border-b border-black/10 dark:border-white/20'}`}>
                                 {/* Abstract Geometric Overlay */}
                                 <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full border-4 ${t.circles} opacity-50 mix-blend-overlay group-hover:scale-110 transition-transform duration-700`}></div>
                                 <div className={`absolute -left-4 -bottom-4 w-24 h-24 rounded-full border-4 ${t.circles} opacity-30 mix-blend-overlay group-hover:-translate-x-2 transition-transform duration-700`}></div>
                                 
                                 {/* UI Mockup Miniature */}
-                                <div className="w-3/4 h-20 bg-white/5 backdrop-blur-md rounded-lg border border-white/10 shadow-2xl flex flex-col p-2 gap-2 transform group-hover:-translate-y-1 transition-transform duration-500 relative overflow-hidden">
+                                <div className="w-3/4 h-20 bg-white/5 backdrop-blur-md rounded-lg border border-black/5 dark:border-white/10 shadow-2xl flex flex-col p-2 gap-2 transform group-hover:-translate-y-1 transition-transform duration-500 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-16 h-16 bg-white/5 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
                                     {/* Mockup Header */}
                                     <div className="flex justify-between items-center w-full">
@@ -116,10 +126,10 @@ export default function AppearanceSettings() {
                                     </div>
                                     {/* Mockup Body */}
                                     <div className="flex gap-2 h-full mt-1">
-                                        <div className="w-1/4 h-full bg-white/10 rounded-md border border-white/5"></div>
+                                        <div className="w-1/4 h-full bg-white/10 rounded-md border border-black/10 dark:border-white/20"></div>
                                         <div className="flex-1 flex flex-col gap-1.5">
-                                            <div className="w-full h-3 bg-white/10 rounded-sm border border-white/5"></div>
-                                            <div className="w-3/4 h-3 bg-white/10 rounded-sm border border-white/5"></div>
+                                            <div className="w-full h-3 bg-white/10 rounded-sm border border-black/10 dark:border-white/20"></div>
+                                            <div className="w-3/4 h-3 bg-white/10 rounded-sm border border-black/10 dark:border-white/20"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -139,9 +149,9 @@ export default function AppearanceSettings() {
             </div>
             
             {/* Desktop Navigation Layout Section */}
-            <div className="hidden lg:flex flex-col gap-5 mt-6 border-t border-themeBorder pt-6 lg:pt-8">
+            <div className="hidden lg:flex flex-col gap-5 mt-6 border-t border-black/10 dark:border-white/20 pt-6 lg:pt-8">
                 <div className="flex items-center gap-3 lg:gap-4">
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themeElevated border-theme border-themeBorderStrong rounded-2xl flex items-center justify-center text-themeAccent shrink-0">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themePanel border-theme border-themeBorderStrong rounded-2xl flex items-center justify-center text-themeAccent shrink-0">
                         <i className="fa-solid fa-layer-group text-lg lg:text-xl"></i>
                     </div>
                     <div>
@@ -156,11 +166,11 @@ export default function AppearanceSettings() {
                         onClick={() => changeNavLayout('classic')}
                         className={`group flex items-start gap-4 text-left p-5 lg:p-6 rounded-2xl border-theme transition-all duration-300 outline-none ${
                             navLayout === 'classic'
-                                ? 'bg-themeElevated border-themeAccent shadow-md ring-1 ring-themeAccent'
-                                : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong hover:bg-themeElevated'
+                                ? 'bg-themePanel border-theme border-themeBorderStrong border-themeAccent shadow-md ring-1 ring-themeAccent'
+                                : 'bg-themePanel border-theme border-themeBorderStrong border-black/10 dark:border-white/20 hover:border-black/5 dark:border-white/10 hover:bg-themePanel border-theme border-themeBorderStrong'
                         }`}
                     >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${navLayout === 'classic' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-themeApp text-themeTextSec border-themeBorder group-hover:text-themeText'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${navLayout === 'classic' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-transparent text-themeTextSec border-black/10 dark:border-white/20 group-hover:text-themeText'}`}>
                             <i className="fa-solid fa-sidebar text-lg"></i>
                         </div>
                         <div className="flex-1">
@@ -177,11 +187,11 @@ export default function AppearanceSettings() {
                         onClick={() => changeNavLayout('topnav')}
                         className={`group flex items-start gap-4 text-left p-5 lg:p-6 rounded-2xl border-theme transition-all duration-300 outline-none ${
                             navLayout === 'topnav'
-                                ? 'bg-themeElevated border-themeAccent shadow-md ring-1 ring-themeAccent'
-                                : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong hover:bg-themeElevated'
+                                ? 'bg-themePanel border-theme border-themeBorderStrong border-themeAccent shadow-md ring-1 ring-themeAccent'
+                                : 'bg-themePanel border-theme border-themeBorderStrong border-black/10 dark:border-white/20 hover:border-black/5 dark:border-white/10 hover:bg-themePanel border-theme border-themeBorderStrong'
                         }`}
                     >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${navLayout === 'topnav' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-themeApp text-themeTextSec border-themeBorder group-hover:text-themeText'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${navLayout === 'topnav' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-transparent text-themeTextSec border-black/10 dark:border-white/20 group-hover:text-themeText'}`}>
                             <i className="fa-solid fa-window-maximize text-lg"></i>
                         </div>
                         <div className="flex-1">
@@ -196,9 +206,9 @@ export default function AppearanceSettings() {
             </div>
 
             {/* Sidebar Density Section */}
-            <div className="hidden lg:flex flex-col gap-5 mt-6 border-t border-themeBorder pt-6 lg:pt-8">
+            <div className="hidden lg:flex flex-col gap-5 mt-6 border-t border-black/10 dark:border-white/20 pt-6 lg:pt-8">
                 <div className="flex items-center gap-3 lg:gap-4">
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themeElevated border-theme border-themeBorderStrong rounded-2xl flex items-center justify-center text-themeAccent shrink-0">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-themePanel border-theme border-themeBorderStrong rounded-2xl flex items-center justify-center text-themeAccent shrink-0">
                         <i className="fa-solid fa-list-check text-lg lg:text-xl"></i>
                     </div>
                     <div>
@@ -213,11 +223,11 @@ export default function AppearanceSettings() {
                         onClick={() => changeSidebarMode('hubs')}
                         className={`group flex items-start gap-4 text-left p-5 lg:p-6 rounded-2xl border-theme transition-all duration-300 outline-none ${
                             sidebarMode === 'hubs'
-                                ? 'bg-themeElevated border-themeAccent shadow-md ring-1 ring-themeAccent'
-                                : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong hover:bg-themeElevated'
+                                ? 'bg-themePanel border-theme border-themeBorderStrong border-themeAccent shadow-md ring-1 ring-themeAccent'
+                                : 'bg-themePanel border-theme border-themeBorderStrong border-black/10 dark:border-white/20 hover:border-black/5 dark:border-white/10 hover:bg-themePanel border-theme border-themeBorderStrong'
                         }`}
                     >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${sidebarMode === 'hubs' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-themeApp text-themeTextSec border-themeBorder group-hover:text-themeText'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${sidebarMode === 'hubs' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-transparent text-themeTextSec border-black/10 dark:border-white/20 group-hover:text-themeText'}`}>
                             <i className="fa-solid fa-layer-group text-lg"></i>
                         </div>
                         <div className="flex-1">
@@ -234,11 +244,11 @@ export default function AppearanceSettings() {
                         onClick={() => changeSidebarMode('expanded')}
                         className={`group flex items-start gap-4 text-left p-5 lg:p-6 rounded-2xl border-theme transition-all duration-300 outline-none ${
                             sidebarMode === 'expanded'
-                                ? 'bg-themeElevated border-themeAccent shadow-md ring-1 ring-themeAccent'
-                                : 'bg-themePanel border-themeBorder hover:border-themeBorderStrong hover:bg-themeElevated'
+                                ? 'bg-themePanel border-theme border-themeBorderStrong border-themeAccent shadow-md ring-1 ring-themeAccent'
+                                : 'bg-themePanel border-theme border-themeBorderStrong border-black/10 dark:border-white/20 hover:border-black/5 dark:border-white/10 hover:bg-themePanel border-theme border-themeBorderStrong'
                         }`}
                     >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${sidebarMode === 'expanded' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-themeApp text-themeTextSec border-themeBorder group-hover:text-themeText'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${sidebarMode === 'expanded' ? 'bg-themeAccent/10 text-themeAccent border-themeAccent/20' : 'bg-transparent text-themeTextSec border-black/10 dark:border-white/20 group-hover:text-themeText'}`}>
                             <i className="fa-solid fa-list text-lg"></i>
                         </div>
                         <div className="flex-1">

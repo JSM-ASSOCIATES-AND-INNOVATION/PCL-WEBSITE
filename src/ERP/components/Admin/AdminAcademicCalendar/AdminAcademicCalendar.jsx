@@ -18,7 +18,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
         image_url: ''
     });
     
-    const [imageFile, setImageFile] = useState(null);
+    
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
@@ -51,11 +51,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
         }));
     };
 
-    const handleFileChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setImageFile(e.target.files[0]);
-        }
-    };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -63,23 +59,12 @@ export default function AdminAcademicCalendar({ isHubView }) {
             setUploading(true);
             let finalImageUrl = formData.image_url;
 
-            // Handle Image Upload
-            if (imageFile) {
-                const fileExt = imageFile.name.split('.').pop();
-                const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-                const filePath = `events/${fileName}`;
-
-                const { error: uploadError } = await supabase.storage
-                    .from('calendar_images')
-                    .upload(filePath, imageFile);
-
-                if (uploadError) throw uploadError;
-
-                const { data: { publicUrl } } = supabase.storage
-                    .from('calendar_images')
-                    .getPublicUrl(filePath);
-
-                finalImageUrl = publicUrl;
+            // Convert Google Drive link to direct image link if it's a drive link
+            if (finalImageUrl && finalImageUrl.includes('drive.google.com/file/d/')) {
+                const match = finalImageUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    finalImageUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
             }
 
             if (formData.id) {
@@ -114,7 +99,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
             }
             
             setFormData({ id: null, title: '', date: '', description: '', event_type: 'Academic', is_active: true, image_url: '' });
-            setImageFile(null);
+            
             setIsEditing(false);
             fetchEvents();
         } catch (error) {
@@ -135,7 +120,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
             is_active: event.is_active,
             image_url: event.image_url || ''
         });
-        setImageFile(null);
+        
         setIsEditing(true);
     };
 
@@ -173,7 +158,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 {/* Form Column */}
-                <div className="lg:col-span-1 bg-themeElevated p-6 rounded-2xl border border-themeBorder h-fit">
+                <div className="lg:col-span-1 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-6 rounded-2xl border border-white/5 h-fit">
                     <h3 className={`${theme.text.heading} text-xl text-themeText mb-4`}>
                         {isEditing ? 'Edit Event' : 'Add New Event'}
                     </h3>
@@ -186,7 +171,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                 required
                                 value={formData.title}
                                 onChange={handleInputChange}
-                                className="w-full bg-themeBg border border-themeBorder rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors"
+                                className="w-full bg-themeBg border border-white/5 rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors"
                                 placeholder="e.g. Fall Semester Begins"
                             />
                         </div>
@@ -199,7 +184,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                 required
                                 value={formData.date}
                                 onChange={handleInputChange}
-                                className="w-full bg-themeBg border border-themeBorder rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors"
+                                className="w-full bg-themeBg border border-white/5 rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors"
                             />
                         </div>
 
@@ -209,7 +194,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                 name="event_type"
                                 value={formData.event_type}
                                 onChange={handleInputChange}
-                                className="w-full bg-themeBg border border-themeBorder rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors"
+                                className="w-full bg-themeBg border border-white/5 rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors"
                             >
                                 <option value="Academic">Academic (Term start, Registration, etc)</option>
                                 <option value="Holiday">Holiday (College Closed)</option>
@@ -225,23 +210,31 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                 required
                                 value={formData.description}
                                 onChange={handleInputChange}
-                                className="w-full bg-themeBg border border-themeBorder rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors min-h-[100px]"
+                                className="w-full bg-themeBg border border-white/5 rounded-lg px-4 py-2.5 text-themeText focus:outline-none focus:border-themeAccent transition-colors min-h-[100px]"
                                 placeholder="Details about the event..."
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-bold text-themeText/70 uppercase tracking-wider mb-2">Event Image (Optional)</label>
+                            <label className="block text-xs font-bold text-themeText/70 uppercase tracking-wider mb-2">Google Drive Link to Event Image (Optional)</label>
                             <input 
-                                type="file" 
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                className="w-full bg-themeBg border border-themeBorder rounded-lg px-4 py-2 text-themeText focus:outline-none text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-themeAccent/10 file:text-themeAccent hover:file:bg-themeAccent/20 transition-all"
+                                type="url" 
+                                placeholder="https://drive.google.com/file/d/.../view"
+                                value={formData.image_url}
+                                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                                className="w-full bg-themeBg border border-white/5 rounded-lg px-4 py-3 text-themeText focus:outline-none focus:border-themeAccent focus:ring-1 focus:ring-themeAccent transition-all text-sm"
                             />
-                            {formData.image_url && !imageFile && (
-                                <div className="mt-2 text-xs text-themeText/60 flex items-center gap-2">
-                                    <img src={formData.image_url} alt="Current event" className="w-10 h-10 object-cover rounded-md border border-themeBorder" />
-                                    <span>Current image will be kept unless changed.</span>
+                            <p className="text-[10px] text-themeTextSec mt-1">Make sure the link is set to "Anyone with the link can view"</p>
+                            
+                            {formData.image_url && (
+                                <div className="mt-3 text-xs text-themeText/60 flex items-center gap-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-2 rounded-lg border border-white/5">
+                                    <img 
+                                        src={formData.image_url.includes('drive.google.com/file/d/') ? `https://drive.google.com/uc?export=view&id=${formData.image_url.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1]}` : formData.image_url} 
+                                        alt="Event Preview" 
+                                        className="w-12 h-12 object-cover rounded-md border border-white/5 bg-themeBg"
+                                        onError={(e) => { e.target.style.display = 'none'; }}
+                                    />
+                                    <span>Image Preview (will be hidden if invalid)</span>
                                 </div>
                             )}
                         </div>
@@ -253,7 +246,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                 name="is_active"
                                 checked={formData.is_active}
                                 onChange={handleInputChange}
-                                className="w-4 h-4 rounded border-themeBorder bg-themeBg text-themeAccent focus:ring-themeAccent"
+                                className="w-4 h-4 rounded border-white/5 bg-themeBg text-themeAccent focus:ring-themeAccent"
                             />
                             <label htmlFor="is_active" className="text-sm text-themeText/80 cursor-pointer">Visible to Public</label>
                         </div>
@@ -272,9 +265,9 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                     onClick={() => {
                                         setIsEditing(false);
                                         setFormData({ id: null, title: '', date: '', description: '', event_type: 'Academic', is_active: true, image_url: '' });
-                                        setImageFile(null);
+                                        
                                     }}
-                                    className="px-4 py-3 bg-themeBg border border-themeBorder text-themeText hover:bg-themeBorder/50 rounded-lg transition-colors"
+                                    className="px-4 py-3 bg-themeBg border border-white/5 text-themeText hover:bg-themeBorder/50 rounded-lg transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -284,7 +277,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                 </div>
 
                 {/* List Column */}
-                <div className="lg:col-span-2 bg-themeElevated p-6 rounded-2xl border border-themeBorder">
+                <div className="lg:col-span-2 bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated p-6 rounded-2xl border border-white/5">
                     <h3 className={`${theme.text.heading} text-xl text-themeText mb-4`}>All Events</h3>
                     
                     {loading ? (
@@ -299,7 +292,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                     ) : (
                         <div className="flex flex-col gap-3">
                             {events.map((event) => (
-                                <div key={event.id} className={`flex items-start justify-between p-4 rounded-xl border border-themeBorder bg-themeBg transition-all hover:border-themeAccent/50 ${!event.is_active ? 'opacity-60' : ''}`}>
+                                <div key={event.id} className={`flex items-start justify-between p-4 rounded-xl border border-white/5 bg-themeBg transition-all hover:border-themeAccent/50 ${!event.is_active ? 'opacity-60' : ''}`}>
                                     <div className="flex flex-col gap-1">
                                         <div className="flex items-center gap-3">
                                             <span className="text-themeText font-bold text-lg">{event.title}</span>
@@ -319,7 +312,7 @@ export default function AdminAcademicCalendar({ isHubView }) {
                                     <div className="flex gap-4 items-center">
                                         {event.image_url && (
                                             <div className="hidden sm:block">
-                                                <img src={event.image_url} alt={event.title} className="w-16 h-16 object-cover rounded-lg border border-themeBorder shadow-sm" />
+                                                <img src={event.image_url} alt={event.title} className="w-16 h-16 object-cover rounded-lg border border-white/5 shadow-sm" />
                                             </div>
                                         )}
                                         <div className="flex flex-col gap-2">

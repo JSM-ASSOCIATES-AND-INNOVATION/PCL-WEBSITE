@@ -244,30 +244,30 @@ export default function AdminFees() {
         <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in relative z-10 selection:bg-themeElevated">
             
             {/* Header and Tabs */}
-            <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-themeBorder bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
+            <div className={`w-full relative overflow-hidden rounded-[2rem] shadow-2xl p-6 lg:p-8 flex flex-col gap-6 border border-white/5 bg-gradient-to-r from-themeAccent to-themeAccent/80`}>
                 {/* Background Decorations */}
-                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-full max-w-[300px] md:w-[300px] h-[300px] bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 mix-blend-overlay pointer-events-none"></div>
                 
                 <div className="flex items-center gap-4 lg:gap-5 relative z-10 mb-2">
-                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center shrink-0 shadow-lg">
-                        <i className="fa-solid fa-coins text-white text-2xl lg:text-3xl drop-shadow-md"></i>
+                    <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-[1rem] bg-black/20 backdrop-blur-md border border-black/10 dark:border-white/20 flex items-center justify-center shrink-0 shadow-lg">
+                        <i className="fa-solid fa-coins text-white text-2xl lg:text-3xl drop-shadow-sm dark:drop-shadow-md"></i>
                     </div>
                     <div>
-                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-md`}>Finance Ledger</h1>
+                        <h1 className={`${theme.text.heading} text-2xl lg:text-3xl tracking-tight text-white mb-1 drop-shadow-sm dark:drop-shadow-md`}>Finance Ledger</h1>
                         <p className="text-white/80 text-xs lg:text-sm font-medium tracking-wide">Master finance control center.</p>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
+                <div className="flex flex-wrap lg:flex-nowrap p-1.5 bg-black/20 backdrop-blur-md rounded-2xl border border-black/10 dark:border-white/20 relative z-10 gap-1.5 w-fit max-w-full overflow-x-auto no-scrollbar">
                     {['overview', 'batch'].map(tab => (
                         <button 
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`flex-1 lg:flex-none px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap min-w-max ${
+                            className={`flex-1 lg:flex-none px-5 py-3 rounded-xl text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap flex items-center justify-center gap-2 min-w-max ${
                                 activeTab === tab 
-                                    ? 'bg-white text-themeAccent shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-white scale-100' 
-                                    : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
+                                ? 'bg-white dark:bg-white/20 backdrop-blur-[80px] text-black dark:text-white shadow-[0_10px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] border border-black/10 dark:border-white/40 scale-100' 
+                                : 'text-black/60 dark:text-white/70 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent scale-95 hover:scale-100'
                             }`}
                         >
                             {tab === 'overview' ? 'Overview' : 'Batch Manager'}
@@ -285,17 +285,17 @@ export default function AdminFees() {
                             <div className="col-span-full py-12 text-center text-themeTextSec"><i className="fa-solid fa-circle-notch fa-spin text-3xl text-themeAccent"></i></div>
                         ) : (
                             <>
-                                <div className={`${theme.layout.panel} rounded-[2rem] border border-themeBorder p-8 relative overflow-hidden shadow-lg`}>
+                                <div className={`${theme.layout.panel} rounded-[2rem] border border-white/5 p-8 relative overflow-hidden shadow-lg`}>
                                     <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
                                     <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2">Total Expected Revenue</p>
                                     <h2 className="text-4xl font-black text-themeText font-mono tracking-tighter">₹{overviewData.totalExpected.toLocaleString()}</h2>
                                 </div>
-                                <div className={`${theme.layout.panel} rounded-[2rem] border border-themeBorder p-8 relative overflow-hidden shadow-lg`}>
+                                <div className={`${theme.layout.panel} rounded-[2rem] border border-white/5 p-8 relative overflow-hidden shadow-lg`}>
                                     <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
                                     <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2">Total Collected</p>
                                     <h2 className="text-4xl font-black text-emerald-500 font-mono tracking-tighter">₹{overviewData.totalCollected.toLocaleString()}</h2>
                                 </div>
-                                <div className={`${theme.layout.panel} rounded-[2rem] border border-themeBorder p-8 relative overflow-hidden shadow-lg`}>
+                                <div className={`${theme.layout.panel} rounded-[2rem] border border-white/5 p-8 relative overflow-hidden shadow-lg`}>
                                     <div className="absolute top-0 left-0 w-1.5 h-full bg-rose-500"></div>
                                     <p className="text-[10px] font-black text-themeTextSec uppercase tracking-widest mb-2">Pending Invoices</p>
                                     <h2 className="text-4xl font-black text-rose-500 font-mono tracking-tighter">{overviewData.pendingCount}</h2>
@@ -310,13 +310,13 @@ export default function AdminFees() {
                 {activeTab === 'batch' && (
                     <div className="flex flex-col gap-6">
                         {/* Top Control Bar */}
-                        <div className="bg-themePanel border border-themeBorder rounded-[2rem] p-6 shadow-lg flex flex-col md:flex-row gap-6 items-end justify-between">
+                        <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-[2rem] p-6 shadow-lg flex flex-col md:flex-row gap-6 items-end justify-between">
                             <div className="w-full md:w-1/3">
                                 <label className="block text-[10px] font-black uppercase tracking-widest text-themeTextSec mb-2 pl-1">Select Academic Batch</label>
                                 <div className="relative">
                                     <select 
                                         value={selectedBatch} onChange={e => setSelectedBatch(e.target.value)}
-                                        className="w-full bg-themeElevated border border-themeBorder hover:border-themeBorderStrong text-themeText rounded-xl px-4 py-3.5 text-sm font-bold transition-colors appearance-none outline-none focus:border-themeAccent"
+                                        className="w-full bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 hover:border-black/5 dark:border-white/10 text-themeText rounded-xl px-4 py-3.5 text-sm font-bold transition-colors appearance-none outline-none focus:border-themeAccent"
                                     >
                                         <option value="" disabled>Select Batch to Manage...</option>
                                         {batches.map(b => <option key={b} value={b}>{b}</option>)}
@@ -340,23 +340,23 @@ export default function AdminFees() {
 
                         {/* Assign Fees Panel (Only visible if students are selected) */}
                         {selectedBatch && selectedStudentIds.length > 0 && (
-                            <div className="bg-themeElevated border border-themeBorder rounded-[2rem] p-6 shadow-lg animate-fade-in flex flex-col xl:flex-row gap-6 xl:items-end">
+                            <div className="bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated border border-white/5 rounded-[2rem] p-6 shadow-lg animate-fade-in flex flex-col xl:flex-row gap-6 xl:items-end">
                                 <div className="flex-1">
                                     <h3 className="text-sm font-black text-themeText uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <i className="fa-solid fa-file-invoice text-themeAccent"></i> Assign New Fee to {selectedStudentIds.length} Students
                                     </h3>
                                     <form id="assign-fee-form" onSubmit={handleAssignFees} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div>
-                                            <input type="text" value={assignTitle} onChange={e => setAssignTitle(e.target.value)} required placeholder="Invoice Title (e.g. Exam Fee)" className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-themeAccent text-themeText" />
+                                            <input type="text" value={assignTitle} onChange={e => setAssignTitle(e.target.value)} required placeholder="Invoice Title (e.g. Exam Fee)" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-themeAccent text-themeText" />
                                         </div>
                                         <div>
-                                            <input type="number" value={assignAmount} onChange={e => setAssignAmount(e.target.value)} required placeholder="Amount (₹)" min="1" className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-themeAccent text-themeText" />
+                                            <input type="number" value={assignAmount} onChange={e => setAssignAmount(e.target.value)} required placeholder="Amount (₹)" min="1" className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl px-4 py-3 text-sm font-mono outline-none focus:border-themeAccent text-themeText" />
                                         </div>
                                         <div>
-                                            <input type="date" value={assignDueDate} onChange={e => setAssignDueDate(e.target.value)} required className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-themeAccent text-themeText" />
+                                            <input type="date" value={assignDueDate} onChange={e => setAssignDueDate(e.target.value)} required className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-themeAccent text-themeText" />
                                         </div>
                                         <div>
-                                            <select value={assignType} onChange={e => setAssignType(e.target.value)} className="w-full bg-themePanel border border-themeBorder rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-themeAccent text-themeText appearance-none">
+                                            <select value={assignType} onChange={e => setAssignType(e.target.value)} className="w-full bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:border-themeAccent text-themeText appearance-none">
                                                 {['Tuition', 'Hostel', 'Library', 'Examination', 'Fine', 'Other'].map(t => <option key={t} value={t}>{t}</option>)}
                                             </select>
                                         </div>
@@ -370,7 +370,7 @@ export default function AdminFees() {
 
                         {/* Spreadsheet Grid */}
                         {selectedBatch && (
-                            <div className="bg-themePanel border border-themeBorder rounded-[2rem] shadow-xl overflow-hidden flex flex-col min-h-[400px]">
+                            <div className="bg-themePanel/85 backdrop-blur-2xl shadow-premium border border-white/5 rounded-[2rem] shadow-xl overflow-hidden flex flex-col min-h-[400px]">
                                 {loading ? (
                                     <div className="flex-1 flex items-center justify-center py-20">
                                         <i className="fa-solid fa-circle-notch fa-spin text-3xl text-themeAccent"></i>
@@ -389,13 +389,13 @@ export default function AdminFees() {
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
                                             <thead>
-                                                <tr className="bg-themeElevated/50 border-b border-themeBorder">
+                                                <tr className="bg-themeElevated/50 border-b border-white/5">
                                                     <th className="p-4 w-12 text-center">
                                                         <input 
                                                             type="checkbox" 
                                                             checked={selectedStudentIds.length === students.length && students.length > 0}
                                                             onChange={handleSelectAll}
-                                                            className="w-4 h-4 rounded border-themeBorder text-themeAccent focus:ring-themeAccent bg-themeElevated cursor-pointer"
+                                                            className="w-4 h-4 rounded border-white/5 text-themeAccent focus:ring-themeAccent bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated cursor-pointer"
                                                         />
                                                     </th>
                                                     <th className="p-4 text-[10px] font-black uppercase tracking-widest text-themeTextSec">Student Details</th>
@@ -411,13 +411,13 @@ export default function AdminFees() {
                                                     const totalPending = status.pendingInvoices ? status.pendingInvoices.reduce((sum, inv) => sum + Number(inv.amount), 0) : 0;
                                                     
                                                     return (
-                                                        <tr key={student.id} className={`border-b border-themeBorder/50 transition-colors ${isSelected ? 'bg-themeAccent/5' : 'hover:bg-themeElevated/30'}`}>
+                                                        <tr key={student.id} className={`border-b border-white/5/50 transition-colors ${isSelected ? 'bg-themeAccent/5' : 'hover:bg-themeElevated/30'}`}>
                                                             <td className="p-4 text-center">
                                                                 <input 
                                                                     type="checkbox"
                                                                     checked={isSelected}
                                                                     onChange={() => handleSelectStudent(student.id)}
-                                                                    className="w-4 h-4 rounded border-themeBorder text-themeAccent focus:ring-themeAccent bg-themeElevated cursor-pointer"
+                                                                    className="w-4 h-4 rounded border-white/5 text-themeAccent focus:ring-themeAccent bg-themeElevated/90 backdrop-blur-2xl shadow-premiumElevated cursor-pointer"
                                                                 />
                                                             </td>
                                                             <td className="p-4">

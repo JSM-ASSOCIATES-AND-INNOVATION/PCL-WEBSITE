@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { theme } from "../../../theme";
+import PageHeader from "../../shared/PageHeader/PageHeader";
 import { useERP } from "../../../context/ErpContext";
 import { supabase } from "../../../lib/supabase/supabaseClient";
 import generatePDF, { Resolution, Margin } from 'react-to-pdf';
@@ -113,7 +114,7 @@ const AchSection = ({ title, items, headStyle, mode }) => {
 const ModernTemplate = (data, config) => {
     const HS = { color: "#d97706" };
     return (
-        <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: "#1e293b", fontSize: "10pt", lineHeight: 1.55 }}>
+        <div>
             <div style={{ borderBottom: "3px solid #f59e0b", paddingBottom: "14px", marginBottom: "20px" }}>
                 <h1 style={{ fontSize: "26pt", fontWeight: 900, textTransform: "uppercase", letterSpacing: "-0.02em", color: "#0f172a", margin: "0 0 6px" }}>
                     {data.personal.name}
@@ -176,7 +177,7 @@ const ModernTemplate = (data, config) => {
 const ClassicTemplate = (data, config) => {
     const HS = { borderBottom: "1px solid #cbd5e1", paddingBottom: "3px", color: "#0f172a" };
     return (
-        <div style={{ fontFamily: "'Georgia', 'Times New Roman', serif", color: "#0f172a", fontSize: "10pt", lineHeight: 1.55 }}>
+        <div>
             <div style={{ textAlign: "center", borderBottom: "2px solid #0f172a", paddingBottom: "12px", marginBottom: "18px" }}>
                 <h1 style={{ fontSize: "22pt", fontWeight: 700, letterSpacing: "0.02em", margin: "0 0 6px", textTransform: "uppercase" }}>{data.personal.name}</h1>
                 <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "4px 10px", fontSize: "8.5pt", color: "#475569" }}>
@@ -274,7 +275,7 @@ const ExecutiveSplitTemplate = (data, config) => {
     };
 
     return (
-        <div style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", display: "flex", margin: "-20mm", minHeight: "297mm", boxSizing: "border-box" }}>
+        <div>
             <div style={{ width: "72mm", minHeight: "297mm", background: "#0f172a", color: "#e2e8f0", padding: "20mm 14mm", boxSizing: "border-box", flexShrink: 0, display: "flex", flexDirection: "column" }}>
                 <div style={{ width: "80px", height: "80px", borderRadius: "50%", background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", border: "3px solid #1e293b", boxShadow: "0 4px 12px rgba(0,0,0,0.3)" }}>
                     {data.personal.photo_url ? (
@@ -434,7 +435,7 @@ const ProfessionalTemplate = (data, config) => {
         marginBottom: "10px",
     };
     return (
-        <div style={{ fontFamily: "'Cambria', Georgia, serif", color: "#1e293b", fontSize: "9.5pt", lineHeight: 1.55 }}>
+        <div>
             <div style={{ background: "#1e3a5f", color: "#ffffff", margin: "-20mm -20mm 0", padding: "18mm 20mm 14mm", marginBottom: "18px" }}>
                 <h1 style={{ fontSize: "24pt", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", margin: "0 0 6px" }}>{data.personal.name}</h1>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 14px", fontSize: "8pt", color: "#93c5fd", fontWeight: 500 }}>
@@ -627,7 +628,6 @@ export default function CVBuilder() {
             setIsExporting(false);
         }
     };
-
     const activeTemplate = TEMPLATES[cvConfig.template] || TEMPLATES.modern;
 
     const dataToggles = [
@@ -646,34 +646,28 @@ export default function CVBuilder() {
 
     return (
         <>
-            <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-20 lg:pb-12 animate-fade-in selection:bg-themeElevated" id="cv-builder-shell">
-                {/* ═══════════════ HEADER ═══════════════ */}
-                <div className={`flex flex-col lg:flex-row lg:items-end justify-between gap-6 ${theme.layout.panel} p-6 lg:p-8 rounded-themePanel border-theme border-themeBorder shadow-sm`}>
-                    <div className="flex items-center gap-5">
-                        <div className="w-14 h-14 lg:w-16 lg:h-16 bg-themeElevated border-theme border-themeBorderStrong rounded-themePanel flex items-center justify-center text-themeAccent text-2xl lg:text-3xl shrink-0 shadow-inner">
-                            <i className="fa-solid fa-file-invoice"></i>
-                        </div>
-                        <div>
-                            <h1 className={`${theme.text.heading} text-2xl lg:text-3xl text-themeText mb-1 tracking-tight`}>Career & CV Builder</h1>
-                            <p className={`${theme.text.secondary} text-xs lg:text-sm font-medium`}>Generate verified, university-branded resumes from your ERP data.</p>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={handleExport}
-                        disabled={isExporting}
-                        className="w-full lg:w-auto px-6 lg:px-8 py-3.5 lg:py-4 bg-white hover:bg-neutral-200 text-[#050505] rounded-themePanel text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 shrink-0 shadow-md hover:shadow-lg"
-                    >
-                        {isExporting ? <i className="fa-solid fa-circle-notch fa-spin text-lg"></i> : <i className="fa-solid fa-file-pdf text-lg"></i>}
-                        {isExporting ? "Generating Document..." : "Export PDF"}
-                    </button>
-                </div>
+            <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 lg:gap-8 pb-32 lg:pb-12 animate-fade-in selection:bg-themeElevated" id="cv-builder-shell">
+                <PageHeader 
+                    icon="fa-solid fa-file-invoice" 
+                    title="CV Builder" 
+                    subtitle="Auto-generate your professional legal resume." 
+                    rightContent={
+                        <button
+                            onClick={handleExport}
+                            disabled={isExporting}
+                            className="w-full lg:w-auto px-6 lg:px-8 py-3.5 lg:py-4 bg-themePanel border-theme border-themeBorderStrong hover:bg-neutral-200 text-[#050505] rounded-[2rem] text-[10px] lg:text-xs font-black uppercase tracking-widest transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 shrink-0 shadow-md hover:shadow-lg"
+                        >
+                            {isExporting ? <i className="fa-solid fa-circle-notch fa-spin text-lg"></i> : <i className="fa-solid fa-file-pdf text-lg"></i>}
+                            {isExporting ? "Generating Document..." : "Export PDF"}
+                        </button>
+                    }
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                     {/* ═══════════════ LEFT: CONTROLS ═══════════════ */}
                     <div className="lg:col-span-4 flex flex-col gap-5 lg:gap-6">
                         {/* Template Selector */}
-                        <div className={`${theme.layout.panel} rounded-themePanel p-5 lg:p-6 border-theme border-themeBorder shadow-sm`}>
+                        <div className={`${theme.layout.panel} rounded-[2rem] p-5 lg:p-6 border border-black/10 dark:border-white/20 shadow-sm`}>
                             <h2 className="text-[10px] lg:text-xs font-black text-themeText uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <i className="fa-solid fa-wand-magic-sparkles text-themeAccent"></i> Template Selection
                             </h2>
@@ -682,15 +676,15 @@ export default function CVBuilder() {
                                     <button
                                         key={key}
                                         onClick={() => setCvConfig({ ...cvConfig, template: key })}
-                                        className={`w-full text-left p-4 rounded-themePanel border-theme transition-all duration-200 group ${
+                                        className={`w-full text-left p-4 rounded-[2rem] border-theme transition-all duration-200 group ${
                                             cvConfig.template === key
-                                                ? "bg-themeElevated border-themeBorderStrong shadow-sm ring-1 ring-themeBorderStrong"
-                                                : "bg-themePanel border-themeBorder hover:border-themeBorderStrong hover:bg-themeElevated/50"
+                                                ? "bg-themePanel border-theme border-themeBorderStrong border-black/5 dark:border-white/10 shadow-sm ring-1 ring-themeBorderStrong"
+                                                : "bg-themePanel border-theme border-themeBorderStrong border-black/10 dark:border-white/20 hover:border-black/5 dark:border-white/10 hover:bg-themeElevated/50"
                                         }`}
                                     >
                                         <div className="flex items-center justify-between mb-1.5">
                                             <span className="flex items-center gap-2.5">
-                                                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${cvConfig.template === key ? "bg-themeAccent/10 text-themeAccent" : "bg-themeElevated text-themeTextSec group-hover:text-themeText"}`}>
+                                                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${cvConfig.template === key ? "bg-themeAccent/10 text-themeAccent" : "bg-themePanel border-theme border-themeBorderStrong text-themeTextSec group-hover:text-themeText"}`}>
                                                     <i className={`fa-solid ${tmpl.icon} text-[10px]`}></i>
                                                 </div>
                                                 <span className={`text-xs font-bold tracking-wide ${cvConfig.template === key ? "text-themeAccent" : "text-themeText"}`}>{tmpl.name}</span>
@@ -704,7 +698,7 @@ export default function CVBuilder() {
                         </div>
 
                         {/* Data Integration Toggles */}
-                        <div className="bg-themeElevated rounded-themePanel p-5 lg:p-6 border-theme border-themeBorder relative overflow-hidden shadow-sm">
+                        <div className="bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] p-5 lg:p-6 border border-black/10 dark:border-white/20 relative overflow-hidden shadow-sm">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-themePanel/30 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none blur-2xl"></div>
                             <div className="flex items-center gap-2 mb-1.5 relative z-10">
                                 <i className="fa-solid fa-database text-themeAccent"></i>
@@ -715,7 +709,7 @@ export default function CVBuilder() {
                                 {dataToggles.map((toggle) => (
                                     <label
                                         key={toggle.id}
-                                        className="flex items-center justify-between p-3.5 bg-themePanel rounded-themePanel border-theme border-themeBorder cursor-pointer hover:border-themeBorderStrong hover:bg-themeElevated transition-all group"
+                                        className="flex items-center justify-between p-3.5 bg-themePanel border-theme border-themeBorderStrong rounded-[2rem] cursor-pointer hover:border-black/5 dark:border-white/10 hover:bg-themePanel border-theme border-themeBorderStrong transition-all group"
                                     >
                                         <span className="text-[10px] lg:text-[11px] font-bold text-themeTextSec group-hover:text-themeText transition-colors flex items-center gap-2.5">
                                             <i className={`fa-solid ${toggle.icon} text-[10px] opacity-50 w-3 text-center`}></i>
@@ -726,7 +720,7 @@ export default function CVBuilder() {
                                                 type="checkbox"
                                                 checked={cvConfig[toggle.id]}
                                                 onChange={() => handleToggle(toggle.id)}
-                                                className="peer appearance-none w-10 h-5 bg-themeElevated border-theme border-themeBorderStrong rounded-full checked:bg-amber-500 checked:border-amber-500 transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-amber-500/30 focus:ring-offset-1 focus:ring-offset-themePanel"
+                                                className="peer appearance-none w-10 h-5 bg-themePanel border-theme border-themeBorderStrong rounded-full checked:bg-amber-500 checked:border-amber-500 transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-amber-500/30 focus:ring-offset-1 focus:ring-offset-themePanel"
                                             />
                                             <div className="absolute left-[3px] top-[2.5px] w-3.5 h-3.5 bg-neutral-400 peer-checked:bg-[#050505] rounded-full peer-checked:translate-x-5 transition-transform duration-300 ease-out pointer-events-none shadow-sm"></div>
                                         </div>
@@ -735,7 +729,7 @@ export default function CVBuilder() {
                             </div>
 
                             {erpData.experience.length === 0 && (
-                                <div className="mt-5 p-3.5 bg-blue-500/10 border-theme border-blue-500/20 rounded-themePanel flex items-start gap-2.5 relative z-10">
+                                <div className="mt-5 p-3.5 bg-blue-500/10 border-theme border-blue-500/20 rounded-[2rem] flex items-start gap-2.5 relative z-10">
                                     <i className="fa-solid fa-circle-info text-blue-400 mt-0.5 text-xs"></i>
                                     <p className="text-[10px] font-medium text-blue-200/90 leading-relaxed">Your experience ledger is currently empty. Log internships and work experiences first to populate this section.</p>
                                 </div>
@@ -749,13 +743,13 @@ export default function CVBuilder() {
                             <span className={`text-[10px] font-black uppercase tracking-widest ${theme.text.secondary} flex items-center gap-2`}>
                                 <i className="fa-solid fa-eye text-themeAccent"></i> Live Preview — {activeTemplate.name}
                             </span>
-                            <span className={`text-[9px] font-bold ${theme.text.muted} uppercase tracking-widest px-2 py-1 bg-themeElevated rounded border-theme border-themeBorder`}>
+                            <span className={`text-[9px] font-bold ${theme.text.muted} uppercase tracking-widest px-2 py-1 bg-themePanel border-theme border-themeBorderStrong rounded border border-black/10 dark:border-white/20`}>
                                 A4 · 210 × 297 mm
                             </span>
                         </div>
 
                         {/* Interactive Scale Container */}
-                        <div id="cv-preview-container" className="w-full bg-[#121212] rounded-themePanel border-theme border-themeBorder p-4 lg:p-8 flex justify-center items-start shadow-inner overflow-hidden min-h-[500px] relative">
+                        <div id="cv-preview-container" className="w-full bg-[#121212] rounded-[2rem] p-4 lg:p-8 flex justify-center items-start shadow-inner overflow-hidden min-h-[500px] relative">
                             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/5 to-transparent opacity-50 pointer-events-none"></div>
                             
                             {/* The paper document */}

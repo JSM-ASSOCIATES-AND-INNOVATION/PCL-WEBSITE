@@ -1,3 +1,4 @@
+import Preloader from '../../UI/Preloader/Preloader';
 /* © 2026 JSM Associates & Innovation. All Rights Reserved. */
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
@@ -5,7 +6,6 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useSiteContent } from '../../../LIB/hooks/useSiteContent';
-import Preloader from '../../UI/Preloader/Preloader';
 import classroom3 from '../../../ASSETS/CAMPUS/pcl_classroom_3.webp';
 import styles from './Programs.module.css';
 
@@ -16,6 +16,8 @@ export default function CourseLLB() {
 
   // CMS Integration
   const { content, loading } = useSiteContent('/programs/llb', 'program_details');
+
+  
 
   useEffect(() => {
     if (loading) return; // Wait for content before animating
@@ -30,6 +32,7 @@ export default function CourseLLB() {
           duration: 0.8, 
           stagger: 0.15,
           ease: 'power3.out',
+          clearProps: 'all',
           scrollTrigger: {
             trigger: contentRef.current,
             start: 'top 80%',
@@ -42,7 +45,7 @@ export default function CourseLLB() {
     return () => ctx.revert();
   }, [loading]);
 
-  if (loading) return <Preloader />;
+  
 
   // CMS Fallbacks
   const cms = {
@@ -92,19 +95,19 @@ export default function CourseLLB() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-[var(--text-color)] mb-6"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-[var(--text-color)] mb-6"
+           
           >
-            {cms.title} <span className="text-[var(--primary-color)] italic">{cms.title_highlight}</span>
+            {cms.title} <span className="text-[var(--primary-color)] italic font-medium pr-2">{cms.title_highlight}</span>
           </motion.h1>
-          <p className="text-lg md:text-xl text-[var(--text-muted)] max-w-3xl leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
+          <p className="text-lg md:text-xl text-[var(--text-muted)] max-w-3xl leading-relaxed">
             {cms.description}
           </p>
         </div>
 
         {/* Image */}
         <div className="w-full h-[300px] md:h-[500px] rounded-3xl overflow-hidden mb-16 relative flex items-center justify-center group shadow-2xl gsap-fade-up z-10">
-          <img src={classroom3} alt="LLB Classroom" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
+          <img decoding="async" loading="lazy" src={classroom3} alt="LLB Classroom" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
           <div className="absolute inset-0 ring-1 ring-inset ring-[var(--primary-color)]/30 rounded-3xl pointer-events-none"></div>
         </div>
 
@@ -112,26 +115,26 @@ export default function CourseLLB() {
         <div className="grid md:grid-cols-3 gap-8 md:gap-12 relative z-10 flex-col-reverse md:flex-row">
           <div className="md:col-span-2 space-y-12">
             <section className="gsap-fade-up">
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--text-color)]" style={{ fontFamily: "'Playfair Display', serif" }}>Program Overview</h2>
-              <p className="text-[var(--text-muted)] leading-relaxed text-base md:text-lg">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[var(--text-color)] tracking-tight">Program Overview</h2>
+              <p className="text-[var(--text-muted)] leading-relaxed text-base md:text-lg text-justify">
                 {cms.overview_text}
               </p>
             </section>
             
             <section className="gsap-fade-up">
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--text-color)]" style={{ fontFamily: "'Playfair Display', serif" }}>Core Focus Areas</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--text-color)] tracking-tight">Core Focus Areas</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 {[cms.focus_1, cms.focus_2, cms.focus_3, cms.focus_4, cms.focus_5].map((item, idx) => (
-                  <div key={idx} className={`${styles.glassCard} !p-4 flex items-start gap-4`}>
+                  <div key={idx} className={`${styles.glassCard} !p-4 flex items-start gap-4 hover:shadow-[0_0_30px_rgba(255,191,0,0.15)] transition-shadow duration-500`}>
                     <div className="w-2 h-2 rounded-full bg-[var(--primary-color)] mt-2 shadow-[0_0_10px_var(--primary-glow)] shrink-0"></div>
-                    <span className="text-[var(--text-color)] font-medium text-sm md:text-base">{item}</span>
+                    <span className="text-[var(--text-color)] font-medium text-sm md:text-base text-justify">{item}</span>
                   </div>
                 ))}
               </div>
             </section>
 
             <section className="mt-12 gsap-fade-up">
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--text-color)]" style={{ fontFamily: "'Playfair Display', serif" }}>Curriculum Overview</h2>
+              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--text-color)] tracking-tight">Curriculum Overview</h2>
               <div className={styles.dataGrid}>
                 <div className={`hidden md:grid grid-cols-3 ${styles.gridHeader}`}>
                   <div>Semester Group</div>
@@ -140,23 +143,23 @@ export default function CourseLLB() {
                 
                 <div className={styles.gridRow}>
                   <div className={styles.gridCellPrimary}>{cms.curriculum_m1_title}<br/><span className="text-xs text-[var(--text-muted)] uppercase tracking-widest block mt-1">{cms.curriculum_m1_badge}</span></div>
-                  <div className={`${styles.gridCellMuted} md:col-span-2`}>{cms.curriculum_m1_desc}</div>
+                  <div className={`${styles.gridCellMuted} md:col-span-2 text-justify`}>{cms.curriculum_m1_desc}</div>
                 </div>
                 <div className={styles.gridRow}>
                   <div className={styles.gridCellPrimary}>{cms.curriculum_m2_title}<br/><span className="text-xs text-[var(--text-muted)] uppercase tracking-widest block mt-1">{cms.curriculum_m2_badge}</span></div>
-                  <div className={`${styles.gridCellMuted} md:col-span-2`}>{cms.curriculum_m2_desc}</div>
+                  <div className={`${styles.gridCellMuted} md:col-span-2 text-justify`}>{cms.curriculum_m2_desc}</div>
                 </div>
                 <div className={styles.gridRow}>
                   <div className={styles.gridCellPrimary}>{cms.curriculum_m3_title}<br/><span className="text-xs text-[var(--text-muted)] uppercase tracking-widest block mt-1">{cms.curriculum_m3_badge}</span></div>
-                  <div className={`${styles.gridCellMuted} md:col-span-2`}>{cms.curriculum_m3_desc}</div>
+                  <div className={`${styles.gridCellMuted} md:col-span-2 text-justify`}>{cms.curriculum_m3_desc}</div>
                 </div>
               </div>
             </section>
           </div>
 
           {/* Quick Facts Sidebar */}
-          <div className="space-y-6 gsap-fade-up order-first md:order-last mb-8 md:mb-0">
-            <div className={`${styles.glassCard} sticky top-24`}>
+          <div className="order-first md:order-last mb-8 md:mb-0 relative h-full">
+            <div className={`${styles.glassCard} sticky top-[100px] gsap-fade-up`}>
               <h3 className="text-xl font-bold text-[var(--primary-color)] mb-6 border-b border-[var(--card-border)] pb-4 font-['Playfair_Display']">Quick Facts</h3>
               
               <div className="space-y-6">
@@ -175,11 +178,17 @@ export default function CourseLLB() {
               </div>
               
               <div className="mt-8 flex flex-col gap-4">
-                <button className={`${styles.magneticBtn} ${styles.magneticBtnOutline}`}>
-                  View Full Syllabus
+                <button onClick={() => alert("Syllabus PDF is currently being updated for the 2026 academic year.")} className="tlh-btn justify-center w-full">
+                  <span className="text-xs font-bold uppercase tracking-widest">View Full Syllabus</span>
+                  <svg width="9" height="13" viewBox="0 0 9 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.64453 0.972656L6.97897 6.3071L1.67567 11.6104" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                 </button>
-                <Link to="/apply" className={styles.magneticBtn}>
-                  Apply Now
+                <Link to="/apply" className="tlh-btn justify-center w-full">
+                  <span className="text-xs font-bold uppercase tracking-widest">Apply Now</span>
+                  <svg width="9" height="13" viewBox="0 0 9 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.64453 0.972656L6.97897 6.3071L1.67567 11.6104" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                 </Link>
               </div>
             </div>

@@ -83,7 +83,7 @@ export default function BlogsPage() {
                 
                 {/* Image Section */}
                 <div className="relative w-full aspect-[4/3] md:aspect-[3/2] overflow-hidden bg-[var(--bg-color)]">
-                    <img 
+                    <img decoding="async" loading="lazy" 
                         src={blog.image_url || FALLBACK_IMG} 
                         alt={blog.title} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100" 
@@ -100,7 +100,7 @@ export default function BlogsPage() {
 
                 {/* Content Section */}
                 <div className="p-5 md:p-8 flex flex-col relative z-10 bg-[var(--card-bg)]">
-                    <h3 className="text-xl md:text-2xl font-bold text-[var(--text-color)] mb-3 leading-tight group-hover:text-[var(--primary-color)] transition-colors line-clamp-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <h3 className="text-xl md:text-2xl font-bold text-[var(--text-color)] mb-3 leading-tight group-hover:text-[var(--primary-color)] transition-colors line-clamp-2">
                         {blog.title}
                     </h3>
                     
@@ -125,57 +125,52 @@ export default function BlogsPage() {
 
             <div className={styles.contentContainer} ref={containerRef}>
                 {/* Header */}
-                <div className="text-center mb-16 md:mb-24 relative z-10">
+                <div className="text-center mb-16 md:mb-24 relative z-10 pt-32">
                     <motion.h1 
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-widest text-[var(--text-color)] mb-6 uppercase leading-tight"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
+                        className="text-4xl md:text-5xl lg:text-6xl font-serif text-[var(--primary-color)] mb-6 leading-tight"
                     >
-                        Campus <span className="text-[var(--primary-color)] italic">Blogs</span>
+                        News & Insights
                     </motion.h1>
-                    <motion.div 
-                        initial={{ opacity: 0, scaleX: 0 }} 
-                        animate={{ opacity: 1, scaleX: 1 }} 
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="h-[1px] w-32 bg-[var(--primary-color)]/50 mx-auto mb-8 origin-center"
-                    />
                     <motion.p 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-[var(--text-muted)] max-w-2xl mx-auto text-lg leading-relaxed mb-10"
-                        style={{ fontFamily: "'Outfit', sans-serif" }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="text-white/80 max-w-2xl mx-auto text-lg leading-relaxed mb-10 font-light"
                     >
-                        Insights, legal analysis, and community stories from the students and faculty of Prudentia College of Law.
+                        Explore our views on latest updates, insights and analysis to help you navigate the evolving legal landscape.
                     </motion.p>
                     
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="flex justify-center"
                     >
-                        <Link to="/blogs/submit" className={`${styles.magneticBtn} inline-flex items-center mx-auto`} style={{ maxWidth: '280px' }}>
-                            <PenTool className="w-4 h-4 mr-2" />
-                            Submit a Post
+                        <Link to="/blogs/submit" className="tlh-btn flex justify-center !py-4 px-10">
+                            <span className="text-xs font-bold uppercase tracking-widest flex items-center">
+                                <PenTool className="w-4 h-4 mr-2" />
+                                Submit a Post
+                            </span>
                         </Link>
                     </motion.div>
                 </div>
 
                 {loading ? (
                     <div className="flex flex-col justify-center items-center py-32 relative z-10">
-                        <div className="w-12 h-12 border-4 border-[var(--card-border)] border-t-[var(--primary-color)] rounded-full animate-spin mb-4"></div>
-                        <p className="text-[var(--text-muted)] tracking-widest uppercase text-sm font-bold">Loading Posts...</p>
+                        <div className="w-12 h-12 border-4 border-white/10 border-t-[var(--primary-color)] rounded-full animate-spin mb-4"></div>
+                        <p className="text-white/50 tracking-widest uppercase text-sm font-bold">Loading Posts...</p>
                     </div>
                 ) : (
                     <div className="relative z-10">
                         {filteredBlogs.length === 0 ? (
-                            <div className={`${styles.glassCard} py-20 text-center border border-[var(--card-border)]`}>
-                                <p className="text-[var(--text-muted)] text-xl" style={{ fontFamily: "'Outfit', sans-serif" }}>No posts found in this category.</p>
+                            <div className="py-20 text-center border border-white/10 rounded-2xl bg-[#1a1818]">
+                                <p className="text-white/50 text-xl font-light">No posts found in this category.</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {filteredBlogs.map((blog) => renderBlogCard(blog))}
                             </div>
                         )}

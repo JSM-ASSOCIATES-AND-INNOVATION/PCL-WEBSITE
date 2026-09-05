@@ -4,7 +4,7 @@ import { theme } from "../../../theme";
 import { supabase } from "../../../lib/supabase/supabaseClient";
 import { useERP } from "../../../context/ErpContext";
 
-export default function FacultyAssignments({ subjectContext }) {
+export default function FacultyAssignments({ subjectContext }, isEmbedded = false) {
     const { userSession } = useERP();
     const [assignments, setAssignments] = useState(() => {
         const cached = sessionStorage.getItem(`fac_assignments_${userSession?.db_id}`);

@@ -4,7 +4,7 @@ import { theme } from "../../../theme";
 import { supabase } from "../../../lib/supabase/supabaseClient";
 import { useERP } from "../../../context/ErpContext";
 
-export default function FacultyMarks({ subjectContext }) {
+export default function FacultyMarks({ subjectContext }, isEmbedded = false) {
     const { userSession } = useERP();
     
     // Selection State

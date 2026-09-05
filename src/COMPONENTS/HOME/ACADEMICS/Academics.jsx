@@ -70,7 +70,7 @@ const Academics = forwardRef(({ windowWidth, academicGridRef, ...props }, ref) =
   };
 
   return (
-    <section className="slide h-full w-full relative flex flex-col items-center justify-center pt-[90px] pb-4 md:pt-[150px] md:pb-6 bg-[var(--bg-color)] overflow-hidden" ref={ref} {...props}>
+    <section className="slide h-[100dvh] w-full relative flex flex-col items-center justify-center pt-[100px] md:pt-[120px] pb-[30px] md:pb-[40px] bg-[var(--bg-color)] overflow-hidden" ref={ref} {...props}>
       {/* Cinematic Ambient Backgrounds */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.02] z-0" style={{ backgroundImage: 'radial-gradient(var(--text-color) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="container relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col justify-between h-full">
@@ -81,10 +81,10 @@ const Academics = forwardRef(({ windowWidth, academicGridRef, ...props }, ref) =
           whileInView="visible"
           viewport={{ once: true }}
           variants={headingVars}
-          className="text-center mb-4 z-20 shrink-0 relative top-10 md:top-14"
+          className="text-center mb-2 md:mb-4 z-20 shrink-0"
         >
           <span className="block text-[9px] uppercase tracking-[0.3em] text-[var(--primary-color)] font-bold mb-2">Our Programs</span>
-          <h2 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-[var(--text-color)] leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h2 className="text-3xl md:text-4xl lg:text-[42px] font-bold text-[var(--text-color)] leading-tight">
             {heading} <span className="italic font-medium text-[var(--primary-color)]">Excellence.</span>
           </h2>
           <div className="h-[2px] w-12 bg-[var(--primary-color)] mx-auto mt-6"></div>
@@ -112,7 +112,7 @@ const Academics = forwardRef(({ windowWidth, academicGridRef, ...props }, ref) =
                   customRender: () => (
                     <Link
                       to={p.link}
-                      className="group relative w-full h-[300px] rounded-[20px] overflow-hidden bg-[var(--card-bg)] border border-[var(--card-border)]/50 shadow-[0_10px_30px_rgba(0,0,0,0.05)] block flex flex-col"
+                      className="group relative w-full h-[280px] rounded-[20px] overflow-hidden bg-[var(--card-bg)] border border-[var(--card-border)]/50 shadow-[0_10px_30px_rgba(0,0,0,0.05)] block flex flex-col"
                     >
                       {/* Top Image Half */}
                       <div className="relative h-[45%] w-full overflow-hidden shrink-0">
@@ -130,18 +130,22 @@ const Academics = forwardRef(({ windowWidth, academicGridRef, ...props }, ref) =
                       
                       {/* Bottom Content Half */}
                       <div className="relative flex flex-col p-4 h-[55%] grow text-left">
-                        <h3 className="text-xl font-bold leading-tight mb-2 text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <h3 className="text-xl font-bold leading-tight mb-2 text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors">
                           {p.title} <span className="italic font-medium">{p.focus}</span>
                         </h3>
                         
-                        <p className="text-[var(--text-muted)] text-[11px] leading-relaxed mb-3 line-clamp-3">
+                        <p className="text-[var(--text-muted)] text-[11px] leading-relaxed text-justify mb-3 line-clamp-3">
                           {p.desc}
                         </p>
                         
-                        <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.15em] font-bold text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors mt-auto">
-                          Explore Program
-                          <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-500" />
+                        <div className="mt-auto">
+                        <div className="tlh-btn !py-2.5 px-6 w-fit">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-inherit flex items-center">
+                            Explore Course
+                            <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform duration-500" />
+                          </span>
                         </div>
+                      </div>
                       </div>
                     </Link>
                   )
@@ -183,17 +187,21 @@ const Academics = forwardRef(({ windowWidth, academicGridRef, ...props }, ref) =
                     
                     {/* Bottom Content Half */}
                     <div className="relative flex flex-col p-4 lg:p-5 h-[55%] grow">
-                      <h3 className="text-xl lg:text-[24px] font-bold leading-tight mb-2 text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      <h3 className="text-xl lg:text-[24px] font-bold leading-tight mb-2 text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors">
                         {prog.title} <span className="italic font-medium">{prog.focus}</span>
                       </h3>
                       
-                      <p className="text-[var(--text-muted)] text-[10px] lg:text-[11px] leading-relaxed mb-3 line-clamp-3">
+                      <p className="text-[var(--text-muted)] text-[10px] lg:text-[11px] leading-relaxed text-justify mb-3 line-clamp-3">
                         {prog.desc}
                       </p>
                       
-                      <div className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.15em] font-bold text-[var(--text-color)] group-hover:text-[var(--primary-color)] transition-colors mt-auto">
-                        Explore Program
-                        <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-500" />
+                      <div className="mt-auto">
+                        <div className="tlh-btn !py-2.5 px-6 w-fit">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-inherit flex items-center">
+                            Explore Course
+                            <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform duration-500" />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </Link>
@@ -204,20 +212,14 @@ const Academics = forwardRef(({ windowWidth, academicGridRef, ...props }, ref) =
         </div>
 
         {/* BOTTOM: Fixed CSS CTA Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          viewport={{ once: true, margin: "50px" }}
-          className="mt-4 flex justify-center shrink-0 z-20 pb-2 relative bottom-4 md:bottom-8"
-        >
+        <motion.div variants={itemVars} className="mt-1 md:mt-6 flex justify-center w-full relative z-10">
           <Link 
             to="/programs" 
-            className="group relative px-8 py-3.5 bg-[var(--primary-color)] text-[#000000] !important font-extrabold uppercase tracking-[0.15em] text-[10px] rounded-full shadow-[0_10px_20px_rgba(255,191,0,0.2)] hover:shadow-[0_15px_30px_rgba(255,191,0,0.3)] hover:-translate-y-1 transition-all duration-500 overflow-hidden flex items-center gap-2"
-            style={{ color: '#000000' }}
+            className="tlh-btn !py-3 md:!py-4 px-8 md:px-10 w-fit"
           >
-            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-            Explore All Programs <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform duration-500" />
+            <span className="text-xs font-bold uppercase tracking-widest text-inherit flex items-center">
+              Explore Full Curriculum <ArrowRight size={16} className="ml-2" />
+            </span>
           </Link>
         </motion.div>
 
